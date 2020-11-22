@@ -2,23 +2,23 @@
 #define BOARD_H
 
 #include <QObject>
-
+#include <QSize>
 #include "tile.h"
 
 
 class Board : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-
-    Board(QObject *parent, int width, int height, int playerNumber);
-    Tile *getTile(int x, int y);
+	Board(QObject *parent, int width, int height, int playerNumber);
+	Tile *getTile(int x, int y);
+	QSize getSize();
 private:
-    QVector<QVector<Tile*>> tiles;
-    QVector<Tile*> players;
-    Tile* goal;
-    //TODO history
-    //TODO active user
+	QVector<QVector<Tile*>> tiles;
+	QVector<Tile*> players;
+	Tile* goal;
+	//TODO history
+	//TODO active user
 
     Tile *getRandomUnoccupiedTile();
     // for each side: -1 because there are more tiles than walls, -2 because the walls next to the sides shouldn't be set, so 3*4 = 12

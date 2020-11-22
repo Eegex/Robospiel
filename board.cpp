@@ -3,8 +3,6 @@
 #include "board.h"
 
 Board::Board(QObject *parent, int width, int height, int playerNumber) : QObject(parent)
-
-
 {
 
     if(playerNumber+1 > width*height){
@@ -32,13 +30,16 @@ Board::Board(QObject *parent, int width, int height, int playerNumber) : QObject
         tiles.append(innerVector);
     }
 
-    std::default_random_engine generator;
-    std::uniform_int_distribution<int> x(0, width-1);
-    std::uniform_int_distribution<int> y(0, height-1);
-    for(int i=0; i<playerNumber; i++)
-    {
-        players.append(getRandomUnoccupiedTile());
-    }
+
+	std::default_random_engine generator;
+	std::uniform_int_distribution<int> x(0, width-1);
+	std::uniform_int_distribution<int> y(0, height-1);
+	for(int i=0; i<playerNumber; i++)
+	{
+		Tile * t = getRandomUnoccupiedTile();
+		t->setPlayer(i);
+		players.append(t);
+	}
 
     goal=getRandomUnoccupiedTile();
 
@@ -47,7 +48,12 @@ Board::Board(QObject *parent, int width, int height, int playerNumber) : QObject
 
 Tile* Board::getTile(int x, int y)
 {
-    return tiles.at(y).at(x);
+	return tiles.at(y).at(x);
+}
+
+QSize Board::getSize()
+{
+	return QSize(tiles.first().size(),tiles.size());
 }
 
 Tile* Board::getRandomUnoccupiedTile(){
