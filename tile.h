@@ -16,12 +16,12 @@ public:
 
     void setWall(Direction direction, bool set);
     bool getWall(Direction direction);
+    Tile* northTile;
+    Tile* westTile;
 private:
     QPoint position;
     bool eastWall=false;
     bool southWall=false;
-    Tile* northTile;
-    Tile* westTile;
     int playerOnThisTile;
 
 
