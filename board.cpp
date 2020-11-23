@@ -123,9 +123,11 @@ void Board::placeOuterWalls(){
 
                 }
             }
-            if(startTile->getPosition().x())
+            //if(startTile->getPosition().x())
+
         }
-        startTile->setWall()
+
+        //startTile->setWall()
     }
 
 
