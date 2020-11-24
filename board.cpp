@@ -42,13 +42,20 @@ Board::Board(QObject *parent, int width, int height, int playerNumber) : QObject
         players.append(t);
     }
 
-    goal=getRandomUnoccupiedTile();
+
 
 
 
     placeOuterWalls();
     placeInnerWalls();
 
+    //goal only in corner?
+
+    //goal=getRandomUnoccupiedTile();
+    placeGoalInCorner();
+
+
+    //option where goals can't be reached in one step? Goal does not have an associated player yet, does it?
 
 }
 
@@ -96,10 +103,8 @@ Tile* Board::getRandomUnoccupiedTile(){
 void Board::placeOuterWalls(){
 
     int outerWallspots = tiles.at(0).length()*2 + tiles.length()*2 - NUM_PLACES_THAT_CANT_HAVE_OUTER_WALLS;
-    qDebug()<< outerWallspots;
 
     int numberOfOuterWalls = (int) (outerWallspots/AVG_DIST_OF_OUTER_WALLS + 1);
-    qDebug()<< numberOfOuterWalls;
 
 
     int i =0;
@@ -135,7 +140,11 @@ void Board::placeOuterWalls(){
                 randSide= tiles.length()-1;
 
             }
-            tiles.at(randSide).at(x)->setWall(Direction::west, true);
+
+            if(!placeOuterWallIfFits(tiles.at(randSide).at(x), Direction::east)){
+                i--;
+            }
+
 
         }
         else{
@@ -149,7 +158,11 @@ void Board::placeOuterWalls(){
                 randSide= tiles.at(0).length()-1;
 
             }
-            tiles.at(y).at(randSide)->setWall(Direction::south, true);
+            if(!placeOuterWallIfFits(tiles.at(y).at(randSide), Direction::south)){
+                i--;
+            }
+
+
 
 
 
@@ -162,24 +175,51 @@ void Board::placeOuterWalls(){
 
 
 
-//        //place south walls:
-
-//        tiles.at(y).at(0)->setWall(Direction::south, true);
-//        i++;
-//        tiles.at(y).at(tiles.at(0).length()-1)->setWall(Direction::south, true);
-//        i++;
-
-//        i = numberOfOuterWalls;
 
 
-//        tiles.at(0).at(x)->setWall(Direction::west, true);
-//        i++;
-//        tiles.at(tiles.length()-1).at(x)->setWall(Direction::west, true);
-//        i++;
 
 
+}
+
+bool Board::placeOuterWallIfFits(Tile* tile, Direction direction){
+
+    if(direction == Direction::north||direction == Direction::west){
+
+        qDebug()<< "Wrong direction as argument in placeOuterWallsIfFits!";
+    }
+    else{
+
+        int x = tile->getPosition().x();
+        int y = tile->getPosition().y();
+
+        if(direction== Direction::east){
+
+            if(!tiles.at(y).at(x-1)->getWall(direction)&&!tiles.at(y).at(x+1)->getWall(direction)){
+
+                tile->setWall(direction, true);
+                return true;
+            }
+        }
+
+        if(direction== Direction::south){
+
+            if(!tiles.at(y-1).at(x)->getWall(direction)&&!tiles.at(y+1).at(x)->getWall(direction)){
+
+                tile->setWall(direction, true);
+                return true;
+            }
+        }
 
     }
+
+    return false;
+
+
+
+
+
+
+}
 
 
 
@@ -200,15 +240,15 @@ void Board::placeInnerWalls(){
     int i = 0;
 
     while(i<numberOfInnerWalls){
-            i++;
+        i++;
 
 
-    int x= randomXIndex(generator);
-    int y = randomYIndex(generator);
+        int x= randomXIndex(generator);
+        int y = randomYIndex(generator);
 
-    if(!placeInnerWallifFits(tiles.at(y).at(x), getNextDirection(Direction::north, randomDirectionIndex(generator)))){
-        i--;
-    }
+        if(!placeInnerWallifFits(tiles.at(y).at(x), getNextDirection(Direction::north, randomDirectionIndex(generator)))){
+            i--;
+        }
 
 
 
@@ -241,18 +281,18 @@ bool Board::placeInnerWallifFits(Tile* tile, Direction direction){
         bool noConflictWithNeighbors = false;
 
         switch(direction)
-               {
-               case Direction::north:
-                   noConflictWithNeighbors =
-                           !tiles.at(y-1).at(x)->getWall(Direction::west)
-                           &&!tiles.at(y-1).at(x)->getWall(Direction::east)
-                           //&&!tiles.at(y+1).at(x)->getWall(Direction::west)
-                           &&!tiles.at(y+1).at(x)->getWall(Direction::east)
-                           &&!tiles.at(y).at(x-1)->getWall(Direction::north)
-                           //&&!tiles.at(y).at(x-1)->getWall(Direction::south)
-                           &&!tiles.at(y).at(x+1)->getWall(Direction::north)
-                           &&!tiles.at(y).at(x+1)->getWall(Direction::south);
-                   break;
+        {
+        case Direction::north:
+            noConflictWithNeighbors =
+                    !tiles.at(y-1).at(x)->getWall(Direction::west)
+                    &&!tiles.at(y-1).at(x)->getWall(Direction::east)
+                    //&&!tiles.at(y+1).at(x)->getWall(Direction::west)
+                    &&!tiles.at(y+1).at(x)->getWall(Direction::east)
+                    &&!tiles.at(y).at(x-1)->getWall(Direction::north)
+                    //&&!tiles.at(y).at(x-1)->getWall(Direction::south)
+                    &&!tiles.at(y).at(x+1)->getWall(Direction::north)
+                    &&!tiles.at(y).at(x+1)->getWall(Direction::south);
+            break;
         case Direction::east:
             noConflictWithNeighbors =
                     //!tiles.at(y-1).at(x)->getWall(Direction::west)
@@ -279,12 +319,12 @@ bool Board::placeInnerWallifFits(Tile* tile, Direction direction){
             noConflictWithNeighbors =
                     !tiles.at(y-1).at(x)->getWall(Direction::west)
                     &&!tiles.at(y-1).at(x)->getWall(Direction::east)
-                    //&&!tiles.at(y+1).at(x)->getWall(Direction::west)
-                    &&!tiles.at(y+1).at(x)->getWall(Direction::east)
+                    &&!tiles.at(y+1).at(x)->getWall(Direction::west)
+                    //&&!tiles.at(y+1).at(x)->getWall(Direction::east)
                     &&!tiles.at(y).at(x-1)->getWall(Direction::north)
                     &&!tiles.at(y).at(x-1)->getWall(Direction::south)
                     &&!tiles.at(y).at(x+1)->getWall(Direction::north);
-                    //&&!tiles.at(y).at(x+1)->getWall(Direction::south);
+            //&&!tiles.at(y).at(x+1)->getWall(Direction::south);
             break;
 
         }
@@ -310,13 +350,46 @@ bool Board::placeInnerWallifFits(Tile* tile, Direction direction){
 }
 
 
+void Board::placeGoalInCorner(){
+
+
+    bool noCorner = true;
+
+
+    while(noCorner){
+
+        int numberOfWalls = 0;
+
+        goal = getRandomUnoccupiedTile();
+        for(int i = 0; i<4; i++){
+            Direction dir = getNextDirection(Direction::north, i);
+                       if(goal->getWall(dir)){
+                numberOfWalls++;
+            }
+        }
+        noCorner = numberOfWalls<2;
+        numberOfWalls=0;
+
+
+    }
+}
+
+
 
 
 
 Direction Board::getNextDirection(Direction direction, int numberOfClockwiseSteps){
 
+    if(numberOfClockwiseSteps ==0){
+        return direction;
+    }
 
-    if(numberOfClockwiseSteps != 1){
+    if(numberOfClockwiseSteps<0){
+        qDebug()<< "getNextDirection was called with an int lower than 0";
+    }
+
+
+    if(numberOfClockwiseSteps > 1){
         Direction nextDir = getNextDirection(direction, 1);
         numberOfClockwiseSteps--;
         //qDebug()<<printDirection(nextDir).c_str() << numberOfClockwiseSteps;
