@@ -46,7 +46,7 @@ Board::Board(QObject *parent, int width, int height, int playerNumber) : QObject
 
 
 
-    //placeOuterWalls();
+    placeOuterWalls();
     placeInnerWalls();
 
 
@@ -101,20 +101,89 @@ void Board::placeOuterWalls(){
     int numberOfOuterWalls = (int) (outerWallspots/AVG_DIST_OF_OUTER_WALLS + 1);
     qDebug()<< numberOfOuterWalls;
 
-    std::default_random_engine generator;
-    std::uniform_int_distribution<int> randStepSize(AVG_DIST_OF_OUTER_WALLS - SPREAD_FACTOR_OF_OUTER_WALLS, AVG_DIST_OF_OUTER_WALLS + SPREAD_FACTOR_OF_OUTER_WALLS);
-    std::list<int> positions;
-    int pos = 0;
-    for(int i = 0; i <numberOfOuterWalls; i++){
 
-        tiles.at(0).at(tiles.at(0).length()-NO_OUTER_WALLS_PER_SIDE + 1)->setWall(Direction::east, true);
+    int i =0;
+
+    std::default_random_engine generator;
+    std::uniform_int_distribution<int> randomXIndex(1,(tiles.at(0).length()-3));
+    std::uniform_int_distribution<int> randomYIndex(1,(tiles.length()-3));
+
+    std::uniform_int_distribution<int> randomDirectionIndex(1, 2);
+    std::uniform_int_distribution<int> randomSideIndex(1, 2);
+    while(i<numberOfOuterWalls){
+
+
+
+
+        int x= randomXIndex(generator);
+        int y = randomYIndex(generator);
+
+        Direction randDir = getNextDirection(Direction::east, randomDirectionIndex(generator));
+
+        int randSide = 0;
+
+
+        if(randDir == Direction::west){
+
+
+            if(randomSideIndex(generator) ==1 ){
+
+                randSide = 0;
+            }
+            else{
+
+                randSide= tiles.length()-1;
+
+            }
+            tiles.at(randSide).at(x)->setWall(Direction::west, true);
+
+        }
+        else{
+
+            if(randomSideIndex(generator) ==1 ){
+
+                randSide = 0;
+            }
+            else{
+
+                randSide= tiles.at(0).length()-1;
+
+            }
+            tiles.at(y).at(randSide)->setWall(Direction::south, true);
+
+
+
+        }
+
+        i++;
 
 
     }
 
-    tiles.at(0).at(0)->setWall(Direction::east, true);
 
-}
+
+//        //place south walls:
+
+//        tiles.at(y).at(0)->setWall(Direction::south, true);
+//        i++;
+//        tiles.at(y).at(tiles.at(0).length()-1)->setWall(Direction::south, true);
+//        i++;
+
+//        i = numberOfOuterWalls;
+
+
+//        tiles.at(0).at(x)->setWall(Direction::west, true);
+//        i++;
+//        tiles.at(tiles.length()-1).at(x)->setWall(Direction::west, true);
+//        i++;
+
+
+
+    }
+
+
+
+
 
 void Board::placeInnerWalls(){
 

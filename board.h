@@ -27,7 +27,7 @@ private:
     const int NO_OUTER_WALLS_PER_SIDE = 3;
     const int SPREAD_FACTOR_INNER_WALLS = 10;
 
-    const int AVG_DIST_OF_OUTER_WALLS = 5;
+    const int AVG_DIST_OF_OUTER_WALLS = 4;
     const int SPREAD_FACTOR_OF_OUTER_WALLS = 2;
     void placeInnerWalls();
     void placeOuterWalls();
