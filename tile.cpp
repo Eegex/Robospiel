@@ -39,6 +39,50 @@ void Tile::setWall(Direction direction, bool set)
 	}
 }
 
+//sets a wall at direction and one clockwise next to it
+
+void Tile::setInnerWall(Direction direction, bool set)
+{
+
+    switch(direction)
+    {
+        case Direction::north:
+            if(northTile)
+            {
+                northTile->setWall(Direction::south, set);
+            }
+            eastWall = set;
+            break;
+        case Direction::east:
+            eastWall=set;
+            southWall=set;
+
+            break;
+        case Direction::south:
+            if(westTile)
+            {
+                westTile->setWall(Direction::east, set);
+            }
+            southWall=set;
+            break;
+        case Direction::west:
+            if(westTile)
+            {
+                westTile->setWall(Direction::east, set);
+            }
+            if(northTile)
+            {
+                northTile->setWall(Direction::south, set);
+
+            }
+
+
+            break;
+    }
+
+
+}
+
 bool Tile::getWall(Direction direction)
 {
 	switch(direction)

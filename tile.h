@@ -21,6 +21,7 @@ public:
 	Tile* northTile;
 	Tile* westTile;
 
+    void setInnerWall(Direction direction, bool set);
 private:
 	QPoint position;
 	bool eastWall=false;

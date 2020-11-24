@@ -10,7 +10,7 @@
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
-    Board board(nullptr, 16, 16, 3);
+    Board board(nullptr, 25, 25, 3);
 	BoardView view(nullptr);
 	view.setBoard(&board);
 	view.show();

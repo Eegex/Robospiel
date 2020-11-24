@@ -1,5 +1,6 @@
 #include <random>
 #include <QDebug>
+#include <Direction.h>
 #include "board.h"
 
 Board::Board(QObject *parent, int width, int height, int playerNumber) : QObject(parent)
@@ -31,29 +32,34 @@ Board::Board(QObject *parent, int width, int height, int playerNumber) : QObject
     }
 
 
-	std::default_random_engine generator;
-	std::uniform_int_distribution<int> x(0, width-1);
-	std::uniform_int_distribution<int> y(0, height-1);
-	for(int i=0; i<playerNumber; i++)
-	{
-		Tile * t = getRandomUnoccupiedTile();
-		t->setPlayer(i);
-		players.append(t);
-	}
+    std::default_random_engine generator;
+    std::uniform_int_distribution<int> x(0, width-1);
+    std::uniform_int_distribution<int> y(0, height-1);
+    for(int i=0; i<playerNumber; i++)
+    {
+        Tile * t = getRandomUnoccupiedTile();
+        t->setPlayer(i);
+        players.append(t);
+    }
 
     goal=getRandomUnoccupiedTile();
 
-    placeOuterWalls();
+
+
+    //placeOuterWalls();
+    placeInnerWalls();
+
+
 }
 
 Tile* Board::getTile(int x, int y)
 {
-	return tiles.at(y).at(x);
+    return tiles.at(y).at(x);
 }
 
 QSize Board::getSize()
 {
-	return QSize(tiles.first().size(),tiles.size());
+    return QSize(tiles.first().size(),tiles.size());
 }
 
 Tile* Board::getRandomUnoccupiedTile(){
@@ -100,35 +106,197 @@ void Board::placeOuterWalls(){
     std::list<int> positions;
     int pos = 0;
     for(int i = 0; i <numberOfOuterWalls; i++){
-//        pos += randStepSize(generator);
-        positions.push_back(randStepSize(generator));
 
-        qDebug()<< randStepSize(generator);
+        tiles.at(0).at(tiles.at(0).length()-NO_OUTER_WALLS_PER_SIDE + 1)->setWall(Direction::east, true);
+
+
     }
 
-    Tile* startTile = tiles.at(0).at(0);
-    for(int i; i< positions.size(); i++){
-        for(int j = 0; j < positions.front(); j ++){
-            if(&startTile->westTile){
+    tiles.at(0).at(0)->setWall(Direction::east, true);
 
-                startTile = startTile->westTile;
-            }
-            else{
-                if(&startTile->northTile == nullptr){
+}
 
-                    startTile = startTile->northTile;
-                }
-                else{
-                    Tile* startTile = tiles.at(0).at(0);
+void Board::placeInnerWalls(){
 
-                }
-            }
-            //if(startTile->getPosition().x())
+
+
+    int numberOfInnerWalls = (tiles.at(0).length()-2) *(tiles.length()-2) /SPREAD_FACTOR_INNER_WALLS;
+
+
+    std::default_random_engine generator;
+    std::uniform_int_distribution<int> randomXIndex(1,(tiles.at(0).length()-2));
+    std::uniform_int_distribution<int> randomYIndex(1,(tiles.length()-2));
+    std::uniform_int_distribution<int> randomDirectionIndex(1, 4);
+
+    int i = 0;
+
+    while(i<numberOfInnerWalls){
+            i++;
+
+
+    int x= randomXIndex(generator);
+    int y = randomYIndex(generator);
+
+    if(!placeInnerWallifFits(tiles.at(y).at(x), getNextDirection(Direction::north, randomDirectionIndex(generator)))){
+        i--;
+    }
+
+
+
+    }
+
+
+
+
+
+
+
+}
+
+bool Board::placeInnerWallifFits(Tile* tile, Direction direction){
+
+    int x = tile->getPosition().x();
+    int y = tile->getPosition().y();
+
+
+
+    if(!tile->getWall(Direction::north)
+            &&!tile->getWall(Direction::east)
+            &&!tile->getWall(Direction::south)
+            &&!tile->getWall(Direction::west)
+
+            )
+    {
+
+
+        bool noConflictWithNeighbors = false;
+
+        switch(direction)
+               {
+               case Direction::north:
+                   noConflictWithNeighbors =
+                           !tiles.at(y-1).at(x)->getWall(Direction::west)
+                           &&!tiles.at(y-1).at(x)->getWall(Direction::east)
+                           //&&!tiles.at(y+1).at(x)->getWall(Direction::west)
+                           &&!tiles.at(y+1).at(x)->getWall(Direction::east)
+                           &&!tiles.at(y).at(x-1)->getWall(Direction::north)
+                           //&&!tiles.at(y).at(x-1)->getWall(Direction::south)
+                           &&!tiles.at(y).at(x+1)->getWall(Direction::north)
+                           &&!tiles.at(y).at(x+1)->getWall(Direction::south);
+                   break;
+        case Direction::east:
+            noConflictWithNeighbors =
+                    //!tiles.at(y-1).at(x)->getWall(Direction::west)
+                    !tiles.at(y-1).at(x)->getWall(Direction::east)
+                    &&!tiles.at(y+1).at(x)->getWall(Direction::west)
+                    &&!tiles.at(y+1).at(x)->getWall(Direction::east)
+                    //&&!tiles.at(y).at(x-1)->getWall(Direction::north)
+                    &&!tiles.at(y).at(x-1)->getWall(Direction::south)
+                    &&!tiles.at(y).at(x+1)->getWall(Direction::north)
+                    &&!tiles.at(y).at(x+1)->getWall(Direction::south);
+            break;
+        case Direction::south:
+            noConflictWithNeighbors =
+                    !tiles.at(y-1).at(x)->getWall(Direction::west)
+                    //&&!tiles.at(y-1).at(x)->getWall(Direction::east)
+                    &&!tiles.at(y+1).at(x)->getWall(Direction::west)
+                    &&!tiles.at(y+1).at(x)->getWall(Direction::east)
+                    &&!tiles.at(y).at(x-1)->getWall(Direction::north)
+                    &&!tiles.at(y).at(x-1)->getWall(Direction::south)
+                    //&&!tiles.at(y).at(x+1)->getWall(Direction::north)
+                    &&!tiles.at(y).at(x+1)->getWall(Direction::south);
+            break;
+        case Direction::west:
+            noConflictWithNeighbors =
+                    !tiles.at(y-1).at(x)->getWall(Direction::west)
+                    &&!tiles.at(y-1).at(x)->getWall(Direction::east)
+                    //&&!tiles.at(y+1).at(x)->getWall(Direction::west)
+                    &&!tiles.at(y+1).at(x)->getWall(Direction::east)
+                    &&!tiles.at(y).at(x-1)->getWall(Direction::north)
+                    &&!tiles.at(y).at(x-1)->getWall(Direction::south)
+                    &&!tiles.at(y).at(x+1)->getWall(Direction::north);
+                    //&&!tiles.at(y).at(x+1)->getWall(Direction::south);
+            break;
 
         }
 
-        //startTile->setWall()
+
+
+        if(noConflictWithNeighbors){
+
+
+            tile->setInnerWall(direction, true);
+            return true;
+
+
+
+        }
+
+
+    }
+    return false;
+
+
+
+}
+
+
+
+
+
+Direction Board::getNextDirection(Direction direction, int numberOfClockwiseSteps){
+
+
+    if(numberOfClockwiseSteps != 1){
+        Direction nextDir = getNextDirection(direction, 1);
+        numberOfClockwiseSteps--;
+        //qDebug()<<printDirection(nextDir).c_str() << numberOfClockwiseSteps;
+
+        return getNextDirection(nextDir, numberOfClockwiseSteps);
+    }
+
+
+    switch(direction)
+    {
+    case Direction::north:
+        return Direction::east;
+        break;
+    case Direction::east:
+        return Direction::south;
+        break;
+    case Direction::south:
+        return Direction::west;
+        break;
+    case Direction::west:
+        return Direction::north;
+        break;
+    }
+}
+
+
+std::string Board::printDirection(Direction direction){
+
+
+
+    switch(direction)
+    {
+    case Direction::north:
+        return "north";
+        break;
+    case Direction::east:
+        return "east";
+        break;
+    case Direction::south:
+        return "south";
+        break;
+    case Direction::west:
+        return "west";
+        break;
     }
 
 
 }
+
+
+
+
