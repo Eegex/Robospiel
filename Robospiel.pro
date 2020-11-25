@@ -24,15 +24,10 @@ HEADERS += \
     PlayerBiddingWidget.h \
     PlayerCreationWidget.h \
     board.h \
-    leaderboardwidget.h \
     mainwindow.h \
-    playercreationwidget.h \
-    tile.h
-board.h \
+    tile.h \
     boardview.h \
-direction.h \
-mainwindow.h \
-tile.h
+    direction.h
 
 TRANSLATIONS += \
 Robospiel_de_DE.ts

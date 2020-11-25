@@ -6,7 +6,6 @@
 #include <QVBoxLayout>
 #include <QDate>
 #include <QDoubleSpinBox>
-#include "LeaderBoardWidget.h"
 
 class PlayerBiddingWidget : public QWidget
 {
@@ -20,14 +19,14 @@ private:
     QString playerName;
     u_int16_t playerBidding;
 public slots:
-    virtual void setBidding(QVariant v);
-    virtual void setName(QVariant v);
-    virtual u_int getBidding();
-    virtual QString getName();
+    void setBidding(QVariant v);
+    void setName(QVariant v);
+    u_int getBidding();
+    QString getName();
 
 signals:
-    virtual void biddingChanged();
-    virtual void nameChanged();
+    void biddingChanged();
+    void nameChanged();
 };
 
 #endif // PLAYERBIDDINGWIDGET_H

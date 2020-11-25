@@ -2,6 +2,7 @@
 #define BOARD_H
 
 #include <QObject>
+#include <QVector>
 #include <QSize>
 #include "tile.h"
 

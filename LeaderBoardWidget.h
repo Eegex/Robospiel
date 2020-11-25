@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QVariant>
 #include <QGridLayout>
+#include <QVector>
 #include "PlayerBiddingWidget.h"
 
 class LeaderBoardWidget : public QWidget
@@ -16,10 +17,10 @@ private:
     QGridLayout * lay = new QGridLayout(this);
     QLabel * lDisplay = new QLabel("LeaderBoardWidget", this);
     u_int8_t numOfPlayers = 5;
-    PlayerBiddingWidget * dummyWidget[]; //Several Players, Array of pointers to Widgets for individual players
+    QVector<PlayerBiddingWidget*> players; //Several Players, Array of pointers to Widgets for individual players
 
 public slots:
-    virtual void sortByBidding();
+    void sortByBidding();
 
 signals:
 

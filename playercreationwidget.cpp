@@ -11,6 +11,7 @@ PlayerCreationWidget::PlayerCreationWidget(QWidget *parent) : QWidget(parent)
 
 void PlayerCreationWidget::addPlayer()
 {
+    printf("Addition Request\n");
     //emit playerAdditionRequest();
 }
 

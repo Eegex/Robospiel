@@ -24,8 +24,7 @@ private:
     u_int8_t numOfPlayers = 0;
 
 public slots:
-
+    void addPlayer();
 signals:
-    virtual void addPlayer();
 };
 #endif // PLAYERCREATIONWIDGET_H
