@@ -11,6 +11,7 @@ CONFIG += c++11
 SOURCES += \
     board.cpp \
     leaderboardwidget.cpp \
+    boardview.cpp \
     main.cpp \
     mainwindow.cpp \
     playerBiddingWidget.cpp \
@@ -27,9 +28,14 @@ HEADERS += \
     mainwindow.h \
     playercreationwidget.h \
     tile.h
+board.h \
+    boardview.h \
+direction.h \
+mainwindow.h \
+tile.h
 
 TRANSLATIONS += \
-    Robospiel_de_DE.ts
+Robospiel_de_DE.ts
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

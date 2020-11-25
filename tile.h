@@ -2,27 +2,31 @@
 #define TILE_H
 
 #include <QObject>
-
+#include <QPoint>
 #include "Direction.h"
 
 class Tile : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    Tile(QPoint position, Tile *north, Tile *west, QObject *parent);
+	Tile(QPoint position, Tile *north, Tile *west, QObject *parent);
 
-    QPoint getPosition() const;
-    void setPosition(const QPoint &value);
+	QPoint getPosition() const;
+	void setPosition(const QPoint &value);
 
-    void setWall(Direction direction, bool set);
-    bool getWall(Direction direction);
+	void setWall(Direction direction, bool set);
+	bool getWall(Direction direction);
+	int getPlayer() const;
+	void setPlayer(int value);
+	Tile* northTile;
+	Tile* westTile;
+
+    void setInnerWall(Direction direction, bool set);
 private:
-    QPoint position;
-    bool eastWall=false;
-    bool southWall=false;
-    Tile* northTile;
-    Tile* westTile;
-    int playerOnThisTile;
+	QPoint position;
+	bool eastWall=false;
+	bool southWall=false;
+	int playerOnThisTile;
 
 
 signals:
