@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QWidget>
 
 class MainWindow : public QMainWindow
 {
@@ -9,6 +10,6 @@ class MainWindow : public QMainWindow
 
 public:
 	MainWindow(QWidget *parent = nullptr);
-	~MainWindow();
+    ~MainWindow();
 };
 #endif // MAINWINDOW_H

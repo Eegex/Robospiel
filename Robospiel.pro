@@ -10,14 +10,22 @@ CONFIG += c++11
 
 SOURCES += \
     board.cpp \
+    leaderboardwidget.cpp \
     main.cpp \
     mainwindow.cpp \
+    playerBiddingWidget.cpp \
+    playercreationwidget.cpp \
     tile.cpp
 
 HEADERS += \
     Direction.h \
+    LeaderBoardWidget.h \
+    PlayerBiddingWidget.h \
+    PlayerCreationWidget.h \
     board.h \
+    leaderboardwidget.h \
     mainwindow.h \
+    playercreationwidget.h \
     tile.h
 
 TRANSLATIONS += \
