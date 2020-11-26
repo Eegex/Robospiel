@@ -11,15 +11,21 @@ CONFIG += c++11
 SOURCES += \
     board.cpp \
     boardview.cpp \
+    client.cpp \
+    connectiontoclient.cpp \
     main.cpp \
     mainwindow.cpp \
+    server.cpp \
     tile.cpp
 
 HEADERS += \
 board.h \
     boardview.h \
+	client.h \
+	connectiontoclient.h \
 direction.h \
 mainwindow.h \
+	server.h \
 tile.h
 
 TRANSLATIONS += \
