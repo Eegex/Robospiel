@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -15,6 +15,7 @@ SOURCES += \
     connectiontoclient.cpp \
     main.cpp \
     mainwindow.cpp \
+    networkview.cpp \
     server.cpp \
     tile.cpp
 
@@ -25,6 +26,7 @@ board.h \
 	connectiontoclient.h \
 direction.h \
 mainwindow.h \
+	networkview.h \
 	server.h \
 tile.h
 

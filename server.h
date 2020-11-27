@@ -5,8 +5,11 @@
 #include <QDataStream>
 #include <QObject>
 
-#include <QtNetwork/qtcpserver.h>
-
+#include <QtNetwork/QTcpSocket>
+#include <QtNetwork/QTcpServer>
+#include <QtNetwork/QNetworkInterface>
+#include <QtNetwork>
+#include <QtCore>
 
 class Server : public QObject
 {

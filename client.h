@@ -3,20 +3,19 @@
 
 #include <QDataStream>
 #include <QObject>
-#include <QtNetwork/qtcpserver.h>
+#include <QtNetwork/QTcpSocket>
+#include <QDebug>
 
 class Client : public QObject
 {
     Q_OBJECT
 public:
-    explicit Client(QObject *parent = nullptr);
 
     ~Client();
     void sendMessageToServer(QString message);
+    Client(QObject *parent, QString serverAddress, int serverPort);
 private:
         QTcpSocket* tcpSocket;
-        QString serverAddress;
-        int serverPort;
         QDataStream streamFromServer;
 
 signals:

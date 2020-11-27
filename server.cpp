@@ -1,11 +1,6 @@
 
 #include "server.h"
 
-#include <QtNetwork/QTcpSocket>
-#include <QtNetwork/qnetworkinterface.h>
-
-#include <QDataStream>
-
 Server::Server(QObject *parent) : QObject(parent)
 {
     server = new QTcpServer(this);
@@ -35,6 +30,7 @@ Server::Server(QObject *parent) : QObject(parent)
     qDebug()<<"Server running: "<<ipAddress<<":"<<server->serverPort();
 
     connect(server, &QTcpServer::newConnection, this, &Server::addClient);
+
 }
 
 void Server::addClient()
@@ -59,6 +55,7 @@ void Server::addClient()
 
 void Server::sendMessageToClients(QString message)
 {
+    qDebug()<<"sending "<<message<<" to all ("<<connections.length()<<") clients";
     for(ConnectionToClient* client : connections)
     {
         client->sendMessage(message);

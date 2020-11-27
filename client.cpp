@@ -1,8 +1,8 @@
 #include "client.h"
 
-#include <QtNetwork/QTcpSocket>
 
-Client::Client(QObject *parent) : QObject(parent)
+
+Client::Client(QObject *parent, QString serverAddress, int serverPort) : QObject(parent)
 {
     tcpSocket = new QTcpSocket(this);
     streamFromServer.setDevice(tcpSocket);
@@ -10,21 +10,29 @@ Client::Client(QObject *parent) : QObject(parent)
     connect(tcpSocket, &QIODevice::readyRead, this, &Client::processMessageFromServer);
     connect(tcpSocket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, &Client::displayError);
     tcpSocket->connectToHost(serverAddress, serverPort);
+    qDebug()<<"end client constructor";
 
 }
 
 void Client::sendMessageToServer(QString message)
 {
-    tcpSocket->write(message.toUtf8());
+    QByteArray block;
+    QDataStream out(&block, QIODevice::WriteOnly);
+
+    out << message;
+
+    tcpSocket->write(block);
     qDebug()<<"Sended message to server: "<<message;
 }
 
 void Client::processMessageFromServer()
 {
+    qDebug()<<"start of message";
     streamFromServer.startTransaction();
 
     QString message;
     streamFromServer >> message;
+    qDebug()<<"middle"<<message;
 
     if (!streamFromServer.commitTransaction())
         return;

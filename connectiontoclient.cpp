@@ -23,5 +23,10 @@ void ConnectionToClient::receiveMessage()
 
 void ConnectionToClient::sendMessage(QString message)
 {
-    tcpSocket->write(message.toUtf8());
+    QByteArray block;
+    QDataStream out(&block, QIODevice::WriteOnly);
+
+    out << message;
+
+    tcpSocket->write(block);
 }
