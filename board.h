@@ -11,7 +11,7 @@ class Board : public QObject
 {
 	Q_OBJECT
 public:
-	Board(QObject *parent, int width, int height, int playerNumber);
+	Board(int width, int height, int playerNumber, QObject *parent = nullptr);
 	Tile *getTile(int x, int y);
 	QSize getSize();
 	std::string printDirection(Direction direction);

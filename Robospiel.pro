@@ -11,6 +11,7 @@ CONFIG += c++11
 SOURCES += \
     board.cpp \
     boardview.cpp \
+    keymapping.cpp \
     main.cpp \
     mainwindow.cpp \
     tile.cpp
@@ -19,6 +20,7 @@ HEADERS += \
 board.h \
     boardview.h \
 direction.h \
+    keymapping.h \
 mainwindow.h \
 tile.h
 

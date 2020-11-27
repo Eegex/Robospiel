@@ -3,7 +3,7 @@
 #include <Direction.h>
 #include "board.h"
 
-Board::Board(QObject *parent, int width, int height, int playerNumber) : QObject(parent)
+Board::Board(int width, int height, int playerNumber, QObject *parent) : QObject(parent)
 {
 	if(playerNumber+1 > width*height)
 	{
@@ -56,7 +56,6 @@ QSize Board::getSize()
 
 Tile* Board::getRandomUnoccupiedTile()
 {
-
 	std::default_random_engine generator(QTime::currentTime().msecsSinceStartOfDay());
 	std::uniform_int_distribution<int> x(0, tiles.at(0).length()-1);
 	std::uniform_int_distribution<int> y(0, tiles.length()-1);
@@ -88,12 +87,11 @@ Tile* Board::getRandomUnoccupiedTile()
 	return initialTile;
 }
 
-void Board::placeOuterWalls(){
-
+void Board::placeOuterWalls()
+{
 	int outerWallspots = tiles.at(0).length()*2 + tiles.length()*2 - NUM_PLACES_THAT_CANT_HAVE_OUTER_WALLS;
 
 	int numberOfOuterWalls = (int) (outerWallspots/AVG_DIST_OF_OUTER_WALLS + 1);
-
 
 	int i =0;
 
@@ -154,7 +152,7 @@ bool Board::placeOuterWallIfFits(Tile* tile, Direction direction)
 	{
 		int x = tile->getPosition().x();
 		int y = tile->getPosition().y();
-		if(direction== Direction::east)
+		if(direction == Direction::east)
 		{
 			if(!tiles.at(y).at(x-1)->getWall(direction)&&!tiles.at(y).at(x+1)->getWall(direction))
 			{
@@ -162,7 +160,7 @@ bool Board::placeOuterWallIfFits(Tile* tile, Direction direction)
 				return true;
 			}
 		}
-		if(direction== Direction::south)
+		if(direction == Direction::south)
 		{
 			if(!tiles.at(y-1).at(x)->getWall(direction)&&!tiles.at(y+1).at(x)->getWall(direction))
 			{

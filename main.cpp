@@ -1,17 +1,13 @@
-
-
 #include <QApplication>
 #include "mainwindow.h"
 #include "board.h"
 #include "boardview.h"
 
-
-
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
-	Board board(nullptr, 16, 16, 3);
-	BoardView view(nullptr);
+	Board board(16, 16, 3);
+	BoardView view;
 	view.setBoard(&board);
 	view.show();
 	MainWindow w;
