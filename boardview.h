@@ -38,8 +38,8 @@ private:
 	QPixmapCache cache;
 	QSize tileSize;
 	QPoint mouseStart;
-	bool cachedPaintig = true;
-	bool showDebugOutput = false;
+    bool cachedPaintig = false;
+    bool showDebugOutput = false;
 	QVector<KeyMapping> mapping;
 signals:
 	void tileHovered(Tile * t);

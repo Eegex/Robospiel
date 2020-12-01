@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTime>
 #include <QSize>
+#include <QVector>
 #include "tile.h"
 
 
@@ -15,10 +16,14 @@ public:
 	Tile *getTile(int x, int y);
 	QSize getSize();
 	std::string printDirection(Direction direction);
+    QVector<Tile*> players;
+    Tile* goal;
+    int seeker = 0;
+    void startNewRound();
+protected:
+    void placeGoalAwayFromSeeker();
 private:
 	QVector<QVector<Tile*>> tiles;
-	QVector<Tile*> players;
-	Tile* goal;
 	//TODO history
 	//TODO active user
 

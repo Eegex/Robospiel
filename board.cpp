@@ -38,10 +38,29 @@ Board::Board(int width, int height, int playerNumber, QObject *parent) : QObject
 	}
 	placeOuterWalls();
 	placeInnerWalls();
-	//goal only in corner?
-	//goal=getRandomUnoccupiedTile();
-	placeGoalInCorner();
-	//option where goals can't be reached in one step? Goal does not have an associated player yet, does it?
+
+
+    startNewRound();
+
+
+}
+
+
+void Board::startNewRound(){
+//is there a way to only use one generator???
+    std::default_random_engine generator(QTime::currentTime().msecsSinceStartOfDay());
+    std::uniform_int_distribution<int> playerNumbers(0, players.size());
+    seeker = playerNumbers(generator);
+
+    //goal only in corner?
+     placeGoalInCorner();
+    //else:
+    //placeGoalAwayFromSeeker();
+
+
+
+
+
 }
 
 Tile* Board::getTile(int x, int y)
@@ -262,8 +281,8 @@ void Board::placeGoalInCorner()
 	while(noCorner)
 	{
 		int numberOfWalls = 0;
-		goal = getRandomUnoccupiedTile();
-		qDebug() << goal;
+
+        placeGoalAwayFromSeeker();
 		for(int i = 0; i<4; i++)
 		{
 			Direction dir = getNextDirection(Direction::north, i);
@@ -276,6 +295,22 @@ void Board::placeGoalInCorner()
 		numberOfWalls=0;
 	}
 	return;
+}
+
+
+void  Board::placeGoalAwayFromSeeker(){
+    bool inRowOrColWithSeeker = true;
+    while(inRowOrColWithSeeker)
+    {
+        goal = getRandomUnoccupiedTile();
+        if(!(goal->getPosition().rx() == players.at(seeker)->getPosition().rx()) &&
+           !(goal->getPosition().ry() == players.at(seeker)->getPosition().ry())    )
+        {
+            inRowOrColWithSeeker = false;
+        }
+    }
+    return;
+
 }
 
 Direction Board::getNextDirection(Direction direction, int numberOfClockwiseSteps)

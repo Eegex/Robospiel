@@ -1,4 +1,5 @@
 #include "boardview.h"
+#include "QDebug"
 
 BoardView::BoardView(QWidget *parent) : QWidget(parent)
 {
@@ -97,7 +98,9 @@ void BoardView::paintEvent(QPaintEvent * event)
 //	painter.setRenderHint(QPainter::Antialiasing);
 	QPen debug(QColor(255,0,255));
 	QPen grid(QColor(0,80,0),1,Qt::SolidLine,Qt::RoundCap);
-	QPen wall(QColor(0,120,0),2,Qt::SolidLine,Qt::RoundCap);
+    QPen wall(QColor(0,120,0),2,Qt::SolidLine,Qt::RoundCap);
+    QPen player(QColor(0,0,0),2,Qt::SolidLine,Qt::RoundCap);
+
 	double tileHeight = (height() - 10) / static_cast<double>(board->getSize().height());
 	double tileWidth = (width() - 10) / static_cast<double>(board->getSize().width());
 	tileSize = QSize(tileWidth,tileHeight);
@@ -110,10 +113,54 @@ void BoardView::paintEvent(QPaintEvent * event)
 		{
 			for(int x = 0; x < board->getSize().width(); x++)
 			{
+
 				QRect tile(5+x*tileWidth,5+y*tileHeight,tileWidth,tileHeight);
-				painter.drawRect(tile);
+                painter.drawRect(tile);
+
+
+
+
+
+
 			}
 		}
+
+        painter.setPen(player);
+
+        int playerNum = board->players.length();
+        double stepSize = 359/playerNum;
+        QColor color;
+        int counter = 0;
+
+
+
+        for(int i = 0; i <board->players.length();i++){
+
+            qDebug()<< i;
+
+            color.setHsv(i*stepSize,200,200);
+
+            painter.setBrush(color);
+
+            if(i == board->seeker){
+
+                //draw the goal
+                painter.drawEllipse(QPoint(5+(board->goal->getPosition().rx()+1)*tileWidth - tileWidth/2.0,5+(board->goal->getPosition().ry()+1)*tileHeight - tileHeight/2.0), (int) (tileWidth/5.0), (int) (tileWidth/5.0));
+
+            }
+
+            Tile* player = board->players.at(i);
+
+
+        painter.drawEllipse(QPoint(5+(player->getPosition().rx()+1)*tileWidth - tileWidth/2,5+(player->getPosition().ry()+1)*tileHeight - tileHeight/2), (int) tileWidth/3, (int) tileWidth/3);
+        }
+
+
+
+
+
+
+
 		painter.setPen(wall);
 	}
 	for(int x = 0; x < board->getSize().width(); x++)
