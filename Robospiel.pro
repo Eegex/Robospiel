@@ -13,6 +13,7 @@ SOURCES += \
     boardview.cpp \
     client.cpp \
     connectiontoclient.cpp \
+    keymapping.cpp \
     main.cpp \
     mainwindow.cpp \
     networkview.cpp \
@@ -20,16 +21,16 @@ SOURCES += \
     tile.cpp
 
 HEADERS += \
-board.h \
+    board.h \
     boardview.h \
-	client.h \
-	connectiontoclient.h \
-direction.h \
+    client.h \
+    connectiontoclient.h \
+    direction.h \
     keymapping.h \
-mainwindow.h \
-	networkview.h \
-	server.h \
-tile.h
+    mainwindow.h \
+    networkview.h \
+    server.h \
+    tile.h
 
 TRANSLATIONS += \
 Robospiel_de_DE.ts
