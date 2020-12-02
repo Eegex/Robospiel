@@ -1,3 +1,6 @@
+
+
+#include <NetworkView.h>
 #include <QApplication>
 #include "mainwindow.h"
 #include "board.h"
@@ -9,6 +12,8 @@ int main(int argc, char *argv[])
     Board board(16, 16, 5);
 	BoardView view;
 	view.setBoard(&board);
+	view.show();
+	NetworkView view;
 	view.show();
 	MainWindow w;
 	w.show();

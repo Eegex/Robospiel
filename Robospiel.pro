@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -11,17 +11,24 @@ CONFIG += c++11
 SOURCES += \
     board.cpp \
     boardview.cpp \
-    keymapping.cpp \
+    client.cpp \
+    connectiontoclient.cpp \
     main.cpp \
     mainwindow.cpp \
+    networkview.cpp \
+    server.cpp \
     tile.cpp
 
 HEADERS += \
 board.h \
     boardview.h \
+	client.h \
+	connectiontoclient.h \
 direction.h \
     keymapping.h \
 mainwindow.h \
+	networkview.h \
+	server.h \
 tile.h
 
 TRANSLATIONS += \
