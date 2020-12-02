@@ -1,68 +1,83 @@
-
 #include "server.h"
 
-Server::Server(QObject *parent) : QObject(parent)
+QTcpServer* Server::server = new QTcpServer();
+Server Server::instance;
+QVector<ConnectionToClient*> Server::connections;
+Server::Server(QObject *parent) : QObject(parent) {}
+
+Server& Server::getInstance()
 {
-    server = new QTcpServer(this);
-    if (!server->listen())
+    return instance;
+}
+
+void Server::startServer(QString address, int port)
+{
+    if(server->isListening())
     {
-        qDebug()<<"Starting the server failed. ";
+        if(server->serverAddress().toString()==address || server->serverPort()==port)
+        {
+            return;
+        }
+        else
+        {
+            server->close();
+        }
+    }
+    if (!server->listen(QHostAddress(address),port))
+    {
+        emit serverNotStarted();
         return;
     }
 
-    QString ipAddress;
-    QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
-    // use the first non-localhost IPv4 address
-    for (int i = 0; i < ipAddressesList.size(); ++i)
+    connect(server, &QTcpServer::newConnection, &instance, &Server::addClient);
+    emit serverStarted(server->serverAddress(), server->serverPort());
+}
+
+int Server::sendMessageToClients(QString message)
+{
+    int errorCount = 0;
+    for(ConnectionToClient* client : connections)
     {
-        if (ipAddressesList.at(i) != QHostAddress::LocalHost && ipAddressesList.at(i).toIPv4Address())
-        {
-            ipAddress = ipAddressesList.at(i).toString();
-            break;
-        }
+        errorCount += client->sendMessage(message) ? 0:1;
     }
-    // if we did not find one, use IPv4 localhost
-    if (ipAddress.isEmpty())
-    {
-        ipAddress = QHostAddress(QHostAddress::LocalHost).toString();
-    }
-
-    qDebug()<<"Server running: "<<ipAddress<<":"<<server->serverPort();
-
-    connect(server, &QTcpServer::newConnection, this, &Server::addClient);
-
+    return errorCount;
 }
 
 void Server::addClient()
 {
     QTcpSocket* tcpServerConnection = server->nextPendingConnection();
     if (!tcpServerConnection) {
-        qDebug()<<"Error: got invalid pending connection!";
         return;
     }
 
     ConnectionToClient* connection = new ConnectionToClient(this, tcpServerConnection);
     connections.append(connection);
 
-    connect(tcpServerConnection, &QTcpSocket::disconnected,
-            tcpServerConnection, &QTcpSocket::deleteLater); //todo delete the struct completely
+    connect(connection, &ConnectionToClient::deleteConnection, this, [=](ConnectionToClient* toDelete)->void{
+        connections.remove(connections.indexOf(toDelete));
+        delete toDelete;
+        toDelete = nullptr;
+        emit clientsChanged(connections.length());
+    });
     connect(connection, &ConnectionToClient::receivedMessage, this, &Server::processMessageFromClient);
 
-
-
-    qDebug()<<"New Client connected to server";
-}
-
-void Server::sendMessageToClients(QString message)
-{
-    qDebug()<<"sending "<<message<<" to all ("<<connections.length()<<") clients";
-    for(ConnectionToClient* client : connections)
-    {
-        client->sendMessage(message);
-    }
+    emit clientsChanged(connections.length());
 }
 
 void Server::processMessageFromClient(QString message)
 {
     qDebug()<<"Server received: "<<message;
+    //TODO handle message
+
+}
+
+void Server::closeServer()
+{
+    server->close();
+    while(!connections.empty())
+    {
+        ConnectionToClient* toDelete = connections.takeFirst();
+        delete toDelete;
+        toDelete = nullptr;
+    }
 }

@@ -6,23 +6,30 @@
 #include <QtNetwork/QTcpSocket>
 #include <QDebug>
 
+
 class Client : public QObject
 {
     Q_OBJECT
 public:
+    static Client& getInstance();
 
-    ~Client();
-    void sendMessageToServer(QString message);
-    Client(QObject *parent, QString serverAddress, int serverPort);
+    void startClient(QString serverAddress, int serverPort);
+    bool sendMessageToServer(QString message);
+    void closeClient();
 private:
-        QTcpSocket* tcpSocket;
-        QDataStream streamFromServer;
+    Client(QObject *parent = nullptr);
+    ~Client();
+    static Client instance;
+    static QTcpSocket* tcpSocket;
+    static QDataStream streamFromServer;
 
 signals:
+    void errorInClient(QAbstractSocket::SocketError socketError);
+    void clientStarted();
+    void clientClosed();
 
 private slots:
-        void displayError(QAbstractSocket::SocketError socketError);
-        void processMessageFromServer();
+    void processMessageFromServer();
 };
 
 #endif // CLIENT_H

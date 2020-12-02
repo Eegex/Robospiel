@@ -4,7 +4,10 @@
 #include "client.h"
 #include "server.h"
 
+#include <QButtonGroup>
+#include <QLabel>
 #include <QLineEdit>
+#include <QRadioButton>
 #include <QVBoxLayout>
 #include <QWidget>
 
@@ -13,16 +16,29 @@ class NetworkView : public QWidget
     Q_OBJECT
 public:
     explicit NetworkView(QWidget *parent = nullptr);
-    QVBoxLayout* layout = new QVBoxLayout();
-    QLineEdit* leServerAddress = new QLineEdit("192.168.178.27");
-    QLineEdit* leServerPort = new QLineEdit("8088");
-    QLineEdit* leMessageToServer = new QLineEdit("Message to server");
-    QLineEdit* leMessageToClients = new QLineEdit("Message to clients");
+
+
 private:
-    Server* server;
-    Client* client;
+    QGridLayout* layout;
+    QButtonGroup* choiceGroup;
+    QRadioButton* btnServer;
+    QWidget* serverContainer;
+    QGridLayout* gridServer;
+    QLineEdit* leServerAddress;
+    QLineEdit* leServerPort;
+    QLabel* serverStatus;
+    QLineEdit* leMessageToClients;
+
+    QRadioButton* btnClient;
+    QWidget* clientContainer;
+    QGridLayout* gridClient;
+    QLineEdit* leClientAddress;
+    QLineEdit* leClientPort;
+    QLabel* clientStatus;
+    QLineEdit* leMessageToServer;
 
 signals:
+
 
 private slots:
     void addServer();

@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QSize>
+#include <QVector>
 #include "tile.h"
 
 

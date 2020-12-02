@@ -1,49 +1,60 @@
 #include "client.h"
 
+Client Client::instance;
+QDataStream Client::streamFromServer;
+QTcpSocket* Client::tcpSocket = new QTcpSocket();
+Client::Client(QObject *parent) : QObject(parent) {}
 
-
-Client::Client(QObject *parent, QString serverAddress, int serverPort) : QObject(parent)
+Client& Client::getInstance()
 {
-    tcpSocket = new QTcpSocket(this);
+    return instance;
+}
+
+void Client::startClient(QString serverAddress, int serverPort)
+{
+    tcpSocket->close();
     streamFromServer.setDevice(tcpSocket);
-//    streamFromServer.setVersion(QDataStream::Qt_4_0);
     connect(tcpSocket, &QIODevice::readyRead, this, &Client::processMessageFromServer);
-    connect(tcpSocket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, &Client::displayError);
+    connect(tcpSocket, &QAbstractSocket::connected, this, [=]()-> void{emit clientStarted();});
+    connect(tcpSocket, &QAbstractSocket::disconnected, this, [=]()->void{emit clientClosed();});
+    connect(tcpSocket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, [=](QAbstractSocket::SocketError socketError) -> void {emit errorInClient(socketError);});
+    //connect(tcpSocket, QAbstractSocket::errorOccurred, this, [=](QAbstractSocket::SocketError socketError) -> void {emit errorInClient(socketError);});
+
     tcpSocket->connectToHost(serverAddress, serverPort);
-    qDebug()<<"end client constructor";
 
 }
 
-void Client::sendMessageToServer(QString message)
+bool Client::sendMessageToServer(QString message)
 {
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
-
     out << message;
 
-    tcpSocket->write(block);
-    qDebug()<<"Sended message to server: "<<message;
+    if(tcpSocket->isOpen())
+    {
+      return (tcpSocket->write(block)!=-1);
+    }
+    return false;
+
 }
 
 void Client::processMessageFromServer()
 {
-    qDebug()<<"start of message";
     streamFromServer.startTransaction();
 
     QString message;
     streamFromServer >> message;
-    qDebug()<<"middle"<<message;
-
     if (!streamFromServer.commitTransaction())
         return;
 
     qDebug()<<"Client received: "<<message;
+    //TODO handle message
 
 }
 
-void Client::displayError(QAbstractSocket::SocketError socketError)
+void Client::closeClient()
 {
-    qDebug()<<"Error in client: "<<socketError;
+    tcpSocket->close();
 }
 
 Client::~Client()

@@ -1,9 +1,12 @@
 #include "connectiontoclient.h"
 
+#include <QString>
+
 ConnectionToClient::ConnectionToClient(QObject *parent, QTcpSocket *tcpSocket): QObject(parent),tcpSocket(tcpSocket)
 {
     streamFromClient.setDevice(tcpSocket);
     connect(tcpSocket, &QIODevice::readyRead, this, &ConnectionToClient::receiveMessage);
+    connect(tcpSocket, &QAbstractSocket::disconnected, this, [=]()->void{emit deleteConnection(this);});
 
 }
 
@@ -15,18 +18,18 @@ void ConnectionToClient::receiveMessage()
     streamFromClient >> message;
 
     if (!streamFromClient.commitTransaction())
+    {
         return;
-
-    qDebug()<<"Connection received: "<<message;
+    }
     emit receivedMessage(message);
 }
 
-void ConnectionToClient::sendMessage(QString message)
+bool ConnectionToClient::sendMessage(QString message)
 {
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
 
     out << message;
 
-    tcpSocket->write(block);
+    return (tcpSocket->write(block)!=-1);
 }
