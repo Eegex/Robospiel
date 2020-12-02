@@ -12,15 +12,18 @@ class PlayerBiddingWidget : public QWidget
     Q_OBJECT
 public:
     explicit PlayerBiddingWidget(QWidget *parent = nullptr);
-
+    QPushButton * accept = new QPushButton(this);
+    QDoubleSpinBox  * lSpinBox = new QDoubleSpinBox(this);
 private:
     QGridLayout * playerLayout = new QGridLayout(this);
-    QDoubleSpinBox  * lSpinBox = new QDoubleSpinBox(this);
+    QLabel * labelName = new QLabel(this);
     QString playerName;
     u_int16_t playerBidding;
+    bool hasBid = 0;
 public slots:
     void setBidding(QVariant v);
     void setName(QVariant v);
+    void btnPressed();
     u_int getBidding();
     QString getName();
 

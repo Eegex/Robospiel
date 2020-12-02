@@ -15,12 +15,16 @@ public:
 
 private:
     QGridLayout * lay = new QGridLayout(this);
-    QLabel * lDisplay = new QLabel("LeaderBoardWidget", this);
-    u_int8_t numOfPlayers = 5;
-    QVector<PlayerBiddingWidget*> players; //Several Players, Array of pointers to Widgets for individual players
+    QPushButton * addBtn = new QPushButton(this);
+    u_int8_t numOfPlayers = 0;
+    u_int8_t currentPlayer = 0;
+    //PlayerBiddingWidget* players;
+    QVector<PlayerBiddingWidget*> players; //Several Players, Array of Widgets for individual players
 
 public slots:
     void sortByBidding();
+    void addPlayer(PlayerBiddingWidget * player);
+    void newPlayer();
 
 signals:
 

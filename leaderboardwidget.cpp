@@ -1,12 +1,25 @@
+#include <QDebug>
 #include "LeaderBoardWidget.h"
 #include "PlayerBiddingWidget.h"
 
 LeaderBoardWidget::LeaderBoardWidget(QWidget *parent) : QWidget(parent)
 {
-    players[0] = new PlayerBiddingWidget(this);
+    addBtn->setText("Add new Player");
+    for(int i = 0; i<numOfPlayers; i++)
+        lay->addWidget(players.at(i), i, 0);
+    lay->addWidget(addBtn, numOfPlayers, 0);
+    for(int i = 0; i<numOfPlayers; i++)
+    {
+        players.at(i)->accept->setEnabled(i == currentPlayer?true:false);
+        players.at(i)->lSpinBox->setEnabled(i == currentPlayer?true:false);
+    }
+    setLayout(lay);
+    connect(addBtn,&QPushButton::clicked,this,&LeaderBoardWidget::newPlayer);
+    //static_cast<PlayerBiddingWidget*>(calloc(5, sizeof(PlayerBiddingWidget*)));
+    /*players[0] = new PlayerBiddingWidget(this);
     players.at(0)->setName("TestName");
     players.at(0)->setBidding(10);
-    lay->addWidget(players.at(0));
+    lay->addWidget(players.at(0));*/
 }
 
 void LeaderBoardWidget::sortByBidding()
@@ -20,5 +33,28 @@ void LeaderBoardWidget::sortByBidding()
         //lay->addWidget(lay->takeAt(0), i, 0);
     }
     free(sortedPlayers);
+}
+
+void LeaderBoardWidget::addPlayer(PlayerBiddingWidget * player){
+    players.append(player);
+    //players[numOfPlayers] = player;
+    lay->addWidget(players.at(numOfPlayers));
+    numOfPlayers++;
+    for(int i = 0; i<numOfPlayers; i++)
+        lay->addWidget(players.at(i), i, 0);
+    lay->addWidget(addBtn, numOfPlayers, 0); //New Player Button under all Players
+    for(int i = 0; i<numOfPlayers; i++)
+    {
+        players.at(i)->accept->setEnabled(i == currentPlayer?true:false);
+        players.at(i)->lSpinBox->setEnabled(i == currentPlayer?true:false);
+    }
+    lay->update();
+}
+
+void LeaderBoardWidget::newPlayer(){
+    qDebug()<< "newPlayer!";
+    //Open Player Addition Widget
+
+
 }
 
