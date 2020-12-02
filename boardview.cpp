@@ -113,15 +113,8 @@ void BoardView::paintEvent(QPaintEvent * event)
 		{
 			for(int x = 0; x < board->getSize().width(); x++)
 			{
-
 				QRect tile(5+x*tileWidth,5+y*tileHeight,tileWidth,tileHeight);
                 painter.drawRect(tile);
-
-
-
-
-
-
 			}
 		}
 
@@ -130,10 +123,6 @@ void BoardView::paintEvent(QPaintEvent * event)
         int playerNum = board->players.length();
         double stepSize = 359/playerNum;
         QColor color;
-        int counter = 0;
-
-
-
         for(int i = 0; i <board->players.length();i++){
 
             qDebug()<< i;
@@ -146,21 +135,11 @@ void BoardView::paintEvent(QPaintEvent * event)
 
                 //draw the goal
                 painter.drawEllipse(QPoint(5+(board->goal->getPosition().rx()+1)*tileWidth - tileWidth/2.0,5+(board->goal->getPosition().ry()+1)*tileHeight - tileHeight/2.0), (int) (tileWidth/5.0), (int) (tileWidth/5.0));
-
             }
 
             Tile* player = board->players.at(i);
-
-
         painter.drawEllipse(QPoint(5+(player->getPosition().rx()+1)*tileWidth - tileWidth/2,5+(player->getPosition().ry()+1)*tileHeight - tileHeight/2), (int) tileWidth/3, (int) tileWidth/3);
         }
-
-
-
-
-
-
-
 		painter.setPen(wall);
 	}
 	for(int x = 0; x < board->getSize().width(); x++)

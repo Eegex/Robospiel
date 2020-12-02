@@ -161,6 +161,13 @@ void Board::placeOuterWalls()
 	}
 }
 
+/**
+This method tries to place one outerwall. (One wall that is in a 90 degree angle to the sides of the board)
+It can only be called with the Direction south (for walls on the left and right side)
+or east (for walls on the upper and lower side)as an argument.
+A wall will only be placed if there is no wall directly next to it (this includes walls that belong to the sides of the board)
+The method will return false if the wall couldn't be placed.
+  **/
 bool Board::placeOuterWallIfFits(Tile* tile, Direction direction)
 {
 	if(direction == Direction::north||direction == Direction::west)
@@ -210,6 +217,15 @@ void Board::placeInnerWalls()
 		}
 	}
 }
+
+
+/**
+This method tries to place one innerwall on a specific Tile. (One "corner" consisting of two walls that are in a 90 degree angle to each other)
+It is called with the Tile it should be placed on and a direction. The Direction indicates the position one of the walls will have on the Tile, the other wall will be at the clockwise next direction.
+EXAMPLE: |_  this innerwall would be a south wall. _| this innerwall would be an east wall.
+A innerwall will only be placed if there is no wall that would connect to it (this includes walls that belong to the sides of the board).
+The method will return false if the wall couldn't be placed on the given Tile.
+  **/
 
 bool Board::placeInnerWallifFits(Tile* tile, Direction direction)
 {
