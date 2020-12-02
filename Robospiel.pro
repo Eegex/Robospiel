@@ -12,6 +12,7 @@ SOURCES += \
     board.cpp \
     leaderboardwidget.cpp \
     boardview.cpp \
+    keymapping.cpp \
     main.cpp \
     mainwindow.cpp \
     playerBiddingWidget.cpp \

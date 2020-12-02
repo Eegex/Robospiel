@@ -12,8 +12,6 @@
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
-	Board board(nullptr, 16, 16, 3);
-	BoardView view(nullptr);
     LeaderBoardWidget leaderBoardWidget(nullptr);
     PlayerBiddingWidget biddingWidget(nullptr);
     biddingWidget.setName("Kinski, Klaus");
@@ -25,6 +23,8 @@ int main(int argc, char *argv[])
     leaderBoardWidget.show();
 //    biddingWidget.setLayout(nullptr);
     //biddingWidget.show();
+    Board board(16, 16, 5);
+	BoardView view;
 	view.setBoard(&board);
 	view.show();
 	MainWindow w;

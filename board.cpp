@@ -3,7 +3,7 @@
 #include <Direction.h>
 #include "board.h"
 
-Board::Board(QObject *parent, int width, int height, int playerNumber) : QObject(parent)
+Board::Board(int width, int height, int playerNumber, QObject *parent) : QObject(parent)
 {
 	if(playerNumber+1 > width*height)
 	{
@@ -38,10 +38,29 @@ Board::Board(QObject *parent, int width, int height, int playerNumber) : QObject
 	}
 	placeOuterWalls();
 	placeInnerWalls();
-	//goal only in corner?
-	//goal=getRandomUnoccupiedTile();
-	placeGoalInCorner();
-	//option where goals can't be reached in one step? Goal does not have an associated player yet, does it?
+
+
+    startNewRound();
+
+
+}
+
+
+void Board::startNewRound(){
+//is there a way to only use one generator???
+    std::default_random_engine generator(QTime::currentTime().msecsSinceStartOfDay());
+    std::uniform_int_distribution<int> playerNumbers(0, players.size());
+    seeker = playerNumbers(generator);
+
+    //goal only in corner?
+     placeGoalInCorner();
+    //else:
+    //placeGoalAwayFromSeeker();
+
+
+
+
+
 }
 
 Tile* Board::getTile(int x, int y)
@@ -56,7 +75,6 @@ QSize Board::getSize()
 
 Tile* Board::getRandomUnoccupiedTile()
 {
-
 	std::default_random_engine generator(QTime::currentTime().msecsSinceStartOfDay());
 	std::uniform_int_distribution<int> x(0, tiles.at(0).length()-1);
 	std::uniform_int_distribution<int> y(0, tiles.length()-1);
@@ -88,12 +106,11 @@ Tile* Board::getRandomUnoccupiedTile()
 	return initialTile;
 }
 
-void Board::placeOuterWalls(){
-
+void Board::placeOuterWalls()
+{
 	int outerWallspots = tiles.at(0).length()*2 + tiles.length()*2 - NUM_PLACES_THAT_CANT_HAVE_OUTER_WALLS;
 
 	int numberOfOuterWalls = (int) (outerWallspots/AVG_DIST_OF_OUTER_WALLS + 1);
-
 
 	int i =0;
 
@@ -144,6 +161,13 @@ void Board::placeOuterWalls(){
 	}
 }
 
+/**
+This method tries to place one outerwall. (One wall that is in a 90 degree angle to the sides of the board)
+It can only be called with the Direction south (for walls on the left and right side)
+or east (for walls on the upper and lower side)as an argument.
+A wall will only be placed if there is no wall directly next to it (this includes walls that belong to the sides of the board)
+The method will return false if the wall couldn't be placed.
+  **/
 bool Board::placeOuterWallIfFits(Tile* tile, Direction direction)
 {
 	if(direction == Direction::north||direction == Direction::west)
@@ -154,7 +178,7 @@ bool Board::placeOuterWallIfFits(Tile* tile, Direction direction)
 	{
 		int x = tile->getPosition().x();
 		int y = tile->getPosition().y();
-		if(direction== Direction::east)
+		if(direction == Direction::east)
 		{
 			if(!tiles.at(y).at(x-1)->getWall(direction)&&!tiles.at(y).at(x+1)->getWall(direction))
 			{
@@ -162,7 +186,7 @@ bool Board::placeOuterWallIfFits(Tile* tile, Direction direction)
 				return true;
 			}
 		}
-		if(direction== Direction::south)
+		if(direction == Direction::south)
 		{
 			if(!tiles.at(y-1).at(x)->getWall(direction)&&!tiles.at(y+1).at(x)->getWall(direction))
 			{
@@ -193,6 +217,15 @@ void Board::placeInnerWalls()
 		}
 	}
 }
+
+
+/**
+This method tries to place one innerwall on a specific Tile. (One "corner" consisting of two walls that are in a 90 degree angle to each other)
+It is called with the Tile it should be placed on and a direction. The Direction indicates the position one of the walls will have on the Tile, the other wall will be at the clockwise next direction.
+EXAMPLE: |_  this innerwall would be a south wall. _| this innerwall would be an east wall.
+A innerwall will only be placed if there is no wall that would connect to it (this includes walls that belong to the sides of the board).
+The method will return false if the wall couldn't be placed on the given Tile.
+  **/
 
 bool Board::placeInnerWallifFits(Tile* tile, Direction direction)
 {
@@ -264,8 +297,8 @@ void Board::placeGoalInCorner()
 	while(noCorner)
 	{
 		int numberOfWalls = 0;
-		goal = getRandomUnoccupiedTile();
-		qDebug() << goal;
+
+        placeGoalAwayFromSeeker();
 		for(int i = 0; i<4; i++)
 		{
 			Direction dir = getNextDirection(Direction::north, i);
@@ -278,6 +311,22 @@ void Board::placeGoalInCorner()
 		numberOfWalls=0;
 	}
 	return;
+}
+
+
+void  Board::placeGoalAwayFromSeeker(){
+    bool inRowOrColWithSeeker = true;
+    while(inRowOrColWithSeeker)
+    {
+        goal = getRandomUnoccupiedTile();
+        if(!(goal->getPosition().rx() == players.at(seeker)->getPosition().rx()) &&
+           !(goal->getPosition().ry() == players.at(seeker)->getPosition().ry())    )
+        {
+            inRowOrColWithSeeker = false;
+        }
+    }
+    return;
+
 }
 
 Direction Board::getNextDirection(Direction direction, int numberOfClockwiseSteps)
