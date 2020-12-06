@@ -12,6 +12,7 @@ class Server : public QObject
     Q_OBJECT
 public:
     static Server& getInstance();
+    static void deleteInstance();
 
     void startServer(QString address, int port);
     int sendMessageToClients(QString message);

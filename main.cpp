@@ -9,13 +9,13 @@
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
-    Board board(16, 16, 5);
-	BoardView view;
-	view.setBoard(&board);
-	view.show();
+//    Board board(16, 16, 5);
+//	BoardView view;
+//	view.setBoard(&board);
+//	view.show();
     NetworkView networkView;
     networkView.show();
-	MainWindow w;
-	w.show();
+//	MainWindow w;
+//	w.show();
 	return a.exec();
 }

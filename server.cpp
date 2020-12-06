@@ -9,6 +9,11 @@ Server& Server::getInstance()
 {
     return instance;
 }
+void Server::deleteInstance()
+{
+    delete server;
+    server = nullptr;
+}
 
 void Server::startServer(QString address, int port)
 {

@@ -3,6 +3,7 @@
 #include "client.h"
 #include <QIntValidator>
 #include <QLabel>
+#include <QMetaEnum>
 #include <QPushButton>
 #include <QTime>
 #include <QVBoxLayout>
@@ -107,7 +108,9 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 
     connect(&Client::getInstance(), &Client::errorInClient, this, [&](QAbstractSocket::SocketError socketError)->void
     {
-        clientStatus->setText(tr("Error in client: ")+QString::number(socketError)+" "+QTime::currentTime().toString());
+        QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
+        QString errorMessage = metaEnum.valueToKey(socketError);
+        clientStatus->setText(tr("Error in client: ")+errorMessage+" "+QTime::currentTime().toString());
     });
     connect(&Client::getInstance(), &Client::clientStarted, this, [&]()->void
     {
@@ -120,10 +123,17 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 
 }
 
+NetworkView::~NetworkView()
+{
+    Server::deleteInstance();
+    Client::deleteInstance();
+}
+
 void NetworkView::addServer()
 {
     Server::getInstance().startServer(leServerAddress->text(), leServerPort->text().toInt());
 }
+
 void NetworkView::sendToClients()
 {
     int errorCount=Server::getInstance().sendMessageToClients(leMessageToClients->text());

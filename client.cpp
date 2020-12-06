@@ -9,6 +9,11 @@ Client& Client::getInstance()
 {
     return instance;
 }
+void Client::deleteInstance()
+{
+    delete tcpSocket;
+    tcpSocket = nullptr;
+}
 
 void Client::startClient(QString serverAddress, int serverPort)
 {

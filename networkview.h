@@ -16,8 +16,7 @@ class NetworkView : public QWidget
     Q_OBJECT
 public:
     explicit NetworkView(QWidget *parent = nullptr);
-
-
+    ~NetworkView();
 private:
     QGridLayout* layout;
     QButtonGroup* choiceGroup;
