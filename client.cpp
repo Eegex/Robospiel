@@ -17,6 +17,7 @@ void Client::deleteInstance()
 
 void Client::startClient(QString serverAddress, int serverPort)
 {
+    emit clientIsStarting();
     tcpSocket->close();
     streamFromServer.setDevice(tcpSocket);
     connect(tcpSocket, &QIODevice::readyRead, this, &Client::processMessageFromServer);

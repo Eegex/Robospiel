@@ -18,6 +18,9 @@ public:
     explicit NetworkView(QWidget *parent = nullptr);
     ~NetworkView();
 private:
+
+    bool allowClientAndServer=false;
+
     QGridLayout* layout;
     QButtonGroup* choiceGroup;
     QRadioButton* btnServer;

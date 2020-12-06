@@ -16,7 +16,6 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
     choiceGroup = new QButtonGroup(this);
     btnClient = new QRadioButton(tr("Join Server"), this);
     btnServer = new QRadioButton(tr("Host Server"), this);
-    btnClient->setChecked(true);
     choiceGroup->addButton(btnClient);
     choiceGroup->addButton(btnServer);
 
@@ -63,10 +62,9 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
     connect(btnStartServer, &QPushButton::clicked, this, &NetworkView::addServer);
     QPushButton* btnStopServer = new QPushButton(tr("Stop Server"), serverContainer);
     connect(btnStopServer, &QPushButton::clicked, this, [&]()->void
-            {
-                Server::getInstance().closeServer();
-                serverStatus->setText(tr("Server stopped. ")+QTime::currentTime().toString());
-            });
+    {
+        Server::getInstance().closeServer();
+    });
     serverStatus = new QLabel(serverContainer);
 
     //only for testing
@@ -92,7 +90,27 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 
     setLayout(layout);
     setWindowTitle(tr("Client/Server Settings"));
-    
+
+    connect(btnClient, &QAbstractButton::toggled, this, [=](bool checked)->void{
+        if(!allowClientAndServer)
+        {
+            clientContainer->setDisabled(!checked);
+            serverContainer->setDisabled(checked);
+            if(checked)
+            {
+                Server::getInstance().closeServer();
+            }
+            else
+            {
+                Client::getInstance().closeClient();
+            }
+        }
+
+    });
+    btnClient->setChecked(true);
+
+
+    //connect server signals
     connect(&Server::getInstance(), &Server::serverNotStarted, this, [=]() -> void
     {
         serverStatus->setText(tr("Server couldn't start. ")+QTime::currentTime().toString());
@@ -105,12 +123,21 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
     {
         serverStatus->setText(QString::number(clientCount) + tr(" client(s) connected to the server. ")+QTime::currentTime().toString());
     });
+    connect(&Server::getInstance(), &Server::serverClosed, this, [&]()->void
+    {
+        serverStatus->setText(tr("Server stopped. ")+QTime::currentTime().toString());
+    });
 
+    //connect client signals
     connect(&Client::getInstance(), &Client::errorInClient, this, [&](QAbstractSocket::SocketError socketError)->void
     {
         QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketError>();
         QString errorMessage = metaEnum.valueToKey(socketError);
         clientStatus->setText(tr("Error in client: ")+errorMessage+" "+QTime::currentTime().toString());
+    });
+    connect(&Client::getInstance(), &Client::clientIsStarting, this, [&]()->void
+    {
+        clientStatus->setText(tr("Client is starting... ")+QTime::currentTime().toString());
     });
     connect(&Client::getInstance(), &Client::clientStarted, this, [&]()->void
     {
@@ -145,7 +172,7 @@ void NetworkView::sendToClients()
 
 void NetworkView::addClient()
 {
-    Client::getInstance().startClient(leServerAddress->text(), leServerPort->text().toInt());
+    Client::getInstance().startClient(leClientAddress->text(), leClientPort->text().toInt());
 }
 
 void NetworkView::sendToServer()

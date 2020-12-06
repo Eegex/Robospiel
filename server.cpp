@@ -85,4 +85,5 @@ void Server::closeServer()
         delete toDelete;
         toDelete = nullptr;
     }
+    emit serverClosed();
 }

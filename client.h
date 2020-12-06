@@ -26,6 +26,7 @@ private:
 
 signals:
     void errorInClient(QAbstractSocket::SocketError socketError);
+    void clientIsStarting();
     void clientStarted();
     void clientClosed();
 

@@ -26,6 +26,7 @@ signals:
     void serverNotStarted();
     void serverStarted(QHostAddress address, int port);
     void clientsChanged(int clientCount);
+    void serverClosed();
 
 private slots:
     void addClient();
