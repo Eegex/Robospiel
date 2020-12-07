@@ -15,6 +15,7 @@ SOURCES += \
     connectiontoclient.cpp \
     keymapping.cpp \
     main.cpp \
+    mainwidget.cpp \
     mainwindow.cpp \
     networkview.cpp \
     server.cpp \
@@ -27,6 +28,7 @@ HEADERS += \
     connectiontoclient.h \
     direction.h \
     keymapping.h \
+    mainwidget.h \
     mainwindow.h \
     networkview.h \
     server.h \

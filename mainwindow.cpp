@@ -1,10 +1,11 @@
-#include "networkview.h"
 #include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
-    setCentralWidget(new NetworkView());
-    show();
+	centralWidget = new MainWidget(this);
+	setCentralWidget(centralWidget);
+	centralWidget->setMenuBar(this->menuBar());
+	showMaximized();
 }
 
 MainWindow::~MainWindow()

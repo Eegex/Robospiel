@@ -3,15 +3,6 @@
 
 BoardView::BoardView(QWidget *parent) : QWidget(parent)
 {
-	mapping.append(KeyMapping(PlayerAction::movePlayerNorth,{Qt::Key::Key_W,Qt::Key::Key_Up}));
-	mapping.append(KeyMapping(PlayerAction::movePlayerEast,{Qt::Key::Key_D,Qt::Key::Key_Right}));
-	mapping.append(KeyMapping(PlayerAction::movePlayerSouth,{Qt::Key::Key_S,Qt::Key::Key_Down}));
-	mapping.append(KeyMapping(PlayerAction::movePlayerWest,{Qt::Key::Key_A,Qt::Key::Key_Left}));
-	mapping.append(KeyMapping(PlayerAction::revert,Qt::Key::Key_R));
-	mapping.append(KeyMapping(PlayerAction::giveUp,Qt::Key::Key_Q));
-	mapping.append(KeyMapping(PlayerAction::enterBidding,Qt::Key::Key_Space));
-	mapping.append(KeyMapping(PlayerAction::clearBidding,Qt::Key::Key_Backspace));
-	mapping.append(KeyMapping(PlayerAction::sendBidding,Qt::Key::Key_Return));
 	setMouseTracking(true);
 	setFocusPolicy(Qt::FocusPolicy::StrongFocus);
 	fillCache(QSize(50,50));
@@ -19,8 +10,8 @@ BoardView::BoardView(QWidget *parent) : QWidget(parent)
 
 void BoardView::setBoard(Board * b)
 {
-	this->board = b;
-	update();
+	board = b;
+	connect(board,SIGNAL(boardChanged()),this,SLOT(update()));
 }
 
 void BoardView::setDebugOutputEnabled(bool set)
@@ -91,15 +82,20 @@ Tile * BoardView::coordsToTile(QPoint p)
 	return nullptr;
 }
 
+void BoardView::setMapping(QVector<KeyMapping> * value)
+{
+	mapping = value;
+}
+
 void BoardView::paintEvent(QPaintEvent * event)
 {
 	QPainter painter;
 	painter.begin(this);
-//	painter.setRenderHint(QPainter::Antialiasing);
+	//	painter.setRenderHint(QPainter::Antialiasing);
 	QPen debug(QColor(255,0,255));
 	QPen grid(QColor(0,80,0),1,Qt::SolidLine,Qt::RoundCap);
-    QPen wall(QColor(0,120,0),2,Qt::SolidLine,Qt::RoundCap);
-    QPen player(QColor(0,0,0),2,Qt::SolidLine,Qt::RoundCap);
+	QPen wall(QColor(0,120,0),2,Qt::SolidLine,Qt::RoundCap);
+	QPen player(QColor(0,0,0),2,Qt::SolidLine,Qt::RoundCap);
 
 	double tileHeight = (height() - 10) / static_cast<double>(board->getSize().height());
 	double tileWidth = (width() - 10) / static_cast<double>(board->getSize().width());
@@ -114,32 +110,34 @@ void BoardView::paintEvent(QPaintEvent * event)
 			for(int x = 0; x < board->getSize().width(); x++)
 			{
 				QRect tile(5+x*tileWidth,5+y*tileHeight,tileWidth,tileHeight);
-                painter.drawRect(tile);
+				painter.drawRect(tile);
 			}
 		}
 
-        painter.setPen(player);
+		painter.setPen(player);
 
-        int playerNum = board->players.length();
-        double stepSize = 359/playerNum;
-        QColor color;
-        for(int i = 0; i <board->players.length();i++){
+		int playerNum = board->players.length();
+		double stepSize = 359/playerNum;
+		QColor color;
+		for(int i = 0; i <board->players.length();i++)
+		{
 
-            qDebug()<< i;
+			qDebug()<< i;
 
-            color.setHsv(i*stepSize,200,200);
+			color.setHsv(i*stepSize,200,200);
 
-            painter.setBrush(color);
+			painter.setBrush(color);
 
-            if(i == board->seeker){
+			if(i == board->seeker)
+			{
 
-                //draw the goal
-                painter.drawEllipse(QPoint(5+(board->goal->getPosition().rx()+1)*tileWidth - tileWidth/2.0,5+(board->goal->getPosition().ry()+1)*tileHeight - tileHeight/2.0), (int) (tileWidth/5.0), (int) (tileWidth/5.0));
-            }
+				//draw the goal
+				painter.drawEllipse(QPoint(5+(board->goal->getPosition().rx()+1)*tileWidth - tileWidth/2.0,5+(board->goal->getPosition().ry()+1)*tileHeight - tileHeight/2.0), (int) (tileWidth/5.0), (int) (tileWidth/5.0));
+			}
 
-            Tile* player = board->players.at(i);
-        painter.drawEllipse(QPoint(5+(player->getPosition().rx()+1)*tileWidth - tileWidth/2,5+(player->getPosition().ry()+1)*tileHeight - tileHeight/2), (int) tileWidth/3, (int) tileWidth/3);
-        }
+			Tile* player = board->players.at(i);
+			painter.drawEllipse(QPoint(5+(player->getPosition().rx()+1)*tileWidth - tileWidth/2,5+(player->getPosition().ry()+1)*tileHeight - tileHeight/2), (int) tileWidth/3, (int) tileWidth/3);
+		}
 		painter.setPen(wall);
 	}
 	for(int x = 0; x < board->getSize().width(); x++)
@@ -253,7 +251,7 @@ void BoardView::mouseMoveEvent(QMouseEvent * event)
 
 void BoardView::keyPressEvent(QKeyEvent * event)
 {
-	for(const KeyMapping & k:mapping)
+	for(const KeyMapping & k:*mapping)
 	{
 		if(k == event->key())
 		{
