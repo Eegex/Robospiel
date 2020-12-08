@@ -15,6 +15,6 @@ public:
 
 private:
 	MainWidget * centralWidget = nullptr;
-    ~MainWindow();
+    //~MainWindow();
 };
 #endif // MAINWINDOW_H

@@ -6,6 +6,7 @@
 #include <QGridLayout>
 #include <QVector>
 #include "PlayerBiddingWidget.h"
+#include "PlayerCreationWidget.h"
 
 class LeaderBoardWidget : public QWidget
 {
@@ -20,6 +21,7 @@ private:
     u_int8_t currentPlayer = 0;
     //PlayerBiddingWidget* players;
     QVector<PlayerBiddingWidget*> players; //Several Players, Array of Widgets for individual players
+    PlayerCreationWidget * playerCreationWidget = new PlayerCreationWidget(nullptr);
 
 public slots:
     void sortByBidding();

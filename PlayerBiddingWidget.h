@@ -5,7 +5,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QDate>
-#include <QDoubleSpinBox>
+#include <QSpinBox>
 
 class PlayerBiddingWidget : public QWidget
 {
@@ -13,7 +13,7 @@ class PlayerBiddingWidget : public QWidget
 public:
     explicit PlayerBiddingWidget(QWidget *parent = nullptr);
     QPushButton * accept = new QPushButton(this);
-    QDoubleSpinBox  * lSpinBox = new QDoubleSpinBox(this);
+    QSpinBox  * lSpinBox = new QSpinBox(this);
 private:
     QGridLayout * playerLayout = new QGridLayout(this);
     QLabel * labelName = new QLabel(this);

@@ -1,9 +1,11 @@
 #include <QDebug>
 #include "LeaderBoardWidget.h"
 #include "PlayerBiddingWidget.h"
+#include "PlayerCreationWidget.h"
 
 LeaderBoardWidget::LeaderBoardWidget(QWidget *parent) : QWidget(parent)
 {
+    playerCreationWidget->hide();
     addBtn->setText("Add new Player");
     for(int i = 0; i<numOfPlayers; i++)
         lay->addWidget(players.at(i), i, 0);
@@ -35,7 +37,8 @@ void LeaderBoardWidget::sortByBidding()
     free(sortedPlayers);
 }
 
-void LeaderBoardWidget::addPlayer(PlayerBiddingWidget * player){
+void LeaderBoardWidget::addPlayer(PlayerBiddingWidget * player)
+{
     players.append(player);
     //players[numOfPlayers] = player;
     lay->addWidget(players.at(numOfPlayers));
@@ -51,10 +54,15 @@ void LeaderBoardWidget::addPlayer(PlayerBiddingWidget * player){
     lay->update();
 }
 
-void LeaderBoardWidget::newPlayer(){
+void LeaderBoardWidget::newPlayer()
+{
+    PlayerBiddingWidget * newWidget = new PlayerBiddingWidget(this);
+    numOfPlayers++;
+    players.append(newWidget);
     qDebug()<< "newPlayer!";
+    playerCreationWidget->addPlayer();
+    playerCreationWidget->show();
+    //addPlayer(newWidget);
     //Open Player Addition Widget
-
-
 }
 
