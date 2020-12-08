@@ -25,6 +25,7 @@ HEADERS += \
     PlayerBiddingWidget.h \
     PlayerCreationWidget.h \
     board.h \
+    keymapping.h \
     mainwindow.h \
     tile.h \
     boardview.h \
