@@ -13,12 +13,14 @@ SOURCES += \
     boardview.cpp \
     client.cpp \
     connectiontoclient.cpp \
+    gamecontroll.cpp \
     keymapping.cpp \
     main.cpp \
     mainwidget.cpp \
     mainwindow.cpp \
     networkview.cpp \
     server.cpp \
+    settingsdialog.cpp \
     tile.cpp
 
 HEADERS += \
@@ -27,11 +29,13 @@ HEADERS += \
     client.h \
     connectiontoclient.h \
     direction.h \
+    gamecontroll.h \
     keymapping.h \
     mainwidget.h \
     mainwindow.h \
     networkview.h \
     server.h \
+    settingsdialog.h \
     tile.h
 
 TRANSLATIONS += \

@@ -6,9 +6,12 @@
 #include <QMenuBar>
 #include <QMenu>
 #include <QAction>
+#include <QMessageBox>
 #include "board.h"
 #include "boardview.h"
 #include "networkview.h"
+#include "settingsdialog.h"
+#include "gamecontroll.h"
 
 class MainWidget : public QWidget
 {
@@ -21,13 +24,15 @@ signals:
 
 private:
 	QGridLayout * glMain = nullptr;
-	Board * board = nullptr;
+	GameControll * game = nullptr;
 	BoardView * view = nullptr;
+	SettingsDialog * settings = nullptr;
 	NetworkView * networkView = nullptr;
 	QMenuBar * menuBar = nullptr;
 	QAction * aNetworking = nullptr;
 	QAction * aNewBoard = nullptr;
 	QAction * aNewTarget = nullptr;
+	QAction * aSettings = nullptr;
 };
 
 #endif // MAINWIDGET_H

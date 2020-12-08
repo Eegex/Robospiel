@@ -4,7 +4,6 @@
 
 int main(int argc, char *argv[])
 {
-	//BUG: random out_of_range once every ~20 launches...
 	QApplication a(argc, argv);
 	QTranslator * translator = new QTranslator;
 	if(translator->load("Robospiel_de_DE"))
