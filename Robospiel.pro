@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -12,11 +12,18 @@ SOURCES += \
     board.cpp \
     leaderboardwidget.cpp \
     boardview.cpp \
+    client.cpp \
+    connectiontoclient.cpp \
+    gamecontroll.cpp \
     keymapping.cpp \
     main.cpp \
+    mainwidget.cpp \
     mainwindow.cpp \
     playerBiddingWidget.cpp \
     playercreationwidget.cpp \
+    networkview.cpp \
+    server.cpp \
+    settingsdialog.cpp \
     tile.cpp
 
 HEADERS += \
@@ -25,8 +32,17 @@ HEADERS += \
     PlayerBiddingWidget.h \
     PlayerCreationWidget.h \
     board.h \
+    boardview.h \
+    client.h \
+    connectiontoclient.h \
+    direction.h \
+    gamecontroll.h \
     keymapping.h \
+    mainwidget.h \
     mainwindow.h \
+    networkview.h \
+    server.h \
+    settingsdialog.h \
     tile.h \
     boardview.h \
     direction.h

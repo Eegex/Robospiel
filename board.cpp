@@ -38,29 +38,21 @@ Board::Board(int width, int height, int playerNumber, QObject *parent) : QObject
 	}
 	placeOuterWalls();
 	placeInnerWalls();
-
-
-    startNewRound();
-
-
+	startNewRound();
 }
 
 
-void Board::startNewRound(){
-//is there a way to only use one generator???
-    std::default_random_engine generator(QTime::currentTime().msecsSinceStartOfDay());
-    std::uniform_int_distribution<int> playerNumbers(0, players.size());
-    seeker = playerNumbers(generator);
-
-    //goal only in corner?
-     placeGoalInCorner();
-    //else:
-    //placeGoalAwayFromSeeker();
-
-
-
-
-
+void Board::startNewRound()
+{
+	//is there a way to only use one generator???
+	std::default_random_engine generator(QTime::currentTime().msecsSinceStartOfDay());
+	std::uniform_int_distribution<int> playerNumbers(0, players.size());
+	seeker = playerNumbers(generator);
+	//goal only in corner?
+	placeGoalInCorner();
+	emit boardChanged();
+	//else:
+	//placeGoalAwayFromSeeker();
 }
 
 Tile* Board::getTile(int x, int y)
@@ -298,7 +290,7 @@ void Board::placeGoalInCorner()
 	{
 		int numberOfWalls = 0;
 
-        placeGoalAwayFromSeeker();
+		placeGoalAwayFromSeeker();
 		for(int i = 0; i<4; i++)
 		{
 			Direction dir = getNextDirection(Direction::north, i);
@@ -314,18 +306,19 @@ void Board::placeGoalInCorner()
 }
 
 
-void  Board::placeGoalAwayFromSeeker(){
-    bool inRowOrColWithSeeker = true;
-    while(inRowOrColWithSeeker)
-    {
-        goal = getRandomUnoccupiedTile();
-        if(!(goal->getPosition().rx() == players.at(seeker)->getPosition().rx()) &&
-           !(goal->getPosition().ry() == players.at(seeker)->getPosition().ry())    )
-        {
-            inRowOrColWithSeeker = false;
-        }
-    }
-    return;
+void Board::placeGoalAwayFromSeeker()
+{
+	bool inRowOrColWithSeeker = true;
+	while(inRowOrColWithSeeker)
+	{
+		goal = getRandomUnoccupiedTile();
+		if(!(goal->getPosition().rx() == players.at(seeker-1)->getPosition().rx()) &&
+		   !(goal->getPosition().ry() == players.at(seeker-1)->getPosition().ry())    )
+		{
+			inRowOrColWithSeeker = false;
+		}
+	}
+	return;
 
 }
 
