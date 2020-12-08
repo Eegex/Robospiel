@@ -16,16 +16,19 @@ public:
 	Tile *getTile(int x, int y);
 	QSize getSize();
 	std::string printDirection(Direction direction);
-    QVector<Tile*> players;
-    Tile* goal;
-    int seeker = 0;
-    void startNewRound();
+	QVector<Tile*> players;
+	Tile* goal;
+	int seeker = 0;
+public slots:
+	void startNewRound();
+signals:
+	void boardChanged();
 protected:
-    void placeGoalAwayFromSeeker();
+	void placeGoalAwayFromSeeker();
 private:
 	QVector<QVector<Tile*>> tiles;
 	//TODO history
-	//TODO active user
+	//TODO active pawn
 
 	Tile *getRandomUnoccupiedTile();
 	// for each side: -1 because there are more tiles than walls, -2 because the walls next to the sides shouldn't be set, so 3*4 = 12
