@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -11,18 +11,34 @@ CONFIG += c++11
 SOURCES += \
     board.cpp \
     boardview.cpp \
+    client.cpp \
+    connectiontoclient.cpp \
+    gamecontroll.cpp \
     keymapping.cpp \
     main.cpp \
+    mainwidget.cpp \
     mainwindow.cpp \
-    tile.cpp
+    networkview.cpp \
+    server.cpp \
+    settingsdialog.cpp \
+    tile.cpp \
+    user.cpp
 
 HEADERS += \
-board.h \
+    board.h \
     boardview.h \
-direction.h \
+    client.h \
+    connectiontoclient.h \
+    direction.h \
+    gamecontroll.h \
     keymapping.h \
-mainwindow.h \
-tile.h
+    mainwidget.h \
+    mainwindow.h \
+    networkview.h \
+    server.h \
+    settingsdialog.h \
+    tile.h \
+    user.h
 
 TRANSLATIONS += \
 Robospiel_de_DE.ts
