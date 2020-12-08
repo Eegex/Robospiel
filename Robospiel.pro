@@ -24,7 +24,8 @@ SOURCES += \
     networkview.cpp \
     server.cpp \
     settingsdialog.cpp \
-    tile.cpp
+    tile.cpp \
+    user.cpp
 
 HEADERS += \
     Direction.h \
@@ -46,6 +47,7 @@ HEADERS += \
     tile.h \
     boardview.h \
     direction.h
+    user.h
 
 TRANSLATIONS += \
 Robospiel_de_DE.ts
