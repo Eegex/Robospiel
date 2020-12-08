@@ -14,7 +14,8 @@ SOURCES += \
     keymapping.cpp \
     main.cpp \
     mainwindow.cpp \
-    tile.cpp
+    tile.cpp \
+    user.cpp
 
 HEADERS += \
 board.h \
@@ -22,7 +23,8 @@ board.h \
 direction.h \
     keymapping.h \
 mainwindow.h \
-tile.h
+tile.h \
+    user.h
 
 TRANSLATIONS += \
 Robospiel_de_DE.ts
