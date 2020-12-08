@@ -28,7 +28,7 @@ public slots:
     QString getName();
 
 signals:
-    void biddingChanged();
+    void biddingChanged(u_int16_t playerBidding);
     void nameChanged();
 };
 

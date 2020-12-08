@@ -1,10 +1,10 @@
 #include "user.h"
 
-User::User(std::string name, QColor color, QObject *parent) : QObject(parent), name(name), color(color)
+User::User(QString name, QColor color, QObject *parent) : QObject(parent), name(name), color(color)
 {
 }
 
-std::string User::getName()
+QString User::getName()
 {
     return name;
 }
@@ -21,7 +21,7 @@ int User::getPoints()
     return points;
 }
 
-void User::setName(std::string n)
+void User::setName(QString n)
 {
     name = n;
 }

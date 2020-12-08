@@ -17,7 +17,7 @@ PlayerBiddingWidget::PlayerBiddingWidget(QWidget *parent) : QWidget(parent)
 void PlayerBiddingWidget::setBidding(QVariant v)
 {
     playerBidding = v.canConvert<QString>()?v.toInt():999;
-    emit biddingChanged();
+    emit biddingChanged(playerBidding);
 }
 
 void PlayerBiddingWidget::setName(QVariant v)

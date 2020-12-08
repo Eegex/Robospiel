@@ -2,6 +2,7 @@
 #include "LeaderBoardWidget.h"
 #include "PlayerBiddingWidget.h"
 #include "PlayerCreationWidget.h"
+#include "user.h"
 
 LeaderBoardWidget::LeaderBoardWidget(QWidget *parent) : QWidget(parent)
 {
@@ -17,6 +18,7 @@ LeaderBoardWidget::LeaderBoardWidget(QWidget *parent) : QWidget(parent)
     }
     setLayout(lay);
     connect(addBtn,&QPushButton::clicked,this,&LeaderBoardWidget::newPlayer);
+    connect(playerCreationWidget, &PlayerCreationWidget::playerAdded, this, &LeaderBoardWidget::addPlayer);
     //static_cast<PlayerBiddingWidget*>(calloc(5, sizeof(PlayerBiddingWidget*)));
     /*players[0] = new PlayerBiddingWidget(this);
     players.at(0)->setName("TestName");
@@ -37,12 +39,16 @@ void LeaderBoardWidget::sortByBidding()
     free(sortedPlayers);
 }
 
-void LeaderBoardWidget::addPlayer(PlayerBiddingWidget * player)
+void LeaderBoardWidget::addPlayer(User * newUser)
 {
-    players.append(player);
+    qDebug()<<"addPlayer in LeaderBoardWidget";
+    qDebug()<<"Name: "+newUser->getName();
+    PlayerBiddingWidget * newWidget = new PlayerBiddingWidget(this);
+    newWidget->setName(newUser->getName());
+    players.append(newWidget);
     //players[numOfPlayers] = player;
     lay->addWidget(players.at(numOfPlayers));
-    numOfPlayers++;
+
     for(int i = 0; i<numOfPlayers; i++)
         lay->addWidget(players.at(i), i, 0);
     lay->addWidget(addBtn, numOfPlayers, 0); //New Player Button under all Players
@@ -51,16 +57,15 @@ void LeaderBoardWidget::addPlayer(PlayerBiddingWidget * player)
         players.at(i)->accept->setEnabled(i == currentPlayer?true:false);
         players.at(i)->lSpinBox->setEnabled(i == currentPlayer?true:false);
     }
+        numOfPlayers++;
     lay->update();
 }
 
 void LeaderBoardWidget::newPlayer()
 {
-    PlayerBiddingWidget * newWidget = new PlayerBiddingWidget(this);
-    numOfPlayers++;
-    players.append(newWidget);
+    qDebug()<<"NewPlayer in LeaderBoardWidget";
     qDebug()<< "newPlayer!";
-    playerCreationWidget->addPlayer();
+    //playerCreationWidget->addPlayer();
     playerCreationWidget->show();
     //addPlayer(newWidget);
     //Open Player Addition Widget

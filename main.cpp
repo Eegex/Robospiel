@@ -3,6 +3,7 @@
 #include "mainwindow.h"
 #include "PlayerBiddingWidget.h"
 #include "LeaderBoardWidget.h"
+#include "user.h"
 
 
 
@@ -10,13 +11,9 @@ int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
     LeaderBoardWidget leaderBoardWidget(nullptr);
-    PlayerBiddingWidget biddingWidget(nullptr);
-    biddingWidget.setName("Kinski, Klaus");
-    PlayerBiddingWidget biddingWidget2(nullptr);
-    biddingWidget2.setName("Mandela, Nelson");
     leaderBoardWidget.setLayout(nullptr);
-    leaderBoardWidget.addPlayer(&biddingWidget);
-    leaderBoardWidget.addPlayer(&biddingWidget2);
+    User * kinski = new User("Kinski, Klaus", nullptr, nullptr);
+    leaderBoardWidget.addPlayer(kinski);
     leaderBoardWidget.show();
 //    biddingWidget.setLayout(nullptr);
     //biddingWidget.show();

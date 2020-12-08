@@ -46,7 +46,7 @@ HEADERS += \
     settingsdialog.h \
     tile.h \
     boardview.h \
-    direction.h
+    direction.h \
     user.h
 
 TRANSLATIONS += \

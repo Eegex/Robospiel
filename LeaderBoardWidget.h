@@ -7,6 +7,7 @@
 #include <QVector>
 #include "PlayerBiddingWidget.h"
 #include "PlayerCreationWidget.h"
+#include "user.h"
 
 class LeaderBoardWidget : public QWidget
 {
@@ -25,7 +26,7 @@ private:
 
 public slots:
     void sortByBidding();
-    void addPlayer(PlayerBiddingWidget * player);
+    void addPlayer(User * newUser);
     void newPlayer();
 
 signals:

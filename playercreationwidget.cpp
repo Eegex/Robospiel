@@ -3,6 +3,8 @@
 #include <QVariant>
 #include <QGridLayout>
 #include <QDebug>
+#include <QString>
+#include "user.h"
 
 PlayerCreationWidget::PlayerCreationWidget(QWidget *parent) : QWidget(parent)
 {
@@ -16,25 +18,20 @@ PlayerCreationWidget::PlayerCreationWidget(QWidget *parent) : QWidget(parent)
     {
        addColourBtn->setStyleSheet("background-color: "+colour.name());
     });
+    connect(addPlayerBtn, &QPushButton::clicked, this, &PlayerCreationWidget::addPlayer);
+
     setLayout(lay);
 }
 
 void PlayerCreationWidget::addPlayer()
 {
-    printf("Addition Request\n");
-    //emit playerAdditionRequest();
+    qDebug()<<"Addition Request";
+    newUser = new User(playerNamePicker->text(), playerColourPicker->selectedColor(), nullptr); //Name, Colour, Parent
+    emit playerAdded(newUser);
 }
 
 void PlayerCreationWidget::addColour()
 {
+    qDebug()<<"AddColour";
     playerColourPicker->show();
 }
-
-/*void PlayerCreationWidget::playerAdded()
-{
-    qDebug()<<"Player Added";
-
-}*/
-
-
-
