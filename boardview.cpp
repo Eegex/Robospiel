@@ -227,18 +227,22 @@ void BoardView::mouseMoveEvent(QMouseEvent * event)
 		if(moved.x() > 100)
 		{
 			emit swipe(Direction::east);
+            qDebug() << "east";
 		}
 		else if(moved.x() < -100)
 		{
 			emit swipe(Direction::west);
+            qDebug() << "west";
 		}
 		else if(moved.y() > 100)
 		{
 			emit swipe(Direction::south);
+            qDebug() << "south";
 		}
 		else if(moved.y() < -100)
 		{
 			emit swipe(Direction::north);
+            qDebug() << "north";
 		}
 	}
 	else
