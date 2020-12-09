@@ -4,7 +4,17 @@
 <context>
     <name>MainWidget</name>
     <message>
-        <location filename="mainwidget.cpp" line="16"/>
+        <location filename="mainwidget.cpp" line="19"/>
+        <source>New Board</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="25"/>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="28"/>
         <source>Networking</source>
         <translation>Netzwerk</translation>
     </message>
@@ -145,6 +155,14 @@
         <location filename="networkview.cpp" line="183"/>
         <source>Message was not sent to the server. </source>
         <translation>Nachricht konnte nicht an den Server gesendet werden. </translation>
+    </message>
+</context>
+<context>
+    <name>SettingsDialog</name>
+    <message>
+        <location filename="settingsdialog.h" line="20"/>
+        <source>Save</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
