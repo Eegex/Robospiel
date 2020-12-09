@@ -10,13 +10,6 @@
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
-    LeaderBoardWidget leaderBoardWidget(nullptr);
-    leaderBoardWidget.setLayout(nullptr);
-    User * kinski = new User("Kinski, Klaus", nullptr, nullptr);
-    leaderBoardWidget.addPlayer(kinski);
-    leaderBoardWidget.show();
-//    biddingWidget.setLayout(nullptr);
-    //biddingWidget.show();
 	QTranslator * translator = new QTranslator;
 	if(translator->load("Robospiel_de_DE"))
 	{

@@ -6,34 +6,34 @@ User::User(QString name, QColor color, QObject *parent) : QObject(parent), name(
 
 QString User::getName()
 {
-    return name;
+	return name;
 }
 QColor User::getColor()
 {
-    return color;
+	return color;
 }
 int User::getTip()
 {
-    return tip;
+	return tip;
 }
 int User::getPoints()
 {
-    return points;
+	return points;
 }
 
 void User::setName(QString n)
 {
-    name = n;
+	name = n;
 }
 void User::setColor(QColor c)
 {
-    color = c;
+	color = c;
 }
 void User::setTip(int t)
 {
-    tip = t;
+	tip = t;
 }
 void User::addPoints(int p)
 {
-    points += p;
+	points += p;
 }

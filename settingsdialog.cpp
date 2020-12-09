@@ -4,8 +4,8 @@ SettingsDialog::SettingsDialog(QDialog * parent) : QDialog(parent)
 {
 	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 	lay->addWidget(twTabs);
-	twTabs->addTab(new QWidget(this),"General");
-	twTabs->addTab(new QWidget(this),"Key mappings");
+	twTabs->addTab(new QWidget(this),tr("General"));
+	twTabs->addTab(new QWidget(this),tr("Key mappings"));
 	lay->addWidget(pbSave);
 	connect(pbSave,&QPushButton::clicked,this,&SettingsDialog::save);
 }
