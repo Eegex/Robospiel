@@ -25,7 +25,7 @@ private:
     QColor * playerColor = new QColor();
     QColorDialog * playerColourPicker = new QColorDialog();
     QLineEdit * playerNamePicker = new QLineEdit();
-    u_int8_t numOfPlayers = 0;
+    unsigned int numOfPlayers = 0;
     User * newUser;
 
 public slots:

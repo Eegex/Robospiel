@@ -18,17 +18,17 @@ private:
     QGridLayout * playerLayout = new QGridLayout(this);
     QLabel * labelName = new QLabel(this);
     QString playerName;
-    u_int16_t playerBidding;
+    unsigned int playerBidding;
     bool hasBid = 0;
 public slots:
     void setBidding(QVariant v);
     void setName(QVariant v);
     void btnPressed();
-    u_int getBidding();
+    unsigned int getBidding();
     QString getName();
 
 signals:
-    void biddingChanged(u_int16_t playerBidding);
+    void biddingChanged(unsigned int playerBidding);
     void nameChanged();
 };
 

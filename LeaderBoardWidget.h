@@ -18,8 +18,8 @@ public:
 private:
     QGridLayout * lay = new QGridLayout(this);
     QPushButton * addBtn = new QPushButton(this);
-    u_int8_t numOfPlayers = 0;
-    u_int8_t currentPlayer = 0;
+    unsigned int numOfPlayers = 0;
+    unsigned int currentPlayer = 0;
     //PlayerBiddingWidget* players;
     QVector<PlayerBiddingWidget*> players; //Several Players, Array of Widgets for individual players
     PlayerCreationWidget * playerCreationWidget = new PlayerCreationWidget(nullptr);
