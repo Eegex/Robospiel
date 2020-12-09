@@ -12,6 +12,7 @@
 #include "networkview.h"
 #include "settingsdialog.h"
 #include "gamecontroll.h"
+#include "LeaderBoardWidget.h"
 
 class MainWidget : public QWidget
 {
@@ -28,6 +29,7 @@ private:
 	BoardView * view = nullptr;
 	SettingsDialog * settings = nullptr;
 	NetworkView * networkView = nullptr;
+	LeaderBoardWidget * leaderboard = nullptr;
 	QMenuBar * menuBar = nullptr;
 	QAction * aNetworking = nullptr;
 	QAction * aNewBoard = nullptr;

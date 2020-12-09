@@ -5,11 +5,13 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	glMain = new QGridLayout(this);
 	game = new GameControll(this);
 	view = new BoardView(this);
+	leaderboard = new LeaderBoardWidget(this);
 	view->setBoard(game->createBoard(16, 16, 5));
 	view->setMapping(game->getMapping());
 	networkView = new NetworkView;
 	settings = new SettingsDialog;
 	glMain->addWidget(view,0,0,Qt::AlignCenter);
+	glMain->addWidget(leaderboard,0,1,Qt::AlignCenter);
 	adjustSize();
 }
 

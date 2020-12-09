@@ -13,40 +13,40 @@
 
 class NetworkView : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    explicit NetworkView(QWidget *parent = nullptr);
-    ~NetworkView();
+	explicit NetworkView(QWidget *parent = nullptr);
+	~NetworkView();
 private:
 
-    bool allowClientAndServer=false;
+	bool allowClientAndServer=false;
 
-    QGridLayout* layout;
-    QButtonGroup* choiceGroup;
-    QRadioButton* btnServer;
-    QWidget* serverContainer;
-    QGridLayout* gridServer;
-    QLineEdit* leServerAddress;
-    QLineEdit* leServerPort;
-    QLabel* serverStatus;
-    QLineEdit* leMessageToClients;
+	QGridLayout* layout;
+	QButtonGroup* choiceGroup;
+	QRadioButton* btnServer;
+	QWidget* serverContainer;
+	QGridLayout* gridServer;
+	QLineEdit* leServerAddress;
+	QLineEdit* leServerPort;
+	QLabel* serverStatus;
+	QLineEdit* leMessageToClients;
 
-    QRadioButton* btnClient;
-    QWidget* clientContainer;
-    QGridLayout* gridClient;
-    QLineEdit* leClientAddress;
-    QLineEdit* leClientPort;
-    QLabel* clientStatus;
-    QLineEdit* leMessageToServer;
+	QRadioButton* btnClient;
+	QWidget* clientContainer;
+	QGridLayout* gridClient;
+	QLineEdit* leClientAddress;
+	QLineEdit* leClientPort;
+	QLabel* clientStatus;
+	QLineEdit* leMessageToServer;
 
 signals:
 
 
 private slots:
-    void addServer();
-    void addClient();
-    void sendToClients();
-    void sendToServer();
+	void addServer();
+	void addClient();
+	void sendToClients();
+	void sendToServer();
 };
 
 #endif // NETWORKVIEW_H

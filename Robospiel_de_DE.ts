@@ -4,22 +4,22 @@
 <context>
     <name>MainWidget</name>
     <message>
-        <location filename="mainwidget.cpp" line="19"/>
+        <location filename="mainwidget.cpp" line="21"/>
         <source>New Board</source>
-        <translation type="unfinished"></translation>
+        <translation>Neues Spielbrett</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="25"/>
+        <location filename="mainwidget.cpp" line="27"/>
         <source>Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="28"/>
+        <location filename="mainwidget.cpp" line="30"/>
         <source>Networking</source>
         <translation>Netzwerk</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="22"/>
+        <location filename="mainwidget.cpp" line="24"/>
         <source>New Target</source>
         <translation>Neues Ziel</translation>
     </message>
@@ -38,13 +38,17 @@
     </message>
     <message>
         <location filename="networkview.cpp" line="26"/>
-        <source>Client Address</source>
-        <translation>Client Adresse</translation>
+        <location filename="networkview.cpp" line="56"/>
+        <source>Server Address</source>
+        <oldsource>Client Address</oldsource>
+        <translation>Server Adresse</translation>
     </message>
     <message>
         <location filename="networkview.cpp" line="28"/>
-        <source>Client Port</source>
-        <translation>Client Port</translation>
+        <location filename="networkview.cpp" line="58"/>
+        <source>Server Port</source>
+        <oldsource>Client Port</oldsource>
+        <translation>Server Port</translation>
     </message>
     <message>
         <location filename="networkview.cpp" line="31"/>
@@ -65,16 +69,6 @@
         <location filename="networkview.cpp" line="39"/>
         <source>Send Message to server</source>
         <translation>Sende Nachricht</translation>
-    </message>
-    <message>
-        <location filename="networkview.cpp" line="56"/>
-        <source>Server Address</source>
-        <translation>Server Adresse</translation>
-    </message>
-    <message>
-        <location filename="networkview.cpp" line="58"/>
-        <source>Server Port</source>
-        <translation>Server Port</translation>
     </message>
     <message>
         <location filename="networkview.cpp" line="61"/>
@@ -162,7 +156,7 @@
     <message>
         <location filename="settingsdialog.h" line="20"/>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translation>Speichern</translation>
     </message>
 </context>
 </TS>

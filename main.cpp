@@ -1,6 +1,11 @@
 #include <QApplication>
 #include <QTranslator>
 #include "mainwindow.h"
+#include "PlayerBiddingWidget.h"
+#include "LeaderBoardWidget.h"
+#include "user.h"
+
+
 
 int main(int argc, char *argv[])
 {

@@ -10,6 +10,7 @@ CONFIG += c++11
 
 SOURCES += \
     board.cpp \
+    leaderboardwidget.cpp \
     boardview.cpp \
     client.cpp \
     connectiontoclient.cpp \
@@ -18,6 +19,8 @@ SOURCES += \
     main.cpp \
     mainwidget.cpp \
     mainwindow.cpp \
+    playerBiddingWidget.cpp \
+    playercreationwidget.cpp \
     networkview.cpp \
     server.cpp \
     settingsdialog.cpp \
@@ -25,6 +28,10 @@ SOURCES += \
     user.cpp
 
 HEADERS += \
+    Direction.h \
+    LeaderBoardWidget.h \
+    PlayerBiddingWidget.h \
+    PlayerCreationWidget.h \
     board.h \
     boardview.h \
     client.h \
@@ -38,6 +45,8 @@ HEADERS += \
     server.h \
     settingsdialog.h \
     tile.h \
+    boardview.h \
+    direction.h \
     user.h
 
 TRANSLATIONS += \

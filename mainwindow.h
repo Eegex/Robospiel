@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "mainwidget.h"
+#include <QWidget>
 
 class MainWindow : public QMainWindow
 {
@@ -14,5 +15,6 @@ public:
 
 private:
 	MainWidget * centralWidget = nullptr;
+    //~MainWindow();
 };
 #endif // MAINWINDOW_H

@@ -82,7 +82,7 @@ Tile * BoardView::coordsToTile(QPoint p)
 	return nullptr;
 }
 
-void BoardView::setMapping(QVector<KeyMapping> * value)
+void BoardView::setMapping(QVector<KeyMapping*> * value)
 {
 	mapping = value;
 }
@@ -255,11 +255,11 @@ void BoardView::mouseMoveEvent(QMouseEvent * event)
 
 void BoardView::keyPressEvent(QKeyEvent * event)
 {
-	for(const KeyMapping & k:*mapping)
+    for(const KeyMapping * k:*mapping)
 	{
-		if(k == event->key())
+        if(*k == event->key())
 		{
-			emit action(k.getAction());
+            emit action(k->getAction());
 			return;
 		}
 	}

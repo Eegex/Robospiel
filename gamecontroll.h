@@ -15,14 +15,14 @@ public:
 	bool triggerAction(PlayerAction action, QString user);
 	Board * getBoard() const;
 
-	QVector<KeyMapping> * getMapping();
+    QVector<KeyMapping*> * getMapping();
 
 public slots:
 	void nextTarget();
 	void remakeBoard();
 
 private:
-	QVector<KeyMapping> mapping;
+    QVector<KeyMapping*> mapping;
 	Board * board = nullptr;
 	QString activeUser;
 signals:
