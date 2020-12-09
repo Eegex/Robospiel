@@ -15,7 +15,7 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 {
 	menuBar = bar;
 	aNetworking = new QAction(tr("Networking"),this);
-	connect(aNetworking,&QAction::triggered,networkView,&NetworkView::show);
+    connect(aNetworking,&QAction::triggered,networkView,&NetworkView::show);
 	bar->addAction(aNetworking);
 	aNewBoard = new QAction(tr("New Board"),this);
 	//connect(aNewBoard,&QAction::triggered,board,&Board::newBoard);

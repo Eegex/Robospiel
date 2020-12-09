@@ -8,6 +8,7 @@
 #include <QAction>
 #include "board.h"
 #include "boardview.h"
+#include "keymappingview.h"
 #include "networkview.h"
 
 class MainWidget : public QWidget
@@ -24,6 +25,7 @@ private:
 	Board * board = nullptr;
 	BoardView * view = nullptr;
 	NetworkView * networkView = nullptr;
+    KeyMappingView* keyMappingView = nullptr;
 	QMenuBar * menuBar = nullptr;
 	QAction * aNetworking = nullptr;
 	QAction * aNewBoard = nullptr;
