@@ -19,6 +19,8 @@ public:
 	QVector<Tile*> players;
 	Tile* goal;
 	int seeker = 0;
+    int activePlayer = 0;
+    void moveActivePlayer(Direction d);
 public slots:
 	void startNewRound();
 signals:

@@ -375,6 +375,14 @@ std::string Board::printDirection(Direction direction)
 	}
 }
 
+void Board::moveActivePlayer(Direction d){
+
+    while()
+
+
+
+}
+
 
 
 
