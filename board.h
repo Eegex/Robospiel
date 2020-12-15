@@ -22,6 +22,8 @@ public:
 	int seeker = 0;
     int activePlayer = 0;
     void moveActivePlayer(Direction d);
+    void setPlayerOnTile(int player, Tile *tile);
+    void changeActivePlayer(Tile *t);
 public slots:
 	void startNewRound();
 signals:

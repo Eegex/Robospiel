@@ -6,6 +6,9 @@ BoardView::BoardView(QWidget *parent) : QWidget(parent)
 	setMouseTracking(true);
 	setFocusPolicy(Qt::FocusPolicy::StrongFocus);
 	fillCache(QSize(50,50));
+    connect(this, &BoardView::swipe, this, &BoardView::callMoveActivePlayer);
+    connect(this, &BoardView::tileClicked, this, &BoardView::callChangeActivePlayer);
+    connect(this, &BoardView::action, this, &BoardView::translateMapping);
 }
 
 void BoardView::setBoard(Board * b)
@@ -122,7 +125,6 @@ void BoardView::paintEvent(QPaintEvent * event)
 		for(int i = 0; i <board->players.length();i++)
 		{
 
-			qDebug()<< i;
 
 			color.setHsv(i*stepSize,200,200);
 
@@ -264,4 +266,45 @@ void BoardView::keyPressEvent(QKeyEvent * event)
 		}
 	}
 	QWidget::keyPressEvent(event);
+}
+
+void BoardView::callMoveActivePlayer(Direction d){
+
+
+    board->moveActivePlayer(d);
+    update();
+
+}
+void BoardView::callChangeActivePlayer(Tile * t){
+
+
+    board->changeActivePlayer(t);
+    update();
+
+}
+void BoardView::translateMapping(PlayerAction action){
+
+
+    Direction d = Direction::north;
+
+
+    switch (action) {
+    case movePlayerNorth:
+        d = Direction::north;
+        break;
+    case movePlayerEast:
+         d = Direction::east;
+        break;
+    case movePlayerWest:
+        d = Direction::west;
+        break;
+    case movePlayerSouth:
+         d = Direction::south;
+        break;
+
+
+    }
+
+    callMoveActivePlayer(d);
+
 }

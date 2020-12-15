@@ -33,6 +33,7 @@ private slots:
 	void keyPressEvent(QKeyEvent * event);
 
 private:
+    void callMoveActivePlayer(Direction d);
 	void fillCache(QSize tileRect);
 	Tile * coordsToTile(QPoint p);
 	Board * board = nullptr;
@@ -42,6 +43,8 @@ private:
 	bool cachedPaintig = false;
 	bool showDebugOutput = false;
     QVector<KeyMapping*> * mapping = nullptr;
+    void callChangeActivePlayer(Tile *t);
+    void translateMapping(PlayerAction action);
 signals:
 	void tileHovered(Tile * t);
 	void tileClicked(Tile * t);

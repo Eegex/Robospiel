@@ -41,6 +41,15 @@ Board::Board(int width, int height, int playerNumber, QObject *parent) : QObject
 	startNewRound();
 }
 
+void Board::setPlayerOnTile(int player, Tile* tile){
+
+
+    tile->setPlayer(player);
+    players[player] = tile;
+
+
+}
+
 
 void Board::startNewRound()
 {
@@ -377,10 +386,74 @@ std::string Board::printDirection(Direction direction)
 
 void Board::moveActivePlayer(Direction d){
 
-    while()
+
+
+    int changeOfXAchsis = 0;
+    int changeOfYAchsis = 0;
+
+    switch (d) {
+    case Direction::north:
+        changeOfYAchsis = -1;
+        break;
+    case Direction::east:
+        changeOfXAchsis = 1;
+        break;
+    case Direction::south:
+        changeOfYAchsis = 1;
+        break;
+    case Direction::west:
+        changeOfXAchsis = -1;
+        break;
+
+
+    }
+
+    qDebug()<< "blaaaaaa" << changeOfXAchsis << "   " << changeOfYAchsis;
+
+    Tile* currentTile = players.at(activePlayer);
+    Tile* nextTile = getTile(
+                currentTile->getPosition().rx() + changeOfXAchsis,
+                currentTile->getPosition().ry() + changeOfYAchsis);
+
+    while(!currentTile->getWall(d)&& nextTile->getPlayer()==0){
+
+        bool nextTileFree = true;
+
+        for(Tile* player : players)
+        {
+            if(player == nextTile)
+            {
+                nextTileFree = false;
+            }
+        }
+
+        if(!nextTileFree){
+            return;
+        }
+
+
+        currentTile = nextTile;
+
+        if(!nextTile->getWall(d)){
+        nextTile = getTile(
+                    currentTile->getPosition().rx() + changeOfXAchsis,
+                    currentTile->getPosition().ry() + changeOfYAchsis);
+
+        }
+        setPlayerOnTile(activePlayer, currentTile);
+    }
 
 
 
+}
+
+void Board::changeActivePlayer(Tile* t){
+
+    if(t->getPlayer()){
+
+        activePlayer = t->getPlayer();
+
+    }
 }
 
 
