@@ -45,14 +45,14 @@ private:
 	QColor background = QColor(230,255,0);
 	QColor primary = QColor(20,20,20);
 	QColor grid = QColor(124,138,0);
-    QVector<KeyMapping*> * mapping = nullptr;
     void callChangeActivePlayer(Tile *t);
     void translateMapping(PlayerAction action);
+    void callMoveActivePlayer(Direction d);
 signals:
 	void tileHovered(Tile * t);
 	void tileClicked(Tile * t);
 	void swipe(Direction d);
-	void action(PlayerAction a);
+    void action(PlayerAction a, QString userName);
 
 };
 

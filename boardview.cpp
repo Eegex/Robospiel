@@ -270,7 +270,6 @@ void BoardView::keyPressEvent(QKeyEvent * event)
 
 void BoardView::callMoveActivePlayer(Direction d){
 
-
     board->moveActivePlayer(d);
     update();
 
