@@ -15,7 +15,9 @@ SOURCES += \
     client.cpp \
     connectiontoclient.cpp \
     gamecontroll.cpp \
+    keyinput.cpp \
     keymapping.cpp \
+    keymappingview.cpp \
     main.cpp \
     mainwidget.cpp \
     mainwindow.cpp \
@@ -38,7 +40,9 @@ HEADERS += \
     connectiontoclient.h \
     direction.h \
     gamecontroll.h \
+    keyinput.h \
     keymapping.h \
+    keymappingview.h \
     mainwidget.h \
     mainwindow.h \
     networkview.h \

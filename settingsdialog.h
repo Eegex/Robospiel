@@ -1,6 +1,9 @@
 #ifndef SETTINGSDIALOG_H
 #define SETTINGSDIALOG_H
 
+#include "keymapping.h"
+#include "keymappingview.h"
+
 #include <QDialog>
 #include <QTabWidget>
 #include <QVBoxLayout>
@@ -13,12 +16,14 @@ class SettingsDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit SettingsDialog(QDialog *parent = nullptr);
+    explicit SettingsDialog(QVector<KeyMapping *> mapping, QDialog *parent = nullptr);
 private:
 	QVBoxLayout * lay = new QVBoxLayout(this);
 	QTabWidget * twTabs = new QTabWidget(this);
 	QPushButton * pbSave = new QPushButton(tr("Save"),this);
+    KeyMappingView* keyMappings;
 signals:
+    void newMapping(QVector<KeyMapping*> mapping);
 
 private slots:
 	void load();

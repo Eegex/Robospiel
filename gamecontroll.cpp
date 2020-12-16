@@ -66,6 +66,10 @@ QVector<KeyMapping*> * GameControll::getMapping()
 {
 	return &mapping;
 }
+void GameControll::setMapping(QVector<KeyMapping*> mapping)
+{
+    this->mapping=mapping;
+}
 
 Board * GameControll::getBoard() const
 {

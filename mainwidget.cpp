@@ -9,10 +9,12 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	view->setBoard(game->createBoard(16, 16, 5));
 	view->setMapping(game->getMapping());
 	networkView = new NetworkView;
-	settings = new SettingsDialog;
+    settings = new SettingsDialog(*game->getMapping());
 	glMain->addWidget(view,0,0,Qt::AlignCenter);
 	glMain->addWidget(leaderboard,0,1,Qt::AlignCenter);
 	adjustSize();
+
+    connect(settings, &SettingsDialog::newMapping, game, &GameControll::setMapping);
 }
 
 void MainWidget::setMenuBar(QMenuBar * bar)
