@@ -1,13 +1,21 @@
 #include "settingsdialog.h"
 
-SettingsDialog::SettingsDialog(QDialog * parent) : QDialog(parent)
+#include <QScrollArea>
+
+SettingsDialog::SettingsDialog(QVector<KeyMapping*> mapping, QDialog * parent) : QDialog(parent)
 {
 	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 	lay->addWidget(twTabs);
 	twTabs->addTab(new QWidget(this),tr("General"));
-	twTabs->addTab(new QWidget(this),tr("Key mappings"));
+
+    QScrollArea* scroll = new QScrollArea(this);
+    keyMappings = new KeyMappingView(mapping, this);
+    scroll->setWidget(keyMappings);
+    twTabs->addTab(scroll,tr("Key mappings"));
+
 	lay->addWidget(pbSave);
 	connect(pbSave,&QPushButton::clicked,this,&SettingsDialog::save);
+
 }
 
 void SettingsDialog::load()
@@ -36,4 +44,6 @@ void SettingsDialog::save()
 	{
 		savefile.close();
 	}
+
+    emit newMapping(keyMappings->getMapping());
 }

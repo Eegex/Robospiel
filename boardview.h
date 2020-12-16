@@ -33,7 +33,6 @@ private slots:
 	void keyPressEvent(QKeyEvent * event);
 
 private:
-    void callMoveActivePlayer(Direction d);
 	void fillCache(QSize tileRect);
 	Tile * coordsToTile(QPoint p);
 	Board * board = nullptr;
@@ -42,6 +41,10 @@ private:
 	QPoint mouseStart;
 	bool cachedPaintig = false;
 	bool showDebugOutput = false;
+	QVector<KeyMapping*> * mapping = nullptr;
+	QColor background = QColor(230,255,0);
+	QColor primary = QColor(20,20,20);
+	QColor grid = QColor(124,138,0);
     QVector<KeyMapping*> * mapping = nullptr;
     void callChangeActivePlayer(Tile *t);
     void translateMapping(PlayerAction action);

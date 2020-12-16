@@ -2,7 +2,7 @@ QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
+CONFIG += c++17
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -15,7 +15,9 @@ SOURCES += \
     client.cpp \
     connectiontoclient.cpp \
     gamecontroll.cpp \
+    keyinput.cpp \
     keymapping.cpp \
+    keymappingview.cpp \
     main.cpp \
     mainwidget.cpp \
     mainwindow.cpp \
@@ -38,7 +40,9 @@ HEADERS += \
     connectiontoclient.h \
     direction.h \
     gamecontroll.h \
+    keyinput.h \
     keymapping.h \
+    keymappingview.h \
     mainwidget.h \
     mainwindow.h \
     networkview.h \

@@ -9,7 +9,11 @@
 #include <QColor>
 #include <QColorDialog>
 #include <QLineEdit>
-#include "user.h"
+
+struct user{
+    QString name;
+    QColor colour;
+};
 
 class PlayerCreationWidget : public QWidget
 {
@@ -19,19 +23,18 @@ public:
 
 private:
     QGridLayout * lay = new QGridLayout(this);
-    //QLabel * lDisplay = new QLabel("PlayerCreationWidget", this);
     QPushButton * addPlayerBtn = new QPushButton("Spieler hinzufügen", this); //Translate-Funktion
     QPushButton * addColourBtn = new QPushButton("Farbe hinzufügen", this);
     QColor * playerColor = new QColor();
     QColorDialog * playerColourPicker = new QColorDialog();
     QLineEdit * playerNamePicker = new QLineEdit();
     unsigned int numOfPlayers = 0;
-    User * newUser;
 
 public slots:
     void addPlayer();
     void addColour();
+    void resetButtonColour();
 signals:
-    void playerAdded(User * newUser); //Argument: Nutzer
+    void playerAdded(struct user * newUser); //Argument: Nutzer
 };
 #endif // PLAYERCREATIONWIDGET_H

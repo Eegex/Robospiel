@@ -7,6 +7,8 @@
 #include <QMenu>
 #include <QAction>
 #include <QMessageBox>
+#include <QLCDNumber>
+#include <QPalette>
 #include "board.h"
 #include "boardview.h"
 #include "networkview.h"
@@ -23,6 +25,8 @@ public:
 
 signals:
 
+private slots:
+	void updateTimer(int remaining);
 private:
 	QGridLayout * glMain = nullptr;
 	GameControll * game = nullptr;
@@ -30,6 +34,7 @@ private:
 	SettingsDialog * settings = nullptr;
 	NetworkView * networkView = nullptr;
 	LeaderBoardWidget * leaderboard = nullptr;
+	QLCDNumber * lcd = nullptr;
 	QMenuBar * menuBar = nullptr;
 	QAction * aNetworking = nullptr;
 	QAction * aNewBoard = nullptr;

@@ -321,8 +321,8 @@ void Board::placeGoalAwayFromSeeker()
 	while(inRowOrColWithSeeker)
 	{
 		goal = getRandomUnoccupiedTile();
-		if(!(goal->getPosition().rx() == players.at(seeker-1)->getPosition().rx()) &&
-		   !(goal->getPosition().ry() == players.at(seeker-1)->getPosition().ry())    )
+		if(!(goal->getPosition().rx() == players.at(seeker)->getPosition().rx()) &&
+		   !(goal->getPosition().ry() == players.at(seeker)->getPosition().ry())    )
 		{
 			inRowOrColWithSeeker = false;
 		}
