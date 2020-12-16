@@ -9,7 +9,7 @@
 #include <QSet>
 #include <QTimer>
 
-KeyMappingView::KeyMappingView(QWidget *parent, QVector<KeyMapping*> mappings) : QWidget(parent)
+KeyMappingView::KeyMappingView(QVector<KeyMapping*> mappings, QWidget *parent) : QWidget(parent)
 {
     completeMappings(mappings);
 
@@ -242,4 +242,15 @@ void KeyMappingView::insertKeyIntoUI(int row, int col)
     layout->addWidget(deleteBtn);
 
     hBoxRows.at(row)->addLayout(layout);
+}
+
+QVector<KeyMapping*> KeyMappingView::getMapping()
+{
+    QVector<KeyMapping*> copy;
+    for(int i=0; i< allMappings.length(); i++)
+    {
+        copy.append(new KeyMapping(*allMappings.at(i)));
+    }
+
+    return copy;
 }

@@ -23,7 +23,7 @@ public:
 	void setBoard(Board * b);
 	void setDebugOutputEnabled(bool set = true);
 	void resize(int pixelPerTile);
-	void setMapping(QVector<KeyMapping> * value);
+    void setMapping(QVector<KeyMapping *> *value);
 
 private slots:
 	void paintEvent(QPaintEvent * event);
@@ -41,7 +41,7 @@ private:
 	QPoint mouseStart;
 	bool cachedPaintig = false;
 	bool showDebugOutput = false;
-	QVector<KeyMapping> * mapping = nullptr;
+    QVector<KeyMapping*> * mapping = nullptr;
 signals:
 	void tileHovered(Tile * t);
 	void tileClicked(Tile * t);

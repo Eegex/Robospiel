@@ -10,25 +10,36 @@ CONFIG += c++11
 
 SOURCES += \
     board.cpp \
+    leaderboardwidget.cpp \
     boardview.cpp \
     client.cpp \
     connectiontoclient.cpp \
+    gamecontroll.cpp \
     keyinput.cpp \
     keymapping.cpp \
     keymappingview.cpp \
     main.cpp \
     mainwidget.cpp \
     mainwindow.cpp \
+    playerBiddingWidget.cpp \
+    playercreationwidget.cpp \
     networkview.cpp \
     server.cpp \
-    tile.cpp
+    settingsdialog.cpp \
+    tile.cpp \
+    user.cpp
 
 HEADERS += \
+    Direction.h \
+    LeaderBoardWidget.h \
+    PlayerBiddingWidget.h \
+    PlayerCreationWidget.h \
     board.h \
     boardview.h \
     client.h \
     connectiontoclient.h \
     direction.h \
+    gamecontroll.h \
     keyinput.h \
     keymapping.h \
     keymappingview.h \
@@ -36,7 +47,11 @@ HEADERS += \
     mainwindow.h \
     networkview.h \
     server.h \
-    tile.h
+    settingsdialog.h \
+    tile.h \
+    boardview.h \
+    direction.h \
+    user.h
 
 TRANSLATIONS += \
 Robospiel_de_DE.ts

@@ -15,7 +15,8 @@ class KeyMappingView : public QWidget
 {
     Q_OBJECT
 public:
-    KeyMappingView(QWidget *parent=nullptr, QVector<KeyMapping*> mappings = QVector<KeyMapping*>());
+    KeyMappingView(QVector<KeyMapping*> mappings = QVector<KeyMapping*>(), QWidget *parent=nullptr);
+    QVector<KeyMapping *> getMapping();
 private:
     KeyMapping stdMappings[13] = {KeyMapping(PlayerAction::movePlayerNorth, Qt::Key::Key_W),
                                   KeyMapping(PlayerAction::movePlayerWest, Qt::Key::Key_A),

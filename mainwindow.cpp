@@ -1,5 +1,6 @@
 #include "keymappingview.h"
 #include "mainwindow.h"
+#include "PlayerBiddingWidget.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {

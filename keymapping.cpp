@@ -3,6 +3,12 @@
 #include <QKeySequence>
 #include <QDebug>
 
+KeyMapping::KeyMapping(const KeyMapping &obj)
+{
+    action=obj.action;
+    keys=obj.keys;
+}
+
 KeyMapping::KeyMapping(PlayerAction a, Qt::Key k) : action(a)
 {
 	keys.append(k);

@@ -2,6 +2,7 @@
 #define BOARD_H
 
 #include <QObject>
+#include <QVector>
 #include <QTime>
 #include <QSize>
 #include <QVector>
