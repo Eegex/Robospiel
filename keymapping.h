@@ -13,7 +13,12 @@ public:
 	bool operator==(const Qt::Key k) const;
 	bool operator==(const int code) const;
 	PlayerAction getAction() const;
+    QVector<Qt::Key> getKeys() const;
 
+    bool addKey(Qt::Key key);
+    void replaceKeyAt(int index, Qt::Key key);
+    void removeKey(Qt::Key key);
+    KeyMapping(const KeyMapping &obj);
 private:
 	PlayerAction action;
 	QVector<Qt::Key> keys;

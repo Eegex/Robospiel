@@ -10,7 +10,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	view->setMapping(game->getMapping());
 	connect(view,&BoardView::action,game,&GameControll::triggerAction);
 	networkView = new NetworkView;
-	settings = new SettingsDialog;
+	settings = new SettingsDialog(*game->getMapping());
 	lcd = new QLCDNumber(this);
 	lcd->setSegmentStyle(QLCDNumber::Flat);
 	lcd->setStyleSheet("QLCDNumber{"
@@ -24,6 +24,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	glMain->addWidget(leaderboard,1,1,Qt::AlignCenter);
 	connect(game,&GameControll::time,this,&MainWidget::updateTimer);
 	adjustSize();
+
+    connect(settings, &SettingsDialog::newMapping, game, &GameControll::setMapping);
 }
 
 void MainWidget::setMenuBar(QMenuBar * bar)
