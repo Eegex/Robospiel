@@ -1,9 +1,11 @@
 #ifndef KEYMAPPINGVIEW_H
 #define KEYMAPPINGVIEW_H
 
+#include "keyinput.h"
 #include "keymapping.h"
 
 #include <QGridLayout>
+#include <QLabel>
 #include <QMap>
 #include <QPushButton>
 #include <QVector>
@@ -32,7 +34,10 @@ private:
                                   KeyMapping(PlayerAction::revert, Qt::Key::Key_Z)};
     QVector<KeyMapping*> allMappings;
     QGridLayout* grid;
+    QVector<QLabel*> labels;
+    QVector<QVector<KeyInput*>> inputs;
     QMap<int, QPushButton*> addBtns;
+    bool constructorHasEnded =false;
 
     Qt::Key getFreeKey(QVector<Qt::Key> *usedKeys);
     Qt::Key getFreeKey();
@@ -43,6 +48,7 @@ private:
 signals:
     void keyMappingChanged();
     void addBtnPressed(int index);
+    void newValidKeyMappings(QVector<KeyMapping*> mappings);
 
 private slots:
     void addKeyToMapping(int index);

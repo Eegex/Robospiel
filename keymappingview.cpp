@@ -1,4 +1,3 @@
-#include "keyinput.h"
 #include "keymappingview.h"
 
 #include <QComboBox>
@@ -17,6 +16,7 @@ KeyMappingView::KeyMappingView(QWidget *parent, QVector<KeyMapping*> mappings) :
     for(int i=0; i<allMappings.length(); i++)
     {
         QLabel* name = new QLabel(this);
+        labels.append(name);
         switch(allMappings.at(i)->getAction())
         {
             case PlayerAction::movePlayerNorth:
@@ -62,12 +62,12 @@ KeyMappingView::KeyMappingView(QWidget *parent, QVector<KeyMapping*> mappings) :
                 name->setText(tr("Sorry, something went wrong :("));
         }
         grid->addWidget(name, i, 0);
+        QVector<KeyInput*> innerVector;
         for(int j=0; j<allMappings.at(i)->getKeys().length(); j++)
         {
             KeyInput* input = new KeyInput(allMappings.at(i)->getKeys().at(j));
+            innerVector.append(input);
             connect(input, &KeyInput::deletedKey, this, [=](QString selection)->void{
-//                QKeySequence sequence = QKeySequence::fromString(selection);
-//                int enumAsInt = sequence[0];
                 allMappings.at(i)->removeKeyByIndex(j);
                 checkMappings();
             });
@@ -80,6 +80,7 @@ KeyMappingView::KeyMappingView(QWidget *parent, QVector<KeyMapping*> mappings) :
 
             grid->addWidget(input, i, j+1);
         }
+        inputs.append(innerVector);
         grid->addWidget(getAddBtn(i), i, allMappings.at(i)->getKeys().length()+1);
 
     }
@@ -87,6 +88,8 @@ KeyMappingView::KeyMappingView(QWidget *parent, QVector<KeyMapping*> mappings) :
     setWindowTitle(tr("Key Mappings"));
     connect(this, SIGNAL(addBtnPressed(int)), this, SLOT(addKeyToMapping(int)));
 
+    constructorHasEnded=true;
+    checkMappings();
 }
 
 void KeyMappingView::addKeyToMapping(int index)
@@ -145,23 +148,51 @@ void KeyMappingView::completeMappings(QVector<KeyMapping*> mappings)
 
 void KeyMappingView::checkMappings()
 {
-    QSet<Qt::Key> usedKeys;
-    for(int i=0; i<allMappings.length(); i++)
+    if(constructorHasEnded)
     {
-        for(int j=0; j<allMappings.at(i)->getKeys().length(); j++)
+        bool valid = true;
+        QSet<Qt::Key> usedKeys;
+        for(int i=0; i<allMappings.length(); i++)
         {
-            if(usedKeys.contains(allMappings.at(i)->getKeys().at(j)))
+            bool rowValid = true;
+            for(int j=0; j<allMappings.at(i)->getKeys().length(); j++)
             {
-                qDebug()<<"found duplicate";
+                if(usedKeys.contains(allMappings.at(i)->getKeys().at(j)))
+                {
+                    qDebug()<<"found duplicate";
+                    valid = false;
+                    rowValid = false;
+                    for(int k=0; k<i; k++)
+                    {
+                        for(int l=0; l<allMappings.at(k)->getKeys().length(); l++)
+                        {
+                            if(allMappings.at(i)->getKeys().at(j)==allMappings.at(k)->getKeys().at(l))
+                            {
+                                labels.at(i)->setStyleSheet("QLabel { color : red; font-weight: bold;}");
+                                labels.at(k)->setStyleSheet("QLabel { color : red; font-weight: bold;}");
+                                inputs.at(i).at(j)->setStyleSheet("QComboBox { color : red; }");
+                                inputs.at(k).at(l)->setStyleSheet("QComboBox { color : red; }");
+
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    usedKeys.insert(allMappings.at(i)->getKeys().at(j));
+                    inputs.at(i).at(j)->setStyleSheet("");
+                }
             }
-            else
+            if(rowValid)
             {
-                usedKeys.insert(allMappings.at(i)->getKeys().at(j));
+                labels.at(i)->setStyleSheet("");
             }
         }
+        if(valid)
+        {
+            emit newValidKeyMappings(allMappings);
+        }
     }
-    qDebug()<<"Ready with check";
-
 }
 
 Qt::Key KeyMappingView::getFreeKey(QVector<Qt::Key>* usedKeys)
