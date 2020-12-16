@@ -23,7 +23,7 @@ public:
 	void setBoard(Board * b);
 	void setDebugOutputEnabled(bool set = true);
 	void resize(int pixelPerTile);
-    void setMapping(QVector<KeyMapping *> *value);
+	void setMapping(QVector<KeyMapping *> *value);
 
 private slots:
 	void paintEvent(QPaintEvent * event);
@@ -41,12 +41,15 @@ private:
 	QPoint mouseStart;
 	bool cachedPaintig = false;
 	bool showDebugOutput = false;
-    QVector<KeyMapping*> * mapping = nullptr;
+	QVector<KeyMapping*> * mapping = nullptr;
+	QColor background = QColor(230,255,0);
+	QColor primary = QColor(20,20,20);
+	QColor grid = QColor(124,138,0);
 signals:
 	void tileHovered(Tile * t);
 	void tileClicked(Tile * t);
 	void swipe(Direction d);
-	void action(PlayerAction a);
+	void action(PlayerAction a, QString user);
 
 };
 
