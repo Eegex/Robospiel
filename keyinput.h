@@ -22,6 +22,8 @@ public:
     Qt::Key getKey();
     bool hasKey();
     void reset();
+    static Qt::Key stringToKey(QString string);
+    static QString keyToString(Qt::Key key);
 signals:
 
 };

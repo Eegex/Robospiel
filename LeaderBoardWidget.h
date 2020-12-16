@@ -20,13 +20,12 @@ private:
     QPushButton * addBtn = new QPushButton(this);
     unsigned int numOfPlayers = 0;
     unsigned int currentPlayer = 0;
-    //PlayerBiddingWidget* players;
     QVector<PlayerBiddingWidget*> players; //Several Players, Array of Widgets for individual players
     PlayerCreationWidget * playerCreationWidget = new PlayerCreationWidget(nullptr);
 
 public slots:
     void sortByBidding();
-    void addPlayer(User * newUser);
+    void addPlayer(struct user * newUser);
     void newPlayer();
 
 signals:

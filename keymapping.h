@@ -3,6 +3,9 @@
 
 #include <Qt>
 #include <QVector>
+#include <QLabel>
+#include <QPushButton>
+#include <QSet>
 #include "Direction.h"
 
 class KeyMapping

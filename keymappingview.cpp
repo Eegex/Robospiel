@@ -1,13 +1,6 @@
 #include "keymappingview.h"
 
-#include <QComboBox>
-#include <QLabel>
-#include <QLineEdit>
-#include <QMetaEnum>
-#include <QPushButton>
-#include <QDebug>
-#include <QSet>
-#include <QTimer>
+
 
 KeyMappingView::KeyMappingView(QVector<KeyMapping*> mappings, QWidget *parent) : QWidget(parent)
 {
@@ -219,12 +212,7 @@ QVBoxLayout* KeyMappingView::getAddGroup(int row)
 void KeyMappingView::insertKeyIntoUI(int row, int col)
 {
     QVBoxLayout* layout = new QVBoxLayout();
-
-    QMetaEnum metaEnum = QMetaEnum::fromType<Qt::Key>();
-    Qt::Key key = static_cast<Qt::Key>(allMappings.at(row)->getKeys().at(col));
-    QString asString = metaEnum.valueToKey(key);
-    asString.remove(0, 4);
-    QLabel* label = new QLabel(asString, this);
+    QLabel* label = new QLabel(KeyInput::keyToString(allMappings.at(row)->getKeys().at(col)), this);
     keyLabels.at(row)->append(label);
     layout->addWidget(label);
 
@@ -236,7 +224,7 @@ void KeyMappingView::insertKeyIntoUI(int row, int col)
         label->deleteLater();
         deleteBtn->deleteLater();
 
-        allMappings.at(row)->removeKey(static_cast<Qt::Key>(QKeySequence(label->text())[0]));
+        allMappings.at(row)->removeKey(KeyInput::stringToKey(label->text()));
         checkMappings();
     });
     layout->addWidget(deleteBtn);
