@@ -34,24 +34,22 @@ private:
                                   KeyMapping(PlayerAction::revert, Qt::Key::Key_Z)};
     QVector<KeyMapping*> allMappings;
     QGridLayout* grid;
-    QVector<QLabel*> labels;
-    QVector<QVector<KeyInput*>> inputs;
+    QVector<QLabel*> mappingLabels;
+    QVector<QVector<QLabel*>*> keyLabels;
+    QVector<QHBoxLayout*> hBoxRows;
     QMap<int, QPushButton*> addBtns;
     bool constructorHasEnded =false;
 
     Qt::Key getFreeKey(QVector<Qt::Key> *usedKeys);
-    Qt::Key getFreeKey();
     void completeMappings(QVector<KeyMapping*> mappings);
-    QPushButton* getAddBtn(int row);
+    QVBoxLayout *getAddGroup(int row);
+    void insertKeyIntoUI(int row, int col);
 
     void checkMappings();
 signals:
     void keyMappingChanged();
     void addBtnPressed(int index);
     void newValidKeyMappings(QVector<KeyMapping*> mappings);
-
-private slots:
-    void addKeyToMapping(int index);
 };
 
 #endif // KEYMAPPINGVIEW_H

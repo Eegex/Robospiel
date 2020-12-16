@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <QDebug>
 #include <QSet>
+#include <QTimer>
 
 KeyMappingView::KeyMappingView(QWidget *parent, QVector<KeyMapping*> mappings) : QWidget(parent)
 {
@@ -16,7 +17,7 @@ KeyMappingView::KeyMappingView(QWidget *parent, QVector<KeyMapping*> mappings) :
     for(int i=0; i<allMappings.length(); i++)
     {
         QLabel* name = new QLabel(this);
-        labels.append(name);
+        mappingLabels.append(name);
         switch(allMappings.at(i)->getAction())
         {
             case PlayerAction::movePlayerNorth:
@@ -62,53 +63,24 @@ KeyMappingView::KeyMappingView(QWidget *parent, QVector<KeyMapping*> mappings) :
                 name->setText(tr("Sorry, something went wrong :("));
         }
         grid->addWidget(name, i, 0);
-        QVector<KeyInput*> innerVector;
+        QHBoxLayout* rowContainer = new QHBoxLayout();
+        hBoxRows.append(rowContainer);
+        QVector<QLabel*>* innerVector = new QVector<QLabel*>();
+        keyLabels.append(innerVector);
         for(int j=0; j<allMappings.at(i)->getKeys().length(); j++)
         {
-            KeyInput* input = new KeyInput(allMappings.at(i)->getKeys().at(j));
-            innerVector.append(input);
-            connect(input, &KeyInput::deletedKey, this, [=](QString selection)->void{
-                allMappings.at(i)->removeKeyByIndex(j);
-                checkMappings();
-            });
-            connect(input, &KeyInput::changedKey, this, [=](QString selection)->void{
-                QKeySequence sequence = QKeySequence::fromString(selection);
-                int enumAsInt = sequence[0];
-                allMappings.at(i)->replaceKeyAt(j, static_cast<Qt::Key>(enumAsInt));
-                checkMappings();
-            });
-
-            grid->addWidget(input, i, j+1);
+            insertKeyIntoUI(i, j);
         }
-        inputs.append(innerVector);
-        grid->addWidget(getAddBtn(i), i, allMappings.at(i)->getKeys().length()+1);
+
+        grid->addLayout(rowContainer, i, 1);
+        grid->addLayout(getAddGroup(i), i, 2);
 
     }
     setLayout(grid);
     setWindowTitle(tr("Key Mappings"));
-    connect(this, SIGNAL(addBtnPressed(int)), this, SLOT(addKeyToMapping(int)));
 
     constructorHasEnded=true;
     checkMappings();
-}
-
-void KeyMappingView::addKeyToMapping(int index)
-{
-    KeyMapping* m = allMappings.at(index);
-    Qt::Key key = getFreeKey();
-    bool keyWasNew = m->addKey(key);
-    if(keyWasNew)
-    {
-
-        grid->removeWidget(addBtns.value(index));
-        KeyInput* input = new KeyInput(key, this);
-        grid->addWidget(input, index, allMappings.at(index)->getKeys().length());
-
-        grid->addWidget(addBtns.value(index), index, allMappings.at(index)->getKeys().length()+1);
-        checkMappings();
-    }
-
-
 }
 
 void KeyMappingView::completeMappings(QVector<KeyMapping*> mappings)
@@ -159,7 +131,6 @@ void KeyMappingView::checkMappings()
             {
                 if(usedKeys.contains(allMappings.at(i)->getKeys().at(j)))
                 {
-                    qDebug()<<"found duplicate";
                     valid = false;
                     rowValid = false;
                     for(int k=0; k<i; k++)
@@ -168,10 +139,10 @@ void KeyMappingView::checkMappings()
                         {
                             if(allMappings.at(i)->getKeys().at(j)==allMappings.at(k)->getKeys().at(l))
                             {
-                                labels.at(i)->setStyleSheet("QLabel { color : red; font-weight: bold;}");
-                                labels.at(k)->setStyleSheet("QLabel { color : red; font-weight: bold;}");
-                                inputs.at(i).at(j)->setStyleSheet("QComboBox { color : red; }");
-                                inputs.at(k).at(l)->setStyleSheet("QComboBox { color : red; }");
+                                mappingLabels.at(i)->setStyleSheet("QLabel { color : red; font-weight: bold;}");
+                                mappingLabels.at(k)->setStyleSheet("QLabel { color : red; font-weight: bold;}");
+                                keyLabels.at(i)->at(j)->setStyleSheet("QLabel { color : red; font-weight: bold;}");
+                                keyLabels.at(k)->at(l)->setStyleSheet("QLabel { color : red; font-weight: bold;}");
 
                             }
                         }
@@ -180,12 +151,12 @@ void KeyMappingView::checkMappings()
                 else
                 {
                     usedKeys.insert(allMappings.at(i)->getKeys().at(j));
-                    inputs.at(i).at(j)->setStyleSheet("");
+                    keyLabels.at(i)->at(j)->setStyleSheet("");
                 }
             }
             if(rowValid)
             {
-                labels.at(i)->setStyleSheet("");
+                mappingLabels.at(i)->setStyleSheet("");
             }
         }
         if(valid)
@@ -222,22 +193,53 @@ Qt::Key KeyMappingView::getFreeKey(QVector<Qt::Key>* usedKeys)
     return static_cast<Qt::Key>(65);
 }
 
-Qt::Key KeyMappingView::getFreeKey()
+QVBoxLayout* KeyMappingView::getAddGroup(int row)
 {
-    QVector<Qt::Key> usedKeys;
-    for(KeyMapping* mapping:allMappings)
-    {
-        usedKeys.append(mapping->getKeys());
-    }
-    return getFreeKey(&usedKeys);
-}
+    QVBoxLayout* layout = new QVBoxLayout();
+    KeyInput* input = new KeyInput();
 
-QPushButton* KeyMappingView::getAddBtn(int row)
-{
+
     QPushButton* btnAddKey = new QPushButton(tr("Add"), this);
     connect(btnAddKey, &QAbstractButton::pressed, this, [=]()->void{
-        emit addBtnPressed(row);
+
+        if(input->hasKey() && allMappings.at(row)->addKey(input->getKey()))
+        {
+            insertKeyIntoUI(row, allMappings.at(row)->getKeys().length()-1);
+            checkMappings();
+        }
+        input->reset();
+
     });
     addBtns.insert(row, btnAddKey);
-    return btnAddKey;
+    layout->addWidget(input);
+    layout->addWidget(btnAddKey);
+    return layout;
+}
+
+void KeyMappingView::insertKeyIntoUI(int row, int col)
+{
+    QVBoxLayout* layout = new QVBoxLayout();
+
+    QMetaEnum metaEnum = QMetaEnum::fromType<Qt::Key>();
+    Qt::Key key = static_cast<Qt::Key>(allMappings.at(row)->getKeys().at(col));
+    QString asString = metaEnum.valueToKey(key);
+    asString.remove(0, 4);
+    QLabel* label = new QLabel(asString, this);
+    keyLabels.at(row)->append(label);
+    layout->addWidget(label);
+
+    QPushButton* deleteBtn = new QPushButton(tr("Delete"), this);
+    connect(deleteBtn, &QAbstractButton::pressed, this, [=]()->void{
+        keyLabels.at(row)->removeAll(label);
+
+        layout->deleteLater();
+        label->deleteLater();
+        deleteBtn->deleteLater();
+
+        allMappings.at(row)->removeKey(static_cast<Qt::Key>(QKeySequence(label->text())[0]));
+        checkMappings();
+    });
+    layout->addWidget(deleteBtn);
+
+    hBoxRows.at(row)->addLayout(layout);
 }

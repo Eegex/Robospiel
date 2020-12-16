@@ -1,32 +1,45 @@
 #include "keyinput.h"
 
 #include <QMetaEnum>
+#include <QKeyEvent>
 
-KeyInput::KeyInput(Qt::Key key, QWidget *parent) : QWidget(parent)
+KeyInput::KeyInput(QWidget *parent) : QWidget(parent)
 {
-    QVector<QString> possibleKeys;
-    QMetaEnum metaEnum = QMetaEnum::fromType<Qt::Key>();
-    for(int i=0; i<metaEnum.keyCount(); i++)
-    {
-        possibleKeys.append(QKeySequence(metaEnum.value(i)).toString());
-    }
-
-    layout = new QVBoxLayout(this);
-    selection = new QComboBox(this);
-    selection->addItems(possibleKeys.toList());
-    selection->setCurrentText(QKeySequence(key).toString());
-    connect(selection, &QComboBox::currentTextChanged, this, [=]()->void{
-        emit changedKey(selection->currentText());
-    });
-    layout->addWidget(selection);
-
-    deleteBtn = new QPushButton(tr("Delete"), this);
-    connect(deleteBtn, &QAbstractButton::pressed, this, [=]()->void{
-        emit deletedKey(selection->currentText());
-        this->deleteLater();
-    });
-    layout->addWidget(deleteBtn);
-
-
-
+    input = new QLineEdit(this);
+    input->setPlaceholderText(tr("Enter the key! "));
+    QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->addWidget(input);
+    setLayout(layout);
 }
+
+void KeyInput::keyReleaseEvent(QKeyEvent* event)
+{
+    QMetaEnum metaEnum = QMetaEnum::fromType<Qt::Key>();
+    Qt::Key key = static_cast<Qt::Key>(event->key());
+    QString asString = metaEnum.valueToKey(key);
+    input->setText(asString.remove(0, 4));
+}
+
+bool KeyInput::hasKey()
+{
+    return input->text()!="" && getKey()!=Qt::Key_unknown && getKey()!=Qt::Key(0);
+}
+
+Qt::Key KeyInput::getKey()
+{
+    QMetaEnum metaEnum = QMetaEnum::fromType<Qt::Key>();
+    QString name = "Key_"+input->text();
+    Qt::Key key = static_cast<Qt::Key>(metaEnum.keyToValue(name.toStdString().c_str()));
+    return key;
+}
+
+void KeyInput::reset()
+{
+    input->setText("");
+}
+
+
+
+
+
+

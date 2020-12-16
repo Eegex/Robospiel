@@ -6,21 +6,23 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <QPushButton>
+#include <QLabel>
+#include <QLineEdit>
 
 class KeyInput : public QWidget
 {
     Q_OBJECT
 
-    QVBoxLayout* layout;
-    QComboBox* selection;
-    QPushButton* deleteBtn;
 
+    void keyReleaseEvent(QKeyEvent *event);
+    QLineEdit* input;
 public:
-    explicit KeyInput(Qt::Key key, QWidget *parent = nullptr);
+    explicit KeyInput(QWidget *parent = nullptr);
 
+    Qt::Key getKey();
+    bool hasKey();
+    void reset();
 signals:
-    void deletedKey(QString currentSelection);
-    void changedKey(QString currentSelection);
 
 };
 

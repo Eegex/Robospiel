@@ -1,5 +1,8 @@
 #include "keymapping.h"
 
+#include <QKeySequence>
+#include <QDebug>
+
 KeyMapping::KeyMapping(PlayerAction a, Qt::Key k) : action(a)
 {
 	keys.append(k);
@@ -45,9 +48,9 @@ bool KeyMapping::addKey(Qt::Key key)
     return true;
 }
 
-void KeyMapping::removeKeyByIndex(int index)
+void KeyMapping::removeKey(Qt::Key key)
 {
-    keys.remove(index);
+    keys.removeAll(key);
 }
 
 void KeyMapping::replaceKeyAt(int index, Qt::Key key)
