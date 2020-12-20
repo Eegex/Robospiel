@@ -6,9 +6,9 @@ BoardView::BoardView(QWidget *parent) : QWidget(parent)
 	setMouseTracking(true);
 	setFocusPolicy(Qt::FocusPolicy::StrongFocus);
 	fillCache(QSize(50,50));
-	connect(this, &BoardView::swipe, this, &BoardView::callMoveActivePlayer);
+    //connect(this, &BoardView::swipe, this, &BoardView::callMoveActivePlayer);
 	connect(this, &BoardView::tileClicked, this, &BoardView::callChangeActivePlayer);
-	connect(this, &BoardView::action, this, &BoardView::translateMapping);
+    //connect(this, &BoardView::action, this, &BoardView::translateMapping);
 }
 
 void BoardView::setBoard(Board * b)
@@ -78,11 +78,8 @@ Tile * BoardView::coordsToTile(QPoint p)
 {
 	int x = (p.x() - 5) / tileSize.width();
 	int y = (p.y() - 5) / tileSize.height();
-	if(x < board->getSize().width() && y < board->getSize().height())
-	{
-		return board->getTile(x,y);
-	}
-	return nullptr;
+    return board->getTile(x,y);
+
 }
 
 void BoardView::setMapping(QVector<KeyMapping*> * value)
@@ -189,7 +186,7 @@ void BoardView::paintEvent(QPaintEvent * event)
 			{
 				QRect tile(x*tileWidth,y*tileHeight,tileWidth,tileHeight);
 				int playerNumber = board->getTile(x,y)->getPlayer();
-				painter.drawText(QRect(8+x*tile.width(),8+y*tile.height(),tile.width(),tile.height()),"(" + QString::number(x) + "/" + QString::number(y) + ")\nPlayer: " + (playerNumber?QString::number(playerNumber):"none"));
+                painter.drawText(QRect(8+x*tile.width(),8+y*tile.height(),tile.width(),tile.height()),"(" + QString::number(x) + "/" + QString::number(y) + ")\nPlayer: " + (playerNumber+1?QString::number(playerNumber):"none"));
 			}
 		}
 	}
@@ -268,33 +265,33 @@ void BoardView::keyPressEvent(QKeyEvent * event)
 	QWidget::keyPressEvent(event);
 }
 
-void BoardView::callMoveActivePlayer(Direction d)
-{
-	board->moveActivePlayer(d);
-	update();
-}
+//void BoardView::callMoveActivePlayer(Direction d)
+//{
+//	board->moveActivePlayer(d);
+//	update();
+//}
 void BoardView::callChangeActivePlayer(Tile * t)
 {
 	board->changeActivePlayer(t);
 	update();
 }
-void BoardView::translateMapping(PlayerAction action)
-{
-	Direction d = Direction::north;
-	switch (action)
-	{
-	case movePlayerNorth:
-		d = Direction::north;
-		break;
-	case movePlayerEast:
-		 d = Direction::east;
-		break;
-	case movePlayerWest:
-		d = Direction::west;
-		break;
-	case movePlayerSouth:
-		 d = Direction::south;
-		break;
-	}
-	callMoveActivePlayer(d);
-}
+//void BoardView::translateMapping(PlayerAction action)
+//{
+//	Direction d = Direction::north;
+//	switch (action)
+//	{
+//	case movePlayerNorth:
+//		d = Direction::north;
+//		break;
+//	case movePlayerEast:
+//		 d = Direction::east;
+//		break;
+//	case movePlayerWest:
+//		d = Direction::west;
+//		break;
+//	case movePlayerSouth:
+//		 d = Direction::south;
+//		break;
+//	}
+//	callMoveActivePlayer(d);
+//}

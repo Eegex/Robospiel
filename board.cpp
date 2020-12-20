@@ -40,24 +40,29 @@ Board::Board(int width, int height, int playerNumber, QObject *parent) : QObject
 
 void Board::setPlayerOnTile(int player, Tile* tile)
 {
+    players[player]->setPlayer(-1);
 	tile->setPlayer(player);
 	players[player] = tile;
 }
 
 void Board::startNewRound()
 {
-	//is there a way to only use one generator???
 	seeker = r->bounded(players.size());
 	//goal only in corner?
 	placeGoalInCorner();
-	emit boardChanged();
 	//else:
 	//placeGoalAwayFromSeeker();
+    emit boardChanged();
 }
 
 Tile* Board::getTile(int x, int y)
 {
-	return tiles.at(y).at(x);
+
+    if(x < getSize().width() && y < getSize().height())
+    {
+        return tiles.at(y).at(x);
+    }
+    return nullptr;
 }
 
 QSize Board::getSize()
@@ -104,8 +109,8 @@ void Board::placeOuterWalls()
 	int i =0;
 
 	std::default_random_engine generator(QTime::currentTime().msecsSinceStartOfDay());
-	std::uniform_int_distribution<int> randomXIndex(1,(tiles.at(0).length()-3)); //?
-	std::uniform_int_distribution<int> randomYIndex(1,(tiles.length()-3)); //?
+    std::uniform_int_distribution<int> randomXIndex(1,(tiles.at(0).length()-NUMBER_OF_UNUSED_OUTER_POSITIONS)); //?
+    std::uniform_int_distribution<int> randomYIndex(1,(tiles.length()-NUMBER_OF_UNUSED_OUTER_POSITIONS)); //?
 	while(i<numberOfOuterWalls)
 	{
 		int x= randomXIndex(generator);
@@ -387,10 +392,15 @@ void Board::moveActivePlayer(Direction d)
 	}
 	qDebug()<< "blaaaaaa" << changeOfXAxis << "   " << changeOfYAxis;
 	Tile* currentTile = players.at(activePlayer);
+
 	Tile* nextTile = getTile(
 						 currentTile->getPosition().rx() + changeOfXAxis,
 						 currentTile->getPosition().ry() + changeOfYAxis);
-	while(!currentTile->getWall(d)&& nextTile->getPlayer()==0)
+    if(nextTile == nullptr)
+    {
+        return;
+    }
+    while(!currentTile->getWall(d)&& nextTile->getPlayer()==-1)
 	{
 		bool nextTileFree = true;
 		for(Tile* player : players)
@@ -417,7 +427,7 @@ void Board::moveActivePlayer(Direction d)
 
 void Board::changeActivePlayer(Tile* t)
 {
-	if(t->getPlayer())
+    if(t->getPlayer()+1)
 	{
 		activePlayer = t->getPlayer();
 	}

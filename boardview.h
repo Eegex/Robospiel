@@ -14,6 +14,7 @@
 #include "board.h"
 #include "keymapping.h"
 
+
 class BoardView : public QWidget
 {
 	Q_OBJECT
@@ -40,14 +41,14 @@ private:
 	QSize tileSize;
 	QPoint mouseStart;
 	bool cachedPaintig = false;
-	bool showDebugOutput = false;
+    bool showDebugOutput = true;
 	QVector<KeyMapping*> * mapping = nullptr;
 	QColor background = QColor(230,255,0);
 	QColor primary = QColor(20,20,20);
 	QColor grid = QColor(124,138,0);
     void callChangeActivePlayer(Tile *t);
-    void translateMapping(PlayerAction action);
-    void callMoveActivePlayer(Direction d);
+    //void translateMapping(PlayerAction action);
+    //void callMoveActivePlayer(Direction d);
 signals:
 	void tileHovered(Tile * t);
 	void tileClicked(Tile * t);

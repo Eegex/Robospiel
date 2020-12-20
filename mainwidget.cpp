@@ -6,7 +6,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	game = new GameControll(this);
 	view = new BoardView(this);
 	leaderboard = new LeaderBoardWidget(this);
-	view->setBoard(game->createBoard(16, 16, 5));
+    view->setBoard(game->createBoard(16, 16, 5));
 	view->setMapping(game->getMapping());
 	connect(view,&BoardView::action,game,&GameControll::triggerAction);
 	networkView = new NetworkView;

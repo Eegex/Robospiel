@@ -1,5 +1,6 @@
 #include "gamecontroll.h"
 
+
 using namespace std::chrono_literals;
 
 GameControll::GameControll(QObject *parent) : QObject(parent)
@@ -37,6 +38,10 @@ bool GameControll::triggerAction(PlayerAction action, QString user)
 		{
 			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
 			{
+                //we subtract movement from action to get a direction (clever enum numbers)
+
+                board->moveActivePlayer(static_cast<Direction>(action - PlayerAction::movement));
+
 				emit actionTriggered(action);
 				return true;
 			}
@@ -105,7 +110,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 		{
 			if(currentPhase == Phase::search)
 			currentPhase = phase;
-			timeLeft = 60;
+            timeLeft = 2;
 			emit time(timeLeft);
 			countdown.start();
 			return true;
