@@ -2,6 +2,7 @@
 #define BOARD_H
 
 #include <QObject>
+#include <QRandomGenerator>
 #include <QVector>
 #include <QTime>
 #include <QSize>
@@ -16,14 +17,14 @@ public:
 	Board(int width, int height, int playerNumber, QObject *parent = nullptr);
 	Tile *getTile(int x, int y);
 	QSize getSize();
-	std::string printDirection(Direction direction);
+	QString printDirection(Direction direction);
 	QVector<Tile*> players;
 	Tile* goal;
 	int seeker = 0;
-    int activePlayer = 0;
-    void moveActivePlayer(Direction d);
-    void setPlayerOnTile(int player, Tile *tile);
-    void changeActivePlayer(Tile *t);
+	int activePlayer = 0;
+	void moveActivePlayer(Direction d);
+	void setPlayerOnTile(int player, Tile *tile);
+	void changeActivePlayer(Tile *t);
 public slots:
 	void startNewRound();
 signals:
@@ -32,6 +33,7 @@ protected:
 	void placeGoalAwayFromSeeker();
 private:
 	QVector<QVector<Tile*>> tiles;
+	QRandomGenerator * r = nullptr;
 	//TODO history
 	//TODO active pawn
 

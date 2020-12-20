@@ -1,10 +1,10 @@
-#include <random>
 #include <QDebug>
 #include <Direction.h>
 #include "board.h"
 
 Board::Board(int width, int height, int playerNumber, QObject *parent) : QObject(parent)
 {
+	r = new QRandomGenerator(QTime::currentTime().msecsSinceStartOfDay());
 	if(playerNumber+1 > width*height)
 	{
 		qDebug()<< "Board contructor was called with two many players!";
@@ -27,9 +27,6 @@ Board::Board(int width, int height, int playerNumber, QObject *parent) : QObject
 		}
 		tiles.append(innerVector);
 	}
-	std::default_random_engine generator(QTime::currentTime().msecsSinceStartOfDay());
-	std::uniform_int_distribution<int> x(0, width-1);
-	std::uniform_int_distribution<int> y(0, height-1);
 	for(int i=0; i<playerNumber; i++)
 	{
 		Tile * t = getRandomUnoccupiedTile();
@@ -41,22 +38,16 @@ Board::Board(int width, int height, int playerNumber, QObject *parent) : QObject
 	startNewRound();
 }
 
-void Board::setPlayerOnTile(int player, Tile* tile){
-
-
-    tile->setPlayer(player);
-    players[player] = tile;
-
-
+void Board::setPlayerOnTile(int player, Tile* tile)
+{
+	tile->setPlayer(player);
+	players[player] = tile;
 }
-
 
 void Board::startNewRound()
 {
 	//is there a way to only use one generator???
-	std::default_random_engine generator(QTime::currentTime().msecsSinceStartOfDay());
-	std::uniform_int_distribution<int> playerNumbers(0, players.size());
-	seeker = playerNumbers(generator);
+	seeker = r->bounded(players.size());
 	//goal only in corner?
 	placeGoalInCorner();
 	emit boardChanged();
@@ -76,16 +67,13 @@ QSize Board::getSize()
 
 Tile* Board::getRandomUnoccupiedTile()
 {
-	std::default_random_engine generator(QTime::currentTime().msecsSinceStartOfDay());
-	std::uniform_int_distribution<int> x(0, tiles.at(0).length()-1);
-	std::uniform_int_distribution<int> y(0, tiles.length()-1);
 	bool tileIsValid = false;
 	Tile* initialTile;
 	int counter = 0;
 	while(!tileIsValid)
 	{
 		counter++;
-		initialTile = tiles.at(y(generator)).at(x(generator));
+		initialTile = tiles.at(r->bounded(tiles.length()-1)).at(r->bounded(tiles.at(0).length()-1));
 		tileIsValid = true;
 		for(Tile* player : players)
 		{
@@ -116,26 +104,23 @@ void Board::placeOuterWalls()
 	int i =0;
 
 	std::default_random_engine generator(QTime::currentTime().msecsSinceStartOfDay());
-	std::uniform_int_distribution<int> randomXIndex(1,(tiles.at(0).length()-3));
-	std::uniform_int_distribution<int> randomYIndex(1,(tiles.length()-3));
-
-	std::uniform_int_distribution<int> randomDirectionIndex(1, 2);
-	std::uniform_int_distribution<int> randomSideIndex(1, 2);
+	std::uniform_int_distribution<int> randomXIndex(1,(tiles.at(0).length()-3)); //?
+	std::uniform_int_distribution<int> randomYIndex(1,(tiles.length()-3)); //?
 	while(i<numberOfOuterWalls)
 	{
 		int x= randomXIndex(generator);
 		int y = randomYIndex(generator);
-		Direction randDir = getNextDirection(Direction::east, randomDirectionIndex(generator));
+		Direction randDir = getNextDirection(Direction::east, r->bounded(1,2));
 		int randSide = 0;
 		if(randDir == Direction::west)
 		{
-			if(randomSideIndex(generator) == 1)
+			if(r->bounded(0,1))
 			{
 				randSide = 0;
 			}
 			else
 			{
-				randSide= tiles.length()-1;
+				randSide = tiles.length()-1;
 			}
 			if(!placeOuterWallIfFits(tiles.at(randSide).at(x), Direction::east))
 			{
@@ -144,14 +129,14 @@ void Board::placeOuterWalls()
 		}
 		else
 		{
-			if(randomSideIndex(generator) ==1 )
+			if(r->bounded(0,1))
 			{
 				randSide = 0;
 			}
 			else
 			{
 
-				randSide= tiles.at(0).length()-1;
+				randSide = tiles.at(0).length()-1;
 			}
 			if(!placeOuterWallIfFits(tiles.at(y).at(randSide), Direction::south))
 			{
@@ -201,18 +186,14 @@ bool Board::placeOuterWallIfFits(Tile* tile, Direction direction)
 
 void Board::placeInnerWalls()
 {
-	int numberOfInnerWalls = (tiles.at(0).length()-2) *(tiles.length()-2) /SPREAD_FACTOR_INNER_WALLS;
-	std::default_random_engine generator(QTime::currentTime().msecsSinceStartOfDay());
-	std::uniform_int_distribution<int> randomXIndex(1,(tiles.at(0).length()-2));
-	std::uniform_int_distribution<int> randomYIndex(1,(tiles.length()-2));
-	std::uniform_int_distribution<int> randomDirectionIndex(1, 4);
+	int numberOfInnerWalls = (tiles.at(0).length()-2) *(tiles.length()-2) / SPREAD_FACTOR_INNER_WALLS;
 	int i = 0;
 	while(i<numberOfInnerWalls)
 	{
 		i++;
-		int x= randomXIndex(generator);
-		int y = randomYIndex(generator);
-		if(!placeInnerWallifFits(tiles.at(y).at(x), getNextDirection(Direction::north, randomDirectionIndex(generator))))
+		int x = r->bounded(1,(tiles.at(0).length()-2));
+		int y = r->bounded(1,(tiles.length()-2));
+		if(!placeInnerWallifFits(tiles.at(y).at(x), getNextDirection(Direction::north, r->bounded(1,4))))
 		{
 			i--;
 		}
@@ -280,7 +261,7 @@ bool Board::placeInnerWallifFits(Tile* tile, Direction direction)
 					&&!tiles.at(y).at(x-1)->getWall(Direction::north)
 					&&!tiles.at(y).at(x-1)->getWall(Direction::south)
 					&&!tiles.at(y).at(x+1)->getWall(Direction::north);
-			//&&!tiles.at(y).at(x+1)->getWall(Direction::south);
+					//&&!tiles.at(y).at(x+1)->getWall(Direction::south);
 			break;
 		}
 		if(noConflictWithNeighbors)
@@ -321,6 +302,7 @@ void Board::placeGoalAwayFromSeeker()
 	while(inRowOrColWithSeeker)
 	{
 		goal = getRandomUnoccupiedTile();
+		//Random launch out_of_range
 		if(!(goal->getPosition().rx() == players.at(seeker)->getPosition().rx()) &&
 		   !(goal->getPosition().ry() == players.at(seeker)->getPosition().ry())    )
 		{
@@ -365,7 +347,7 @@ Direction Board::getNextDirection(Direction direction, int numberOfClockwiseStep
 	}
 }
 
-std::string Board::printDirection(Direction direction)
+QString Board::printDirection(Direction direction)
 {
 	switch(direction)
 	{
@@ -384,76 +366,61 @@ std::string Board::printDirection(Direction direction)
 	}
 }
 
-void Board::moveActivePlayer(Direction d){
-
-
-
-    int changeOfXAchsis = 0;
-    int changeOfYAchsis = 0;
-
-    switch (d) {
-    case Direction::north:
-        changeOfYAchsis = -1;
-        break;
-    case Direction::east:
-        changeOfXAchsis = 1;
-        break;
-    case Direction::south:
-        changeOfYAchsis = 1;
-        break;
-    case Direction::west:
-        changeOfXAchsis = -1;
-        break;
-
-
-    }
-
-    qDebug()<< "blaaaaaa" << changeOfXAchsis << "   " << changeOfYAchsis;
-
-    Tile* currentTile = players.at(activePlayer);
-    Tile* nextTile = getTile(
-                currentTile->getPosition().rx() + changeOfXAchsis,
-                currentTile->getPosition().ry() + changeOfYAchsis);
-
-    while(!currentTile->getWall(d)&& nextTile->getPlayer()==0){
-
-        bool nextTileFree = true;
-
-        for(Tile* player : players)
-        {
-            if(player == nextTile)
-            {
-                nextTileFree = false;
-            }
-        }
-
-        if(!nextTileFree){
-            return;
-        }
-
-
-        currentTile = nextTile;
-
-        if(!nextTile->getWall(d)){
-        nextTile = getTile(
-                    currentTile->getPosition().rx() + changeOfXAchsis,
-                    currentTile->getPosition().ry() + changeOfYAchsis);
-
-        }
-        setPlayerOnTile(activePlayer, currentTile);
-    }
-
-
-
+void Board::moveActivePlayer(Direction d)
+{
+	int changeOfXAxis = 0;
+	int changeOfYAxis = 0;
+	switch(d)
+	{
+	case Direction::north:
+		changeOfYAxis = -1;
+		break;
+	case Direction::east:
+		changeOfXAxis = 1;
+		break;
+	case Direction::south:
+		changeOfYAxis = 1;
+		break;
+	case Direction::west:
+		changeOfXAxis = -1;
+		break;
+	}
+	qDebug()<< "blaaaaaa" << changeOfXAxis << "   " << changeOfYAxis;
+	Tile* currentTile = players.at(activePlayer);
+	Tile* nextTile = getTile(
+						 currentTile->getPosition().rx() + changeOfXAxis,
+						 currentTile->getPosition().ry() + changeOfYAxis);
+	while(!currentTile->getWall(d)&& nextTile->getPlayer()==0)
+	{
+		bool nextTileFree = true;
+		for(Tile* player : players)
+		{
+			if(player == nextTile)
+			{
+				nextTileFree = false;
+			}
+		}
+		if(!nextTileFree)
+		{
+			return;
+		}
+		currentTile = nextTile;
+		if(!nextTile->getWall(d))
+		{
+			nextTile = getTile(
+						   currentTile->getPosition().rx() + changeOfXAxis,
+						   currentTile->getPosition().ry() + changeOfYAxis);
+		}
+		setPlayerOnTile(activePlayer, currentTile);
+	}
 }
 
-void Board::changeActivePlayer(Tile* t){
-
-    if(t->getPlayer()){
-
-        activePlayer = t->getPlayer();
-
-    }
+void Board::changeActivePlayer(Tile* t)
+{
+	if(t->getPlayer())
+	{
+		activePlayer = t->getPlayer();
+	}
 }
 
 
