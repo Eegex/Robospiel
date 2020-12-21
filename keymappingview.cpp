@@ -83,12 +83,12 @@ void KeyMappingView::completeMappings(QVector<KeyMapping*> mappings)
     {
         usedKeys.append(mapping->getKeys());
     }
-    for(KeyMapping mapping: stdMappings)
+    for(PlayerAction action: mappableActions)
     {
         bool exists =false;
         for(int i=0; i<mappings.length(); i++)
         {
-            if(mappings.at(i)->getAction()==mapping.getAction())
+            if(mappings.at(i)->getAction()==action)
             {
                 exists=true;
                 allMappings.append(new KeyMapping(*mappings.takeAt(i)));
@@ -97,14 +97,7 @@ void KeyMappingView::completeMappings(QVector<KeyMapping*> mappings)
         }
         if(!exists)
         {
-            if(usedKeys.contains(mapping.getKeys().at(0)))
-            {
-                allMappings.append(new KeyMapping(mapping.getAction(), getFreeKey(&usedKeys)));
-            }
-            else
-            {
-                allMappings.append(new KeyMapping(mapping));
-            }
+            allMappings.append(new KeyMapping(action));
         }
     }
     checkMappings();
@@ -157,33 +150,6 @@ void KeyMappingView::checkMappings()
             emit newValidKeyMappings(allMappings);
         }
     }
-}
-
-Qt::Key KeyMappingView::getFreeKey(QVector<Qt::Key>* usedKeys)
-{
-    //letters
-    for(int i=65; i<=90; i++)
-    {
-        Qt::Key key = static_cast<Qt::Key>(i);
-        if(!usedKeys->contains(key))
-        {
-            usedKeys->append(key);
-            return key;
-        }
-    }
-
-    //numbers
-    for(int i=48; i<=57; i++)
-    {
-        Qt::Key key = static_cast<Qt::Key>(i);
-        if(!usedKeys->contains(key))
-        {
-            usedKeys->append(key);
-            return key;
-        }
-    }
-
-    return static_cast<Qt::Key>(65);
 }
 
 QVBoxLayout* KeyMappingView::getAddGroup(int row)

@@ -18,21 +18,21 @@ public:
     KeyMappingView(QVector<KeyMapping*> mappings = QVector<KeyMapping*>(), QWidget *parent=nullptr);
     QVector<KeyMapping *> getMapping();
 private:
-    KeyMapping stdMappings[13] = {KeyMapping(PlayerAction::movePlayerNorth, Qt::Key::Key_W),
-                                  KeyMapping(PlayerAction::movePlayerWest, Qt::Key::Key_A),
-                                  KeyMapping(PlayerAction::movePlayerSouth, Qt::Key::Key_S),
-                                  KeyMapping(PlayerAction::movePlayerEast, Qt::Key::Key_D),
+    PlayerAction mappableActions[13] = {PlayerAction::movePlayerNorth,
+                                        PlayerAction::movePlayerWest,
+                                        PlayerAction::movePlayerSouth,
+                                        PlayerAction::movePlayerEast,
 
-                                  KeyMapping(PlayerAction::switchPlayerNorth, Qt::Key::Key_Up),
-                                  KeyMapping(PlayerAction::switchPlayerWest, Qt::Key::Key_Left),
-                                  KeyMapping(PlayerAction::switchPlayerSouth, Qt::Key::Key_Down),
-                                  KeyMapping(PlayerAction::switchPlayerEast, Qt::Key::Key_Right),
+                                        PlayerAction::switchPlayerNorth,
+                                        PlayerAction::switchPlayerWest,
+                                        PlayerAction::switchPlayerSouth,
+                                        PlayerAction::switchPlayerEast,
 
-                                  KeyMapping(PlayerAction::enterBidding, Qt::Key::Key_Space),
-                                  KeyMapping(PlayerAction::sendBidding, Qt::Key::Key_Enter),
-                                  KeyMapping(PlayerAction::clearBidding, Qt::Key::Key_Backspace),
-                                  KeyMapping(PlayerAction::giveUp, Qt::Key::Key_G),
-                                  KeyMapping(PlayerAction::revert, Qt::Key::Key_Z)};
+                                        PlayerAction::enterBidding,
+                                        PlayerAction::sendBidding,
+                                        PlayerAction::clearBidding,
+                                        PlayerAction::giveUp,
+                                        PlayerAction::revert};
     QVector<KeyMapping*> allMappings;
     QGridLayout* grid;
     QVector<QLabel*> mappingLabels;
@@ -41,7 +41,6 @@ private:
     QMap<int, QPushButton*> addBtns;
     bool constructorHasEnded =false;
 
-    Qt::Key getFreeKey(QVector<Qt::Key> *usedKeys);
     void completeMappings(QVector<KeyMapping*> mappings);
     QVBoxLayout *getAddGroup(int row);
     void insertKeyIntoUI(int row, int col);
@@ -50,7 +49,7 @@ private:
 signals:
     void keyMappingChanged();
     void addBtnPressed(int index);
-    void newValidKeyMappings(QVector<KeyMapping*> mappings);
+    void newValidKeyMappings(QVector<KeyMapping*> mappings); //not used at the moment, because saving happens explicitly by clicking a button
 };
 
 #endif // KEYMAPPINGVIEW_H

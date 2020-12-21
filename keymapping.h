@@ -13,6 +13,7 @@ class KeyMapping
 public:
 	KeyMapping(PlayerAction a, Qt::Key k);
 	KeyMapping(PlayerAction a, QVector<Qt::Key> k);
+    KeyMapping(PlayerAction);
 	bool operator==(const Qt::Key k) const;
 	bool operator==(const int code) const;
 	PlayerAction getAction() const;
