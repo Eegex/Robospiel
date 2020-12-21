@@ -323,7 +323,7 @@ void Board::placeGoalAwayFromSeeker()
 	while(inRowOrColWithSeeker)
 	{
 		goal = getRandomUnoccupiedTile();
-		//Random launch out_of_range
+		//BUG: Random launch out_of_range
 		if(!(goal->getPosition().rx() == players.at(seeker)->getPosition().rx()) &&
 		   !(goal->getPosition().ry() == players.at(seeker)->getPosition().ry())    )
 		{

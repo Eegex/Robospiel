@@ -223,16 +223,17 @@ void BoardView::paintEvent(QPaintEvent * event)
 
 void BoardView::resizeEvent(QResizeEvent * event)
 {
-    int w = event->size().width() / board->getSize().width();
-    int h = event->size().height() / board->getSize().height();
-    fillCache(QSize(w,h));
-    update();
-    for(int i = 0; i <board->players.length();i++)
-    {
-        playerWidgets.at(i)->move(tileToDesktopCoordinates(board->players.at(i)));
-    }
-    goalwidget->move(tileToDesktopCoordinates(board->goal));
-    event->accept();
+	int w = event->size().width() / board->getSize().width();
+	int h = event->size().height() / board->getSize().height();
+	fillCache(QSize(w,h));
+	update();
+	for(int i = 0; i <board->players.length();i++)
+	{
+		playerWidgets.at(i)->move(tileToDesktopCoordinates(board->players.at(i)));
+		playerWidgets.at(i)->setFixedSize(w,h);
+	}
+	goalwidget->move(tileToDesktopCoordinates(board->goal));
+	event->accept();
 }
 
 void BoardView::mousePressEvent(QMouseEvent * event)
