@@ -9,6 +9,10 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 	mapping.append(new KeyMapping(PlayerAction::movePlayerEast,{Qt::Key::Key_D,Qt::Key::Key_Right}));
 	mapping.append(new KeyMapping(PlayerAction::movePlayerSouth,{Qt::Key::Key_S,Qt::Key::Key_Down}));
 	mapping.append(new KeyMapping(PlayerAction::movePlayerWest,{Qt::Key::Key_A,Qt::Key::Key_Left}));
+	mapping.append(new KeyMapping(PlayerAction::switchPlayerNorth,Qt::Key::Key_I));
+	mapping.append(new KeyMapping(PlayerAction::switchPlayerEast,Qt::Key::Key_L));
+	mapping.append(new KeyMapping(PlayerAction::switchPlayerSouth,Qt::Key::Key_K));
+	mapping.append(new KeyMapping(PlayerAction::switchPlayerWest,Qt::Key::Key_J));
 	mapping.append(new KeyMapping(PlayerAction::revert,Qt::Key::Key_R));
 	mapping.append(new KeyMapping(PlayerAction::giveUp,Qt::Key::Key_Q));
 	mapping.append(new KeyMapping(PlayerAction::enterBidding,Qt::Key::Key_Space));
@@ -16,7 +20,7 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 	mapping.append(new KeyMapping(PlayerAction::sendBidding,Qt::Key::Key_Return));
 	countdown.setSingleShot(false);
 	countdown.setInterval(1s);
-    connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
+	connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
 
 
 }
@@ -51,6 +55,7 @@ bool GameControll::triggerAction(PlayerAction action, QString user)
 		{
 			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
 			{
+				board->switchPlayer(static_cast<Direction>(action-PlayerAction::playerSwitch));
 				emit actionTriggered(action);
 				return true;
 			}
@@ -79,15 +84,12 @@ bool GameControll::triggerAction(PlayerAction action, QString user)
 	return false;
 }
 
-void GameControll::activePlayerChanged (int playerNumber){
-
-   if(triggerAction(PlayerAction::playerSwitch, "")){
-
-       board->changeActivePlayer(playerNumber);
-
+void GameControll::activePlayerChanged (int playerNumber)
+{
+   if(triggerAction(PlayerAction::playerSwitch, ""))
+   {
+	   board->changeActivePlayer(playerNumber);
    }
-
-
 }
 
 void GameControll::nextTarget()

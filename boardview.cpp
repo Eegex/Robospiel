@@ -113,13 +113,13 @@ QPoint BoardView::tileToDesktopCoordinates(Tile* tile)
 
 void BoardView::paintEvent(QPaintEvent * event)
 {
-    QPainter painter;
-    painter.begin(this);
-    //	painter.setRenderHint(QPainter::Antialiasing);
-    QPen debug(QColor(255,0,255));
-    QPen gridPen(grid,1,Qt::SolidLine,Qt::RoundCap);
-    QPen wallPen(primary,2,Qt::SolidLine,Qt::RoundCap);
-    QPen player(QColor(0,0,0),2,Qt::SolidLine,Qt::RoundCap);
+	QPainter painter;
+	painter.begin(this);
+	//painter.setRenderHint(QPainter::Antialiasing);
+	QPen debug(QColor(255,0,255));
+	QPen gridPen(grid,1,Qt::SolidLine,Qt::RoundCap);
+	QPen wallPen(primary,2,Qt::SolidLine,Qt::RoundCap);
+	QPen player(QColor(0,0,0),2,Qt::SolidLine,Qt::RoundCap);
 
     double tileHeight = (height() - 10) / static_cast<double>(board->getSize().height());
     double tileWidth = (width() - 10) / static_cast<double>(board->getSize().width());
