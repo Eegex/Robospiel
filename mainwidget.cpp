@@ -9,6 +9,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
     view->setBoard(game->createBoard(16, 16, 5));
 	view->setMapping(game->getMapping());
 	connect(view,&BoardView::action,game,&GameControll::triggerAction);
+    connect(view,&BoardView::activePlayerChanged,game,&GameControll::activePlayerChanged);
 	networkView = new NetworkView;
 	settings = new SettingsDialog(*game->getMapping());
 	lcd = new QLCDNumber(this);

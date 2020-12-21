@@ -2,7 +2,7 @@
 #include <QTranslator>
 #include "keymappingview.h"
 #include "mainwindow.h"
-#include "PlayerBiddingWidget.h"
+#include "UserBiddingWidget.h"
 #include "LeaderBoardWidget.h"
 #include "user.h"
 

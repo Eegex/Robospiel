@@ -16,7 +16,9 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 	mapping.append(new KeyMapping(PlayerAction::sendBidding,Qt::Key::Key_Return));
 	countdown.setSingleShot(false);
 	countdown.setInterval(1s);
-	connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
+    connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
+
+
 }
 
 Board * GameControll::createBoard(int width, int height, int playerNumber)
@@ -76,6 +78,17 @@ bool GameControll::triggerAction(PlayerAction action, QString user)
 		}
 	}
 	return false;
+}
+
+void GameControll::activePlayerChanged (int playerNumber){
+
+   if(triggerAction(PlayerAction::playerSwitch, "")){
+
+       board->changeActivePlayer(playerNumber);
+
+   }
+
+
 }
 
 void GameControll::nextTarget()

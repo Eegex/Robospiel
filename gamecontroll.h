@@ -27,6 +27,7 @@ public slots:
 	void nextTarget();
 	void remakeBoard();
 
+    void activePlayerChanged(int playerNumber);
 private:
 	Phase currentPhase = Phase::idle;
 	QVector<KeyMapping*> mapping;

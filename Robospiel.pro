@@ -9,6 +9,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    UserBiddingWidget.cpp \
     board.cpp \
     leaderboardwidget.cpp \
     boardview.cpp \
@@ -21,19 +22,20 @@ SOURCES += \
     main.cpp \
     mainwidget.cpp \
     mainwindow.cpp \
-    playerBiddingWidget.cpp \
-    playercreationwidget.cpp \
+    pawnwidget.cpp \
     networkview.cpp \
+    playerwidget.cpp \
     server.cpp \
     settingsdialog.cpp \
     tile.cpp \
-    user.cpp
+    user.cpp \
+    usercreationwidget.cpp
 
 HEADERS += \
     Direction.h \
     LeaderBoardWidget.h \
-    PlayerBiddingWidget.h \
-    PlayerCreationWidget.h \
+    UserBiddingWidget.h \
+    UserCreationWidget.h \
     board.h \
     boardview.h \
     client.h \
@@ -46,6 +48,8 @@ HEADERS += \
     mainwidget.h \
     mainwindow.h \
     networkview.h \
+    pawnwidget.h \
+    playerwidget.h \
     server.h \
     settingsdialog.h \
     tile.h \

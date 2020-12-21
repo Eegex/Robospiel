@@ -24,11 +24,12 @@ public:
 	int activePlayer = 0;
 	void moveActivePlayer(Direction d);
 	void setPlayerOnTile(int player, Tile *tile);
-	void changeActivePlayer(Tile *t);
+    void changeActivePlayer(int playerNumber);
 public slots:
 	void startNewRound();
 signals:
 	void boardChanged();
+    void playerMoved(int playerNumber);
 protected:
 	void placeGoalAwayFromSeeker();
 private:

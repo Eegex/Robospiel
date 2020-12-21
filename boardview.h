@@ -11,8 +11,10 @@
 #include <QRandomGenerator>
 #include <QRect>
 #include <QMouseEvent>
+#include "QDebug"
 #include "board.h"
 #include "keymapping.h"
+#include "playerwidget.h"
 
 
 class BoardView : public QWidget
@@ -47,13 +49,16 @@ private:
 	QColor primary = QColor(20,20,20);
 	QColor grid = QColor(124,138,0);
     void callChangeActivePlayer(Tile *t);
+    QVector<PlayerWidget* > playerWidgets;
     //void translateMapping(PlayerAction action);
     //void callMoveActivePlayer(Direction d);
+    QPoint tileToDesktopCoordinates(Tile *tile);
 signals:
 	void tileHovered(Tile * t);
 	void tileClicked(Tile * t);
 	void swipe(Direction d);
     void action(PlayerAction a, QString userName);
+    void activePlayerChanged(int playerNumber);
 
 };
 

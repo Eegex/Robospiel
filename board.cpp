@@ -422,15 +422,16 @@ void Board::moveActivePlayer(Direction d)
 						   currentTile->getPosition().ry() + changeOfYAxis);
 		}
 		setPlayerOnTile(activePlayer, currentTile);
+        emit playerMoved(activePlayer);
 	}
 }
 
-void Board::changeActivePlayer(Tile* t)
+void Board::changeActivePlayer(int playerNumber)
 {
-    if(t->getPlayer()+1)
-	{
-		activePlayer = t->getPlayer();
-	}
+
+    activePlayer = playerNumber;
+    emit boardChanged();
+
 }
 
 

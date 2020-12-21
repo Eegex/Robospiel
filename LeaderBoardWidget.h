@@ -5,8 +5,8 @@
 #include <QVariant>
 #include <QGridLayout>
 #include <QVector>
-#include "PlayerBiddingWidget.h"
-#include "PlayerCreationWidget.h"
+#include "UserBiddingWidget.h"
+#include "UserCreationWidget.h"
 #include "user.h"
 
 class LeaderBoardWidget : public QWidget
@@ -20,12 +20,12 @@ private:
     QPushButton * addBtn = new QPushButton(this);
     unsigned int numOfPlayers = 0;
     unsigned int currentPlayer = 0;
-    QVector<PlayerBiddingWidget*> players; //Several Players, Array of Widgets for individual players
-    PlayerCreationWidget * playerCreationWidget = new PlayerCreationWidget(nullptr);
+    QVector<UserBiddingWidget*> players; //Several Players, Array of Widgets for individual players
+    UserCreationWidget * playerCreationWidget = new UserCreationWidget(nullptr);
 
 public slots:
     void sortByBidding();
-    void addPlayer(struct user * newUser);
+    void addPlayer(struct UserData * newUser);
     void newPlayer();
 
 signals:
