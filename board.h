@@ -30,6 +30,7 @@ public slots:
 signals:
 	void boardChanged();
     void playerMoved(int playerNumber);
+    void goalMoved();
 protected:
 	void placeGoalAwayFromSeeker();
 private:

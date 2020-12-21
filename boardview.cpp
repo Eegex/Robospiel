@@ -25,7 +25,9 @@ void BoardView::setBoard(Board * b)
         connect(playerWidgets.back(), &PlayerWidget::clicked,this, [&](int playerNumber){emit activePlayerChanged(playerNumber);} );
 
     }
+    goalwidget = new GoalWidget(QSize(20,20),board,this);
     connect(board,&Board::playerMoved,this, [&](int playerNumber){playerWidgets.at(playerNumber)->move(tileToDesktopCoordinates(board->players.at(playerNumber)));});
+    connect(board,&Board::goalMoved,this, [&](){goalwidget->move(tileToDesktopCoordinates(board->goal));});
 }
 
 void BoardView::setDebugOutputEnabled(bool set)
@@ -229,6 +231,7 @@ void BoardView::resizeEvent(QResizeEvent * event)
     {
         playerWidgets.at(i)->move(tileToDesktopCoordinates(board->players.at(i)));
     }
+    goalwidget->move(tileToDesktopCoordinates(board->goal));
     event->accept();
 }
 

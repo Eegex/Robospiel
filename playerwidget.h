@@ -14,12 +14,10 @@
 class PlayerWidget : public PawnWidget
 {
     Q_OBJECT
-public:
-    explicit PlayerWidget(QSize size, int playerNumber, Board* board, QWidget* parent = nullptr);
-
+public:    
+    explicit PlayerWidget(QSize size, int playerNumber, Board *board, QWidget *parent= nullptr);
 private:
     int playerNumber;
-    Board* board;
     bool debugMode = true;
 
 protected:

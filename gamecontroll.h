@@ -29,7 +29,7 @@ public slots:
 
     void activePlayerChanged(int playerNumber);
 private:
-	Phase currentPhase = Phase::idle;
+    Phase currentPhase = Phase::freeplay;
 	QVector<KeyMapping*> mapping;
 	Board * board = nullptr;
 	QString activeUser;

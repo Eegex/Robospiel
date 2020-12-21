@@ -15,6 +15,7 @@
 #include "board.h"
 #include "keymapping.h"
 #include "playerwidget.h"
+#include "goalwidget.h"
 
 
 class BoardView : public QWidget
@@ -50,6 +51,7 @@ private:
 	QColor grid = QColor(124,138,0);
     void callChangeActivePlayer(Tile *t);
     QVector<PlayerWidget* > playerWidgets;
+    GoalWidget* goalwidget;
     //void translateMapping(PlayerAction action);
     //void callMoveActivePlayer(Direction d);
     QPoint tileToDesktopCoordinates(Tile *tile);

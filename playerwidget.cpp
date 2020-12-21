@@ -2,8 +2,8 @@
 
 
 
-PlayerWidget::PlayerWidget(QSize size, int playerNumber, Board *board, QWidget *parent):
-    PawnWidget(size, parent), playerNumber(playerNumber), board(board)
+PlayerWidget::PlayerWidget(QSize size,  int playerNumber, Board *board, QWidget *parent):
+    PawnWidget(size, board, parent), playerNumber(playerNumber)
 {
 
 

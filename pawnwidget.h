@@ -3,16 +3,18 @@
 
 #include <QWidget>
 #include <QPoint>
+#include "board.h"
 
 class PawnWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit PawnWidget(QSize size, QWidget *parent = nullptr);
+    explicit PawnWidget(QSize size, Board* board, QWidget *parent = nullptr);
     void move(QPoint point);
 
 
-private:
+protected:
+    Board* board;
 
     
 signals:
