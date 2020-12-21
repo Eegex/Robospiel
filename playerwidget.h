@@ -18,7 +18,8 @@ public:
     explicit PlayerWidget(QSize size, int playerNumber, Board *board, QWidget *parent= nullptr);
 private:
     int playerNumber;
-    bool debugMode = true;
+    bool debugMode = false;
+    double fractionOfTile = 0.7;
 
 protected:
 

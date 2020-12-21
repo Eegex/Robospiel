@@ -233,6 +233,7 @@ void BoardView::resizeEvent(QResizeEvent * event)
 		playerWidgets.at(i)->setFixedSize(w,h);
 	}
 	goalwidget->move(tileToDesktopCoordinates(board->goal));
+    goalwidget->setFixedSize(w,h);
 	event->accept();
 }
 
