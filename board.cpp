@@ -50,6 +50,7 @@ void Board::startNewRound()
 	seeker = r->bounded(players.size());
 	//goal only in corner?
 	placeGoalInCorner();
+    emit goalMoved();
 	//else:
 	//placeGoalAwayFromSeeker();
     emit boardChanged();
@@ -286,13 +287,28 @@ void Board::placeGoalInCorner()
 		int numberOfWalls = 0;
 
 		placeGoalAwayFromSeeker();
-		for(int i = 0; i<4; i++)
+        for(int i = 0; i<5; i++)
 		{
+            //we need to make sure that only tiles with real corners are used.
+            //A tile like this | | should not get a goal. So we check if the two walls of the tile are in neighboring directions.
 			Direction dir = getNextDirection(Direction::north, i);
 			if(goal->getWall(dir))
 			{
-				numberOfWalls++;
+                qDebug() << goal << printDirection(dir);
+                if(numberOfWalls ==1){
+                    numberOfWalls = 2;
+                }
+                else if(numberOfWalls==0){
+
+                    numberOfWalls++;
+                }
+
 			}
+            else{
+                if(numberOfWalls==1){
+                numberOfWalls=0;
+                }
+            }
 		}
 		noCorner = numberOfWalls<2;
 		numberOfWalls=0;
@@ -390,7 +406,7 @@ void Board::moveActivePlayer(Direction d)
 		changeOfXAxis = -1;
 		break;
 	}
-	qDebug()<< "blaaaaaa" << changeOfXAxis << "   " << changeOfYAxis;
+    //qDebug()<< "blaaaaaa" << changeOfXAxis << "   " << changeOfYAxis;
 	Tile* currentTile = players.at(activePlayer);
 
 	Tile* nextTile = getTile(

@@ -23,13 +23,13 @@ public:
 	QVector<KeyMapping*> * getMapping();
 
 public slots:
-	void setMapping(QVector<KeyMapping *> mapping);
+    void setMapping(QVector<KeyMapping *> mapping);
 	void nextTarget();
 	void remakeBoard();
 
     void activePlayerChanged(int playerNumber);
 private:
-	Phase currentPhase = Phase::freeplay;
+    Phase currentPhase = Phase::freeplay;
 	QVector<KeyMapping*> mapping;
 	Board * board = nullptr;
 	QString activeUser;
