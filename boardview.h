@@ -26,7 +26,7 @@ public:
 	void setBoard(Board * b);
 	void setDebugOutputEnabled(bool set = true);
 	void resize(int pixelPerTile);
-    void setMapping(QVector<KeyMapping *> *value);
+	void setMapping(QVector<KeyMapping *> *value);
 
 private slots:
 	void paintEvent(QPaintEvent * event);

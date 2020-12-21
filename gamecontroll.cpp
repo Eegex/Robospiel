@@ -40,10 +40,9 @@ bool GameControll::triggerAction(PlayerAction action, QString user)
 		{
 			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
 			{
-                //we subtract movement from action to get a direction (clever enum numbers)
+				//we subtract movement from action to get a direction (clever enum numbers)
 
-                board->moveActivePlayer(static_cast<Direction>(action - PlayerAction::movement));
-
+				board->moveActivePlayer(static_cast<Direction>(action - PlayerAction::movement));
 				emit actionTriggered(action);
 				return true;
 			}
@@ -123,7 +122,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 		{
 			if(currentPhase == Phase::search)
 			currentPhase = phase;
-            timeLeft = 2;
+			timeLeft = 2;
 			emit time(timeLeft);
 			countdown.start();
 			return true;
@@ -164,7 +163,7 @@ QVector<KeyMapping*> * GameControll::getMapping()
 }
 void GameControll::setMapping(QVector<KeyMapping*> mapping)
 {
-    this->mapping=mapping;
+	this->mapping=mapping;
 }
 
 Board * GameControll::getBoard() const
