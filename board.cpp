@@ -387,7 +387,7 @@ QString Board::printDirection(Direction direction)
 	}
 }
 
-void Board::moveActivePlayer(Direction d)
+void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 {
 	int changeOfXAxis = 0;
 	int changeOfYAxis = 0;
@@ -407,7 +407,11 @@ void Board::moveActivePlayer(Direction d)
 		break;
 	}
     //qDebug()<< "blaaaaaa" << changeOfXAxis << "   " << changeOfYAxis;
+
 	Tile* currentTile = players.at(activePlayer);
+    HistoryElement h = HistoryElement();
+    h.action=static_cast<PlayerAction>((int)PlayerAction::movement+(int)d);
+    h.previousPosition=currentTile->getPosition();
 
 	Tile* nextTile = getTile(
 						 currentTile->getPosition().rx() + changeOfXAxis,
@@ -416,7 +420,7 @@ void Board::moveActivePlayer(Direction d)
     {
         return;
     }
-    while(!currentTile->getWall(d)&& nextTile->getPlayer()==-1)
+    while(!currentTile->getWall(d)&& nextTile->getPlayer()==-1 && (currentTile->getPosition().x()!=targetX || currentTile->getPosition().y()!=targetY))
 	{
 		bool nextTileFree = true;
 		for(Tile* player : players)
@@ -428,7 +432,7 @@ void Board::moveActivePlayer(Direction d)
 		}
 		if(!nextTileFree)
 		{
-			return;
+            break;
 		}
 		currentTile = nextTile;
 		if(!nextTile->getWall(d))
@@ -440,16 +444,45 @@ void Board::moveActivePlayer(Direction d)
 		setPlayerOnTile(activePlayer, currentTile);
         emit playerMoved(activePlayer);
 	}
+
+    history.append(h);
 }
 
 void Board::changeActivePlayer(int playerNumber)
 {
+
+    HistoryElement h = HistoryElement();
+    h.action=PlayerAction::playerSwitch;
+    h.previousPlayer=activePlayer;
+    history.append(h);
 
     activePlayer = playerNumber;
     emit boardChanged();
 
 }
 
+void Board::revert()
+{
+    if(!history.isEmpty())
+    {
+        HistoryElement h = history.takeLast();
+        if(h.action & PlayerAction::movement)
+        {
+            int direction = h.action-PlayerAction::movement;
+            direction = direction>(int) Direction::east ? direction>>2 : direction<<2; //invert direction
+            moveActivePlayer(static_cast<Direction>(direction), h.previousPosition.x(), h.previousPosition.y());
+        }
+        if(h.action==PlayerAction::playerSwitch)
+        {
+            changeActivePlayer(h.previousPlayer);
+        }
 
+        //remove the new written history
+        history.removeLast();
+    }
+
+    //TODO delete history after each presentation and after the freeplay-phase
+
+}
 
 

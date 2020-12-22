@@ -9,6 +9,12 @@
 #include <QVector>
 #include "tile.h"
 
+struct HistoryElement
+{
+    PlayerAction action;
+    int previousPlayer;
+    QPoint previousPosition;
+};
 
 class Board : public QObject
 {
@@ -22,9 +28,10 @@ public:
 	Tile* goal;
 	int seeker = 0;
 	int activePlayer = 0;
-	void moveActivePlayer(Direction d);
+    void moveActivePlayer(Direction d, int targetX = -1, int targetY = -1);
 	void setPlayerOnTile(int player, Tile *tile);
     void changeActivePlayer(int playerNumber);
+    void revert();
 public slots:
 	void startNewRound();
 signals:
@@ -36,7 +43,7 @@ protected:
 private:
 	QVector<QVector<Tile*>> tiles;
 	QRandomGenerator * r = nullptr;
-	//TODO history
+    QVector<HistoryElement> history;
 	//TODO active pawn
 
 	Tile *getRandomUnoccupiedTile();

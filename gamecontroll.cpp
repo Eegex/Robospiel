@@ -71,6 +71,10 @@ bool GameControll::triggerAction(PlayerAction action, QString user)
 		{
 			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
 			{
+                if(action == PlayerAction::revert)
+                {
+                    board->revert();
+                }
 				emit actionTriggered(action);
 				return true;
 			}
