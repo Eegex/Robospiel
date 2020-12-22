@@ -31,7 +31,9 @@ void PlayerWidget::leaveEvent(QEvent *event)
 
 void PlayerWidget::paintEvent(QPaintEvent *event)
 {
-
+    QRect bounds = rect();
+    double width = bounds.width()*fractionOfTile;
+    double height = bounds.height()*fractionOfTile;
 
     int playerNum = board->players.length();
     double stepSize = 359/playerNum;
@@ -42,25 +44,31 @@ void PlayerWidget::paintEvent(QPaintEvent *event)
 
     QPen pen;
     pen.setColor(color);
+
+    QSize offset = bounds.size() - QSize(width, height);
+
+    bounds.moveTopLeft({(int) offset.width()/2, (int) offset.height()/2});
+    bounds.setSize(QSize((int) width, (int) height));
+
     if(painter.begin(this))
+
     {
-        if(board->activePlayer==playerNumber)
-        {
-        painter.setBrush(color.lighter(200));
-        }
-        else
+
+        painter.setBrush(color.darker(200));
+        painter.setPen(pen);
+        if(board->activePlayer == playerNumber)
         {
             painter.setBrush(color);
+            painter.setPen(color.lighter(130));
         }
-        painter.setPen(pen);
-        painter.drawEllipse(this->rect());
-
-        if(debugMode){
-            painter.drawText(this->rect(), QString::number(playerNumber));
+        painter.drawEllipse(bounds);
+        if(debugMode)
+        {
+            pen.setColor(QColor(255,0,255));
+            painter.setPen(pen);
+            painter.drawText(this->rect().center(), QString::number(playerNumber));
         }
-
         painter.end();
     }
-
     event->accept();
 }

@@ -116,39 +116,61 @@ void Board::placeOuterWalls()
 	{
 		int x= randomXIndex(generator);
 		int y = randomYIndex(generator);
-		Direction randDir = getNextDirection(Direction::east, r->bounded(1,2));
-		int randSide = 0;
-		if(randDir == Direction::west)
-		{
-			if(r->bounded(0,1))
-			{
-				randSide = 0;
-			}
-			else
-			{
-				randSide = tiles.length()-1;
-			}
-			if(!placeOuterWallIfFits(tiles.at(randSide).at(x), Direction::east))
-			{
-				i--;
-			}
-		}
-		else
-		{
-			if(r->bounded(0,1))
-			{
-				randSide = 0;
-			}
-			else
-			{
+//		Direction randDir = getNextDirection(Direction::east, r->bounded(1,2));
+//		int randSide = 0;
+//		if(randDir == Direction::west)
+//		{
+//			if(r->bounded(0,1))
+//			{
+//				randSide = 0;
+//			}
+//			else
+//			{
+//				randSide = tiles.length()-1;
+//			}
+//			if(!placeOuterWallIfFits(tiles.at(randSide).at(x), Direction::east))
+//			{
+//				i--;
+//			}
+//		}
+//		else
+//		{
+//			if(r->bounded(0,1))
+//			{
+//				randSide = 0;
+//			}
+//			else
+//			{
 
-				randSide = tiles.at(0).length()-1;
-			}
-			if(!placeOuterWallIfFits(tiles.at(y).at(randSide), Direction::south))
-			{
-				i--;
-			}
-		}
+//				randSide = tiles.at(0).length()-1;
+//			}
+//			if(!placeOuterWallIfFits(tiles.at(y).at(randSide), Direction::south))
+//			{
+//				i--;
+//			}
+//		}
+
+        int randDir = r->bounded(0,2);
+        int randSide = 0;
+        if(randDir)
+        {
+
+            randSide = r->bounded(0,2)?0:tiles.length()-1;
+
+            if(!placeOuterWallIfFits(tiles.at(randSide).at(x), Direction::east))
+            {
+                i--;
+            }
+        }
+        else
+        {
+            randSide = r->bounded(0,2)?0:tiles.at(0).length()-1;
+
+            if(!placeOuterWallIfFits(tiles.at(y).at(randSide), Direction::south))
+            {
+                i--;
+            }
+        }
 		i++;
 	}
 }
@@ -294,15 +316,12 @@ void Board::placeGoalInCorner()
 			Direction dir = getNextDirection(Direction::north, i);
 			if(goal->getWall(dir))
 			{
-                qDebug() << goal << printDirection(dir);
                 if(numberOfWalls ==1){
                     numberOfWalls = 2;
                 }
                 else if(numberOfWalls==0){
-
                     numberOfWalls++;
                 }
-
 			}
             else{
                 if(numberOfWalls==1){
@@ -483,6 +502,63 @@ void Board::revert()
 
     //TODO delete history after each presentation and after the freeplay-phase
 
+}
+int Board::switchPlayer(Direction d)
+{
+	qDebug() << "Board::switchPlayer(Direction d)";
+	if(!static_cast<int>(d))
+	{
+		qDebug() << "keine Richtung";
+		return activePlayer;
+	}
+	int targetAngle = 0;
+	switch(d)
+	{
+	case Direction::north:
+	{
+		targetAngle = 0;
+		break;
+	}
+	case Direction::east:
+	{
+		targetAngle = 90;
+		break;
+	}
+	case Direction::south:
+	{
+		targetAngle = 180;
+		break;
+	}
+	case Direction::west:
+	{
+		targetAngle = 270;
+		break;
+	}
+	}
+	qDebug() << targetAngle;
+	int minAngle = 360;
+	Tile * min = nullptr;
+	for(Tile * t:players)
+	{
+		if(t->getPlayer() != activePlayer)
+		{
+			QPoint delta = players.at(activePlayer)->getPosition() - t->getPosition();
+			qDebug() << "Winkel" << atan(delta.x()/delta.y());
+			int tileAngle = abs(atan(delta.x()/delta.y()) - targetAngle);
+			qDebug() << tileAngle << minAngle;
+			if(tileAngle >= 360)
+			{
+				tileAngle -= 360;
+			}
+			if(tileAngle < minAngle)
+			{
+				min = t;
+				minAngle = tileAngle;
+			}
+		}
+	}
+	changeActivePlayer(min->getPlayer());
+	return min->getPlayer();
 }
 
 
