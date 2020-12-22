@@ -32,7 +32,6 @@ public:
 	void setPlayerOnTile(int player, Tile *tile);
     void changeActivePlayer(int playerNumber);
     void revert();
-	void changeActivePlayer(int playerNumber);
 public slots:
 	void startNewRound();
 	int switchPlayer(Direction d);
