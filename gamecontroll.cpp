@@ -21,8 +21,6 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 	countdown.setSingleShot(false);
 	countdown.setInterval(1s);
 	connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
-
-
 }
 
 Board * GameControll::createBoard(int width, int height, int playerNumber)
@@ -33,6 +31,7 @@ Board * GameControll::createBoard(int width, int height, int playerNumber)
 		board = nullptr;
 	}
 	board = new Board(width, height, playerNumber, this);
+	connect(board,&Board::goalHit,this,&GameControll::nextTarget);
 	return board;
 }
 
@@ -88,7 +87,7 @@ bool GameControll::triggerAction(PlayerAction action, QString user)
 	return false;
 }
 
-void GameControll::activePlayerChanged (int playerNumber)
+void GameControll::activePlayerChanged(int playerNumber)
 {
    if(triggerAction(PlayerAction::playerSwitch, ""))
    {

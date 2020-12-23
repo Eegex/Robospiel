@@ -40,7 +40,7 @@ Board::Board(int width, int height, int playerNumber, QObject *parent) : QObject
 
 void Board::setPlayerOnTile(int player, Tile* tile)
 {
-    players[player]->setPlayer(-1);
+	players[player]->setPlayer(-1);
 	tile->setPlayer(player);
 	players[player] = tile;
 }
@@ -48,12 +48,13 @@ void Board::setPlayerOnTile(int player, Tile* tile)
 void Board::startNewRound()
 {
 	seeker = r->bounded(players.size());
+	activePlayer = seeker;
 	//goal only in corner?
 	placeGoalInCorner();
-    emit goalMoved();
+	emit goalMoved();
 	//else:
 	//placeGoalAwayFromSeeker();
-    emit boardChanged();
+	emit boardChanged();
 }
 
 Tile* Board::getTile(int x, int y)
@@ -79,7 +80,7 @@ Tile* Board::getRandomUnoccupiedTile()
 	while(!tileIsValid)
 	{
 		counter++;
-		initialTile = tiles.at(r->bounded(tiles.length()-1)).at(r->bounded(tiles.at(0).length()-1));
+		initialTile = tiles.at(r->bounded(tiles.length())).at(r->bounded(tiles.at(0).length()));
 		tileIsValid = true;
 		for(Tile* player : players)
 		{
@@ -106,71 +107,43 @@ void Board::placeOuterWalls()
 	int outerWallspots = tiles.at(0).length()*2 + tiles.length()*2 - NUM_PLACES_THAT_CANT_HAVE_OUTER_WALLS;
 
 	int numberOfOuterWalls = (int) (outerWallspots/AVG_DIST_OF_OUTER_WALLS + 1);
-
-	int i =0;
-
-	std::default_random_engine generator(QTime::currentTime().msecsSinceStartOfDay());
-    std::uniform_int_distribution<int> randomXIndex(1,(tiles.at(0).length()-NUMBER_OF_UNUSED_OUTER_POSITIONS)); //?
-    std::uniform_int_distribution<int> randomYIndex(1,(tiles.length()-NUMBER_OF_UNUSED_OUTER_POSITIONS)); //?
+	int i = 0;
 	while(i<numberOfOuterWalls)
 	{
-		int x= randomXIndex(generator);
-		int y = randomYIndex(generator);
-//		Direction randDir = getNextDirection(Direction::east, r->bounded(1,2));
-//		int randSide = 0;
-//		if(randDir == Direction::west)
-//		{
-//			if(r->bounded(0,1))
-//			{
-//				randSide = 0;
-//			}
-//			else
-//			{
-//				randSide = tiles.length()-1;
-//			}
-//			if(!placeOuterWallIfFits(tiles.at(randSide).at(x), Direction::east))
-//			{
-//				i--;
-//			}
-//		}
-//		else
-//		{
-//			if(r->bounded(0,1))
-//			{
-//				randSide = 0;
-//			}
-//			else
-//			{
-
-//				randSide = tiles.at(0).length()-1;
-//			}
-//			if(!placeOuterWallIfFits(tiles.at(y).at(randSide), Direction::south))
-//			{
-//				i--;
-//			}
-//		}
-
-        int randDir = r->bounded(0,2);
-        int randSide = 0;
-        if(randDir)
-        {
-
-            randSide = r->bounded(0,2)?0:tiles.length()-1;
-
-            if(!placeOuterWallIfFits(tiles.at(randSide).at(x), Direction::east))
-            {
-                i--;
-            }
-        }
-        else
-        {
-            randSide = r->bounded(0,2)?0:tiles.at(0).length()-1;
-
-            if(!placeOuterWallIfFits(tiles.at(y).at(randSide), Direction::south))
-            {
-                i--;
-            }
-        }
+		int x = r->bounded(1,tiles.at(0).length()-NUMBER_OF_UNUSED_OUTER_POSITIONS);
+		int y = r->bounded(1,tiles.length()-NUMBER_OF_UNUSED_OUTER_POSITIONS);
+		Direction randDir = getNextDirection(Direction::east, r->bounded(1,3));
+		int randSide = 0;
+		if(randDir == Direction::west)
+		{
+			if(r->bounded(0,2))
+			{
+				randSide = 0;
+			}
+			else
+			{
+				randSide = tiles.length()-1;
+			}
+			if(!placeOuterWallIfFits(tiles.at(randSide).at(x), Direction::east))
+			{
+				i--;
+			}
+		}
+		else
+		{
+			if(r->bounded(0,2))
+			{
+				randSide = 0;
+			}
+			else
+			{
+				randSide = tiles.length()-1;
+			}
+			if(!placeOuterWallIfFits(tiles.at(y).at(randSide), Direction::south))
+			{
+				i--;
+			}
+		}
 		i++;
 	}
 }
@@ -219,9 +192,9 @@ void Board::placeInnerWalls()
 	while(i<numberOfInnerWalls)
 	{
 		i++;
-		int x = r->bounded(1,(tiles.at(0).length()-2));
-		int y = r->bounded(1,(tiles.length()-2));
-		if(!placeInnerWallifFits(tiles.at(y).at(x), getNextDirection(Direction::north, r->bounded(1,4))))
+		int x = r->bounded(1,(tiles.at(0).length()-1));
+		int y = r->bounded(1,(tiles.length()-1));
+		if(!placeInnerWallifFits(tiles.at(y).at(x), getNextDirection(Direction::north, r->bounded(1,5))))
 		{
 			i--;
 		}
@@ -309,25 +282,25 @@ void Board::placeGoalInCorner()
 		int numberOfWalls = 0;
 
 		placeGoalAwayFromSeeker();
-        for(int i = 0; i<5; i++)
+		for(int i = 0; i<5; i++)
 		{
-            //we need to make sure that only tiles with real corners are used.
-            //A tile like this | | should not get a goal. So we check if the two walls of the tile are in neighboring directions.
+			//we need to make sure that only tiles with real corners are used.
+			//A tile like this | | should not get a goal. So we check if the two walls of the tile are in neighboring directions.
 			Direction dir = getNextDirection(Direction::north, i);
 			if(goal->getWall(dir))
 			{
-                if(numberOfWalls ==1){
-                    numberOfWalls = 2;
-                }
-                else if(numberOfWalls==0){
-                    numberOfWalls++;
-                }
+				if(numberOfWalls ==1){
+					numberOfWalls = 2;
+				}
+				else if(numberOfWalls==0){
+					numberOfWalls++;
+				}
 			}
-            else{
-                if(numberOfWalls==1){
-                numberOfWalls=0;
-                }
-            }
+			else{
+				if(numberOfWalls==1){
+				numberOfWalls=0;
+				}
+			}
 		}
 		noCorner = numberOfWalls<2;
 		numberOfWalls=0;
@@ -342,7 +315,6 @@ void Board::placeGoalAwayFromSeeker()
 	while(inRowOrColWithSeeker)
 	{
 		goal = getRandomUnoccupiedTile();
-		//BUG: Random launch out_of_range
 		if(!(goal->getPosition().rx() == players.at(seeker)->getPosition().rx()) &&
 		   !(goal->getPosition().ry() == players.at(seeker)->getPosition().ry())    )
 		{
@@ -425,8 +397,7 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 		changeOfXAxis = -1;
 		break;
 	}
-    qDebug()<< "blaaaaaa" << changeOfXAxis << "   " << changeOfYAxis;
-
+	//qDebug()<< "blaaaaaa" << changeOfXAxis << "   " << changeOfYAxis;
 	Tile* currentTile = players.at(activePlayer);
     HistoryElement h = HistoryElement();
     h.action=static_cast<PlayerAction>((int)PlayerAction::movement+(int)d);
@@ -463,7 +434,12 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 						   currentTile->getPosition().ry() + changeOfYAxis);
 		}
 		setPlayerOnTile(activePlayer, currentTile);
-        emit playerMoved(activePlayer);
+		emit playerMoved(activePlayer);
+		moves++;
+		if(goal == currentTile && seeker == activePlayer)
+		{
+			emit goalHit(moves);
+		}
 	}
 
     history.append(h);
@@ -513,7 +489,7 @@ int Board::switchPlayer(Direction d)
 		qDebug() << "keine Richtung";
 		return activePlayer;
 	}
-	int targetAngle = 0;
+	int targetAngle;
 	switch(d)
 	{
 	case Direction::north:
@@ -544,9 +520,10 @@ int Board::switchPlayer(Direction d)
 	{
 		if(t->getPlayer() != activePlayer)
 		{
-			QPoint delta = players.at(activePlayer)->getPosition() - t->getPosition();
-			qDebug() << "Winkel" << atan(delta.x()/delta.y());
-			int tileAngle = abs(atan(delta.x()/delta.y()) - targetAngle);
+			qDebug() << t->getPlayer();
+			QPoint delta = t->getPosition() - players.at(activePlayer)->getPosition();
+			qDebug() << "Winkel" << atan(delta.y()/delta.x()) * 180.0/3.14159265358979323846;
+			int tileAngle = abs(atan(delta.y()/delta.x()) * 180/3.14159265358979323846 - targetAngle);
 			qDebug() << tileAngle << minAngle;
 			if(tileAngle >= 360)
 			{
@@ -559,7 +536,7 @@ int Board::switchPlayer(Direction d)
 			}
 		}
 	}
-	changeActivePlayer(min->getPlayer());
+//	changeActivePlayer(min->getPlayer());
 	return min->getPlayer();
 }
 
