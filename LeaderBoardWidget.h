@@ -20,6 +20,7 @@ private:
     QPushButton * addBtn = new QPushButton(this);
     unsigned int numOfPlayers = 0;
     unsigned int currentPlayer = 0;
+    unsigned short isOnline = 0;
     QVector<PlayerBiddingWidget*> players; //Several Players, Array of Widgets for individual players
     PlayerCreationWidget * playerCreationWidget = new PlayerCreationWidget(nullptr);
 

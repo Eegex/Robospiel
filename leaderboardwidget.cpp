@@ -7,10 +7,15 @@
 LeaderBoardWidget::LeaderBoardWidget(QWidget *parent) : QWidget(parent)
 {
     playerCreationWidget->hide();
-    addBtn->setText("Add new Player");
-    lay->addWidget(addBtn, numOfPlayers, 0);
+    addBtn->hide();
+    if(!isOnline)
+    {
+        addBtn->setText("Add new Player");
+        lay->addWidget(addBtn, numOfPlayers, 0);
+        addBtn->show();
+        connect(addBtn,&QPushButton::clicked,this,&LeaderBoardWidget::newPlayer);
+    }
     setLayout(lay);
-    connect(addBtn,&QPushButton::clicked,this,&LeaderBoardWidget::newPlayer);
     connect(playerCreationWidget, &PlayerCreationWidget::playerAdded, this, &LeaderBoardWidget::addPlayer);
 }
 
@@ -29,7 +34,7 @@ void LeaderBoardWidget::addPlayer(struct user * newUser)
     lay->addWidget(players.at(numOfPlayers));
     numOfPlayers++; //Increment number of players, important for correct placement of button
     for(unsigned int i = 0; i<numOfPlayers; i++){lay->addWidget(players.at(i), i, 0);}
-    lay->addWidget(addBtn, numOfPlayers, 0); //New Player Button under all Players
+    if(!isOnline){lay->addWidget(addBtn, numOfPlayers, 0);} //New Player Button under all Players
     lay->update();
 }
 
