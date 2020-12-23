@@ -1,9 +1,13 @@
 #include "user.h"
+#include <QString>
+#include <QColor>
+#include <QUuid>
+
 
 User::User(QString name, QColor color, QObject *parent) : QObject(parent), name(name), color(color)
 {
+    User::id = QUuid::createUuid();
 }
-
 QString User::getName()
 {
 	return name;
@@ -12,9 +16,13 @@ QColor User::getColor()
 {
 	return color;
 }
-int User::getTip()
+QUuid User::getId()
 {
-	return tip;
+    return id;
+}
+int User::getBidding()
+{
+    return bidding;
 }
 int User::getPoints()
 {
@@ -29,9 +37,9 @@ void User::setColor(QColor c)
 {
 	color = c;
 }
-void User::setTip(int t)
+void User::setBidding(int b)
 {
-	tip = t;
+    bidding = b;
 }
 void User::addPoints(int p)
 {

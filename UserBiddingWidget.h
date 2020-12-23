@@ -6,6 +6,8 @@
 #include <QVBoxLayout>
 #include <QDate>
 #include <QSpinBox>
+#include <QColor>
+#include <QUuid>
 
 class UserBiddingWidget : public QWidget
 {
@@ -17,19 +19,22 @@ public:
 private:
     QGridLayout * userLayout = new QGridLayout(this);
     QLabel * labelName = new QLabel(this);
+    QUuid userId;
     QString userName;
     QColor userColor;
     int userBidding = 999;
 public slots:
+    QUuid getId();
     QString getName();
     int getBidding();
+    void setId(QUuid id);
     void setBidding(int bidding);
     void setName(QString v);
     void setColor(QColor colour);
     void btnPressed();
 
 signals:
-    void biddingChanged(int playerBidding);
+    void biddingChanged(int playerBidding, QUuid id);
     void nameChanged();
     void colourChanged();
 };
