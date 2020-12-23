@@ -26,7 +26,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	glMain->addWidget(leaderboard,1,1,Qt::AlignCenter);
 	connect(game,&GameControll::time,this,&MainWidget::updateTimer);
 	adjustSize();
-    connect(leaderboard->userCreationWidget, &UserCreationWidget::userAdded, this, &MainWidget::addUser);
+    connect(leaderboard->getUserCreationWidget(), &UserCreationWidget::userAdded, this, &MainWidget::addUser);
 
     connect(settings, &SettingsDialog::newMapping, game, &GameControll::setMapping);
 }
@@ -56,7 +56,7 @@ void MainWidget::addUser(struct UserData * newUser)
     qDebug()<< u->getName();
     // adds new player in the frontend
     leaderboard->addPlayer(u);
-    connect(leaderboard->players.last(), &UserBiddingWidget::biddingChanged, this, &MainWidget::changeBidding);
+    connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, &MainWidget::changeBidding);
 }
 
 void MainWidget::changeBidding(int bidding, QUuid id)

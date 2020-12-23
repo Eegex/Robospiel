@@ -31,10 +31,10 @@ void LeaderBoardWidget::addPlayer(User * newUser)
     newWidget->setName(newUser->getName());
     newWidget->setColor(newUser->getColor().name());
     newWidget->setId(newUser->getId());
-    players.append(newWidget); //Append widget to list of players
-    lay->addWidget(players.at(numOfPlayers));
+    users.append(newWidget); //Append widget to list of players
+    lay->addWidget(users.at(numOfPlayers));
     numOfPlayers++; //Increment number of players, important for correct placement of button
-    for(unsigned int i = 0; i<numOfPlayers; i++){lay->addWidget(players.at(i), i, 0);}
+    for(unsigned int i = 0; i<numOfPlayers; i++){lay->addWidget(users.at(i), i, 0);}
     if(!isOnline){lay->addWidget(addBtn, numOfPlayers, 0);} //New Player Button under all Players
     lay->update();
 }
@@ -46,3 +46,5 @@ void LeaderBoardWidget::newPlayer()
     userCreationWidget->setFocus(); //Set focus to specific window
 }
 
+QVector<UserBiddingWidget*>* LeaderBoardWidget::getUsers(){return &users;}
+UserCreationWidget *LeaderBoardWidget::getUserCreationWidget(){return userCreationWidget;}
