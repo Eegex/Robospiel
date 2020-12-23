@@ -59,7 +59,7 @@ void Board::startNewRound()
 Tile* Board::getTile(int x, int y)
 {
 
-    if(x < getSize().width() && y < getSize().height())
+    if(x < getSize().width() && y < getSize().height() && x>= 0 && y>= 0)
     {
         return tiles.at(y).at(x);
     }
@@ -425,7 +425,7 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 		changeOfXAxis = -1;
 		break;
 	}
-    //qDebug()<< "blaaaaaa" << changeOfXAxis << "   " << changeOfYAxis;
+    qDebug()<< "blaaaaaa" << changeOfXAxis << "   " << changeOfYAxis;
 
 	Tile* currentTile = players.at(activePlayer);
     HistoryElement h = HistoryElement();
@@ -437,6 +437,8 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 						 currentTile->getPosition().ry() + changeOfYAxis);
     if(nextTile == nullptr)
     {
+        qDebug()<< "nullptr";
+
         return;
     }
     while(!currentTile->getWall(d)&& nextTile->getPlayer()==-1 && (currentTile->getPosition().x()!=targetX || currentTile->getPosition().y()!=targetY))
