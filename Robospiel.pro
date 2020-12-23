@@ -2,14 +2,16 @@ QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
+CONFIG += c++17
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    UserBiddingWidget.cpp \
     board.cpp \
+    goalwidget.cpp \
     leaderboardwidget.cpp \
     boardview.cpp \
     client.cpp \
@@ -21,31 +23,35 @@ SOURCES += \
     main.cpp \
     mainwidget.cpp \
     mainwindow.cpp \
-    playerBiddingWidget.cpp \
-    playercreationwidget.cpp \
+    pawnwidget.cpp \
     networkview.cpp \
+    playerwidget.cpp \
     server.cpp \
     settingsdialog.cpp \
     tile.cpp \
-    user.cpp
+    user.cpp \
+    usercreationwidget.cpp
 
 HEADERS += \
     Direction.h \
     LeaderBoardWidget.h \
-    PlayerBiddingWidget.h \
-    PlayerCreationWidget.h \
+    UserBiddingWidget.h \
+    UserCreationWidget.h \
     board.h \
     boardview.h \
     client.h \
     connectiontoclient.h \
     direction.h \
     gamecontroll.h \
+    goalwidget.h \
     keyinput.h \
     keymapping.h \
     keymappingview.h \
     mainwidget.h \
     mainwindow.h \
     networkview.h \
+    pawnwidget.h \
+    playerwidget.h \
     server.h \
     settingsdialog.h \
     tile.h \

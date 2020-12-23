@@ -1,17 +1,28 @@
 #include "boardview.h"
-#include "QDebug"
 
 BoardView::BoardView(QWidget *parent) : QWidget(parent)
 {
 	setMouseTracking(true);
 	setFocusPolicy(Qt::FocusPolicy::StrongFocus);
 	fillCache(QSize(50,50));
+	//connect(this, &BoardView::swipe, this, &BoardView::callMoveActivePlayer);
+	//connect(this, &BoardView::tileClicked, this, &BoardView::callChangeActivePlayer);
+	//connect(this, &BoardView::action, this, &BoardView::translateMapping);
 }
 
 void BoardView::setBoard(Board * b)
 {
 	board = b;
 	connect(board,SIGNAL(boardChanged()),this,SLOT(update()));
+	for(int i = 0; i <board->players.length();i++)
+	{
+		playerWidgets.append(new PlayerWidget(QSize(50,50),i,board,this));
+		connect(playerWidgets.back(), &PlayerWidget::clicked,this, [&](int playerNumber){emit activePlayerChanged(playerNumber);} );
+
+	}
+	goalwidget = new GoalWidget(QSize(20,20),board,this);
+	connect(board,&Board::playerMoved,this, [&](int playerNumber){playerWidgets.at(playerNumber)->move(tileToDesktopCoordinates(board->players.at(playerNumber)));});
+	connect(board,&Board::goalMoved,this, [&](){goalwidget->move(tileToDesktopCoordinates(board->goal));});
 }
 
 void BoardView::setDebugOutputEnabled(bool set)
@@ -23,6 +34,7 @@ void BoardView::resize(int pixelPerTile)
 {
 	tileSize = QSize(pixelPerTile,pixelPerTile);
 	QWidget::resize(board->getSize() * pixelPerTile + QSize(10,10));
+
 }
 
 QSize BoardView::sizeHint() const
@@ -38,18 +50,18 @@ void BoardView::fillCache(QSize tileSize)
 	}
 	cache.clear();
 	this->tileSize = tileSize;
-	QPen thin(QColor(50,50,50),1);
-	QPen fat(QColor(120,120,120),10);
+	QPen gridPen(grid,1);
+	QPen primaryPen(primary,10);
 	QPainter painter;
 	QRect tileRect(0,0,tileSize.width(),tileSize.height());
 	QPixmap tile(tileSize);
 	for(int i = 0;i < 16; i++)
 	{
 		painter.begin(&tile);
-		painter.setPen(thin);
-		painter.setBrush(QColor(20,20,20));
+		painter.setPen(gridPen);
+		painter.setBrush(background);
 		painter.drawRect(tileRect);
-		painter.setPen(fat);
+		painter.setPen(primaryPen);
 		if(i & static_cast<int>(Direction::north))
 		{
 			painter.drawLine(tileRect.topLeft(),tileRect.topRight());
@@ -75,11 +87,7 @@ Tile * BoardView::coordsToTile(QPoint p)
 {
 	int x = (p.x() - 5) / tileSize.width();
 	int y = (p.y() - 5) / tileSize.height();
-	if(x < board->getSize().width() && y < board->getSize().height())
-	{
-		return board->getTile(x,y);
-	}
-	return nullptr;
+	return board->getTile(x,y);
 }
 
 void BoardView::setMapping(QVector<KeyMapping*> * value)
@@ -87,14 +95,21 @@ void BoardView::setMapping(QVector<KeyMapping*> * value)
 	mapping = value;
 }
 
+QPoint BoardView::tileToDesktopCoordinates(Tile* tile)
+{
+	double tileHeight = (height() - 10) / static_cast<double>(board->getSize().height());
+	double tileWidth = (width() - 10) / static_cast<double>(board->getSize().width());
+	return QPoint(5+(tile->getPosition().rx())*tileWidth,5+(tile->getPosition().ry())*tileHeight);
+}
+
 void BoardView::paintEvent(QPaintEvent * event)
 {
 	QPainter painter;
 	painter.begin(this);
-	//	painter.setRenderHint(QPainter::Antialiasing);
+	//painter.setRenderHint(QPainter::Antialiasing);
 	QPen debug(QColor(255,0,255));
-	QPen grid(QColor(0,80,0),1,Qt::SolidLine,Qt::RoundCap);
-	QPen wall(QColor(0,120,0),2,Qt::SolidLine,Qt::RoundCap);
+	QPen gridPen(grid,1,Qt::SolidLine,Qt::RoundCap);
+	QPen wallPen(primary,2,Qt::SolidLine,Qt::RoundCap);
 	QPen player(QColor(0,0,0),2,Qt::SolidLine,Qt::RoundCap);
 
 	double tileHeight = (height() - 10) / static_cast<double>(board->getSize().height());
@@ -102,8 +117,8 @@ void BoardView::paintEvent(QPaintEvent * event)
 	tileSize = QSize(tileWidth,tileHeight);
 	if(!cachedPaintig)
 	{
-		painter.setPen(grid);
-		painter.setBrush(QColor(20,20,20));
+		painter.setPen(gridPen);
+		painter.setBrush(background);
 		painter.drawRect(this->rect());
 		for(int y = 0; y < board->getSize().height(); y++)
 		{
@@ -113,41 +128,32 @@ void BoardView::paintEvent(QPaintEvent * event)
 				painter.drawRect(tile);
 			}
 		}
-
-		painter.setPen(player);
-
-		int playerNum = board->players.length();
-		double stepSize = 359/playerNum;
-		QColor color;
-		for(int i = 0; i <board->players.length();i++)
-		{
-
-			qDebug()<< i;
-
-			color.setHsv(i*stepSize,200,200);
-
-			painter.setBrush(color);
-
-			if(i == board->seeker)
-			{
-
-				//draw the goal
-				painter.drawEllipse(QPoint(5+(board->goal->getPosition().rx()+1)*tileWidth - tileWidth/2.0,5+(board->goal->getPosition().ry()+1)*tileHeight - tileHeight/2.0), (int) (tileWidth/5.0), (int) (tileWidth/5.0));
-			}
-
-			Tile* player = board->players.at(i);
-			painter.drawEllipse(QPoint(5+(player->getPosition().rx()+1)*tileWidth - tileWidth/2,5+(player->getPosition().ry()+1)*tileHeight - tileHeight/2), (int) tileWidth/3, (int) tileWidth/3);
-		}
-		painter.setPen(wall);
+		//		painter.setPen(player);
+		//		int playerNum = board->players.length();
+		//		double stepSize = 359/playerNum;
+		//		QColor color;
+		//		for(int i = 0; i <board->players.length();i++)
+		//		{
+		//			color.setHsv(i*stepSize,200,200);
+		//			painter.setBrush(color);
+		//			if(i == board->seeker)
+		//			{
+		//				//draw the goal
+		//			painter.drawEllipse();
+		//			}
+		//			Tile* player = board->players.at(i);
+		//			painter.drawEllipse(QPoint(5+(player->getPosition().rx()+1)*tileWidth - tileWidth/2,5+(player->getPosition().ry()+1)*tileHeight - tileHeight/2), (int) tileWidth/3, (int) tileWidth/3);
+		//		}
+		painter.setPen(wallPen);
 	}
 	for(int x = 0; x < board->getSize().width(); x++)
 	{
 		for(int y = 0; y < board->getSize().height(); y++)
 		{
 			int key = (board->getTile(x,y)->getWall(Direction::north)?static_cast<int>(Direction::north):0) |
-					  (board->getTile(x,y)->getWall(Direction::east)?static_cast<int>(Direction::east):0) |
-					  (board->getTile(x,y)->getWall(Direction::south)?static_cast<int>(Direction::south):0) |
-					  (board->getTile(x,y)->getWall(Direction::west)?static_cast<int>(Direction::west):0);
+					(board->getTile(x,y)->getWall(Direction::east)?static_cast<int>(Direction::east):0) |
+					(board->getTile(x,y)->getWall(Direction::south)?static_cast<int>(Direction::south):0) |
+					(board->getTile(x,y)->getWall(Direction::west)?static_cast<int>(Direction::west):0);
 			if(cachedPaintig)
 			{
 				QPixmap tile;
@@ -187,7 +193,7 @@ void BoardView::paintEvent(QPaintEvent * event)
 			{
 				QRect tile(x*tileWidth,y*tileHeight,tileWidth,tileHeight);
 				int playerNumber = board->getTile(x,y)->getPlayer();
-				painter.drawText(QRect(8+x*tile.width(),8+y*tile.height(),tile.width(),tile.height()),"(" + QString::number(x) + "/" + QString::number(y) + ")\nPlayer: " + (playerNumber?QString::number(playerNumber):"none"));
+				painter.drawText(QRect(8+x*tile.width(),8+y*tile.height(),tile.width(),tile.height()),"(" + QString::number(x) + "/" + QString::number(y) + ")\nPlayer: " + (playerNumber+1?QString::number(playerNumber):"none"));
 			}
 		}
 	}
@@ -201,6 +207,13 @@ void BoardView::resizeEvent(QResizeEvent * event)
 	int h = event->size().height() / board->getSize().height();
 	fillCache(QSize(w,h));
 	update();
+	for(int i = 0; i <board->players.length();i++)
+	{
+		playerWidgets.at(i)->move(tileToDesktopCoordinates(board->players.at(i)));
+		playerWidgets.at(i)->setFixedSize(w,h);
+	}
+	goalwidget->move(tileToDesktopCoordinates(board->goal));
+    goalwidget->setFixedSize(w,h);
 	event->accept();
 }
 
@@ -225,18 +238,22 @@ void BoardView::mouseMoveEvent(QMouseEvent * event)
 		if(moved.x() > 100)
 		{
 			emit swipe(Direction::east);
+			qDebug() << "east";
 		}
 		else if(moved.x() < -100)
 		{
 			emit swipe(Direction::west);
+			qDebug() << "west";
 		}
 		else if(moved.y() > 100)
 		{
 			emit swipe(Direction::south);
+			qDebug() << "south";
 		}
 		else if(moved.y() < -100)
 		{
 			emit swipe(Direction::north);
+			qDebug() << "north";
 		}
 	}
 	else
@@ -251,13 +268,44 @@ void BoardView::mouseMoveEvent(QMouseEvent * event)
 
 void BoardView::keyPressEvent(QKeyEvent * event)
 {
-    for(const KeyMapping * k:*mapping)
+	for(const KeyMapping * k:*mapping)
 	{
-        if(*k == event->key())
+		if(*k == event->key())
 		{
-            emit action(k->getAction());
+			emit action(k->getAction(), "");
 			return;
 		}
 	}
 	QWidget::keyPressEvent(event);
 }
+
+//void BoardView::callMoveActivePlayer(Direction d)
+//{
+//	board->moveActivePlayer(d);
+//	update();
+//}
+//void BoardView::callChangeActivePlayer(Tile * t)
+//{
+//	board->changeActivePlayer(t);
+//	update();
+//}
+//void BoardView::translateMapping(PlayerAction action)
+//{
+//	Direction d = Direction::north;
+//	switch (action)
+//	{
+//	case movePlayerNorth:
+//		d = Direction::north;
+//		break;
+//	case movePlayerEast:
+//		 d = Direction::east;
+//		break;
+//	case movePlayerWest:
+//		d = Direction::west;
+//		break;
+//	case movePlayerSouth:
+//		 d = Direction::south;
+//		break;
+//	}
+//	callMoveActivePlayer(d);
+//}

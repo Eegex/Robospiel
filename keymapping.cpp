@@ -19,6 +19,11 @@ KeyMapping::KeyMapping(PlayerAction a, QVector<Qt::Key> k) : action(a), keys(k)
 
 }
 
+KeyMapping::KeyMapping(PlayerAction a) : action(a)
+{
+
+}
+
 bool KeyMapping::operator==(const Qt::Key k) const
 {
 	return keys.contains(k);

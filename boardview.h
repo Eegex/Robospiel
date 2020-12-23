@@ -11,8 +11,12 @@
 #include <QRandomGenerator>
 #include <QRect>
 #include <QMouseEvent>
+#include "QDebug"
 #include "board.h"
 #include "keymapping.h"
+#include "playerwidget.h"
+#include "goalwidget.h"
+
 
 class BoardView : public QWidget
 {
@@ -23,7 +27,7 @@ public:
 	void setBoard(Board * b);
 	void setDebugOutputEnabled(bool set = true);
 	void resize(int pixelPerTile);
-    void setMapping(QVector<KeyMapping *> *value);
+	void setMapping(QVector<KeyMapping *> *value);
 
 private slots:
 	void paintEvent(QPaintEvent * event);
@@ -41,12 +45,22 @@ private:
 	QPoint mouseStart;
 	bool cachedPaintig = false;
 	bool showDebugOutput = false;
-    QVector<KeyMapping*> * mapping = nullptr;
+	QVector<KeyMapping*> * mapping = nullptr;
+    QColor background = QColor(0,0,0);
+    QColor primary = QColor(100,100,100);
+    QColor grid = QColor(50,50,50);
+	void callChangeActivePlayer(Tile *t);
+	QVector<PlayerWidget* > playerWidgets;
+	GoalWidget* goalwidget;
+	//void translateMapping(PlayerAction action);
+	//void callMoveActivePlayer(Direction d);
+	QPoint tileToDesktopCoordinates(Tile *tile);
 signals:
 	void tileHovered(Tile * t);
 	void tileClicked(Tile * t);
 	void swipe(Direction d);
-	void action(PlayerAction a);
+	void action(PlayerAction a, QString userName);
+	void activePlayerChanged(int playerNumber);
 
 };
 

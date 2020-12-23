@@ -1,13 +1,8 @@
 #include "keymappingview.h"
 
-#include <QComboBox>
-#include <QLabel>
-#include <QLineEdit>
-#include <QMetaEnum>
-#include <QPushButton>
-#include <QDebug>
-#include <QSet>
-#include <QTimer>
+#include <QSizePolicy>
+
+
 
 KeyMappingView::KeyMappingView(QVector<KeyMapping*> mappings, QWidget *parent) : QWidget(parent)
 {
@@ -90,12 +85,12 @@ void KeyMappingView::completeMappings(QVector<KeyMapping*> mappings)
     {
         usedKeys.append(mapping->getKeys());
     }
-    for(KeyMapping mapping: stdMappings)
+    for(PlayerAction action: mappableActions)
     {
         bool exists =false;
         for(int i=0; i<mappings.length(); i++)
         {
-            if(mappings.at(i)->getAction()==mapping.getAction())
+            if(mappings.at(i)->getAction()==action)
             {
                 exists=true;
                 allMappings.append(new KeyMapping(*mappings.takeAt(i)));
@@ -104,14 +99,7 @@ void KeyMappingView::completeMappings(QVector<KeyMapping*> mappings)
         }
         if(!exists)
         {
-            if(usedKeys.contains(mapping.getKeys().at(0)))
-            {
-                allMappings.append(new KeyMapping(mapping.getAction(), getFreeKey(&usedKeys)));
-            }
-            else
-            {
-                allMappings.append(new KeyMapping(mapping));
-            }
+            allMappings.append(new KeyMapping(action));
         }
     }
     checkMappings();
@@ -166,33 +154,6 @@ void KeyMappingView::checkMappings()
     }
 }
 
-Qt::Key KeyMappingView::getFreeKey(QVector<Qt::Key>* usedKeys)
-{
-    //letters
-    for(int i=65; i<=90; i++)
-    {
-        Qt::Key key = static_cast<Qt::Key>(i);
-        if(!usedKeys->contains(key))
-        {
-            usedKeys->append(key);
-            return key;
-        }
-    }
-
-    //numbers
-    for(int i=48; i<=57; i++)
-    {
-        Qt::Key key = static_cast<Qt::Key>(i);
-        if(!usedKeys->contains(key))
-        {
-            usedKeys->append(key);
-            return key;
-        }
-    }
-
-    return static_cast<Qt::Key>(65);
-}
-
 QVBoxLayout* KeyMappingView::getAddGroup(int row)
 {
     QVBoxLayout* layout = new QVBoxLayout();
@@ -200,6 +161,7 @@ QVBoxLayout* KeyMappingView::getAddGroup(int row)
 
 
     QPushButton* btnAddKey = new QPushButton(tr("Add"), this);
+    btnAddKey->setFixedWidth(KeyInput::inputWidth);
     connect(btnAddKey, &QAbstractButton::pressed, this, [=]()->void{
 
         if(input->hasKey() && allMappings.at(row)->addKey(input->getKey()))
@@ -219,16 +181,13 @@ QVBoxLayout* KeyMappingView::getAddGroup(int row)
 void KeyMappingView::insertKeyIntoUI(int row, int col)
 {
     QVBoxLayout* layout = new QVBoxLayout();
-
-    QMetaEnum metaEnum = QMetaEnum::fromType<Qt::Key>();
-    Qt::Key key = static_cast<Qt::Key>(allMappings.at(row)->getKeys().at(col));
-    QString asString = metaEnum.valueToKey(key);
-    asString.remove(0, 4);
-    QLabel* label = new QLabel(asString, this);
+    QLabel* label = new QLabel(KeyInput::keyToString(allMappings.at(row)->getKeys().at(col)), this);
     keyLabels.at(row)->append(label);
     layout->addWidget(label);
 
     QPushButton* deleteBtn = new QPushButton(tr("Delete"), this);
+    QFontMetrics* fontInfo = new QFontMetrics(deleteBtn->font());
+    deleteBtn->setMaximumWidth(fontInfo->boundingRect(deleteBtn->text()+"...").width());
     connect(deleteBtn, &QAbstractButton::pressed, this, [=]()->void{
         keyLabels.at(row)->removeAll(label);
 
@@ -236,12 +195,16 @@ void KeyMappingView::insertKeyIntoUI(int row, int col)
         label->deleteLater();
         deleteBtn->deleteLater();
 
-        allMappings.at(row)->removeKey(static_cast<Qt::Key>(QKeySequence(label->text())[0]));
+        allMappings.at(row)->removeKey(KeyInput::stringToKey(label->text()));
         checkMappings();
     });
     layout->addWidget(deleteBtn);
+    layout->setAlignment(label, Qt::AlignHCenter);
+    layout->setAlignment(deleteBtn, Qt::AlignHCenter);
+
 
     hBoxRows.at(row)->addLayout(layout);
+    hBoxRows.at(row)->setAlignment(Qt::AlignLeft);
 }
 
 QVector<KeyMapping*> KeyMappingView::getMapping()

@@ -1,6 +1,6 @@
 #include "tile.h"
 
-Tile::Tile(QPoint position, Tile* north, Tile* west, QObject *parent) :  QObject(parent), position(position), northTile(north), westTile(west), playerOnThisTile(0)
+Tile::Tile(QPoint position, Tile* north, Tile* west, QObject *parent) :  QObject(parent), position(position), northTile(north), westTile(west), playerOnThisTile(-1)
 {
 }
 
