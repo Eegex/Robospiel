@@ -11,6 +11,7 @@ SettingsDialog::SettingsDialog(QVector<KeyMapping*> mapping, QDialog * parent) :
     QScrollArea* scroll = new QScrollArea(this);
     keyMappings = new KeyMappingView(mapping, this);
     scroll->setWidget(keyMappings);
+    scroll->setWidgetResizable(true);
     twTabs->addTab(scroll,tr("Key mappings"));
 
 	lay->addWidget(pbSave);

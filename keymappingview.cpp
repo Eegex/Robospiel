@@ -1,5 +1,7 @@
 #include "keymappingview.h"
 
+#include <QSizePolicy>
+
 
 
 KeyMappingView::KeyMappingView(QVector<KeyMapping*> mappings, QWidget *parent) : QWidget(parent)
@@ -159,6 +161,7 @@ QVBoxLayout* KeyMappingView::getAddGroup(int row)
 
 
     QPushButton* btnAddKey = new QPushButton(tr("Add"), this);
+    btnAddKey->setFixedWidth(KeyInput::inputWidth);
     connect(btnAddKey, &QAbstractButton::pressed, this, [=]()->void{
 
         if(input->hasKey() && allMappings.at(row)->addKey(input->getKey()))
@@ -183,6 +186,8 @@ void KeyMappingView::insertKeyIntoUI(int row, int col)
     layout->addWidget(label);
 
     QPushButton* deleteBtn = new QPushButton(tr("Delete"), this);
+    QFontMetrics* fontInfo = new QFontMetrics(deleteBtn->font());
+    deleteBtn->setMaximumWidth(fontInfo->boundingRect(deleteBtn->text()+"...").width());
     connect(deleteBtn, &QAbstractButton::pressed, this, [=]()->void{
         keyLabels.at(row)->removeAll(label);
 
@@ -194,8 +199,12 @@ void KeyMappingView::insertKeyIntoUI(int row, int col)
         checkMappings();
     });
     layout->addWidget(deleteBtn);
+    layout->setAlignment(label, Qt::AlignHCenter);
+    layout->setAlignment(deleteBtn, Qt::AlignHCenter);
+
 
     hBoxRows.at(row)->addLayout(layout);
+    hBoxRows.at(row)->setAlignment(Qt::AlignLeft);
 }
 
 QVector<KeyMapping*> KeyMappingView::getMapping()
