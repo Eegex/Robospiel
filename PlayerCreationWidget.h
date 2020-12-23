@@ -29,11 +29,13 @@ private:
     QColorDialog * playerColourPicker = new QColorDialog();
     QLineEdit * playerNamePicker = new QLineEdit();
     unsigned int numOfPlayers = 0;
+    bool hasColorChanged = false;
 
 public slots:
     void addPlayer();
     void addColour();
     void resetButtonColour();
+    void pickerColourChanged();
 signals:
     void playerAdded(struct user * newUser); //Argument: Nutzer
 };

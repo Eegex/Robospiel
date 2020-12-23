@@ -43,5 +43,5 @@ void PlayerBiddingWidget::btnPressed()
     emit biddingChanged(playerBidding);
 }
 
-int PlayerBiddingWidget::getBidding(){return playerBidding;}
-QString PlayerBiddingWidget::getName(){return playerName;}
+inline int PlayerBiddingWidget::getBidding(){return playerBidding;}
+inline QString PlayerBiddingWidget::getName(){return playerName;}

@@ -19,6 +19,7 @@ PlayerCreationWidget::PlayerCreationWidget(QWidget *parent) : QWidget(parent)
     });
     connect(addPlayerBtn, &QPushButton::clicked, this, &PlayerCreationWidget::addPlayer);
     connect(addPlayerBtn, &QPushButton::clicked, this, &PlayerCreationWidget::resetButtonColour);
+    connect(playerColourPicker, &QColorDialog::currentColorChanged, this, &PlayerCreationWidget::pickerColourChanged);
     setLayout(lay);
 }
 
@@ -27,17 +28,15 @@ void PlayerCreationWidget::addPlayer()
     qDebug()<<"Addition Request of player with name "<<playerNamePicker->text()<<"and colour "<<playerColourPicker->selectedColor().name();
 
     struct user newUser;
-    newUser.name = playerNamePicker->text()!=nullptr?playerNamePicker->text():DEFAULTPLAYERNAME;
-    newUser.colour = playerColourPicker->selectedColor();
+    QString names[2] = {DEFAULTPLAYERNAME, playerNamePicker->text()};
+    newUser.name = names[playerNamePicker->text() != nullptr];
+    QColor colours[2] = {0xAAAAAA, playerColourPicker->selectedColor()};
+    newUser.colour = colours[hasColorChanged];
     qDebug()<<"Current Colour"<<playerColourPicker->selectedColor().name();
-    delete playerColourPicker;
-    playerColourPicker = new QColorDialog;
+    hasColorChanged = false;
     emit playerAdded(&newUser);
-    connect(playerColourPicker, &QColorDialog::colorSelected, this, [&](const QColor &colour)
-    {
-       addColourBtn->setStyleSheet("background-color: "+colour.name());
-    });
 }
 
-void PlayerCreationWidget::resetButtonColour(){addColourBtn->setStyleSheet("background-color: 0xFFFFFF");}
-void PlayerCreationWidget::addColour(){playerColourPicker->show();}
+inline void PlayerCreationWidget::pickerColourChanged(){hasColorChanged = true;}
+inline void PlayerCreationWidget::resetButtonColour(){addColourBtn->setStyleSheet("background-color: 0xFFFFFF");}
+inline void PlayerCreationWidget::addColour(){playerColourPicker->show();}
