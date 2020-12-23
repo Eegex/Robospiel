@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QLineEdit>
+#include <QMetaEnum>
 
 class KeyInput : public QWidget
 {
@@ -16,8 +17,10 @@ class KeyInput : public QWidget
 
     void keyReleaseEvent(QKeyEvent *event);
     QLineEdit* input;
+    static QMetaEnum metaEnum;
 public:
     explicit KeyInput(QWidget *parent = nullptr);
+    static int inputWidth;
 
     Qt::Key getKey();
     bool hasKey();
