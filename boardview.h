@@ -46,9 +46,9 @@ private:
 	bool cachedPaintig = false;
 	bool showDebugOutput = false;
 	QVector<KeyMapping*> * mapping = nullptr;
-	QColor background = QColor(230,255,0);
-	QColor primary = QColor(20,20,20);
-	QColor grid = QColor(124,138,0);
+    QColor background = QColor(0,0,0);
+    QColor primary = QColor(100,100,100);
+    QColor grid = QColor(50,50,50);
 	void callChangeActivePlayer(Tile *t);
 	QVector<PlayerWidget* > playerWidgets;
 	GoalWidget* goalwidget;
