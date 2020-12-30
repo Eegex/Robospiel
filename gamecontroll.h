@@ -25,11 +25,11 @@ public:
 	QVector<KeyMapping*> * getMapping();
 
 public slots:
-    void setMapping(QVector<KeyMapping *> mapping);
+	void setMapping(QVector<KeyMapping *> mapping);
 	void nextTarget();
 	void remakeBoard();
 
-    void activePlayerChanged(int playerNumber);
+	void activePlayerChanged(int playerNumber);
 private:
     Phase currentPhase = Phase::search; //freeplay
 	QVector<KeyMapping*> mapping;

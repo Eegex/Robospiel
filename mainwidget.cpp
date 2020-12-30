@@ -32,6 +32,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
         {
             game->triggerAction(PlayerAction::sendBidding, id);
         });
+	connect(settings, &SettingsDialog::colorsChanged, view, &BoardView::updateColors);
 	connect(settings, &SettingsDialog::newMapping, game, &GameControll::setMapping);
 }
 

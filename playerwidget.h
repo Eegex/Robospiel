@@ -7,24 +7,29 @@
 #include <QPen>
 #include <QPaintEvent>
 #include <QMouseEvent>
+#include <QSequentialAnimationGroup>
 
 #include "pawnwidget.h"
 #include "board.h"
 
 class PlayerWidget : public PawnWidget
 {
-	Q_OBJECT
-public:
-	explicit PlayerWidget(QSize size, int playerNumber, Board *board, QWidget *parent= nullptr);
+    Q_OBJECT
+public:    
+    explicit PlayerWidget(QSize size, int playerNumber, Board *board, QWidget *parent= nullptr);
+    void moveAnimated(QPoint point);
+    bool resizeWhileAnimation(double widthFactor, double heightFactor);
 private:
     int playerNumber;
     bool debugMode = false;
     double fractionOfTile = 0.7;
+    QSequentialAnimationGroup* animations = new QSequentialAnimationGroup();
 
 protected:
 
 signals:
-	void clicked(int playerNumber);
+    void clicked(int playerNumber);
+    void reposition(int playerNumber);
 
 
 
