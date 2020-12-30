@@ -20,7 +20,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 					   "color: #000000;"
 					   "}");
 	lcd->setMinimumSize(250,180);
-	lcd->setDigitCount(2);
+    lcd->setDigitCount(2);
 	glMain->addWidget(view,0,0,3,1,Qt::AlignCenter);
 	glMain->addWidget(lcd,0,1,Qt::AlignCenter);
 	glMain->addWidget(leaderboard,1,1,Qt::AlignCenter);

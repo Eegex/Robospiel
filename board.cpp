@@ -481,6 +481,13 @@ void Board::revert()
     //TODO delete history after each presentation and after the freeplay-phase
 
 }
+
+void Board::revertToBeginning(){
+    while(!history.isEmpty()){
+        revert();
+    }
+
+}
 int Board::switchPlayer(Direction d)
 {
 	qDebug() << "Board::switchPlayer(Direction d)";

@@ -54,6 +54,9 @@ KeyMappingView::KeyMappingView(QVector<KeyMapping*> mappings, QWidget *parent) :
             case PlayerAction::revert:
                 name->setText(tr("undo the last move"));
                 break;
+            case PlayerAction::revertToBeginning:
+                name->setText(tr("revert to initial positions"));
+                break;
             default:
                 name->setText(tr("Sorry, something went wrong :("));
         }

@@ -14,6 +14,7 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 	mapping.append(new KeyMapping(PlayerAction::switchPlayerSouth,Qt::Key::Key_K));
 	mapping.append(new KeyMapping(PlayerAction::switchPlayerWest,Qt::Key::Key_J));
 	mapping.append(new KeyMapping(PlayerAction::revert,Qt::Key::Key_R));
+    mapping.append(new KeyMapping(PlayerAction::revertToBeginning,Qt::Key::Key_B));
 	mapping.append(new KeyMapping(PlayerAction::giveUp,Qt::Key::Key_Q));
 	mapping.append(new KeyMapping(PlayerAction::enterBidding,Qt::Key::Key_Space));
 	mapping.append(new KeyMapping(PlayerAction::clearBidding,Qt::Key::Key_Backspace));
@@ -79,10 +80,14 @@ bool GameControll::triggerAction(PlayerAction action, QString user)
                 {
                     board->revert();
                 }
+                if(action == PlayerAction::revertToBeginning)
+                {
+                    board -> revertToBeginning();
+                }
 				emit actionTriggered(action);
 				return true;
 			}
-		}
+        }
 	}
 	return false;
 }
