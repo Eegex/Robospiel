@@ -7,18 +7,18 @@
 
 class PawnWidget : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    explicit PawnWidget(QSize size, Board* board, QWidget *parent = nullptr);
-    void move(QPoint point);
+	explicit PawnWidget(QSize size, Board* board, QWidget *parent = nullptr);
+	void move(QPoint point);
 
 
 protected:
-    Board* board;
+	Board* board;
 
-    
+
 signals:
-    
+
 };
 
 #endif // PAWNWIDGET_H

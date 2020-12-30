@@ -23,13 +23,13 @@ class MainWidget : public QWidget
 	Q_OBJECT
 public:
 	explicit MainWidget(QWidget *parent = nullptr);
-    void setMenuBar(QMenuBar * bar);
+	void setMenuBar(QMenuBar * bar);
 private slots:
 	void updateTimer(int remaining);
-    void changeBidding(int bidding, QUuid id);
-    void addUser(struct UserData * newUser);
+	void changeBidding(int bidding, QUuid id);
+	void addUser(struct UserData * newUser);
 private:
-    QVector<User*> users;
+	QVector<User*> users;
 	QGridLayout * glMain = nullptr;
 	GameControll * game = nullptr;
 	BoardView * view = nullptr;
@@ -41,7 +41,7 @@ private:
 	QAction * aNetworking = nullptr;
 	QAction * aNewBoard = nullptr;
 	QAction * aNewTarget = nullptr;
-    QAction * aSettings = nullptr;
+	QAction * aSettings = nullptr;
 };
 
 #endif // MAINWIDGET_H

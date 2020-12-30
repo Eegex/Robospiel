@@ -11,9 +11,9 @@
 
 struct HistoryElement
 {
-    PlayerAction action;
-    int previousPlayer;
-    QPoint previousPosition;
+	PlayerAction action;
+	int previousPlayer;
+	QPoint previousPosition;
 };
 
 class Board : public QObject
@@ -28,10 +28,10 @@ public:
 	Tile * goal;
 	int seeker = 0;
 	int activePlayer = 0;
-    void moveActivePlayer(Direction d, int targetX = -1, int targetY = -1);
+	void moveActivePlayer(Direction d, int targetX = -1, int targetY = -1);
 	void setPlayerOnTile(int player, Tile *tile);
-    void changeActivePlayer(int playerNumber);
-    void revert();
+	void changeActivePlayer(int playerNumber);
+	void revert();
 public slots:
 	void startNewRound();
 	int switchPlayer(Direction d);
@@ -46,7 +46,7 @@ private:
 	QVector<QVector<Tile*>> tiles;
 	QRandomGenerator * r = nullptr;
 	int moves = 0;
-    QVector<HistoryElement> history;
+	QVector<HistoryElement> history;
 	//TODO active pawn
 
 	Tile *getRandomUnoccupiedTile();
