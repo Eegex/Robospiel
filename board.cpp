@@ -461,10 +461,11 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 						   currentTile->getPosition().ry() + changeOfYAxis);
 		}
 		setPlayerOnTile(activePlayer, currentTile);
-        emit playerMoved(activePlayer);
+
 	}
 
     history.append(h);
+    emit playerMoved(activePlayer);
 }
 
 void Board::changeActivePlayer(int playerNumber)

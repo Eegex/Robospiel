@@ -1,5 +1,5 @@
 #include "boardview.h"
-
+#include "QDebug"
 
 
 BoardView::BoardView(QWidget *parent) : QWidget(parent)
@@ -22,11 +22,13 @@ void BoardView::setBoard(Board * b)
     for(int i = 0; i <board->players.length();i++)
     {
         playerWidgets.append(new PlayerWidget(QSize(50,50),i,board,this));
-        connect(playerWidgets.back(), &PlayerWidget::clicked,this, [&](int playerNumber){emit activePlayerChanged(playerNumber);} );
-
+        connect(playerWidgets.back(), &PlayerWidget::clicked, this, [&](int playerNumber){emit activePlayerChanged(playerNumber);} );
+        connect(playerWidgets.back(), &PlayerWidget::reposition, this, [&](int playerNumber){
+            playerWidgets.at(playerNumber)->move(tileToDesktopCoordinates(board->players.at(playerNumber)));
+        });
     }
     goalwidget = new GoalWidget(QSize(20,20),board,this);
-    connect(board,&Board::playerMoved,this, [&](int playerNumber){playerWidgets.at(playerNumber)->move(tileToDesktopCoordinates(board->players.at(playerNumber)));});
+    connect(board,&Board::playerMoved,this, [&](int playerNumber){playerWidgets.at(playerNumber)->moveAnimated(tileToDesktopCoordinates(board->players.at(playerNumber)));});
     connect(board,&Board::goalMoved,this, [&](){goalwidget->move(tileToDesktopCoordinates(board->goal));});
 }
 
@@ -229,8 +231,14 @@ void BoardView::resizeEvent(QResizeEvent * event)
 	update();
 	for(int i = 0; i <board->players.length();i++)
 	{
-		playerWidgets.at(i)->move(tileToDesktopCoordinates(board->players.at(i)));
+
 		playerWidgets.at(i)->setFixedSize(w,h);
+        qDebug()<<"calculated"<<tileToDesktopCoordinates(board->players.at(i));
+        if(!playerWidgets.at(i)->resizeWhileAnimation(event->size().width()*1.0/event->oldSize().width(),
+                                              event->size().height()*1.0/event->oldSize().height()))
+        {
+            playerWidgets.at(i)->move(tileToDesktopCoordinates(board->players.at(i)));
+        }
 	}
 	goalwidget->move(tileToDesktopCoordinates(board->goal));
     goalwidget->setFixedSize(w,h);
