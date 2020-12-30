@@ -4,30 +4,32 @@
 #include <QObject>
 #include <QString>
 #include <QColor>
+#include <QUuid>
 
 class User : public QObject
 {
     Q_OBJECT
 public:
     User(QString name, QColor color, QObject *parent);
-
     QString getName();
     QColor getColor();
-    int getTip();
+    QUuid getId();
+    int getBidding();
     int getPoints();
-
     void setName(QString n);
     void setColor(QColor c);
-    void setTip(int t);
+    void setBidding(int b);
     void addPoints(int p);
 
 private:
     QString name;
     QColor color;
-    int tip;
-    int points = 0;
+    QUuid id;
+    int bidding;
+    int points;
 
 signals:
+
 
 };
 

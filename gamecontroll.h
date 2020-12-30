@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QTime>
 #include <QDebug>
+#include "user.h"
 #include "keymapping.h"
 #include "board.h"
 #include "Direction.h"

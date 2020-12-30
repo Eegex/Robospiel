@@ -44,23 +44,27 @@ private:
 	QSize tileSize;
 	QPoint mouseStart;
 	bool cachedPaintig = false;
-    bool showDebugOutput = false;
+	bool showDebugOutput = false;
 	QVector<KeyMapping*> * mapping = nullptr;
     QColor background = QColor(0,0,0);
     QColor primary = QColor(100,100,100);
     QColor grid = QColor(50,50,50);
-    void callChangeActivePlayer(Tile *t);
-    QVector<PlayerWidget* > playerWidgets;
-    GoalWidget* goalwidget;
-    //void translateMapping(PlayerAction action);
-    //void callMoveActivePlayer(Direction d);
-    QPoint tileToDesktopCoordinates(Tile *tile);
+//  Bitte stehen lassen, damit Nora keinen Anfall bekommt :P
+//  QColor background = QColor(0,0,0);
+//	QColor primary = QColor(100,100,100);
+//	QColor grid = QColor(50,50,50);
+	void callChangeActivePlayer(Tile *t);
+	QVector<PlayerWidget* > playerWidgets;
+	GoalWidget* goalwidget;
+	//void translateMapping(PlayerAction action);
+	//void callMoveActivePlayer(Direction d);
+	QPoint tileToDesktopCoordinates(Tile *tile);
 signals:
 	void tileHovered(Tile * t);
 	void tileClicked(Tile * t);
 	void swipe(Direction d);
-    void action(PlayerAction a, QString userName);
-    void activePlayerChanged(int playerNumber);
+	void action(PlayerAction a, QString userName);
+	void activePlayerChanged(int playerNumber);
 
 };
 

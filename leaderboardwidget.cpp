@@ -6,12 +6,17 @@
 
 LeaderBoardWidget::LeaderBoardWidget(QWidget *parent) : QWidget(parent)
 {
-    playerCreationWidget->hide();
-    addBtn->setText("Add new Player");
-    lay->addWidget(addBtn, numOfPlayers, 0);
+    userCreationWidget->hide();
+    addBtn->hide();
+    if(!isOnline)
+    {
+        addBtn->setText("Add new Player");
+        lay->addWidget(addBtn, numOfPlayers, 0);
+        addBtn->show();
+        connect(addBtn,&QPushButton::clicked,this,&LeaderBoardWidget::newPlayer);
+    }
     setLayout(lay);
-    connect(addBtn,&QPushButton::clicked,this,&LeaderBoardWidget::newPlayer);
-    connect(playerCreationWidget, &UserCreationWidget::userAdded, this, &LeaderBoardWidget::addPlayer);
+    //connect(userCreationWidget, &UserCreationWidget::playerAdded, this, &LeaderBoardWidget::addPlayer);
 }
 
 void LeaderBoardWidget::sortByBidding()
@@ -19,24 +24,27 @@ void LeaderBoardWidget::sortByBidding()
     //TODO: Will be done in back end
 }
 
-void LeaderBoardWidget::addPlayer(struct UserData * newUser)
+void LeaderBoardWidget::addPlayer(User * newUser)
 {
-    qDebug()<<"LeaderBoardWidget: AddPlayer: Add player with name: "<<newUser->name<<"and colour "<<(newUser->colour.isValid()?newUser->colour.name():"0x000000");
+    qDebug()<<"LeaderBoardWidget: AddPlayer: Add player with name: "<<newUser->getName()<<"and id"<<newUser->getId().toString()<<"and colour "<<(newUser->getColor().isValid()?newUser->getColor().name():"0x000000");
     UserBiddingWidget * newWidget = new UserBiddingWidget(this); //Create new BiddingWidget to display
-    newWidget->setName(newUser->name);
-    newWidget->setColor(newUser->colour.name());
-    players.append(newWidget); //Append widget to list of players
-    lay->addWidget(players.at(numOfPlayers));
+    newWidget->setName(newUser->getName());
+    newWidget->setColor(newUser->getColor().name());
+    newWidget->setId(newUser->getId());
+    users.append(newWidget); //Append widget to list of players
+    lay->addWidget(users.at(numOfPlayers));
     numOfPlayers++; //Increment number of players, important for correct placement of button
-    for(unsigned int i = 0; i<numOfPlayers; i++){lay->addWidget(players.at(i), i, 0);}
-    lay->addWidget(addBtn, numOfPlayers, 0); //New Player Button under all Players
+    for(unsigned int i = 0; i<numOfPlayers; i++){lay->addWidget(users.at(i), i, 0);}
+    if(!isOnline){lay->addWidget(addBtn, numOfPlayers, 0);} //New Player Button under all Players
     lay->update();
 }
 
 void LeaderBoardWidget::newPlayer()
 {
     qDebug()<<"NewPlayer in LeaderBoardWidget";
-    playerCreationWidget->show(); //Show creation widget
-    playerCreationWidget->setFocus(); //Set focus to specific window
+    userCreationWidget->show(); //Show creation widget
+    userCreationWidget->setFocus(); //Set focus to specific window
 }
 
+QVector<UserBiddingWidget*>* LeaderBoardWidget::getUsers(){return &users;}
+UserCreationWidget *LeaderBoardWidget::getUserCreationWidget(){return userCreationWidget;}

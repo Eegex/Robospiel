@@ -2,41 +2,41 @@
 
 
 GoalWidget::GoalWidget(QSize size, Board *board, QWidget *parent):
-    PawnWidget(size, board, parent)
+	PawnWidget(size, board, parent)
 {
-
+	setAttribute(Qt::WA_TransparentForMouseEvents,true);
 }
 
 void GoalWidget::paintEvent(QPaintEvent *event)
 {
-    QRect bounds = rect();
-    double width = bounds.width()*fractionOfTile;
-    double height = bounds.height()*fractionOfTile;
+	QRect bounds = rect();
+	double width = bounds.width()*fractionOfTile;
+	double height = bounds.height()*fractionOfTile;
 
-    int playerNum = board->players.length();
-    double stepSize = 359/playerNum;
-    QColor color;
-    color.setHsv(board->seeker*stepSize,200,200);
+	int playerNum = board->players.length();
+	double stepSize = 359/playerNum;
+	QColor color;
+	color.setHsv(board->seeker*stepSize,200,200);
 
-    QPainter painter;
+	QPainter painter;
 
-    QPen pen;
+	QPen pen;
 
-    QSize offset = bounds.size() - QSize(width, height);
+	QSize offset = bounds.size() - QSize(width, height);
 
-    bounds.moveTopLeft({(int) offset.width()/2, (int) offset.height()/2});
-    bounds.setSize(QSize((int) width, (int) height));
-    pen.setColor(color);
-    if(painter.begin(this))
-    {
+	bounds.moveTopLeft({(int) offset.width()/2, (int) offset.height()/2});
+	bounds.setSize(QSize((int) width, (int) height));
+	pen.setColor(color);
+	if(painter.begin(this))
+	{
 
-        painter.setBrush(color);
+		painter.setBrush(color);
 
-        painter.setPen(pen);
-        painter.drawEllipse(bounds);
+		painter.setPen(pen);
+		painter.drawEllipse(bounds);
 
-        painter.end();
-    }
+		painter.end();
+	}
 
-    event->accept();
+	event->accept();
 }

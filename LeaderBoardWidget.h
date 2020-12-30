@@ -14,18 +14,21 @@ class LeaderBoardWidget : public QWidget
     Q_OBJECT
 public:
     explicit LeaderBoardWidget(QWidget *parent = nullptr);
+    void addPlayer(User * newUser);
+    QVector<UserBiddingWidget*> * getUsers();
+    UserCreationWidget *getUserCreationWidget();
 
 private:
     QGridLayout * lay = new QGridLayout(this);
     QPushButton * addBtn = new QPushButton(this);
     unsigned int numOfPlayers = 0;
     unsigned int currentPlayer = 0;
-    QVector<UserBiddingWidget*> players; //Several Players, Array of Widgets for individual players
-    UserCreationWidget * playerCreationWidget = new UserCreationWidget(nullptr);
+    unsigned short isOnline = 0;
+    QVector<UserBiddingWidget*> users; //Several Players, Array of Widgets for individual players
+    UserCreationWidget * userCreationWidget = new UserCreationWidget(nullptr);
 
 public slots:
     void sortByBidding();
-    void addPlayer(struct UserData * newUser);
     void newPlayer();
 
 signals:
@@ -33,3 +36,5 @@ signals:
 };
 
 #endif // LEADERBOARDWIDGET_H
+
+

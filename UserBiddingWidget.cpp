@@ -11,13 +11,18 @@ UserBiddingWidget::UserBiddingWidget(QWidget *parent) : QWidget(parent)
     connect(accept,&QPushButton::clicked,this,&UserBiddingWidget::btnPressed); //When player has accepted bid, disable the button
 	lSpinBox->setMinimum(1);
 	lSpinBox->setSingleStep(1);
-	accept->setText("Accept Bid");
+    accept->setText("Accept Bid");
+}
+
+void UserBiddingWidget::setId(QUuid id)
+{
+    userId = id;
 }
 
 void UserBiddingWidget::setBidding(int bidding)
 {
     userBidding = bidding;
-	emit biddingChanged(userBidding);
+    emit biddingChanged(userBidding, userId);
 }
 
 void UserBiddingWidget::setName(QString name)
@@ -40,8 +45,9 @@ void UserBiddingWidget::btnPressed()
     lSpinBox->setMaximum(userBidding = lSpinBox->value());
     accept->setText("Bid: "+QString::number(userBidding));
     qDebug()<<"Player "<<userName<<" changed their bidding to: "<<userBidding;
-    emit biddingChanged(userBidding);
+    emit biddingChanged(userBidding, userId);
 }
 
+QUuid UserBiddingWidget::getId(){return userId;}
 int UserBiddingWidget::getBidding(){return userBidding;}
 QString UserBiddingWidget::getName(){return userName;}
