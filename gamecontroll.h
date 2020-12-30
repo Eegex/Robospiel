@@ -18,8 +18,9 @@ public:
 	enum class Phase{idle, search, countdown, presentation, freeplay};
 	explicit GameControll(QObject *parent = nullptr);
 	Board * createBoard(int width, int height, int playerNumber);
-	bool triggerAction(PlayerAction action, QString user);
-	Board * getBoard() const;
+    //bool triggerAction(PlayerAction action, QString user); //String will need to be ID of user
+    bool triggerAction(PlayerAction action, QUuid userID);
+    Board * getBoard() const;
 
 	QVector<KeyMapping*> * getMapping();
 
@@ -30,10 +31,11 @@ public slots:
 
     void activePlayerChanged(int playerNumber);
 private:
-    Phase currentPhase = Phase::freeplay;
+    Phase currentPhase = Phase::search; //freeplay
 	QVector<KeyMapping*> mapping;
 	Board * board = nullptr;
-	QString activeUser;
+    //QString activeUser;
+    QUuid activeUserID;
 	QTimer countdown;
 	int timeLeft;
 signals:

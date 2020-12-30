@@ -27,7 +27,11 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(game,&GameControll::time,this,&MainWidget::updateTimer);
 	adjustSize();
 	connect(leaderboard->getUserCreationWidget(), &UserCreationWidget::userAdded, this, &MainWidget::addUser);
-
+    for(UserBiddingWidget * ubw : *leaderboard->getUsers())
+        connect(ubw, &UserBiddingWidget::biddingChanged, this, [&](const int playerBidding, const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
+        {
+            game->triggerAction(PlayerAction::sendBidding, id);
+        });
 	connect(settings, &SettingsDialog::newMapping, game, &GameControll::setMapping);
 }
 
@@ -57,6 +61,10 @@ void MainWidget::addUser(struct UserData * newUser)
 	// adds new player in the frontend
 	leaderboard->addPlayer(u);
 	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, &MainWidget::changeBidding);
+    connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int playerBidding, const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
+    {
+        game->triggerAction(PlayerAction::sendBidding, id);
+    });
 }
 
 void MainWidget::changeBidding(int bidding, QUuid id)

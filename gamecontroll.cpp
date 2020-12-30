@@ -1,4 +1,5 @@
 #include "gamecontroll.h"
+#include "UserBiddingWidget.h"
 
 
 using namespace std::chrono_literals;
@@ -35,56 +36,56 @@ Board * GameControll::createBoard(int width, int height, int playerNumber)
 	return board;
 }
 
-bool GameControll::triggerAction(PlayerAction action, QString user)
+bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 {
-	if((activeUser.isEmpty() || user == activeUser))
-	{
-		if(action & PlayerAction::movement)
-		{
-			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
-			{
-				//we subtract movement from action to get a direction (clever enum numbers)
+    qDebug()<<"Called function TriggerAction with parameters "<<action<<" and User ID "<<userID;
+    if(activeUserID == nullptr /*@Jan Ist das so gewollt? */ || userID == activeUserID)
+    {
+        if(action & PlayerAction::movement)
+        {
+            if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
+            {
+                //we subtract movement from action to get a direction (clever enum numbers)
 
-				board->moveActivePlayer(static_cast<Direction>(action - PlayerAction::movement));
-				emit actionTriggered(action);
-				return true;
-			}
-		}
-		else if(action & PlayerAction::playerSwitch)
-		{
-			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
-			{
-				board->switchPlayer(static_cast<Direction>(action-PlayerAction::playerSwitch));
-				emit actionTriggered(action);
-				return true;
-			}
-		}
-		else if(action & PlayerAction::bidding)
-		{
-			if(currentPhase == Phase::search || currentPhase == Phase::countdown)
-			{
-				if(action == PlayerAction::sendBidding)
-				{
-					switchPhase(Phase::countdown);
-				}
-				emit actionTriggered(action);
-				return true;
-			}
-		}
-		else if(action & PlayerAction::other)
-		{
-			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
-			{
+                board->moveActivePlayer(static_cast<Direction>(action - PlayerAction::movement));
+                emit actionTriggered(action);
+                return true;
+            }
+        }
+        else if(action & PlayerAction::playerSwitch)
+        {
+            if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
+            {
+                board->switchPlayer(static_cast<Direction>(action-PlayerAction::playerSwitch));
+                emit actionTriggered(action);
+                return true;
+            }
+        }
+        else if(action & PlayerAction::bidding)
+        {
+            qDebug()<<"Currently in GameControl: triggerAction -> bidding, current Phase is "<<static_cast<int>(currentPhase);
+            if(currentPhase == Phase::search || currentPhase == Phase::countdown)
+            {
+                if(action == PlayerAction::sendBidding)
+                    switchPhase(Phase::countdown); //If timer has not been started, start the dödöööö FINAL COUNTDOWN dödödödö dödödödödö
+                emit actionTriggered(action);
+                return true;
+            }
+        }
+        else if(action & PlayerAction::other)
+        {
+            if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
+            {
                 if(action == PlayerAction::revert)
                 {
                     board->revert();
                 }
-				emit actionTriggered(action);
-				return true;
-			}
-		}
-	}
-	return false;
+                emit actionTriggered(action);
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 void GameControll::activePlayerChanged(int playerNumber)
@@ -125,11 +126,12 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	case Phase::countdown:
 	{
 		{
-			if(currentPhase == Phase::search)
-			currentPhase = phase;
-			timeLeft = 2;
-			emit time(timeLeft);
-			countdown.start();
+            if(currentPhase == Phase::search){
+                currentPhase = phase;
+                timeLeft = 60; //2
+                emit time(timeLeft);
+                countdown.start();
+            }
 			return true;
 		}
 		break;

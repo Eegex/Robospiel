@@ -21,7 +21,17 @@ LeaderBoardWidget::LeaderBoardWidget(QWidget *parent) : QWidget(parent)
 
 void LeaderBoardWidget::sortByBidding()
 {
-    //TODO: Will be done in back end
+    QVector<UserBiddingWidget*> sortedUsers;
+    UserBiddingWidget * minWidget;
+    int minBid = 999;
+    for(int additionIndex = 0; additionIndex < users.size(); additionIndex++){ //Effectively insertion sort
+        for(UserBiddingWidget * user : users)
+            if(user->getBidding()<minBid)
+                minWidget = user;
+        sortedUsers[additionIndex] = minWidget;
+        users.remove(users.indexOf(minWidget));
+    }
+    users = sortedUsers;
 }
 
 void LeaderBoardWidget::addPlayer(User * newUser)
