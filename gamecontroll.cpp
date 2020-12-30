@@ -76,14 +76,14 @@ bool GameControll::triggerAction(PlayerAction action, QString user)
 		{
 			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
 			{
-                if(action == PlayerAction::revert)
-                {
-                    board->revert();
-                }
-                if(action == PlayerAction::revertToBeginning)
-                {
-                    board -> revertToBeginning();
-                }
+				if(action == PlayerAction::revert)
+				{
+					board->revert();
+				}
+				if(action == PlayerAction::revertToBeginning)
+                                {
+                                    board -> revertToBeginning();
+                                }
 				emit actionTriggered(action);
 				return true;
 			}
@@ -130,11 +130,13 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	case Phase::countdown:
 	{
 		{
-			if(currentPhase == Phase::search)
-			currentPhase = phase;
-			timeLeft = 2;
-			emit time(timeLeft);
-			countdown.start();
+            if(currentPhase == Phase::search)
+            {
+                currentPhase = phase;
+                timeLeft = 2; //60
+                emit time(timeLeft);
+                countdown.start();
+            }
 			return true;
 		}
 		break;
