@@ -60,11 +60,11 @@ void Board::startNewRound()
 Tile* Board::getTile(int x, int y)
 {
 
-    if(x < getSize().width() && y < getSize().height() && x>= 0 && y>= 0)
-    {
-        return tiles.at(y).at(x);
-    }
-    return nullptr;
+	if(x < getSize().width() && y < getSize().height() && x>= 0 && y>= 0)
+	{
+		return tiles.at(y).at(x);
+	}
+	return nullptr;
 }
 
 QSize Board::getSize()
@@ -399,20 +399,20 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 	}
 	//qDebug()<< "blaaaaaa" << changeOfXAxis << "   " << changeOfYAxis;
 	Tile* currentTile = players.at(activePlayer);
-    HistoryElement h = HistoryElement();
-    h.action=static_cast<PlayerAction>((int)PlayerAction::movement+(int)d);
-    h.previousPosition=currentTile->getPosition();
+	HistoryElement h = HistoryElement();
+	h.action = static_cast<PlayerAction>((int)PlayerAction::movement+(int)d);
+	h.previousPosition = currentTile->getPosition();
 
 	Tile* nextTile = getTile(
 						 currentTile->getPosition().rx() + changeOfXAxis,
 						 currentTile->getPosition().ry() + changeOfYAxis);
-    if(nextTile == nullptr)
-    {
-        qDebug()<< "nullptr";
+	if(nextTile == nullptr)
+	{
+		qDebug()<< "nullptr";
 
-        return;
-    }
-    while(!currentTile->getWall(d)&& nextTile->getPlayer()==-1 && (currentTile->getPosition().x()!=targetX || currentTile->getPosition().y()!=targetY))
+		return;
+	}
+	while(!currentTile->getWall(d)&& nextTile->getPlayer()==-1 && (currentTile->getPosition().x()!=targetX || currentTile->getPosition().y()!=targetY))
 	{
 		bool nextTileFree = true;
 		for(Tile* player : players)
@@ -424,7 +424,7 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 		}
 		if(!nextTileFree)
 		{
-            break;
+			break;
 		}
 		currentTile = nextTile;
 		if(!nextTile->getWall(d))
@@ -434,7 +434,7 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 						   currentTile->getPosition().ry() + changeOfYAxis);
 		}
 		setPlayerOnTile(activePlayer, currentTile);
-		emit playerMoved(activePlayer);
+
 		moves++;
 		if(goal == currentTile && seeker == activePlayer)
 		{
@@ -442,44 +442,39 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 		}
 	}
 
-    history.append(h);
+	emit playerMoved(activePlayer);
+	history.append(h);
 }
 
 void Board::changeActivePlayer(int playerNumber)
 {
-
-    HistoryElement h = HistoryElement();
-    h.action=PlayerAction::playerSwitch;
-    h.previousPlayer=activePlayer;
-    history.append(h);
-
-    activePlayer = playerNumber;
-    emit boardChanged();
-
+	HistoryElement h = HistoryElement();
+	h.action=PlayerAction::playerSwitch;
+	h.previousPlayer=activePlayer;
+	history.append(h);
+	activePlayer = playerNumber;
+	emit boardChanged();
 }
 
 void Board::revert()
 {
-    if(!history.isEmpty())
-    {
-        HistoryElement h = history.takeLast();
-        if(h.action & PlayerAction::movement)
-        {
-            int direction = h.action-PlayerAction::movement;
-            direction = direction>(int) Direction::east ? direction>>2 : direction<<2; //invert direction
-            moveActivePlayer(static_cast<Direction>(direction), h.previousPosition.x(), h.previousPosition.y());
-        }
-        if(h.action==PlayerAction::playerSwitch)
-        {
-            changeActivePlayer(h.previousPlayer);
-        }
-
-        //remove the new written history
-        history.removeLast();
-    }
-
-    //TODO delete history after each presentation and after the freeplay-phase
-
+	if(!history.isEmpty())
+	{
+		HistoryElement h = history.takeLast();
+		if(h.action & PlayerAction::movement)
+		{
+			int direction = h.action-PlayerAction::movement;
+			direction = direction>(int) Direction::east ? direction>>2 : direction<<2; //invert direction
+			moveActivePlayer(static_cast<Direction>(direction), h.previousPosition.x(), h.previousPosition.y());
+		}
+		if(h.action == PlayerAction::playerSwitch)
+		{
+			changeActivePlayer(h.previousPlayer);
+		}
+		//remove the new written history
+		history.removeLast();
+	}
+	//TODO delete history after each presentation and after the freeplay-phase
 }
 
 void Board::revertToBeginning(){
@@ -543,7 +538,7 @@ int Board::switchPlayer(Direction d)
 			}
 		}
 	}
-//	changeActivePlayer(min->getPlayer());
+	//changeActivePlayer(min->getPlayer());
 	return min->getPlayer();
 }
 

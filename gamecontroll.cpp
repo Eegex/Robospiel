@@ -87,7 +87,7 @@ bool GameControll::triggerAction(PlayerAction action, QString user)
 				emit actionTriggered(action);
 				return true;
 			}
-        }
+		}
 	}
 	return false;
 }

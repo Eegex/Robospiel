@@ -29,6 +29,9 @@ public:
 	void resize(int pixelPerTile);
 	void setMapping(QVector<KeyMapping *> *value);
 
+public slots:
+	void updateColors(QColor b, QColor w, QColor g);
+
 private slots:
 	void paintEvent(QPaintEvent * event);
 	void resizeEvent(QResizeEvent * event);
@@ -46,9 +49,9 @@ private:
 	bool cachedPaintig = false;
 	bool showDebugOutput = false;
 	QVector<KeyMapping*> * mapping = nullptr;
-    QColor background = QColor(0,0,0);
-    QColor primary = QColor(100,100,100);
-    QColor grid = QColor(50,50,50);
+	QColor background = QColor(0,0,0);
+	QColor primary = QColor(100,100,100);
+	QColor grid = QColor(50,50,50);
 //  Bitte stehen lassen, damit Nora keinen Anfall bekommt :P
 //  QColor background = QColor(0,0,0);
 //	QColor primary = QColor(100,100,100);

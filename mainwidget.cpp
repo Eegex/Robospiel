@@ -27,7 +27,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(game,&GameControll::time,this,&MainWidget::updateTimer);
 	adjustSize();
 	connect(leaderboard->getUserCreationWidget(), &UserCreationWidget::userAdded, this, &MainWidget::addUser);
-
+	connect(settings, &SettingsDialog::colorsChanged, view, &BoardView::updateColors);
 	connect(settings, &SettingsDialog::newMapping, game, &GameControll::setMapping);
 }
 
