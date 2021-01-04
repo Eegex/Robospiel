@@ -12,6 +12,8 @@
 #include <QLineEdit>
 #include <QColorDialog>
 #include <QScrollArea>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include "keymapping.h"
 #include "keymappingview.h"
 
@@ -20,6 +22,16 @@ class SettingsDialog : public QDialog
 	Q_OBJECT
 public:
 	explicit SettingsDialog(QVector<KeyMapping *> mapping, QDialog *parent = nullptr);
+	QString getUsername() const;
+	QColor getUsercolor() const;
+	QColor getBackground() const;
+	QColor getWallcolor() const;
+	QColor getGridcolor() const;
+
+public slots:
+	void load();
+	void save();
+
 private:
 	QVBoxLayout * lay = new QVBoxLayout(this);
 	QLineEdit * leUsername = new QLineEdit(this);
@@ -31,18 +43,17 @@ private:
 	QPushButton * pbSave = new QPushButton(tr("Save"),this);
 	QFormLayout * flGeneral = new QFormLayout;
 	KeyMappingView * keyMappings;
-	QString username;
-	QColor user = Qt::black;
-	QColor back = QColor(229,255,0);
-	QColor wall = QColor(255, 0, 140);
-	QColor grid = QColor(0, 255, 217);
+	QJsonObject settings;
+	const QString username = "un";
+	const QString usercolor = "sc";
+	const QString background = "bc";
+	const QString wallcolor = "wc";
+	const QString gridcolor = "gc";
 signals:
 	void newMapping(QVector<KeyMapping*> mapping);
 	void colorsChanged(QColor b, QColor w, QColor g);
 
 private slots:
-	void load();
-	void save();
 };
 
 #endif // SETTINGSDIALOG_H

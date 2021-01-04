@@ -5,14 +5,16 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 {
 	glMain = new QGridLayout(this);
 	game = new GameControll(this);
+	settings = new SettingsDialog(*game->getMapping());
+	settings->load();
 	view = new BoardView(this);
+	view->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
 	leaderboard = new LeaderBoardWidget(this);
 	view->setBoard(game->createBoard(16, 16, 5));
 	view->setMapping(game->getMapping());
 	connect(view,&BoardView::action,game,&GameControll::triggerAction);
 	connect(view,&BoardView::activePlayerChanged,game,&GameControll::activePlayerChanged);
 	networkView = new NetworkView;
-	settings = new SettingsDialog(*game->getMapping());
 	lcd = new QLCDNumber(this);
 	lcd->setSegmentStyle(QLCDNumber::Flat);
 	lcd->setStyleSheet("QLCDNumber{"
@@ -20,18 +22,18 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 					   "color: #000000;"
 					   "}");
 	lcd->setMinimumSize(250,180);
-    lcd->setDigitCount(2);
+	lcd->setDigitCount(2);
 	glMain->addWidget(view,0,0,3,1,Qt::AlignCenter);
 	glMain->addWidget(lcd,0,1,Qt::AlignCenter);
 	glMain->addWidget(leaderboard,1,1,Qt::AlignCenter);
 	connect(game,&GameControll::time,this,&MainWidget::updateTimer);
 	adjustSize();
 	connect(leaderboard->getUserCreationWidget(), &UserCreationWidget::userAdded, this, &MainWidget::addUser);
-    for(UserBiddingWidget * ubw : *leaderboard->getUsers())
-        connect(ubw, &UserBiddingWidget::biddingChanged, this, [&](const int playerBidding, const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
-        {
-            game->triggerAction(PlayerAction::sendBidding, id);
-        });
+	for(UserBiddingWidget * ubw : *leaderboard->getUsers())
+		connect(ubw, &UserBiddingWidget::biddingChanged, this, [&](const int playerBidding, const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
+		{
+			game->triggerAction(PlayerAction::sendBidding, id);
+		});
 	connect(settings, &SettingsDialog::colorsChanged, view, &BoardView::updateColors);
 	connect(settings, &SettingsDialog::newMapping, game, &GameControll::setMapping);
 }
@@ -62,10 +64,10 @@ void MainWidget::addUser(struct UserData * newUser)
 	// adds new player in the frontend
 	leaderboard->addPlayer(u);
 	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, &MainWidget::changeBidding);
-    connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int playerBidding, const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
-    {
-        game->triggerAction(PlayerAction::sendBidding, id);
-    });
+	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int playerBidding, const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
+	{
+		game->triggerAction(PlayerAction::sendBidding, id);
+	});
 }
 
 void MainWidget::changeBidding(int bidding, QUuid id)

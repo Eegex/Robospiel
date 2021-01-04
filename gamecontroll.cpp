@@ -14,7 +14,7 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 	mapping.append(new KeyMapping(PlayerAction::switchPlayerSouth,Qt::Key::Key_K));
 	mapping.append(new KeyMapping(PlayerAction::switchPlayerWest,Qt::Key::Key_J));
 	mapping.append(new KeyMapping(PlayerAction::revert,Qt::Key::Key_R));
-    mapping.append(new KeyMapping(PlayerAction::revertToBeginning,Qt::Key::Key_B));
+	mapping.append(new KeyMapping(PlayerAction::revertToBeginning,Qt::Key::Key_B));
 	mapping.append(new KeyMapping(PlayerAction::giveUp,Qt::Key::Key_Q));
 	mapping.append(new KeyMapping(PlayerAction::enterBidding,Qt::Key::Key_Space));
 	mapping.append(new KeyMapping(PlayerAction::clearBidding,Qt::Key::Key_Backspace));
@@ -36,9 +36,10 @@ Board * GameControll::createBoard(int width, int height, int playerNumber)
 	return board;
 }
 
-bool GameControll::triggerAction(PlayerAction action, QString user)
+bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 {
-	if((activeUser.isEmpty() || user == activeUser))
+	qDebug()<<"Called function TriggerAction with parameters "<<action<<" and User ID "<<userID;
+	if(activeUserID == nullptr /*@Jan Ist das so gewollt? */ || userID == activeUserID)
 	{
 		if(action & PlayerAction::movement)
 		{
@@ -62,12 +63,11 @@ bool GameControll::triggerAction(PlayerAction action, QString user)
 		}
 		else if(action & PlayerAction::bidding)
 		{
+			qDebug()<<"Currently in GameControl: triggerAction -> bidding, current Phase is "<<static_cast<int>(currentPhase);
 			if(currentPhase == Phase::search || currentPhase == Phase::countdown)
 			{
 				if(action == PlayerAction::sendBidding)
-				{
-					switchPhase(Phase::countdown);
-				}
+					switchPhase(Phase::countdown); //If timer has not been started, start the dödöööö FINAL COUNTDOWN dödödödö dödödödödö
 				emit actionTriggered(action);
 				return true;
 			}
@@ -80,10 +80,6 @@ bool GameControll::triggerAction(PlayerAction action, QString user)
 				{
 					board->revert();
 				}
-				if(action == PlayerAction::revertToBeginning)
-                                {
-                                    board -> revertToBeginning();
-                                }
 				emit actionTriggered(action);
 				return true;
 			}
@@ -130,13 +126,13 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	case Phase::countdown:
 	{
 		{
-            if(currentPhase == Phase::search)
-            {
-                currentPhase = phase;
-                timeLeft = 2; //60
-                emit time(timeLeft);
-                countdown.start();
-            }
+			if(currentPhase == Phase::search)
+			{
+				currentPhase = phase;
+				timeLeft = 2; //60
+				emit time(timeLeft);
+				countdown.start();
+			}
 			return true;
 		}
 		break;
