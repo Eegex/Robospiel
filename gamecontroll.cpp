@@ -36,10 +36,11 @@ Board * GameControll::createBoard(int width, int height, int playerNumber)
 	return board;
 }
 
-bool GameControll::triggerAction(PlayerAction action, QString user)
+bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 {
-	if((activeUser.isEmpty() || user == activeUser))
-	{
+    qDebug()<<"Called function TriggerAction with parameters "<<action<<" and User ID "<<userID;
+    if(activeUserID == nullptr /*@Jan Ist das so gewollt? */ || userID == activeUserID)
+    {
 		if(action & PlayerAction::movement)
 		{
 			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)

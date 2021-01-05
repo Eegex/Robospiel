@@ -21,7 +21,7 @@ public:
     bool resizeWhileAnimation(double widthFactor, double heightFactor);
 private:
     int playerNumber;
-    bool debugMode = false;
+    bool debugMode = true;
     double fractionOfTile = 0.7;
     QSequentialAnimationGroup* animations = new QSequentialAnimationGroup();
 
