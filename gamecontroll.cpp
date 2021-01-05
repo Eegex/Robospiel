@@ -56,8 +56,12 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 		{
 			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
 			{
-				board->switchPlayer(static_cast<Direction>(action-PlayerAction::playerSwitch));
-				emit actionTriggered(action);
+                if(action != PlayerAction::playerSwitch) //if we don't want a real PlayerSwitch (withDirection), just check if we can do one (by clicking on a player)
+                {
+                    board->switchPlayer(static_cast<Direction>(action-PlayerAction::playerSwitch));
+                    emit actionTriggered(action);
+
+                }
 				return true;
 			}
 		}
@@ -95,7 +99,7 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 
 void GameControll::activePlayerChanged(int playerNumber)
 {
-   if(triggerAction(PlayerAction::playerSwitch, ""))
+   if(triggerAction(PlayerAction::playerSwitch, "")) // PROBLEM? Here we call the Action without wanting to perform it (is caught in gamecontroll right now)
    {
 	   board->changeActivePlayer(playerNumber);
    }
