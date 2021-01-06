@@ -59,7 +59,7 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
                 if(action != PlayerAction::playerSwitch) //if we don't want a real PlayerSwitch (withDirection), just check if we can do one (by clicking on a player)
                 {
                     board->switchPlayer(static_cast<Direction>(action-PlayerAction::playerSwitch));
-                    emit actionTriggered(action);
+                    emit actionTriggered(action); // should this be outside the if?
 
                 }
 				return true;
