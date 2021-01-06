@@ -28,7 +28,8 @@ public slots:
 	void setMapping(QVector<KeyMapping *> mapping);
 	void nextTarget();
 	void remakeBoard();
-
+    QUuid getActiveUserID();
+    void setActiveUserID(QUuid id);
 	void activePlayerChanged(int playerNumber);
 private:
     Phase currentPhase = Phase::search; //freeplay
@@ -41,7 +42,8 @@ private:
 signals:
 	void actionTriggered(PlayerAction action);
 	void time(int secs);
-
+    void newRound();
+    void biddingDone();
 private slots:
 	void updateTimer();
 	bool switchPhase(GameControll::Phase phase);

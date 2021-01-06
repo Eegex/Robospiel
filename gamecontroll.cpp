@@ -43,7 +43,7 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 	{
 		if(action & PlayerAction::movement)
 		{
-			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
+            if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay) //If online only let the active user move
 			{
 				//we subtract movement from action to get a direction (clever enum numbers)
 
@@ -100,6 +100,7 @@ void GameControll::nextTarget()
 {
 	if(switchPhase(Phase::search))
 	{
+        emit newRound();
 		board->startNewRound();
 	}
 }
@@ -140,7 +141,9 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	case Phase::presentation:
 	{
 		if(currentPhase == Phase::countdown)
-		{
+        {
+            emit biddingDone();
+            //Set Player to player with minimum bid, aka first player after being sorted
 			currentPhase = phase;
 			return true;
 		}
@@ -150,7 +153,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	{
 		if(currentPhase == Phase::presentation)
 		{
-			currentPhase = phase;
+            currentPhase = phase;
 			return true;
 		}
 		break;
@@ -178,6 +181,10 @@ Board * GameControll::getBoard() const
 {
 	return board;
 }
+
+QUuid GameControll::getActiveUserID(){return activeUserID;}
+
+void GameControll::setActiveUserID(QUuid id){activeUserID = id;}
 
 void GameControll::updateTimer()
 {

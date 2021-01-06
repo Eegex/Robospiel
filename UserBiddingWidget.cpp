@@ -11,12 +11,19 @@ UserBiddingWidget::UserBiddingWidget(QWidget *parent) : QWidget(parent)
     connect(accept,&QPushButton::clicked,this,&UserBiddingWidget::btnPressed); //When player has accepted bid, disable the button
 	lSpinBox->setMinimum(1);
 	lSpinBox->setSingleStep(1);
-    accept->setText("Accept Bid");
+    accept->setText(BID_BTN_TEXT);
 }
 
 void UserBiddingWidget::setId(QUuid id)
 {
     userId = id;
+}
+
+void UserBiddingWidget::resetBidding()
+{
+    setBidding(MAX_BID);
+    accept->setText(BID_BTN_TEXT);
+    lSpinBox->setValue(1);
 }
 
 void UserBiddingWidget::setBidding(int bidding)

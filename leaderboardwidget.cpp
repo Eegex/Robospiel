@@ -19,19 +19,36 @@ LeaderBoardWidget::LeaderBoardWidget(QWidget *parent) : QWidget(parent)
     //connect(userCreationWidget, &UserCreationWidget::playerAdded, this, &LeaderBoardWidget::addPlayer);
 }
 
+void LeaderBoardWidget::updateLayout(){
+    for(unsigned int i = 0; i<numOfPlayers; i++){lay->addWidget(users.at(i), i, 0);}
+    if(!isOnline){lay->addWidget(addBtn, numOfPlayers, 0);} //New Player Button under all Players
+    lay->update();
+}
 void LeaderBoardWidget::sortByBidding()
 {
+    qDebug()<<"Called sortByBidding";
     QVector<UserBiddingWidget*> sortedUsers;
     UserBiddingWidget * minWidget;
-    int minBid = 999;
-    for(int additionIndex = 0; additionIndex < users.size(); additionIndex++){ //Effectively insertion sort
-        for(UserBiddingWidget * user : users)
-            if(user->getBidding()<minBid)
-                minWidget = user;
-        sortedUsers[additionIndex] = minWidget;
-        users.remove(users.indexOf(minWidget));
+    int minIndex = 0;
+    int minBid;
+    for(int additionIndex = 0; additionIndex < users.size(); additionIndex++){
+        minBid = MAX_BID;
+        for(UserBiddingWidget * user : users){
+            if(user->getBidding() < minBid && user->active){ //If User has a lower bid than the currently lowest bid
+                minWidget = user; //Set the Widget to add to the new list to the user
+                minIndex = users.indexOf(user); //Set the index needed for deactivating the user to the current index
+                minBid = user->getBidding(); //Set the newest lowest bid to the current user as there can be users after that one with lower bids
+            }
+        }
+        users[minIndex]->active = false; //Deactivate user
+        sortedUsers.append(minWidget);
     }
     users = sortedUsers;
+    for(int i = 0; i<users.size(); i++){
+        qDebug()<<"SortedUsers: User "<<i<<": "<<users[i]->getName()<<" with bidding: "<<users[i]->getBidding();
+        users[i]->active = true;
+    }
+    updateLayout();
 }
 
 void LeaderBoardWidget::addPlayer(User * newUser)
@@ -44,9 +61,10 @@ void LeaderBoardWidget::addPlayer(User * newUser)
     users.append(newWidget); //Append widget to list of players
     lay->addWidget(users.at(numOfPlayers));
     numOfPlayers++; //Increment number of players, important for correct placement of button
-    for(unsigned int i = 0; i<numOfPlayers; i++){lay->addWidget(users.at(i), i, 0);}
+    updateLayout();
+    /*for(unsigned int i = 0; i<numOfPlayers; i++){lay->addWidget(users.at(i), i, 0);}
     if(!isOnline){lay->addWidget(addBtn, numOfPlayers, 0);} //New Player Button under all Players
-    lay->update();
+    lay->update();*/
 }
 
 void LeaderBoardWidget::newPlayer()

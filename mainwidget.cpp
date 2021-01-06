@@ -29,11 +29,21 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(game,&GameControll::time,this,&MainWidget::updateTimer);
 	adjustSize();
 	connect(leaderboard->getUserCreationWidget(), &UserCreationWidget::userAdded, this, &MainWidget::addUser);
-	for(UserBiddingWidget * ubw : *leaderboard->getUsers())
+    for(UserBiddingWidget * ubw : *leaderboard->getUsers()){
 		connect(ubw, &UserBiddingWidget::biddingChanged, this, [&](const int playerBidding, const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
 		{
 			game->triggerAction(PlayerAction::sendBidding, id);
 		});
+        connect(game, &GameControll::newRound, this, [&]()
+        {
+            ubw->resetBidding();
+        });
+    }
+    connect(game, &GameControll::biddingDone, this, [&](){
+        leaderboard->sortByBidding();
+        game->setActiveUserID(leaderboard->getUsers()->first()->getId());
+        qDebug()<<"Bidding is done, Users are sorted, initial player is: "<<leaderboard->getUsers()->first()->getName()<<" with id "<<game->getActiveUserID();
+    });
 	connect(settings, &SettingsDialog::colorsChanged, view, &BoardView::updateColors);
 	connect(settings, &SettingsDialog::newMapping, game, &GameControll::setMapping);
 }
