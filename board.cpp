@@ -376,6 +376,9 @@ QString Board::printDirection(Direction direction)
 	case Direction::west:
 		return "west";
 		break;
+	case Direction::none:
+		return "none";
+		break;
 	}
 }
 
@@ -397,13 +400,14 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 	case Direction::west:
 		changeOfXAxis = -1;
 		break;
+	case Direction::none:
+		break;
 	}
 	//qDebug()<< "blaaaaaa" << changeOfXAxis << "   " << changeOfYAxis;
 	Tile* currentTile = players.at(activePlayer);
 	HistoryElement h = HistoryElement();
 	h.action = static_cast<PlayerAction>((int)PlayerAction::movement+(int)d);
 	h.previousPosition = currentTile->getPosition();
-
 	Tile* nextTile = getTile(
 						 currentTile->getPosition().rx() + changeOfXAxis,
 						 currentTile->getPosition().ry() + changeOfYAxis);
@@ -435,10 +439,7 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 						   currentTile->getPosition().ry() + changeOfYAxis);
 		}
 		setPlayerOnTile(activePlayer, currentTile);
-
-
 	}
-
 	emit playerMoved(activePlayer);
 	moves++;
 	if(goal == currentTile && seeker == activePlayer)
@@ -487,9 +488,15 @@ void Board::revertToBeginning()
 		revert();
 	}
 }
+
+// This method is called with a direction that indicates the way the gamer wants to switch the player.
+// We compute the angle each player has from the activePlayer (up would be 360/0 degrees, then it goes clockwise)
+// As well as the distance each playe has from the active one
+// From these two values a Fittingscore is computed and the player with the SMALLEST one is chosen as the next active player
+
 int Board::switchPlayer(Direction d)
 {
-	qDebug() << "Board::switchPlayer(Direction d)";
+	qDebug() << "Board::switchPlayer(Direction d)" << printDirection(d);
 	if(!static_cast<int>(d))
 	{
 		qDebug() << "keine Richtung";
@@ -520,30 +527,94 @@ int Board::switchPlayer(Direction d)
 	}
 	}
 	qDebug() << targetAngle;
-	int minAngle = 360;
+	float angleFactor = 2; //indicates the priority of the angle in deciding to what player you should jump
+	float distanceFactor = 1; //indicates the priority of the distance in deciding to what player you should jump
+	float largestPossibleFittingScore = angleFactor + distanceFactor;
+	float minFit = largestPossibleFittingScore;
 	Tile * min = nullptr;
+
 	for(Tile * t:players)
 	{
 		if(t->getPlayer() != activePlayer)
 		{
-			qDebug() << t->getPlayer();
+			qDebug() << "Player: " << t->getPlayer();
 			QPoint delta = t->getPosition() - players.at(activePlayer)->getPosition();
-			qDebug() << "Winkel" << atan(delta.y()/delta.x()) * 180.0/3.14159265358979323846;
-			int tileAngle = abs(atan(delta.y()/delta.x()) * 180/3.14159265358979323846 - targetAngle);
-			qDebug() << tileAngle << minAngle;
-			if(tileAngle >= 360)
+			qDebug() << delta;
+
+			int tileAngle = 0;
+			if(delta.x()) //so we don't divide by 0
 			{
-				tileAngle -= 360;
+				//int tileAngle = atan(abs(fraction) * 180/3.14159265358979323846 - targetAngle);
+				tileAngle = atan(((float) delta.y()/(float) delta.x())) * 180/3.14159265358979323846 ;
+
 			}
-			if(tileAngle < minAngle)
+			if(tileAngle < 0) // a negative angle should actually be the reverse one
+			{
+				tileAngle += 90;
+			}
+
+			//qDebug() << "initial Winkel" << tileAngle;
+			// as till now we have only an angle between 0 and 90, we must add degrees depending on the quadrant.
+			// note that we always include the first achsis and exclude the last axis (clockwise)
+			if(delta.y()<0 && delta.x()>=0)
+			{
+			   //qDebug() << "in 1st quadrant";
+			}
+			if(delta.y()>=0 && delta.x()>0)
+			{
+				//qDebug() << "in 4th quadrant";
+				tileAngle = tileAngle + 90;
+			}
+			else if(delta.y()>0 && delta.x()<=0)
+			{
+				//qDebug() << "in 3rd quadrant";
+				tileAngle = tileAngle +180;
+			}
+
+			else if(delta.y()<=0 && delta.x()<0)
+			{
+				//qDebug() << "in 2nd quadrant";
+				tileAngle = tileAngle +270;
+			}
+
+			//qDebug() << "standardized angle" << tileAngle;
+
+			float distanceOfAngles = std::min(abs(tileAngle- targetAngle), abs(360-tileAngle+targetAngle));
+//            qDebug() << distanceOfAngleToTargetAngle;
+
+			float distance = sqrt(pow(delta.x(),2) + pow(delta.y(),2) );
+			float largestPossibleDistance = sqrt(pow(tiles.size(),2) + pow(tiles.at(0).size(),2) );
+//            qDebug() << "Distance: " << distance << largestPossibleDistance;
+
+			//falls jmd nen besseren Namen weiß, gerne umbennen, soll heißen wie gut der Player sich eignet um für diese Bewegung genommen zu werden
+			float fittingScore = largestPossibleFittingScore;
+
+			if(!(distanceOfAngles>=90)) //we never want to move down when the gamer said to move up
+			{
+				fittingScore = angleFactor * distanceOfAngles/360 + distanceFactor * distance/largestPossibleDistance;
+			}
+
+//            qDebug() << "Fitting: " << fittingScore << minFit;
+
+			if(fittingScore < minFit) //looking for the best (smallest) fittingScore
 			{
 				min = t;
-				minAngle = tileAngle;
+				minFit = fittingScore;
+//                qDebug() << "FittingAfter: " << fittingScore << minFit;
 			}
+
+
 		}
 	}
-	//changeActivePlayer(min->getPlayer());
-	return min->getPlayer();
+	if(minFit < largestPossibleFittingScore)
+	{
+//        qDebug() << "Ergebnis" << min->getPlayer();
+		changeActivePlayer(min->getPlayer());
+		return min->getPlayer();
+	}
+	else{
+		return activePlayer;
+	}
 }
 
 

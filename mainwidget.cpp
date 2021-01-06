@@ -74,10 +74,13 @@ void MainWidget::addUser(struct UserData * newUser)
 	// adds new player in the frontend
 	leaderboard->addPlayer(u);
 	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, &MainWidget::changeBidding);
-	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int , const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
+    connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingReset, this, &MainWidget::changeBidding);
+    connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int , const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
 	{
 		game->triggerAction(PlayerAction::sendBidding, id);
 	});
+    connect(game, &GameControll::newRound, leaderboard->getUsers()->last(), &UserBiddingWidget::resetBidding);
+    connect(game, &GameControll::biddingDone, leaderboard->getUsers()->last(), &UserBiddingWidget::deactivateBtn);
 }
 
 void MainWidget::editBoard()
@@ -92,7 +95,7 @@ void MainWidget::changeBidding(int bidding, QUuid id)
 	qDebug()<<"change Bidding from "<<id.toString()<< "to" << bidding;
 	for (User *u: users)
 	{
-		if (u->getId() == id)
+        if (u->getId() == id)
 		{
 			u->setBidding(bidding);
 			break;

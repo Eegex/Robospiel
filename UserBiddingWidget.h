@@ -1,6 +1,6 @@
 #ifndef USERBIDDINGWIDGET_H
 #define USERBIDDINGWIDGET_H
-#define MAX_BID 999
+#define MAX_BID 99
 #define BID_BTN_TEXT "Accept Bid"
 
 #include <QLabel>
@@ -36,11 +36,13 @@ public slots:
     void setColor(QColor colour);
     void btnPressed();
     void resetBidding();
+    void deactivateBtn();
 
 signals:
     void biddingChanged(int playerBidding, QUuid id);
     void nameChanged();
     void colourChanged();
+    void biddingReset(int playerBidding, QUuid id);
 };
 
 #endif // PLAYERBIDDINGWIDGET_H
