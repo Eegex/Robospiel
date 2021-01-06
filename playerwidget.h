@@ -17,7 +17,7 @@ class PlayerWidget : public PawnWidget
     Q_OBJECT
 public:    
     explicit PlayerWidget(QSize size, int playerNumber, Board *board, QWidget *parent= nullptr);
-    void moveAnimated(QPoint point);
+    void moveAnimated(QPoint point, double speed);
     bool resizeWhileAnimation(double widthFactor, double heightFactor);
 private:
     int playerNumber;

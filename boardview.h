@@ -16,6 +16,7 @@
 #include "keymapping.h"
 #include "playerwidget.h"
 #include "goalwidget.h"
+#include <algorithm>
 
 
 class BoardView : public QWidget

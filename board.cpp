@@ -470,7 +470,7 @@ void Board::revert()
 		if(h.action == PlayerAction::playerSwitch)
 		{
 			changeActivePlayer(h.previousPlayer);
-		}
+        }
 		//remove the new written history
 		history.removeLast();
 	}

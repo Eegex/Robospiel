@@ -79,9 +79,8 @@ void PlayerWidget::paintEvent(QPaintEvent *event)
 	event->accept();
 }
 
-void PlayerWidget::moveAnimated(QPoint point)
+void PlayerWidget::moveAnimated(QPoint point, double speed) //speed in pixels per second
 {
-	double speed = 350; //in pixels per second
 
 	double distance;
 	if(animations->animationCount() > 0)
@@ -98,6 +97,7 @@ void PlayerWidget::moveAnimated(QPoint point)
 	QPropertyAnimation * animation = new QPropertyAnimation(this, "geometry");
 	animation->setDuration(1000*distance/speed);
 	animation->setEndValue(QRect(point.x(), point.y(), 0, 0));
+    animation->setEasingCurve(QEasingCurve::InQuad);
 
 	animations->addAnimation(animation);
 	if(animations->state() != QAbstractAnimation::Running)

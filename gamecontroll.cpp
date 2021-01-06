@@ -128,7 +128,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 		{
             if(currentPhase == Phase::search){
                 currentPhase = phase;
-                timeLeft = 60; //2
+                timeLeft = 2; //60
                 emit time(timeLeft);
                 countdown.start();
             }
