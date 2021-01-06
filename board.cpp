@@ -40,9 +40,9 @@ Board::Board(int width, int height, int playerNumber, QObject *parent) : QObject
 
 void Board::setPlayerOnTile(int player, Tile* tile)
 {
-	players[player]->setPlayer(-1);
-	tile->setPlayer(player);
-	players[player] = tile;
+    players[player]->setPlayer(-1);
+    tile->setPlayer(player);
+    players[player] = tile;
 }
 
 void Board::startNewRound()
@@ -398,7 +398,7 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 		changeOfXAxis = -1;
 		break;
 	}
-    qDebug()<< "blaaaaaa" << changeOfXAxis << "   " << changeOfYAxis;
+    //qDebug()<< "blaaaaaa" << changeOfXAxis << "   " << changeOfYAxis;
 	Tile* currentTile = players.at(activePlayer);
 	HistoryElement h = HistoryElement();
 	h.action = static_cast<PlayerAction>((int)PlayerAction::movement+(int)d);
@@ -446,6 +446,71 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
         emit goalHit(moves);
     }
     history.append(h);
+	int changeOfXAxis = 0;
+	int changeOfYAxis = 0;
+	switch(d)
+	{
+	case Direction::north:
+		changeOfYAxis = -1;
+		break;
+	case Direction::east:
+		changeOfXAxis = 1;
+		break;
+	case Direction::south:
+		changeOfYAxis = 1;
+		break;
+	case Direction::west:
+		changeOfXAxis = -1;
+		break;
+	}
+	//qDebug()<< "blaaaaaa" << changeOfXAxis << "   " << changeOfYAxis;
+	Tile* currentTile = players.at(activePlayer);
+	HistoryElement h = HistoryElement();
+	h.action = static_cast<PlayerAction>((int)PlayerAction::movement+(int)d);
+	h.previousPosition = currentTile->getPosition();
+
+	Tile* nextTile = getTile(
+						 currentTile->getPosition().rx() + changeOfXAxis,
+						 currentTile->getPosition().ry() + changeOfYAxis);
+	if(nextTile == nullptr)
+	{
+		qDebug()<< "nullptr";
+
+		return;
+	}
+	while(!currentTile->getWall(d)&& nextTile->getPlayer()==-1 && (currentTile->getPosition().x()!=targetX || currentTile->getPosition().y()!=targetY))
+	{
+		bool nextTileFree = true;
+		for(Tile* player : players)
+		{
+			if(player == nextTile)
+			{
+				nextTileFree = false;
+			}
+		}
+		if(!nextTileFree)
+		{
+			break;
+		}
+		currentTile = nextTile;
+		if(!nextTile->getWall(d))
+		{
+			nextTile = getTile(
+						   currentTile->getPosition().rx() + changeOfXAxis,
+						   currentTile->getPosition().ry() + changeOfYAxis);
+		}
+		setPlayerOnTile(activePlayer, currentTile);
+
+
+	}
+
+	emit playerMoved(activePlayer);
+	moves++;
+	if(goal == currentTile && seeker == activePlayer)
+	{
+		emit goalHit(moves);
+	}
+	history.append(h);
 }
 
 void Board::changeActivePlayer(int playerNumber)
@@ -480,12 +545,19 @@ void Board::revert()
 	//TODO delete history after each presentation and after the freeplay-phase
 }
 
-void Board::revertToBeginning(){
-    while(!history.isEmpty()){
-        revert();
-    }
-
+void Board::revertToBeginning()
+{
+	while(!history.isEmpty())
+	{
+		revert();
+	}
 }
+
+// This method is called with a direction that indicates the way the gamer wants to switch the player.
+// We compute the angle each player has from the activePlayer (up would be 360/0 degrees, then it goes clockwise)
+// As well as the distance each playe has from the active one
+// From these two values a Fittingscore is computed and the player with the SMALLEST one is chosen as the next active player
+
 int Board::switchPlayer(Direction d)
 {
     qDebug() << "Board::switchPlayer(Direction d)" << printDirection(d);

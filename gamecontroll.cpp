@@ -1,11 +1,9 @@
 #include "gamecontroll.h"
 
-
 using namespace std::chrono_literals;
 
 GameControll::GameControll(QObject *parent) : QObject(parent)
 {
-
     countdown.setSingleShot(false);
 	countdown.setInterval(1s);
 	connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
@@ -41,9 +39,9 @@ Board * GameControll::createBoard(int width, int height, int playerNumber)
 
 bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 {
-    qDebug()<<"Called function TriggerAction with parameters "<<action<<" and User ID "<<userID<<" in round "<<static_cast<int>(currentPhase);
-    if(activeUserID == nullptr /*@Jan Ist das so gewollt? */ || userID == activeUserID)
-    {
+	qDebug()<<"Called function TriggerAction with parameters "<<action<<" and User ID "<<userID;
+	if(activeUserID.isNull() || userID == activeUserID)
+	{
 		if(action & PlayerAction::movement)
 		{
             qDebug()<<"Called  function TriggerAction with Movement Parameter";
@@ -61,12 +59,8 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 		{
 			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
 			{
-                if(action != PlayerAction::playerSwitch) //if we don't want a real PlayerSwitch (withDirection), just check if we can do one (by clicking on a player)
-                {
-                    board->switchPlayer(static_cast<Direction>(action-PlayerAction::playerSwitch));
-                    emit actionTriggered(action); // should this be outside the if?
-
-                }
+				board->switchPlayer(static_cast<Direction>(action-PlayerAction::playerSwitch));
+				emit actionTriggered(action);
 				return true;
 			}
 		}
@@ -76,9 +70,7 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 			if(currentPhase == Phase::search || currentPhase == Phase::countdown)
 			{
 				if(action == PlayerAction::sendBidding)
-				{
-					switchPhase(Phase::countdown);
-				}
+					switchPhase(Phase::countdown); //If timer has not been started, start the dödöööö FINAL COUNTDOWN dödödödö dödödödödö
 				emit actionTriggered(action);
 				return true;
 			}
@@ -105,7 +97,7 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 
 void GameControll::activePlayerChanged(int playerNumber)
 {
-   if(triggerAction(PlayerAction::playerSwitch, ""))
+   if(triggerAction(PlayerAction::playerSwitch, "")) // PROBLEM? Here we call the Action without wanting to perform it (is caught in gamecontroll right now)
    {
 	   board->changeActivePlayer(playerNumber);
    }
@@ -116,7 +108,7 @@ void GameControll::nextTarget()
     qDebug()<<"Next Target 116";
     emit newRound();
 	if(switchPhase(Phase::search))
-    {
+	{
 		board->startNewRound();
 	}
 }
@@ -157,9 +149,9 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	case Phase::presentation:
 	{
 		if(currentPhase == Phase::countdown)
-        {
-            emit biddingDone();
-            //Set Player to player with minimum bid, aka first player after being sorted
+		{
+			emit biddingDone();
+			//Set Player to player with minimum bid, aka first player after being sorted
 			currentPhase = phase;
 			return true;
 		}
@@ -169,7 +161,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	{
 		if(currentPhase == Phase::presentation)
 		{
-            currentPhase = phase;
+			currentPhase = phase;
 			return true;
 		}
 		break;
