@@ -18,7 +18,7 @@ public:
     KeyMappingView(QVector<KeyMapping*> mappings = QVector<KeyMapping*>(), QWidget *parent=nullptr);
     QVector<KeyMapping *> getMapping();
 private:
-    PlayerAction mappableActions[13] = {PlayerAction::movePlayerNorth,
+    PlayerAction mappableActions[14] = {PlayerAction::movePlayerNorth,
                                         PlayerAction::movePlayerWest,
                                         PlayerAction::movePlayerSouth,
                                         PlayerAction::movePlayerEast,
@@ -32,7 +32,8 @@ private:
                                         PlayerAction::sendBidding,
                                         PlayerAction::clearBidding,
                                         PlayerAction::giveUp,
-                                        PlayerAction::revert};
+                                        PlayerAction::revert,
+                                        PlayerAction::revertToBeginning};
     QVector<KeyMapping*> allMappings;
     QGridLayout* grid;
     QVector<QLabel*> mappingLabels;

@@ -1,8 +1,7 @@
-#include "playerwidget.h"
-#include "QDebug"
 
 #include <QPropertyAnimation>
-
+#include "playerwidget.h"
+#include "QDebug"
 
 PlayerWidget::PlayerWidget(QSize size,  int playerNumber, Board *board, QWidget *parent):
 	PawnWidget(size, board, parent), playerNumber(playerNumber)

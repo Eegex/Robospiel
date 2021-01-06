@@ -28,10 +28,11 @@ public:
 	Tile * goal;
 	int seeker = 0;
 	int activePlayer = 0;
-	void moveActivePlayer(Direction d, int targetX = -1, int targetY = -1);
+    void moveActivePlayer(Direction d, int targetX = -1, int targetY = -1);
 	void setPlayerOnTile(int player, Tile *tile);
-	void changeActivePlayer(int playerNumber);
-	void revert();
+    void changeActivePlayer(int playerNumber);
+    void revert();
+    void revertToBeginning();
 public slots:
 	void startNewRound();
 	int switchPlayer(Direction d);
