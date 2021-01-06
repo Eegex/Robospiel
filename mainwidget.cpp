@@ -27,22 +27,22 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(game,&GameControll::time,this,&MainWidget::updateTimer);
 	adjustSize();
 	connect(leaderboard->getUserCreationWidget(), &UserCreationWidget::userAdded, this, &MainWidget::addUser);
-	for(UserBiddingWidget * ubw : *leaderboard->getUsers()){
-		connect(ubw, &UserBiddingWidget::biddingChanged, this, [&](const int playerBidding, const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
+	for(UserBiddingWidget * ubw : *leaderboard->getUsers())
+	{
+		connect(ubw, &UserBiddingWidget::biddingChanged, this, [&](const int , const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
 		{
 			game->triggerAction(PlayerAction::sendBidding, id);
 		});
-        connect(game, &GameControll::newRound, this, [&]()
-        {
-            ubw->resetBidding();
-        });
-    }
-    connect(game, &GameControll::biddingDone, this, [&](){
-        leaderboard->sortByBidding();
-        game->setActiveUserID(leaderboard->getUsers()->first()->getId());
-        qDebug()<<"Bidding is done, Users are sorted, initial player is: "<<leaderboard->getUsers()->first()->getName()<<" with id "<<game->getActiveUserID();
-    });
-
+		connect(game, &GameControll::newRound, this, [&]()
+		{
+			ubw->resetBidding();
+		});
+	}
+	connect(game, &GameControll::biddingDone, this, [&](){
+		leaderboard->sortByBidding();
+		game->setActiveUserID(leaderboard->getUsers()->first()->getId());
+		qDebug()<<"Bidding is done, Users are sorted, initial player is: "<<leaderboard->getUsers()->first()->getName()<<" with id "<<game->getActiveUserID();
+	});
 }
 
 void MainWidget::setMenuBar(QMenuBar * bar)
@@ -51,6 +51,9 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	aNewBoard = new QAction(tr("New Board"),this);
 	//connect(aNewBoard,&QAction::triggered,board,&Board::newBoard);
 	bar->addAction(aNewBoard);
+	aEditBoard = new QAction(tr("Edit Board"),this);
+	connect(aEditBoard,&QAction::triggered,this,&MainWidget::editBoard);
+	bar->addAction(aEditBoard);
 	aNewTarget = new QAction(tr("New Target"),this);
 	connect(aNewTarget,&QAction::triggered,game,&GameControll::nextTarget);
 	bar->addAction(aNewTarget);
@@ -75,6 +78,13 @@ void MainWidget::addUser(struct UserData * newUser)
 	{
 		game->triggerAction(PlayerAction::sendBidding, id);
 	});
+}
+
+void MainWidget::editBoard()
+{
+	edit = new BoardEditor(this);
+	edit->setBoard(game->getBoard());
+	glMain->addWidget(edit,0,0,3,1,Qt::AlignCenter);
 }
 
 void MainWidget::changeBidding(int bidding, QUuid id)

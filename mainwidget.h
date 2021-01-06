@@ -12,7 +12,7 @@
 #include <QUuid>
 #include "user.h"
 #include "board.h"
-#include "boardview.h"
+#include "boardeditor.h"
 #include "networkview.h"
 #include "settingsdialog.h"
 #include "gamecontroll.h"
@@ -28,17 +28,20 @@ private slots:
 	void updateTimer(int remaining);
 	void changeBidding(int bidding, QUuid id);
 	void addUser(struct UserData * newUser);
+	void editBoard();
 private:
 	QVector<User*> users;
 	QGridLayout * glMain = nullptr;
 	GameControll * game = nullptr;
 	BoardView * view = nullptr;
+	BoardEditor * edit = nullptr;
 	NetworkView * networkView = nullptr;
 	LeaderBoardWidget * leaderboard = nullptr;
 	QLCDNumber * lcd = nullptr;
 	QMenuBar * menuBar = nullptr;
 	QAction * aNetworking = nullptr;
 	QAction * aNewBoard = nullptr;
+	QAction * aEditBoard = nullptr;
 	QAction * aNewTarget = nullptr;
 	QAction * aSettings = nullptr;
 };

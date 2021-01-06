@@ -11,6 +11,7 @@ CONFIG += c++17
 SOURCES += \
     UserBiddingWidget.cpp \
     board.cpp \
+    boardeditor.cpp \
     goalwidget.cpp \
     leaderboardwidget.cpp \
     boardview.cpp \
@@ -38,6 +39,7 @@ HEADERS += \
     UserBiddingWidget.h \
     UserCreationWidget.h \
     board.h \
+    boardeditor.h \
     boardview.h \
     client.h \
     connectiontoclient.h \
