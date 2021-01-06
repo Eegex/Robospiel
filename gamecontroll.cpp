@@ -41,13 +41,15 @@ Board * GameControll::createBoard(int width, int height, int playerNumber)
 
 bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 {
-    qDebug()<<"Called function TriggerAction with parameters "<<action<<" and User ID "<<userID;
+    qDebug()<<"Called function TriggerAction with parameters "<<action<<" and User ID "<<userID<<" in round "<<static_cast<int>(currentPhase);
     if(activeUserID == nullptr /*@Jan Ist das so gewollt? */ || userID == activeUserID)
     {
 		if(action & PlayerAction::movement)
 		{
+            qDebug()<<"Called  function TriggerAction with Movement Parameter";
 			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
 			{
+                qDebug()<<"Called Function TriggerAction Inner If";
 				//we subtract movement from action to get a direction (clever enum numbers)
 
 				board->moveActivePlayer(static_cast<Direction>(action - PlayerAction::movement));
@@ -111,9 +113,10 @@ void GameControll::activePlayerChanged(int playerNumber)
 
 void GameControll::nextTarget()
 {
+    qDebug()<<"Next Target 116";
+    emit newRound();
 	if(switchPhase(Phase::search))
-	{
-        emit newRound();
+    {
 		board->startNewRound();
 	}
 }

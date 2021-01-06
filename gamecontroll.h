@@ -46,7 +46,6 @@ signals:
 	void actionTriggered(PlayerAction action);
 	void time(int secs);
 	void colorsChanged(QColor back, QColor wall, QColor grid);
-
     void newRound();
     void biddingDone();
 private slots:

@@ -398,7 +398,7 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 		changeOfXAxis = -1;
 		break;
 	}
-	//qDebug()<< "blaaaaaa" << changeOfXAxis << "   " << changeOfYAxis;
+    qDebug()<< "blaaaaaa" << changeOfXAxis << "   " << changeOfYAxis;
 	Tile* currentTile = players.at(activePlayer);
 	HistoryElement h = HistoryElement();
 	h.action = static_cast<PlayerAction>((int)PlayerAction::movement+(int)d);

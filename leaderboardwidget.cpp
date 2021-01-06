@@ -34,7 +34,9 @@ void LeaderBoardWidget::sortByBidding()
     for(int additionIndex = 0; additionIndex < users.size(); additionIndex++){
         minBid = MAX_BID;
         for(UserBiddingWidget * user : users){
-            if(user->getBidding() < minBid && user->active){ //If User has a lower bid than the currently lowest bid
+            qDebug()<<"SortByBidding: USER "<<user->getName()<<" with bidding "<<user->getBidding();
+            if(user->getBidding() <= minBid && user->active){//If User has a lower bid than the currently lowest bid
+                qDebug()<<"Bidding of user "<<user->getName()<<" with bidding "<<user->getBidding()<<" is smaller than minimum bid of "<<minBid;
                 minWidget = user; //Set the Widget to add to the new list to the user
                 minIndex = users.indexOf(user); //Set the index needed for deactivating the user to the current index
                 minBid = user->getBidding(); //Set the newest lowest bid to the current user as there can be users after that one with lower bids

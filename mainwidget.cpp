@@ -27,19 +27,17 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(game,&GameControll::time,this,&MainWidget::updateTimer);
 	adjustSize();
 	connect(leaderboard->getUserCreationWidget(), &UserCreationWidget::userAdded, this, &MainWidget::addUser);
-    for(UserBiddingWidget * ubw : *leaderboard->getUsers()){
+    /*for(UserBiddingWidget * ubw : *leaderboard->getUsers()){
 		connect(ubw, &UserBiddingWidget::biddingChanged, this, [&](const int playerBidding, const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
 		{
 			game->triggerAction(PlayerAction::sendBidding, id);
 		});
-        connect(game, &GameControll::newRound, this, [&]()
-        {
-            ubw->resetBidding();
-        });
-    }
+        connect(game, &GameControll::newRound, ubw, &UserBiddingWidget::resetBidding);
+        connect(game, &GameControll::newRound, ubw, &UserBiddingWidget::deactivateBtn);
+    }*/
     connect(game, &GameControll::biddingDone, this, [&](){
         leaderboard->sortByBidding();
-        game->setActiveUserID(leaderboard->getUsers()->first()->getId());
+        //game->setActiveUserID(leaderboard->getUsers()->first()->getId());
         qDebug()<<"Bidding is done, Users are sorted, initial player is: "<<leaderboard->getUsers()->first()->getName()<<" with id "<<game->getActiveUserID();
     });
 
@@ -71,10 +69,13 @@ void MainWidget::addUser(struct UserData * newUser)
 	// adds new player in the frontend
 	leaderboard->addPlayer(u);
 	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, &MainWidget::changeBidding);
-	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int , const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
+    connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingReset, this, &MainWidget::changeBidding);
+    connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int , const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
 	{
 		game->triggerAction(PlayerAction::sendBidding, id);
 	});
+    connect(game, &GameControll::newRound, leaderboard->getUsers()->last(), &UserBiddingWidget::resetBidding);
+    connect(game, &GameControll::biddingDone, leaderboard->getUsers()->last(), &UserBiddingWidget::deactivateBtn);
 }
 
 void MainWidget::changeBidding(int bidding, QUuid id)
@@ -82,7 +83,7 @@ void MainWidget::changeBidding(int bidding, QUuid id)
 	qDebug()<<"change Bidding from "<<id.toString()<< "to" << bidding;
 	for (User *u: users)
 	{
-		if (u->getId() == id)
+        if (u->getId() == id)
 		{
 			u->setBidding(bidding);
 			break;
