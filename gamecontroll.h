@@ -6,6 +6,7 @@
 #include <QTime>
 #include <QDebug>
 #include "user.h"
+#include "settingsdialog.h"
 #include "keymapping.h"
 #include "board.h"
 #include "Direction.h"
@@ -17,14 +18,15 @@ class GameControll : public QObject
 public:
 	enum class Phase{idle, search, countdown, presentation, freeplay};
 	explicit GameControll(QObject *parent = nullptr);
+	void load();
 	Board * createBoard(int width, int height, int playerNumber);
-    //bool triggerAction(PlayerAction action, QString user); //String will need to be ID of user
-    bool triggerAction(PlayerAction action, QUuid userID);
-    Board * getBoard() const;
-
+	//bool triggerAction(PlayerAction action, QString user); //String will need to be ID of user
+	bool triggerAction(PlayerAction action, QUuid userID);
+	Board * getBoard() const;
 	QVector<KeyMapping*> * getMapping();
 
 public slots:
+	void showSettings();
 	void setMapping(QVector<KeyMapping *> mapping);
 	void nextTarget();
 	void remakeBoard();
@@ -32,7 +34,8 @@ public slots:
     void setActiveUserID(QUuid id);
 	void activePlayerChanged(int playerNumber);
 private:
-    Phase currentPhase = Phase::search; //freeplay
+	Phase currentPhase = Phase::search; //freeplay
+	SettingsDialog * settings = nullptr;
 	QVector<KeyMapping*> mapping;
 	Board * board = nullptr;
     //QString activeUser;
@@ -42,6 +45,8 @@ private:
 signals:
 	void actionTriggered(PlayerAction action);
 	void time(int secs);
+	void colorsChanged(QColor back, QColor wall, QColor grid);
+
     void newRound();
     void biddingDone();
 private slots:

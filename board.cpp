@@ -48,7 +48,7 @@ void Board::setPlayerOnTile(int player, Tile* tile)
 void Board::startNewRound()
 {
 	seeker = r->bounded(players.size());
-    history.clear();
+	history.clear();
 	activePlayer = seeker;
 	//goal only in corner?
 	placeGoalInCorner();
@@ -440,11 +440,11 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 	}
 
 	emit playerMoved(activePlayer);
-    moves++;
-    if(goal == currentTile && seeker == activePlayer)
-    {
-        emit goalHit(moves);
-    }
+	moves++;
+	if(goal == currentTile && seeker == activePlayer)
+	{
+		emit goalHit(moves);
+	}
 	history.append(h);
 }
 
@@ -468,6 +468,7 @@ void Board::revert()
 			int direction = h.action-PlayerAction::movement;
 			direction = direction>(int) Direction::east ? direction>>2 : direction<<2; //invert direction
 			moveActivePlayer(static_cast<Direction>(direction), h.previousPosition.x(), h.previousPosition.y());
+			moves--;
 		}
 		if(h.action == PlayerAction::playerSwitch)
 		{
@@ -479,11 +480,12 @@ void Board::revert()
 	//TODO delete history after each presentation and after the freeplay-phase
 }
 
-void Board::revertToBeginning(){
-    while(!history.isEmpty()){
-        revert();
-    }
-
+void Board::revertToBeginning()
+{
+	while(!history.isEmpty())
+	{
+		revert();
+	}
 }
 int Board::switchPlayer(Direction d)
 {

@@ -5,10 +5,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 {
 	glMain = new QGridLayout(this);
 	game = new GameControll(this);
-	settings = new SettingsDialog(*game->getMapping());
-	settings->load();
 	view = new BoardView(this);
-	view->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
+	connect(game, &GameControll::colorsChanged, view, &BoardView::updateColors);
 	leaderboard = new LeaderBoardWidget(this);
 	view->setBoard(game->createBoard(16, 16, 5));
 	view->setMapping(game->getMapping());
@@ -58,7 +56,7 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	connect(aNewTarget,&QAction::triggered,game,&GameControll::nextTarget);
 	bar->addAction(aNewTarget);
 	aSettings = new QAction(tr("Settings"),this);
-	connect(aSettings,&QAction::triggered,settings,&QDialog::exec);
+	connect(aSettings,&QAction::triggered,game,&GameControll::showSettings);
 	bar->addAction(aSettings);
 	aNetworking = new QAction(tr("Networking"),this);
 	connect(aNetworking,&QAction::triggered,networkView,&NetworkView::show);
@@ -74,7 +72,7 @@ void MainWidget::addUser(struct UserData * newUser)
 	// adds new player in the frontend
 	leaderboard->addPlayer(u);
 	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, &MainWidget::changeBidding);
-	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int playerBidding, const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
+	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int , const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
 	{
 		game->triggerAction(PlayerAction::sendBidding, id);
 	});
