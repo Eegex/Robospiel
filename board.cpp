@@ -439,7 +439,7 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 
 	}
 
-	emit playerMoved(activePlayer);
+    emit playerMoved(activePlayer, goal == currentTile && seeker == activePlayer);
     moves++;
     if(goal == currentTile && seeker == activePlayer)
     {

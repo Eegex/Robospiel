@@ -32,7 +32,6 @@ Board * GameControll::createBoard(int width, int height, int playerNumber)
 		board = nullptr;
 	}
 	board = new Board(width, height, playerNumber, this);
-	connect(board,&Board::goalHit,this,&GameControll::nextTarget);
 	return board;
 }
 
@@ -80,6 +79,10 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 				{
 					board->revert();
 				}
+                if(action == PlayerAction::revertToBeginning)
+                {
+                    board->revert();
+                }
 				emit actionTriggered(action);
 				return true;
 			}

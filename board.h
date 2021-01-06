@@ -38,7 +38,7 @@ public slots:
 	int switchPlayer(Direction d);
 signals:
 	void boardChanged();
-	void playerMoved(int playerNumber);
+    void playerMoved(int playerNumber, bool goalHit);
 	void goalMoved();
 	void goalHit(int usedMoves);
 protected:

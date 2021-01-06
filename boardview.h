@@ -50,6 +50,7 @@ private:
 	bool cachedPaintig = false;
 	bool showDebugOutput = false;
 	QVector<KeyMapping*> * mapping = nullptr;
+    bool goalWaitingToBeEmitted = false;
 	QColor background = QColor(0,0,0);
 	QColor primary = QColor(100,100,100);
 	QColor grid = QColor(50,50,50);
@@ -69,6 +70,7 @@ signals:
 	void swipe(Direction d);
 	void action(PlayerAction a, QString userName);
 	void activePlayerChanged(int playerNumber);
+    void lastAnimationEnded();
 
 };
 

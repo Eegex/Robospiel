@@ -20,11 +20,21 @@ void BoardView::setBoard(Board * b)
 		connect(playerWidgets.back(), &PlayerWidget::clicked,this, [&](int playerNumber){emit activePlayerChanged(playerNumber);} );
 		connect(playerWidgets.back(), &PlayerWidget::reposition, this, [&](int playerNumber){
 			playerWidgets.at(playerNumber)->move(tileToDesktopCoordinates(board->players.at(playerNumber)));
+            if(goalWaitingToBeEmitted)
+            {
+                goalWaitingToBeEmitted=false;
+                emit lastAnimationEnded();
+            }
 		});
 
 	}
 	goalwidget = new GoalWidget(QSize(20,20),board,this);
-    connect(board,&Board::playerMoved,this, [&](int playerNumber){playerWidgets.at(playerNumber)->moveAnimated(tileToDesktopCoordinates(board->players.at(playerNumber)), std::max(width(), height())*1.5);});
+    connect(board,&Board::playerMoved,this, [&](int playerNumber, bool goalHit){
+        if(goalHit)
+        {
+            goalWaitingToBeEmitted=true;
+        }
+        playerWidgets.at(playerNumber)->moveAnimated(tileToDesktopCoordinates(board->players.at(playerNumber)), std::max(width(), height())*1.5);});
 	connect(board,&Board::goalMoved,this, [&](){goalwidget->move(tileToDesktopCoordinates(board->goal));});
 }
 

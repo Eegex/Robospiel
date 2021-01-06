@@ -14,6 +14,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	view->setMapping(game->getMapping());
 	connect(view,&BoardView::action,game,&GameControll::triggerAction);
 	connect(view,&BoardView::activePlayerChanged,game,&GameControll::activePlayerChanged);
+    connect(view, &BoardView::lastAnimationEnded, game, &GameControll::nextTarget);
 	networkView = new NetworkView;
 	lcd = new QLCDNumber(this);
 	lcd->setSegmentStyle(QLCDNumber::Flat);
@@ -36,6 +37,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 		});
 	connect(settings, &SettingsDialog::colorsChanged, view, &BoardView::updateColors);
 	connect(settings, &SettingsDialog::newMapping, game, &GameControll::setMapping);
+
 }
 
 void MainWidget::setMenuBar(QMenuBar * bar)
