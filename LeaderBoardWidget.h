@@ -30,6 +30,7 @@ private:
 public slots:
     void sortByBidding();
     void newPlayer();
+    void updateLayout();
 
 signals:
 

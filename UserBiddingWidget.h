@@ -1,5 +1,7 @@
 #ifndef USERBIDDINGWIDGET_H
 #define USERBIDDINGWIDGET_H
+#define MAX_BID 999
+#define BID_BTN_TEXT "Accept Bid"
 
 #include <QLabel>
 #include <QPushButton>
@@ -16,13 +18,14 @@ public:
     explicit UserBiddingWidget(QWidget *parent = nullptr);
     QPushButton * accept = new QPushButton(this);
     QSpinBox * lSpinBox = new QSpinBox(this);
+    bool active = true; //Needed for sorting
 private:
     QGridLayout * userLayout = new QGridLayout(this);
     QLabel * labelName = new QLabel(this);
     QUuid userId;
     QString userName;
     QColor userColor;
-    int userBidding = 999;
+    int userBidding = MAX_BID;
 public slots:
     QUuid getId();
     QString getName();
@@ -32,6 +35,7 @@ public slots:
     void setName(QString v);
     void setColor(QColor colour);
     void btnPressed();
+    void resetBidding();
 
 signals:
     void biddingChanged(int playerBidding, QUuid id);
