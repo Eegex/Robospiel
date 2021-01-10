@@ -40,7 +40,7 @@ private:
 	QLineEdit* leMessageToServer;
 
 signals:
-
+    void leaderboradOnline();
 
 private slots:
 	void addServer();

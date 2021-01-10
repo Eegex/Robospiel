@@ -27,6 +27,7 @@ public:
 private slots:
 	void updateTimer(int remaining);
 	void changeBidding(int bidding, QUuid id);
+    void changeOnlyBidding(int bidding);
 	void addUser(struct UserData * newUser);
 private:
 	QVector<User*> users;

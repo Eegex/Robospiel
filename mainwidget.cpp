@@ -29,13 +29,15 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(game,&GameControll::time,this,&MainWidget::updateTimer);
 	adjustSize();
 	connect(leaderboard->getUserCreationWidget(), &UserCreationWidget::userAdded, this, &MainWidget::addUser);
-	for(UserBiddingWidget * ubw : *leaderboard->getUsers())
-		connect(ubw, &UserBiddingWidget::biddingChanged, this, [&](const int playerBidding, const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
+    for(UserBiddingWidget * ubw : *leaderboard->getUsers())
+        connect(ubw, &UserBiddingWidget::biddingChanged, this, [&](const int userBidding, const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
 		{
 			game->triggerAction(PlayerAction::sendBidding, id);
 		});
 	connect(settings, &SettingsDialog::colorsChanged, view, &BoardView::updateColors);
 	connect(settings, &SettingsDialog::newMapping, game, &GameControll::setMapping);
+    connect(leaderboard->getUserOnlineWidget(), &UserOnlineWidget::userAdded, this, &MainWidget::addUser);
+    connect(leaderboard->getUserOnlineWidget(), &UserOnlineWidget::biddingChangedOnline,this,&MainWidget::changeOnlyBidding);
 }
 
 void MainWidget::setMenuBar(QMenuBar * bar)
@@ -57,17 +59,20 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 
 void MainWidget::addUser(struct UserData * newUser)
 {
-	qDebug()<<"addplayer in MainWidget";
+    qDebug()<<"adduser in MainWidget";
 	User *u = new User(newUser->name, newUser->colour, this);
 	users.append(u);
-	qDebug()<< u->getName();
-	// adds new player in the frontend
-	leaderboard->addPlayer(u);
-	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, &MainWidget::changeBidding);
-	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int playerBidding, const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
-	{
-		game->triggerAction(PlayerAction::sendBidding, id);
-	});
+    qDebug()<< u->getName();
+    if(leaderboard->getIsOnline() == 0)
+    {
+        // adds new user in the frontend
+        leaderboard->addUser(u);
+        connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, &MainWidget::changeBidding);
+        connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int userBidding, const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
+        {
+            game->triggerAction(PlayerAction::sendBidding, id);
+        });
+    }
 }
 
 void MainWidget::changeBidding(int bidding, QUuid id)
@@ -81,6 +86,12 @@ void MainWidget::changeBidding(int bidding, QUuid id)
 			break;
 		}
 	}
+}
+
+void MainWidget::changeOnlyBidding(int bidding)
+{
+    qDebug()<<"changeOnly Bidding to"<<bidding;
+    users.at(0)->setBidding(bidding);
 }
 
 void MainWidget::updateTimer(int remaining)
