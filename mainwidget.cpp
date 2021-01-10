@@ -5,10 +5,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 {
 	glMain = new QGridLayout(this);
 	game = new GameControll(this);
-	settings = new SettingsDialog(*game->getMapping());
-	settings->load();
 	view = new BoardView(this);
-	view->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
+	connect(game, &GameControll::colorsChanged, view, &BoardView::updateColors);
 	leaderboard = new LeaderBoardWidget(this);
 	view->setBoard(game->createBoard(16, 16, 5));
 	view->setMapping(game->getMapping());
@@ -30,13 +28,21 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(game,&GameControll::time,this,&MainWidget::updateTimer);
 	adjustSize();
 	connect(leaderboard->getUserCreationWidget(), &UserCreationWidget::userAdded, this, &MainWidget::addUser);
-	for(UserBiddingWidget * ubw : *leaderboard->getUsers())
+    /*for(UserBiddingWidget * ubw : *leaderboard->getUsers()){
 		connect(ubw, &UserBiddingWidget::biddingChanged, this, [&](const int playerBidding, const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
 		{
 			game->triggerAction(PlayerAction::sendBidding, id);
 		});
-	connect(settings, &SettingsDialog::colorsChanged, view, &BoardView::updateColors);
-	connect(settings, &SettingsDialog::newMapping, game, &GameControll::setMapping);
+        connect(game, &GameControll::newRound, ubw, &UserBiddingWidget::resetBidding);
+        connect(game, &GameControll::newRound, ubw, &UserBiddingWidget::deactivateBtn);
+    }*/
+    connect(game, &GameControll::biddingDone, this, [&](){
+        leaderboard->sortByBidding();
+        //game->setActiveUserID(leaderboard->getUsers()->first()->getId());
+        qDebug()<<"Bidding is done, Users are sorted, initial player is: "<<leaderboard->getUsers()->first()->getName()<<" with id "<<game->getActiveUserID();
+    });
+    //connect(settings, &SettingsDialog::colorsChanged, view, &BoardView::updateColors);
+	//connect(settings, &SettingsDialog::newMapping, game, &GameControll::setMapping); TODO maybe this was important? commented while merging
 
 }
 
@@ -50,7 +56,7 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	connect(aNewTarget,&QAction::triggered,game,&GameControll::nextTarget);
 	bar->addAction(aNewTarget);
 	aSettings = new QAction(tr("Settings"),this);
-	connect(aSettings,&QAction::triggered,settings,&QDialog::exec);
+	connect(aSettings,&QAction::triggered,game,&GameControll::showSettings);
 	bar->addAction(aSettings);
 	aNetworking = new QAction(tr("Networking"),this);
 	connect(aNetworking,&QAction::triggered,networkView,&NetworkView::show);
@@ -66,10 +72,13 @@ void MainWidget::addUser(struct UserData * newUser)
 	// adds new player in the frontend
 	leaderboard->addPlayer(u);
 	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, &MainWidget::changeBidding);
-	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int playerBidding, const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
+    connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingReset, this, &MainWidget::changeBidding);
+    connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int , const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
 	{
 		game->triggerAction(PlayerAction::sendBidding, id);
 	});
+    connect(game, &GameControll::newRound, leaderboard->getUsers()->last(), &UserBiddingWidget::resetBidding);
+    connect(game, &GameControll::biddingDone, leaderboard->getUsers()->last(), &UserBiddingWidget::deactivateBtn);
 }
 
 void MainWidget::changeBidding(int bidding, QUuid id)
@@ -77,7 +86,7 @@ void MainWidget::changeBidding(int bidding, QUuid id)
 	qDebug()<<"change Bidding from "<<id.toString()<< "to" << bidding;
 	for (User *u: users)
 	{
-		if (u->getId() == id)
+        if (u->getId() == id)
 		{
 			u->setBidding(bidding);
 			break;

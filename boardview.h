@@ -48,7 +48,7 @@ private:
 	QSize tileSize;
 	QPoint mouseStart;
 	bool cachedPaintig = false;
-	bool showDebugOutput = false;
+    bool showDebugOutput = false;
 	QVector<KeyMapping*> * mapping = nullptr;
     bool goalWaitingToBeEmitted = false;
 	QColor background = QColor(0,0,0);
