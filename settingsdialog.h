@@ -11,9 +11,9 @@
 #include <QFormLayout>
 #include <QLineEdit>
 #include <QColorDialog>
-#include <QScrollArea>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 #include "keymapping.h"
 #include "keymappingview.h"
 
@@ -27,6 +27,7 @@ public:
 	QColor getBackground() const;
 	QColor getWallcolor() const;
 	QColor getGridcolor() const;
+	QVector<KeyMapping *> getMapping() const;
 
 public slots:
 	void load();
@@ -49,6 +50,7 @@ private:
 	const QString background = "bc";
 	const QString wallcolor = "wc";
 	const QString gridcolor = "gc";
+	const QString keymappings = "km";
 signals:
 	void newMapping(QVector<KeyMapping*> mapping);
 	void colorsChanged(QColor b, QColor w, QColor g);

@@ -19,19 +19,38 @@ LeaderBoardWidget::LeaderBoardWidget(QWidget *parent) : QWidget(parent)
     //connect(userCreationWidget, &UserCreationWidget::userAdded, this, &LeaderBoardWidget::addUser);
 }
 
+void LeaderBoardWidget::updateLayout(){
+    for(unsigned int i = 0; i<numOfPlayers; i++){lay->addWidget(users.at(i), i, 0);}
+    if(!isOnline){lay->addWidget(addBtn, numOfPlayers, 0);} //New Player Button under all Players
+    lay->update();
+}
 void LeaderBoardWidget::sortByBidding()
 {
+    qDebug()<<"Called sortByBidding";
     QVector<UserBiddingWidget*> sortedUsers;
     UserBiddingWidget * minWidget;
-    int minBid = 999;
-    for(int additionIndex = 0; additionIndex < users.size(); additionIndex++){ //Effectively insertion sort
-        for(UserBiddingWidget * user : users)
-            if(user->getBidding()<minBid)
-                minWidget = user;
-        sortedUsers[additionIndex] = minWidget;
-        users.remove(users.indexOf(minWidget));
+    int minIndex = 0;
+    int minBid;
+    for(int additionIndex = 0; additionIndex < users.size(); additionIndex++){
+        minBid = MAX_BID;
+        for(UserBiddingWidget * user : users){
+            qDebug()<<"SortByBidding: USER "<<user->getName()<<" with bidding "<<user->getBidding();
+            if(user->getBidding() <= minBid && user->active){//If User has a lower bid than the currently lowest bid
+                qDebug()<<"Bidding of user "<<user->getName()<<" with bidding "<<user->getBidding()<<" is smaller than minimum bid of "<<minBid;
+                minWidget = user; //Set the Widget to add to the new list to the user
+                minIndex = users.indexOf(user); //Set the index needed for deactivating the user to the current index
+                minBid = user->getBidding(); //Set the newest lowest bid to the current user as there can be users after that one with lower bids
+            }
+        }
+        users[minIndex]->active = false; //Deactivate user
+        sortedUsers.append(minWidget);
     }
     users = sortedUsers;
+    for(int i = 0; i<users.size(); i++){
+        qDebug()<<"SortedUsers: User "<<i<<": "<<users[i]->getName()<<" with bidding: "<<users[i]->getBidding();
+        users[i]->active = true;
+    }
+    updateLayout();
 }
 
 void LeaderBoardWidget::addUser(User * newUser)
@@ -44,9 +63,10 @@ void LeaderBoardWidget::addUser(User * newUser)
     users.append(newWidget); //Append widget to list of users
     lay->addWidget(users.at(numOfUsers));
     numOfUsers++; //Increment number of users, important for correct placement of button
-    for(unsigned int i = 0; i<numOfUsers; i++){lay->addWidget(users.at(i), i, 0);}
-    if(!isOnline){lay->addWidget(addBtn, numOfUsers, 0);} //New User Button under all Users
-    lay->update();
+    updateLayout();
+    //for(unsigned int i = 0; i<numOfUsers; i++){lay->addWidget(users.at(i), i, 0);}
+    //if(!isOnline){lay->addWidget(addBtn, numOfUsers, 0);} //New User Button under all Users
+    //lay->update();
 }
 
 void LeaderBoardWidget::newUser()

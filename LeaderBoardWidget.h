@@ -41,6 +41,7 @@ private:
 
 public slots:
     void sortByBidding();
+    void updateLayout();
     void newUser();
 signals:
     void userAdded(struct Userdata * newUser);

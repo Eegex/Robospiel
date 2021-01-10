@@ -34,7 +34,6 @@ private:
 	QGridLayout * glMain = nullptr;
 	GameControll * game = nullptr;
 	BoardView * view = nullptr;
-	SettingsDialog * settings = nullptr;
 	NetworkView * networkView = nullptr;
 	LeaderBoardWidget * leaderboard = nullptr;
 	QLCDNumber * lcd = nullptr;
