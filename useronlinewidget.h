@@ -16,17 +16,17 @@ class UserOnlineWidget : public QWidget
 public:
     explicit UserOnlineWidget(QWidget *parent = nullptr);
     void setBidding();
+    void updateName(QString newName); // TODO: same for color
 private:
     QGridLayout * lay = new QGridLayout(this);
-    QPushButton * addBtn = new QPushButton(this);
     QPushButton * bidBtn = new QPushButton(this);
-    QLineEdit * nameField = new QLineEdit(this);
     QLabel * name = new QLabel(this);
     QSpinBox * biddingBox = new QSpinBox(this);
     QListWidget * listWidget = new QListWidget(this);
     int userBidding = 999;
+    QString username = "";
+    QColor usercolor;
 public slots:
-    void setUser();
     void btnPressed();
 signals:
     void userAdded(struct UserData * newUser);

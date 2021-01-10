@@ -26,10 +26,14 @@ public:
     void goOnline();
     void goOffline();
     void goUndefined();
+    void setUsername(QString name);
+    void setUsercolor(QColor color);
 
 private:
     QGridLayout * lay = new QGridLayout(this);
     QPushButton * addBtn = new QPushButton(this);
+    QString username;
+    QColor usercolor;
     unsigned int numOfUsers = 0;
     unsigned int currentUser = 0;
     unsigned int isOnline = 0; // 0 = not decided, 1 = offline, 2 = online

@@ -20,8 +20,8 @@ LeaderBoardWidget::LeaderBoardWidget(QWidget *parent) : QWidget(parent)
 }
 
 void LeaderBoardWidget::updateLayout(){
-    for(unsigned int i = 0; i<numOfPlayers; i++){lay->addWidget(users.at(i), i, 0);}
-    if(!isOnline){lay->addWidget(addBtn, numOfPlayers, 0);} //New Player Button under all Players
+    for(unsigned int i = 0; i<numOfUsers; i++){lay->addWidget(users.at(i), i, 0);}
+    if(!isOnline){lay->addWidget(addBtn, numOfUsers, 0);} //New Player Button under all Players
     lay->update();
 }
 void LeaderBoardWidget::sortByBidding()
@@ -112,6 +112,17 @@ void LeaderBoardWidget::goUndefined()
     }
     lay->addWidget(networkView);
     lay->update();
+}
+
+void LeaderBoardWidget::setUsername(QString name)
+{
+    username = name;
+    userOnlineWidget->updateName(username);
+}
+
+void LeaderBoardWidget::setUsercolor(QColor color)
+{
+    usercolor = color;
 }
 
 unsigned short LeaderBoardWidget::getIsOnline(){return isOnline;}

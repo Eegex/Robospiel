@@ -4,38 +4,16 @@
 UserOnlineWidget::UserOnlineWidget(QWidget *parent) : QWidget(parent)
 {
     bidBtn->hide();
-    nameField->hide();
     name->hide();
     biddingBox->hide();
     listWidget->hide();
-    lay->addWidget(nameField);
-    lay->addWidget(addBtn);
     lay->addWidget(listWidget);
-    nameField->show();
     listWidget->show();
-    addBtn->show();nameField->setPlaceholderText("Enter your name");
-    addBtn->setText("Save");
-    setLayout(lay);
-
-    connect(addBtn,&QPushButton::clicked,this,&UserOnlineWidget::setUser);
-    connect(bidBtn,&QPushButton::clicked, this, &UserOnlineWidget::btnPressed);
-}
-void UserOnlineWidget::setUser()
-{
-    qDebug()<<"SetUser in UserOnline";
-    struct UserData newUser;
-    newUser.name = nameField->text();
-    // TODO: colour picking
-    newUser.colour = QColorConstants::Black;
-    emit userAdded(&newUser);
-    addBtn->hide();
-    nameField->hide();
-    name->setText(newUser.name);
-    lay->addWidget(name);
-    name->show();
     setBidding();
-    lay->update();
-    // TODO: load & show other users with rank and current bidding
+    setLayout(lay);
+    name->setText(username);
+    name->show();
+    connect(bidBtn,&QPushButton::clicked, this, &UserOnlineWidget::btnPressed);
 }
 
 void UserOnlineWidget::setBidding()
@@ -56,6 +34,13 @@ void UserOnlineWidget::btnPressed()
     bidBtn->setText("Bid: "+QString::number(userBidding));
     qDebug()<<"Player changed their bidding to: "<<userBidding;
     emit biddingChangedOnline(userBidding);
+}
+
+void UserOnlineWidget::updateName(QString newName)
+{
+    username = newName;
+    name->setText(username);
+    lay->update();
 }
 
 /* void UserOnlineWidget::loadUsers()

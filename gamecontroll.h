@@ -24,6 +24,7 @@ public:
 	bool triggerAction(PlayerAction action, QUuid userID);
 	Board * getBoard() const;
 	QVector<KeyMapping*> * getMapping();
+    SettingsDialog * getSettingsDialog();
 
 public slots:
 	void showSettings();

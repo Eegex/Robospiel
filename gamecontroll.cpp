@@ -6,8 +6,7 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 {
     countdown.setSingleShot(false);
 	countdown.setInterval(1s);
-	connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
-	connect(settings, &SettingsDialog::newMapping, this, &GameControll::setMapping);
+    connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
 }
 
 void GameControll::load()
@@ -16,7 +15,8 @@ void GameControll::load()
 	settings->load();
 	connect(settings,&SettingsDialog::colorsChanged,this,[&](QColor back, QColor wall, QColor grid){emit colorsChanged(back,wall,grid);});
 	connect(settings,&SettingsDialog::newMapping,this,[&](QVector<KeyMapping*> mapping){ this->mapping = mapping; });
-	emit colorsChanged(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
+    connect(settings, &SettingsDialog::newMapping, this, &GameControll::setMapping);
+    emit colorsChanged(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
 	this->mapping = settings->getMapping();
 }
 
@@ -206,4 +206,9 @@ void GameControll::updateTimer()
 		switchPhase(Phase::presentation);
 	}
 	emit time(timeLeft);
+}
+
+SettingsDialog * GameControll::getSettingsDialog()
+{
+    return settings;
 }
