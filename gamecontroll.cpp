@@ -92,7 +92,7 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 			}
 		}
 	}
-	return false;
+    return false; // test kommentar
 }
 
 void GameControll::activePlayerChanged(int playerNumber)
