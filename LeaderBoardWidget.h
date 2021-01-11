@@ -12,6 +12,8 @@
 #include "user.h"
 #include "networkview.h"
 
+enum state {undecided, offline, online};
+
 class LeaderBoardWidget : public QWidget
 {
     Q_OBJECT
@@ -22,7 +24,6 @@ public:
     UserCreationWidget *getUserCreationWidget();
     UserOnlineWidget *getUserOnlineWidget();
     unsigned short getIsOnline();
-    int userBidding = 999;
     void goOnline();
     void goOffline();
     void goUndefined();
@@ -36,7 +37,7 @@ private:
     QColor usercolor;
     unsigned int numOfUsers = 0;
     unsigned int currentUser = 0;
-    unsigned int isOnline = 0; // 0 = not decided, 1 = offline, 2 = online
+    unsigned int isOnline = undecided; // 0 = not decided, 1 = offline, 2 = online
     QVector<UserBiddingWidget*> users; //Several Users, Array of Widgets for individual users
     UserCreationWidget * userCreationWidget = new UserCreationWidget(nullptr);
     UserOnlineWidget * userOnlineWidget = new UserOnlineWidget(nullptr);

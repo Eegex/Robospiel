@@ -72,10 +72,12 @@ void MainWidget::addUser(struct UserData * newUser)
 	connect(game, &GameControll::biddingDone, leaderboard->getUsers()->last(), &UserBiddingWidget::deactivateBtn);
 	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, &MainWidget::changeBidding);
 	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingReset, this, &MainWidget::changeBidding);
-	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int userBidding, const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
-	{
+    /*connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingReset, this, [&](const int, const QUuid){
+        leaderboard->updateLayout();
+    });*/
+    connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int userBidding, const QUuid id){ //Connect the biddingChanged Signal to triggerAction with appropriate argument{
 		game->triggerAction(PlayerAction::sendBidding, id);
-	});
+    });
 }
 
 void MainWidget::addExistingUser(User* user)
@@ -110,8 +112,8 @@ void MainWidget::editBoard()
 
 void MainWidget::changeBidding(int bidding, QUuid id)
 {
-	qDebug()<<"change Bidding from "<<id.toString()<< "to" << bidding;
-	for (User *u: users)
+    qDebug()<<"Called Function Change Bidding from "<<id.toString()<< "to" << bidding;
+    for (User *u: users)
 	{
 		if (u->getId() == id)
 		{
