@@ -6,6 +6,7 @@
 #include <QVector>
 #include <QTime>
 #include <QSize>
+#include <QColor>
 #include <QVector>
 #include "tile.h"
 
@@ -28,14 +29,20 @@ public:
 	Tile * goal;
 	int seeker = 0;
 	int activePlayer = 0;
-    void moveActivePlayer(Direction d, int targetX = -1, int targetY = -1);
+	void moveActivePlayer(Direction d, int targetX = -1, int targetY = -1);
 	void setPlayerOnTile(int player, Tile *tile);
-    void changeActivePlayer(int playerNumber);
-    void revert();
-    void revertToBeginning();
+	void changeActivePlayer(int playerNumber);
+	void revert();
+	void revertToBeginning();
+	int addPlayer(Tile * t);
+	void updateColors(QColor b, QColor w, QColor g);
+	QColor getBackground() const;
+	QColor getPrimary() const;
+	QColor getGrid() const;
+
 public slots:
 	void startNewRound();
-	int switchPlayer(Direction d);
+	int addPlayer(Direction d);
 signals:
 	void boardChanged();
 	void playerMoved(int playerNumber);
@@ -48,7 +55,9 @@ private:
 	QRandomGenerator * r = nullptr;
 	int moves = 0;
 	QVector<HistoryElement> history;
-	//TODO active pawn
+	QColor background = QColor(0xff,0xff,0);
+	QColor primary = QColor(0xff,0,0xff);
+	QColor grid = QColor(0,0xff,0xff);
 
 	Tile *getRandomUnoccupiedTile();
 	// for each side: -1 because there are more tiles than walls, -2 because the walls next to the sides shouldn't be set, so 3*4 = 12

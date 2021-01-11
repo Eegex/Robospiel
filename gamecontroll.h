@@ -24,6 +24,7 @@ public:
 	bool triggerAction(PlayerAction action, QUuid userID);
 	Board * getBoard() const;
 	QVector<KeyMapping*> * getMapping();
+	Phase getCurrentPhase() const;
 
 public slots:
 	void showSettings();
@@ -34,7 +35,7 @@ public slots:
 	void setActiveUserID(QUuid id);
 	void activePlayerChanged(int playerNumber);
 private:
-	Phase currentPhase = Phase::search; //freeplay
+	Phase currentPhase = Phase::idle; //freeplay
 	SettingsDialog * settings = nullptr;
 	QVector<KeyMapping*> mapping;
 	Board * board = nullptr;
@@ -45,8 +46,6 @@ private:
 signals:
 	void actionTriggered(PlayerAction action);
 	void time(int secs);
-	void colorsChanged(QColor back, QColor wall, QColor grid);
-
 	void newRound();
 	void biddingDone();
 private slots:

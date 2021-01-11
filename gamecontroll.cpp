@@ -14,9 +14,12 @@ void GameControll::load()
 {
 	settings = new SettingsDialog(mapping);
 	settings->load();
-	connect(settings,&SettingsDialog::colorsChanged,this,[&](QColor back, QColor wall, QColor grid){emit colorsChanged(back,wall,grid);});
+	connect(settings,&SettingsDialog::colorsChanged,this,[&](){ board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor()); });
 	connect(settings,&SettingsDialog::newMapping,this,[&](QVector<KeyMapping*> mapping){ this->mapping = mapping; });
-	emit colorsChanged(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
+	if(board)
+	{
+		board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
+	}
 	this->mapping = settings->getMapping();
 }
 
@@ -33,6 +36,10 @@ Board * GameControll::createBoard(int width, int height, int playerNumber)
 		board = nullptr;
 	}
 	board = new Board(width, height, playerNumber, this);
+	if(settings)
+	{
+		board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
+	}
 	connect(board,&Board::goalHit,this,&GameControll::nextTarget);
 	return board;
 }
@@ -57,7 +64,7 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 		{
 			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
 			{
-				board->switchPlayer(static_cast<Direction>(action-PlayerAction::playerSwitch));
+				board->addPlayer(static_cast<Direction>(action-PlayerAction::playerSwitch));
 				emit actionTriggered(action);
 				return true;
 			}
@@ -95,6 +102,11 @@ void GameControll::activePlayerChanged(int playerNumber)
    {
 	   board->changeActivePlayer(playerNumber);
    }
+}
+
+GameControll::Phase GameControll::getCurrentPhase() const
+{
+	return currentPhase;
 }
 
 void GameControll::nextTarget()

@@ -12,23 +12,68 @@ Direction BoardEditor::tileBorder(QPoint p)
 	int y = (p.y()) / tileSize.height();
 	int w = p.x() - x * tileSize.width();
 	int h = p.y() - y * tileSize.height();
-	if(w < 10)
+	const int offset = 17;
+	if(h > offset / 2 && h < tileSize.height() - offset / 2)
 	{
-		return Direction::west;
+		if(w < offset)
+		{
+			return Direction::west;
+		}
+		else if(w > tileSize.width() - offset)
+		{
+			return Direction::east;
+		}
 	}
-	else if(w > tileSize.width() - 10)
+	else if(w > offset / 2 && w < tileSize.width() - offset / 2)
 	{
-		return Direction::east;
-	}
-	else if(h < 10)
-	{
-		return Direction::north;
-	}
-	else if(h > tileSize.height() - 10)
-	{
-		return Direction::south;
+		if(h < offset)
+		{
+			return Direction::north;
+		}
+		else if(h > tileSize.height() - offset)
+		{
+			return Direction::south;
+		}
 	}
 	return Direction::none;
+}
+
+void BoardEditor::placePawn(PawnWidget * pawn)
+{
+	PlayerWidget * player = dynamic_cast<PlayerWidget*>(pawn);
+	GoalWidget * goal = dynamic_cast<GoalWidget*>(pawn);
+	if(player)
+	{
+		int playerNumber = playerWidgets.indexOf(player);
+		board->players.at(playerNumber)->setPlayer(-1);
+		Tile * newPlayer = coordsToTile(player->mapToParent(player->rect().center()));
+		if(newPlayer)
+		{
+			newPlayer->setPlayer(playerNumber);
+			board->players[playerNumber] = newPlayer;
+			player->move(tileToDesktopCoordinates(newPlayer));
+		}
+		else
+		{
+			board->players.remove(playerNumber);
+			delete playerWidgets.takeAt(playerNumber);
+			for(int i = 0; i < board->players.size();i++)
+			{
+				board->players.at(i)->setPlayer(i);
+				playerWidgets.at(i)->setPlayer(i);
+			}
+		}
+	}
+	else if(goal)
+	{
+		Tile * newGoal = coordsToTile(goal->mapToParent(goal->rect().center()));
+		if(newGoal)
+		{
+			board->goal = newGoal;
+		}
+		goalwidget->move(tileToDesktopCoordinates(board->goal));
+	}
+	update();
 }
 
 void BoardEditor::mousePressEvent(QMouseEvent * event)
@@ -37,15 +82,56 @@ void BoardEditor::mousePressEvent(QMouseEvent * event)
 	if(t)
 	{
 		Direction d = tileBorder(event->pos());
-		if(d != Direction::none)
+		if(d == Direction::none)
+		{
+			addPlayer(board->addPlayer(t));
+		}
+		else
 		{
 			t->setWall(d,!t->getWall(d));
-			update();
 		}
+		update();
 	}
 }
 
 void BoardEditor::mouseMoveEvent(QMouseEvent * event)
 {
+//	if(event->buttons() == Qt::LeftButton)
+//	{
+//		Tile * t = coordsToTile(event->pos());
+//		if(t)
+//		{
+//			Direction d = tileBorder(event->pos());
+//			if(d != Direction::none && (lastTile != t || lastDirection != d))
+//			{
+//				t->setWall(d,!t->getWall(d));
+//				lastTile = t;
+//				lastDirection = d;
+//			}
+//			update();
+//		}
+//	}
+}
 
+void BoardEditor::mouseReleaseEvent(QMouseEvent * event)
+{
+	lastTile = nullptr;
+	lastDirection = Direction::none;
+	BoardView::mouseReleaseEvent(event);
+}
+
+void BoardEditor::setBoard(Board * b)
+{
+	BoardView::setBoard(b);
+	goalwidget->setEditable();
+	connect(goalwidget,&PawnWidget::placeMe,this,&BoardEditor::placePawn);
+}
+
+
+PlayerWidget * BoardEditor::addPlayer(int i)
+{
+	PlayerWidget * newPlayer = BoardView::addPlayer(i);
+	newPlayer->setEditable();
+	connect(newPlayer,&PawnWidget::placeMe,this,&BoardEditor::placePawn);
+	return newPlayer;
 }

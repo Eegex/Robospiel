@@ -10,17 +10,12 @@ void BoardView::setBoard(Board * b)
 {
 	board = b;
 	connect(board,SIGNAL(boardChanged()),this,SLOT(update()));
-	for(int i = 0; i <board->players.length();i++)
+	for(int i = 0; i < board->players.length();i++)
 	{
-		playerWidgets.append(new PlayerWidget(QSize(50,50),i,board,this));
-		connect(playerWidgets.back(), &PlayerWidget::clicked,this, [&](int playerNumber){emit activePlayerChanged(playerNumber);} );
-		connect(playerWidgets.back(), &PlayerWidget::reposition, this, [&](int playerNumber){
-			playerWidgets.at(playerNumber)->move(tileToDesktopCoordinates(board->players.at(playerNumber)));
-		});
-
+		addPlayer(i);
 	}
-	goalwidget = new GoalWidget(QSize(20,20),board,this);
 	connect(board,&Board::playerMoved,this, [&](int playerNumber){playerWidgets.at(playerNumber)->moveAnimated(tileToDesktopCoordinates(board->players.at(playerNumber)));});
+	goalwidget = new GoalWidget(QSize(20,20),board,this);
 	connect(board,&Board::goalMoved,this, [&](){goalwidget->move(tileToDesktopCoordinates(board->goal));});
 }
 
@@ -53,14 +48,6 @@ void BoardView::setMapping(QVector<KeyMapping*> * value)
 	mapping = value;
 }
 
-void BoardView::updateColors(QColor b, QColor w, QColor g)
-{
-	background = b;
-	primary = w;
-	grid = g;
-	update();
-}
-
 QPoint BoardView::tileToDesktopCoordinates(Tile* tile)
 {
 	double tileHeight = (height() - 10) / static_cast<double>(board->getSize().height());
@@ -68,20 +55,33 @@ QPoint BoardView::tileToDesktopCoordinates(Tile* tile)
 	return QPoint(5+(tile->getPosition().rx())*tileWidth,5+(tile->getPosition().ry())*tileHeight);
 }
 
+PlayerWidget * BoardView::addPlayer(int i)
+{
+	PlayerWidget * newPlayer = new PlayerWidget(QSize(50,50),i,board,this);
+	playerWidgets.append(newPlayer);
+	connect(newPlayer, &PlayerWidget::clicked,this, [&](int playerNumber){emit activePlayerChanged(playerNumber);} );
+	connect(newPlayer, &PlayerWidget::reposition, this, [&](int playerNumber){
+		playerWidgets.at(playerNumber)->move(tileToDesktopCoordinates(board->players.at(playerNumber)));
+	});
+	newPlayer->move(tileToDesktopCoordinates(board->players[i]));
+	newPlayer->show();
+	return newPlayer;
+}
+
 void BoardView::paintEvent(QPaintEvent * event)
 {
 	QPainter painter;
 	painter.begin(this);
 	QPen debug(QColor(255,0,255));
-	QPen gridPen(grid,1,Qt::SolidLine,Qt::RoundCap);
-	QPen wallPen(primary,2,Qt::SolidLine,Qt::RoundCap);
+	QPen gridPen(board->getGrid(),1,Qt::SolidLine,Qt::RoundCap);
+	QPen wallPen(board->getPrimary(),2,Qt::SolidLine,Qt::RoundCap);
 	QPen player(QColor(0,0,0),2,Qt::SolidLine,Qt::RoundCap);
 
 	double tileHeight = (height() - 10) / static_cast<double>(board->getSize().height());
 	double tileWidth = (width() - 10) / static_cast<double>(board->getSize().width());
 	tileSize = QSize(tileWidth,tileHeight);
 	painter.setPen(gridPen);
-	painter.setBrush(background);
+	painter.setBrush(board->getBackground());
 	painter.drawRect(this->rect());
 	for(int y = 0; y < board->getSize().height(); y++)
 	{
@@ -207,7 +207,7 @@ void BoardView::mouseMoveEvent(QMouseEvent * event)
 
 void BoardView::keyPressEvent(QKeyEvent * event)
 {
-	for(const KeyMapping * k:*mapping)
+	for(const KeyMapping * k:qAsConst(*mapping))
 	{
 		if(*k == event->key())
 		{

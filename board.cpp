@@ -202,7 +202,6 @@ void Board::placeInnerWalls()
 	}
 }
 
-
 /**
 This method tries to place one innerwall on a specific Tile. (One "corner" consisting of two walls that are in a 90 degree angle to each other)
 It is called with the Tile it should be placed on and a direction. The Direction indicates the position one of the walls will have on the Tile, the other wall will be at the clockwise next direction.
@@ -265,6 +264,8 @@ bool Board::placeInnerWallifFits(Tile* tile, Direction direction)
 					&&!tiles.at(y).at(x+1)->getWall(Direction::north);
 					//&&!tiles.at(y).at(x+1)->getWall(Direction::south);
 			break;
+		case Direction::none:
+			break;
 		}
 		if(noConflictWithNeighbors)
 		{
@@ -309,7 +310,6 @@ void Board::placeGoalInCorner()
 	return;
 }
 
-
 void Board::placeGoalAwayFromSeeker()
 {
 	bool inRowOrColWithSeeker = true;
@@ -324,6 +324,21 @@ void Board::placeGoalAwayFromSeeker()
 	}
 	return;
 
+}
+
+QColor Board::getGrid() const
+{
+	return grid;
+}
+
+QColor Board::getPrimary() const
+{
+	return primary;
+}
+
+QColor Board::getBackground() const
+{
+	return background;
 }
 
 Direction Board::getNextDirection(Direction direction, int numberOfClockwiseSteps)
@@ -489,12 +504,28 @@ void Board::revertToBeginning()
 	}
 }
 
+int Board::addPlayer(Tile * t)
+{
+	qDebug() << "Board::switchPlayer(Tile * t)";
+	players.append(t);
+	t->setPlayer(players.size() - 1);
+	return t->getPlayer();
+}
+
+void Board::updateColors(QColor b, QColor w, QColor g)
+{
+	background = b;
+	primary = w;
+	grid = g;
+	emit boardChanged();
+}
+
 // This method is called with a direction that indicates the way the gamer wants to switch the player.
 // We compute the angle each player has from the activePlayer (up would be 360/0 degrees, then it goes clockwise)
 // As well as the distance each playe has from the active one
 // From these two values a Fittingscore is computed and the player with the SMALLEST one is chosen as the next active player
 
-int Board::switchPlayer(Direction d)
+int Board::addPlayer(Direction d)
 {
 	qDebug() << "Board::switchPlayer(Direction d)" << printDirection(d);
 	if(!static_cast<int>(d))

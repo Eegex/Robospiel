@@ -24,13 +24,10 @@ class BoardView : public QWidget
 public:
 	explicit BoardView(QWidget *parent = nullptr);
 	QSize sizeHint() const;
-	void setBoard(Board * b);
+	virtual void setBoard(Board * b);
 	void setDebugOutputEnabled(bool set = true);
 	void resize(int pixelPerTile);
 	void setMapping(QVector<KeyMapping *> *value);
-
-public slots:
-	void updateColors(QColor b, QColor w, QColor g);
 
 protected slots:
 	void paintEvent(QPaintEvent * event);
@@ -46,15 +43,13 @@ protected:
 	QPoint mouseStart;
 	bool showDebugOutput = false;
 	QVector<KeyMapping*> * mapping = nullptr;
-	QColor background = QColor(0xff,0xff,0);
-	QColor primary = QColor(0xff,0,0xff);
-	QColor grid = QColor(0,0xff,0xff);
 	void callChangeActivePlayer(Tile *t);
 	QVector<PlayerWidget* > playerWidgets;
 	GoalWidget* goalwidget;
 	//void translateMapping(PlayerAction action);
 	//void callMoveActivePlayer(Direction d);
 	QPoint tileToDesktopCoordinates(Tile *tile);
+	virtual PlayerWidget * addPlayer(int i);
 signals:
 	void tileHovered(Tile * t);
 	void tileClicked(Tile * t);

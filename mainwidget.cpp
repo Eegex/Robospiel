@@ -6,7 +6,6 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	glMain = new QGridLayout(this);
 	game = new GameControll(this);
 	view = new BoardView(this);
-	connect(game, &GameControll::colorsChanged, view, &BoardView::updateColors);
 	leaderboard = new LeaderBoardWidget(this);
 	view->setBoard(game->createBoard(16, 16, 5));
 	view->setMapping(game->getMapping());
@@ -38,7 +37,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 			ubw->resetBidding();
 		});
 	}
-	connect(game, &GameControll::biddingDone, this, [&](){
+	connect(game, &GameControll::biddingDone, this, [&]()
+	{
 		leaderboard->sortByBidding();
 		game->setActiveUserID(leaderboard->getUsers()->first()->getId());
 		qDebug()<<"Bidding is done, Users are sorted, initial player is: "<<leaderboard->getUsers()->first()->getName()<<" with id "<<game->getActiveUserID();
@@ -74,20 +74,38 @@ void MainWidget::addUser(struct UserData * newUser)
 	// adds new player in the frontend
 	leaderboard->addPlayer(u);
 	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, &MainWidget::changeBidding);
-    connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingReset, this, &MainWidget::changeBidding);
-    connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int , const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
+	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingReset, this, &MainWidget::changeBidding);
+	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int , const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
 	{
 		game->triggerAction(PlayerAction::sendBidding, id);
 	});
-    connect(game, &GameControll::newRound, leaderboard->getUsers()->last(), &UserBiddingWidget::resetBidding);
-    connect(game, &GameControll::biddingDone, leaderboard->getUsers()->last(), &UserBiddingWidget::deactivateBtn);
+	connect(game, &GameControll::newRound, leaderboard->getUsers()->last(), &UserBiddingWidget::resetBidding);
+	connect(game, &GameControll::biddingDone, leaderboard->getUsers()->last(), &UserBiddingWidget::deactivateBtn);
 }
 
 void MainWidget::editBoard()
 {
-	edit = new BoardEditor(this);
-	edit->setBoard(game->getBoard());
-	glMain->addWidget(edit,0,0,3,1,Qt::AlignCenter);
+	if(game->getCurrentPhase() == GameControll::Phase::idle && !edit)
+	{
+		edit = new BoardEditor(this);
+		edit->setBoard(game->getBoard());
+		glMain->addWidget(edit,0,0,3,1,Qt::AlignCenter);
+		aEditBoard->setText(tr("Stop editing"));
+		delete view;
+		view = nullptr;
+	}
+	else
+	{
+		view = new BoardView(this);
+		view->setBoard(game->getBoard());
+		view->setMapping(game->getMapping());
+		connect(view,&BoardView::action,game,&GameControll::triggerAction);
+		connect(view,&BoardView::activePlayerChanged,game,&GameControll::activePlayerChanged);
+		glMain->addWidget(view,0,0,3,1,Qt::AlignCenter);
+		aEditBoard->setText(tr("Edit Board"));
+		delete edit;
+		edit = nullptr;
+	}
 }
 
 void MainWidget::changeBidding(int bidding, QUuid id)
@@ -95,7 +113,7 @@ void MainWidget::changeBidding(int bidding, QUuid id)
 	qDebug()<<"change Bidding from "<<id.toString()<< "to" << bidding;
 	for (User *u: users)
 	{
-        if (u->getId() == id)
+		if (u->getId() == id)
 		{
 			u->setBidding(bidding);
 			break;
