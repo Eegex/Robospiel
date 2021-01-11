@@ -54,6 +54,8 @@ private:
 signals:
 	void newMapping(QVector<KeyMapping*> mapping);
 	void colorsChanged();
+    void usernameChanged(QString name);
+    void usercolorChanged(QColor color);
 
 private slots:
 };

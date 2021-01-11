@@ -31,7 +31,8 @@ SOURCES += \
     settingsdialog.cpp \
     tile.cpp \
     user.cpp \
-    usercreationwidget.cpp
+    usercreationwidget.cpp \
+    useronlinewidget.cpp
 
 HEADERS += \
     Direction.h \
@@ -59,7 +60,8 @@ HEADERS += \
     tile.h \
     boardview.h \
     direction.h \
-    user.h
+    user.h \
+    useronlinewidget.h
 
 TRANSLATIONS += \
 Robospiel_de_DE.ts

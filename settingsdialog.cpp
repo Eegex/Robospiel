@@ -19,8 +19,14 @@ SettingsDialog::SettingsDialog(QVector<KeyMapping*> mapping, QDialog * parent) :
 	keyMappings = new KeyMappingView(mapping, this);
 	twTabs->addTab(keyMappings,tr("Key mappings"));
 	lay->addWidget(pbSave);
-	connect(leUsername,&QLineEdit::editingFinished,this,[&](){ settings.insert(username,leUsername->text()); });
-	connect(pbUserColor,&QPushButton::clicked,this,[&](){ settings.insert(usercolor,QColorDialog::getColor(getUsercolor()).name()); pbUserColor->setStyleSheet("background-color:" + settings.value(usercolor).toString()); });
+    connect(leUsername,&QLineEdit::editingFinished,this,[&](){
+        settings.insert(username,leUsername->text());
+        emit usernameChanged(getUsername());
+    });
+    connect(pbUserColor,&QPushButton::clicked,this,[&](){
+        settings.insert(usercolor,QColorDialog::getColor(getUsercolor()).name()); pbUserColor->setStyleSheet("background-color:" + settings.value(usercolor).toString());
+        emit usercolorChanged(getUsercolor());
+    });
 	connect(pbBackgroundColor,&QPushButton::clicked,this,[&](){ settings.insert(background,QColorDialog::getColor(getBackground()).name()); pbBackgroundColor->setStyleSheet("background-color:" + settings.value(background).toString()); });
 	connect(pbWallColor,&QPushButton::clicked,this,[&](){ settings.insert(wallcolor,QColorDialog::getColor(getWallcolor()).name()); pbWallColor->setStyleSheet("background-color:" + settings.value(wallcolor).toString()); });
 	connect(pbGridColor,&QPushButton::clicked,this,[&](){ settings.insert(gridcolor,QColorDialog::getColor(getGridcolor()).name()); pbGridColor->setStyleSheet("background-color:" + settings.value(gridcolor).toString()); });

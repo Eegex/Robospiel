@@ -418,11 +418,12 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 	case Direction::none:
 		break;
 	}
-	//qDebug()<< "blaaaaaa" << changeOfXAxis << "   " << changeOfYAxis;
+    //qDebug()<< "blaaaaaa" << changeOfXAxis << "   " << changeOfYAxis;
 	Tile* currentTile = players.at(activePlayer);
 	HistoryElement h = HistoryElement();
 	h.action = static_cast<PlayerAction>((int)PlayerAction::movement+(int)d);
 	h.previousPosition = currentTile->getPosition();
+
 	Tile* nextTile = getTile(
 						 currentTile->getPosition().rx() + changeOfXAxis,
 						 currentTile->getPosition().ry() + changeOfYAxis);
@@ -454,14 +455,18 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 						   currentTile->getPosition().ry() + changeOfYAxis);
 		}
 		setPlayerOnTile(activePlayer, currentTile);
+
+
 	}
-	emit playerMoved(activePlayer);
-	moves++;
-	if(goal == currentTile && seeker == activePlayer)
-	{
-		emit goalHit(moves);
-	}
-	history.append(h);
+
+    emit playerMoved(activePlayer);
+    moves++;
+    if(goal == currentTile && seeker == activePlayer)
+    {
+        emit goalHit(moves);
+    }
+    history.append(h);
+
 }
 
 void Board::changeActivePlayer(int playerNumber)

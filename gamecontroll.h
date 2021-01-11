@@ -25,6 +25,7 @@ public:
 	Board * getBoard() const;
 	QVector<KeyMapping*> * getMapping();
 	Phase getCurrentPhase() const;
+    SettingsDialog * getSettingsDialog();
 
 public slots:
 	void showSettings();
@@ -44,13 +45,17 @@ private:
 	QTimer countdown;
 	int timeLeft;
 signals:
-	void actionTriggered(PlayerAction action);
+    void actionTriggered(PlayerAction action, QJsonObject additionalData);
 	void time(int secs);
-	void newRound();
-	void biddingDone();
+	void colorsChanged();
+    void newRound();
+    void biddingDone();
+    void newOnlineUser(User* user);
 private slots:
 	void updateTimer();
-	bool switchPhase(GameControll::Phase phase);
+    bool switchPhase(GameControll::Phase phase);
+    void exeQTAction(QJsonObject data);
+    void sendToServer(PlayerAction a, QJsonObject info);
 };
 
 #endif // GAMECONTROLL_H
