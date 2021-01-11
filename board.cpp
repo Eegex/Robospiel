@@ -418,7 +418,7 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 	case Direction::none:
 		break;
 	}
-    //qDebug()<< "blaaaaaa" << changeOfXAxis << "   " << changeOfYAxis;
+	//qDebug()<< "blaaaaaa" << changeOfXAxis << "   " << changeOfYAxis;
 	Tile* currentTile = players.at(activePlayer);
 	HistoryElement h = HistoryElement();
 	h.action = static_cast<PlayerAction>((int)PlayerAction::movement+(int)d);
@@ -459,13 +459,13 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 
 	}
 
-    emit playerMoved(activePlayer);
-    moves++;
-    if(goal == currentTile && seeker == activePlayer)
-    {
-        emit goalHit(moves);
-    }
-    history.append(h);
+	emit playerMoved(activePlayer);
+	moves++;
+	if(goal == currentTile && seeker == activePlayer)
+	{
+		emit goalHit(moves);
+	}
+	history.append(h);
 
 }
 
@@ -530,7 +530,7 @@ void Board::updateColors(QColor b, QColor w, QColor g)
 // As well as the distance each playe has from the active one
 // From these two values a Fittingscore is computed and the player with the SMALLEST one is chosen as the next active player
 
-int Board::addPlayer(Direction d)
+int Board::switchPlayer(Direction d)
 {
 	qDebug() << "Board::switchPlayer(Direction d)" << printDirection(d);
 	if(!static_cast<int>(d))

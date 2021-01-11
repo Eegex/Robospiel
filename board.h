@@ -42,7 +42,7 @@ public:
 
 public slots:
 	void startNewRound();
-	int addPlayer(Direction d);
+	int switchPlayer(Direction d);
 signals:
 	void boardChanged();
 	void playerMoved(int playerNumber);
