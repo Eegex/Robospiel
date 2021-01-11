@@ -39,7 +39,7 @@ public slots:
     void deactivateBtn();
 
 signals:
-    void biddingChanged(int playerBidding, QUuid id);
+    void biddingChanged(int userBidding, QUuid id);
     void nameChanged();
     void colourChanged();
     void biddingReset(int playerBidding, QUuid id);

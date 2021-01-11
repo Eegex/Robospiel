@@ -4,7 +4,6 @@
 GoalWidget::GoalWidget(QSize size, Board *board, QWidget *parent):
 	PawnWidget(size, board, parent)
 {
-	setAttribute(Qt::WA_TransparentForMouseEvents,true);
 }
 
 void GoalWidget::paintEvent(QPaintEvent *event)
@@ -39,4 +38,17 @@ void GoalWidget::paintEvent(QPaintEvent *event)
 	}
 
 	event->accept();
+}
+
+void GoalWidget::mousePressEvent(QMouseEvent * event)
+{
+	if(editable)
+	{
+		PawnWidget::mousePressEvent(event);
+		event->accept();
+	}
+	else
+	{
+		event->ignore();
+	}
 }

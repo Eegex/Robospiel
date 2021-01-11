@@ -14,32 +14,25 @@
 
 class PlayerWidget : public PawnWidget
 {
-    Q_OBJECT
-public:    
-    explicit PlayerWidget(QSize size, int playerNumber, Board *board, QWidget *parent= nullptr);
-    void moveAnimated(QPoint point);
-    bool resizeWhileAnimation(double widthFactor, double heightFactor);
+	Q_OBJECT
+public:
+	explicit PlayerWidget(QSize size, int playerNumber, Board *board, QWidget *parent= nullptr);
+	void moveAnimated(QPoint point);
+	bool resizeWhileAnimation(double widthFactor, double heightFactor);
+	void setPlayer(int value);
 private:
-    int playerNumber;
-    bool debugMode = true;
-    double fractionOfTile = 0.7;
-    QSequentialAnimationGroup* animations = new QSequentialAnimationGroup();
+	int playerNumber;
+	bool debugMode = true;
+	double fractionOfTile = 0.7;
+	QSequentialAnimationGroup* animations = new QSequentialAnimationGroup();
 
-protected:
-
-signals:
-    void clicked(int playerNumber);
-    void reposition(int playerNumber);
-
-
-
-	// QWidget interface
 protected:
 	void mousePressEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
-	void enterEvent(QEvent *event);
-	void leaveEvent(QEvent *event);
 	void paintEvent(QPaintEvent *event);
+
+signals:
+	void clicked(int playerNumber);
+	void reposition(int playerNumber);
 };
 
 #endif // PLAYERWIDGET_H

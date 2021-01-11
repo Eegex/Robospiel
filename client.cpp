@@ -1,5 +1,10 @@
 #include "client.h"
 
+#include <QJsonDocument>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonObject>
+
 Client Client::instance;
 QDataStream Client::streamFromServer;
 QTcpSocket* Client::tcpSocket = new QTcpSocket();
@@ -30,8 +35,12 @@ void Client::startClient(QString serverAddress, int serverPort)
 
 }
 
-bool Client::sendMessageToServer(QString message)
+bool Client::sendMessageToServer(QJsonObject data)
 {
+    //prepare the message
+    QJsonDocument document(data);
+    QString message = QString::fromUtf8(document.toJson());
+
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out << message;
@@ -54,13 +63,19 @@ void Client::processMessageFromServer()
         return;
 
     qDebug()<<"Client received: "<<message;
-    //TODO handle message
 
+    QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
+    emit actionReceived(data);
 }
 
 void Client::closeClient()
 {
     tcpSocket->close();
+}
+
+bool Client::isActive()
+{
+    return tcpSocket->state()==QAbstractSocket::BoundState;
 }
 
 Client::~Client()

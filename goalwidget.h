@@ -11,12 +11,14 @@
 
 class GoalWidget : public PawnWidget
 {
-    Q_OBJECT
-    void paintEvent(QPaintEvent *event);
+	Q_OBJECT
+	void paintEvent(QPaintEvent *event);
 public:
-    GoalWidget(QSize size, Board* board, QWidget *parent);
+	GoalWidget(QSize size, Board* board, QWidget *parent);
+protected:
+	void mousePressEvent(QMouseEvent * event);
 private:
-    double fractionOfTile = 0.3; //how large is the goal in contrast to a tile
+	const double fractionOfTile = 0.3; //how large is the goal in contrast to a tile
 };
 
 #endif // GOALWIDGET_H

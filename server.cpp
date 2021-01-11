@@ -1,4 +1,8 @@
 #include "server.h"
+#include "Direction.h"
+
+#include <QJsonDocument>
+#include <QJsonObject>
 
 QTcpServer* Server::server = new QTcpServer();
 Server Server::instance;
@@ -38,13 +42,24 @@ void Server::startServer(QString address, int port)
     emit serverStarted(server->serverAddress(), server->serverPort());
 }
 
-int Server::sendMessageToClients(QString message)
+int Server::sendMessageToClients(QJsonObject additionalData)
+{
+    //prepare the message
+    QJsonDocument document(additionalData);
+    QString message = QString::fromUtf8(document.toJson());
+    return forwardMessageToClients(message);
+}
+
+int Server::forwardMessageToClients(QString message)
 {
     int errorCount = 0;
     for(ConnectionToClient* client : connections)
     {
         errorCount += client->sendMessage(message) ? 0:1;
     }
+
+    QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
+    emit actionReceived(data);
     return errorCount;
 }
 
@@ -64,17 +79,11 @@ void Server::addClient()
         toDelete = nullptr;
         emit clientsChanged(connections.length());
     });
-    connect(connection, &ConnectionToClient::receivedMessage, this, &Server::processMessageFromClient);
+    connect(connection, &ConnectionToClient::receivedMessage, this, &Server::forwardMessageToClients);
 
     emit clientsChanged(connections.length());
 }
 
-void Server::processMessageFromClient(QString message)
-{
-    qDebug()<<"Server received: "<<message;
-    //TODO handle message
-
-}
 
 void Server::closeServer()
 {
@@ -86,4 +95,9 @@ void Server::closeServer()
         toDelete = nullptr;
     }
     emit serverClosed();
+}
+
+bool Server::isActive()
+{
+    return Server::server->isListening();
 }

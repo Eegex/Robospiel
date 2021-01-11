@@ -1,22 +1,58 @@
 #include "gamecontroll.h"
 
+#include "server.h"
+#include "client.h"
+#include "user.h"
+
+#include <QUuid>
+
 using namespace std::chrono_literals;
 
 GameControll::GameControll(QObject *parent) : QObject(parent)
 {
-    countdown.setSingleShot(false);
+	countdown.setSingleShot(false);
 	countdown.setInterval(1s);
 	connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
-	connect(settings, &SettingsDialog::newMapping, this, &GameControll::setMapping);
+
+
+	connect(this, &GameControll::actionTriggered, this, &GameControll::sendToServer);
+	connect(&Client::getInstance(), &Client::actionReceived, this, &GameControll::exeQTAction);
+	connect(&Server::getInstance(), &Server::actionReceived, this, &GameControll::exeQTAction);
+
 }
+
+void GameControll::sendToServer(PlayerAction a, QJsonObject info)
+{
+	info.insert("action", a);
+	if(Server::getInstance().isActive())
+	{
+		//you are the server
+		Server::getInstance().sendMessageToClients(info);
+	}
+	else if (Client::getInstance().isActive())
+	{
+		//you are the client
+		Client::getInstance().sendMessageToServer(info);
+	}
+	else
+	{
+		//you are offline
+		exeQTAction(info);
+	}
+}
+
+
 
 void GameControll::load()
 {
 	settings = new SettingsDialog(mapping);
 	settings->load();
-	connect(settings,&SettingsDialog::colorsChanged,this,[&](QColor back, QColor wall, QColor grid){emit colorsChanged(back,wall,grid);});
+	connect(settings,&SettingsDialog::colorsChanged,this,[&](){ board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor()); });
 	connect(settings,&SettingsDialog::newMapping,this,[&](QVector<KeyMapping*> mapping){ this->mapping = mapping; });
-	emit colorsChanged(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
+	if(board)
+	{
+		board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
+	}
 	this->mapping = settings->getMapping();
 }
 
@@ -33,8 +69,48 @@ Board * GameControll::createBoard(int width, int height, int playerNumber)
 		board = nullptr;
 	}
 	board = new Board(width, height, playerNumber, this);
+	if(settings)
+	{
+		board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
+	}
 	connect(board,&Board::goalHit,this,&GameControll::nextTarget);
 	return board;
+}
+
+void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return was needed?
+{
+	PlayerAction a = static_cast<PlayerAction>(data.take("action").toInt());
+	User* user;
+	switch(a)
+	{
+		case newUser:
+
+			user = new User(data.value("username").toString(), QColor(data.value("usercolor").toString()), QUuid(data.value("id").toString()), this);
+			emit newOnlineUser(user);
+			break;
+		case movePlayerEast:
+		case movePlayerNorth:
+		case movePlayerSouth:
+		case movePlayerWest:
+				board->moveActivePlayer(static_cast<Direction>(a - PlayerAction::movement));
+				break;
+		case switchPlayerEast:
+		case switchPlayerNorth:
+		case switchPlayerSouth:
+		case switchPlayerWest:
+			board->switchPlayer(static_cast<Direction>(a-PlayerAction::playerSwitch));
+			break;
+		case sendBidding:
+			switchPhase(Phase::countdown);
+			break;
+		case revert:
+			board->revert();
+			break;
+		case revertToBeginning:
+			board -> revertToBeginning();
+			break;
+	}
+
 }
 
 bool GameControll::triggerAction(PlayerAction action, QUuid userID)
@@ -44,14 +120,10 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 	{
 		if(action & PlayerAction::movement)
 		{
-            qDebug()<<"Called  function TriggerAction with Movement Parameter";
-			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
+			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay) //If online only let the active user move
 			{
-                qDebug()<<"Called Function TriggerAction Inner If";
 				//we subtract movement from action to get a direction (clever enum numbers)
-
-				board->moveActivePlayer(static_cast<Direction>(action - PlayerAction::movement));
-				emit actionTriggered(action);
+				emit actionTriggered(action, QJsonObject());
 				return true;
 			}
 		}
@@ -60,7 +132,7 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
 			{
 				board->switchPlayer(static_cast<Direction>(action-PlayerAction::playerSwitch));
-				emit actionTriggered(action);
+				emit actionTriggered(action,QJsonObject());
 				return true;
 			}
 		}
@@ -69,9 +141,10 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 			qDebug()<<"Currently in GameControl: triggerAction -> bidding, current Phase is "<<static_cast<int>(currentPhase);
 			if(currentPhase == Phase::search || currentPhase == Phase::countdown)
 			{
-				if(action == PlayerAction::sendBidding)
-					switchPhase(Phase::countdown); //If timer has not been started, start the dödöööö FINAL COUNTDOWN dödödödö dödödödödö
-				emit actionTriggered(action);
+				if(action == PlayerAction::sendBidding)//If timer has not been started, start the dödöööö FINAL COUNTDOWN dödödödö dödödödödö
+				{
+				}
+				emit actionTriggered(action, QJsonObject()); //TODO maybe inside the if?
 				return true;
 			}
 		}
@@ -83,32 +156,32 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 				{
 					board->revert();
 				}
-				if(action == PlayerAction::revertToBeginning)
-                                {
-                                    board -> revertToBeginning();
-                                }
-				emit actionTriggered(action);
+				emit actionTriggered(action, QJsonObject());
 				return true;
 			}
 		}
 	}
-	return false;
+	return false; // test kommentar
 }
 
 void GameControll::activePlayerChanged(int playerNumber)
 {
-   if(triggerAction(PlayerAction::playerSwitch, "")) // PROBLEM? Here we call the Action without wanting to perform it (is caught in gamecontroll right now)
+   if(triggerAction(PlayerAction::playerSwitch, ""))
    {
 	   board->changeActivePlayer(playerNumber);
    }
 }
 
+GameControll::Phase GameControll::getCurrentPhase() const
+{
+	return currentPhase;
+}
+
 void GameControll::nextTarget()
 {
-    qDebug()<<"Next Target 116";
-    emit newRound();
 	if(switchPhase(Phase::search))
 	{
+		emit newRound();
 		board->startNewRound();
 	}
 }
@@ -206,4 +279,9 @@ void GameControll::updateTimer()
 		switchPhase(Phase::presentation);
 	}
 	emit time(timeLeft);
+}
+
+SettingsDialog * GameControll::getSettingsDialog()
+{
+	return settings;
 }

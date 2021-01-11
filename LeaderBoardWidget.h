@@ -5,34 +5,50 @@
 #include <QVariant>
 #include <QGridLayout>
 #include <QVector>
+#include <QSpinBox>
 #include "UserBiddingWidget.h"
 #include "UserCreationWidget.h"
+#include "useronlinewidget.h"
 #include "user.h"
+#include "networkview.h"
 
 class LeaderBoardWidget : public QWidget
 {
     Q_OBJECT
 public:
     explicit LeaderBoardWidget(QWidget *parent = nullptr);
-    void addPlayer(User * newUser);
+    void addUser(User * newUser);
     QVector<UserBiddingWidget*> * getUsers();
     UserCreationWidget *getUserCreationWidget();
+    UserOnlineWidget *getUserOnlineWidget();
+    unsigned short getIsOnline();
+    int userBidding = 999;
+    void goOnline();
+    void goOffline();
+    void goUndefined();
+    void setUsername(QString name);
+    void setUsercolor(QColor color);
 
 private:
     QGridLayout * lay = new QGridLayout(this);
     QPushButton * addBtn = new QPushButton(this);
-    unsigned int numOfPlayers = 0;
-    unsigned int currentPlayer = 0;
-    unsigned short isOnline = 0;
-    QVector<UserBiddingWidget*> users; //Several Players, Array of Widgets for individual players
+    QString username;
+    QColor usercolor;
+    unsigned int numOfUsers = 0;
+    unsigned int currentUser = 0;
+    unsigned int isOnline = 0; // 0 = not decided, 1 = offline, 2 = online
+    QVector<UserBiddingWidget*> users; //Several Users, Array of Widgets for individual users
     UserCreationWidget * userCreationWidget = new UserCreationWidget(nullptr);
+    UserOnlineWidget * userOnlineWidget = new UserOnlineWidget(nullptr);
+    NetworkView * networkView = new NetworkView(nullptr);
+
 
 public slots:
     void sortByBidding();
-    void newPlayer();
     void updateLayout();
-
+    void newUser();
 signals:
+    void userAdded(struct Userdata * newUser);
 
 };
 

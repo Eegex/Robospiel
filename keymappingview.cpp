@@ -59,6 +59,9 @@ KeyMappingView::KeyMappingView(QVector<KeyMapping*> mappings, QWidget *parent) :
 			case PlayerAction::revertToBeginning:
 				name->setText(tr("revert to initial positions"));
 				break;
+			case PlayerAction::freePlay:
+				name->setText(tr("switch to freeplay"));
+				break;
 			default:
 				name->setText(tr("Sorry, something went wrong :("));
 		}

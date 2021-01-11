@@ -5,6 +5,8 @@
 #include <QObject>
 #include <QtNetwork/QTcpSocket>
 #include <QDebug>
+#include <QJsonObject>
+#include "Direction.h"
 
 
 class Client : public QObject
@@ -15,8 +17,9 @@ public:
     static void deleteInstance();
 
     void startClient(QString serverAddress, int serverPort);
-    bool sendMessageToServer(QString message);
+    bool sendMessageToServer(QJsonObject data);
     void closeClient();
+    bool isActive();
 private:
     Client(QObject *parent = nullptr);
     ~Client();
@@ -29,6 +32,7 @@ signals:
     void clientIsStarting();
     void clientStarted();
     void clientClosed();
+    void actionReceived(QJsonObject data);
 
 private slots:
     void processMessageFromServer();
