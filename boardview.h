@@ -29,6 +29,7 @@ public:
 	void resize(int pixelPerTile);
 	void setMapping(QVector<KeyMapping *> *value);
 
+    void makeNewBoard();
 public slots:
 	void updateColors(QColor b, QColor w, QColor g);
 

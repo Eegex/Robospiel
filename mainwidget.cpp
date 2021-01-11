@@ -47,7 +47,7 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 {
 	menuBar = bar;
 	aNewBoard = new QAction(tr("New Board"),this);
-	//connect(aNewBoard,&QAction::triggered,board,&Board::newBoard);
+    connect(aNewBoard,&QAction::triggered,view,&BoardView::makeNewBoard);
 	bar->addAction(aNewBoard);
 	aNewTarget = new QAction(tr("New Target"),this);
 	connect(aNewTarget,&QAction::triggered,game,&GameControll::nextTarget);

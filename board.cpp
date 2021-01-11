@@ -9,33 +9,50 @@ Board::Board(int width, int height, int playerNumber, QObject *parent) : QObject
 	{
 		qDebug()<< "Board contructor was called with two many players!";
 	}
-	for(int i=0; i< height; i++)
-	{
-		QVector<Tile*> innerVector;
-		for(int j=0; j<width; j++)
-		{
-			Tile* tile = new Tile(QPoint(j, i), tiles.isEmpty()?nullptr:tiles.last().at(j), innerVector.isEmpty()?nullptr: innerVector.last(), this);
-			if(j==width-1)
-			{
-				tile->setWall(Direction::east, true);
-			}
-			if(i==height-1)
-			{
-				tile->setWall(Direction::south, true);
-			}
-			innerVector.append(tile);
-		}
-		tiles.append(innerVector);
-	}
-	for(int i=0; i<playerNumber; i++)
-	{
-		Tile * t = getRandomUnoccupiedTile();
-		t->setPlayer(i);
-		players.append(t);
-	}
-	placeOuterWalls();
-	placeInnerWalls();
+
+    makeNewBoard(width, height, playerNumber);
+
+
+
 	startNewRound();
+}
+
+void Board::makeNewBoard(int width, int height, int playerNumber){
+    tiles.clear();
+    players.clear();
+    for(int i=0; i< height; i++)
+    {
+        QVector<Tile*> innerVector;
+        for(int j=0; j<width; j++)
+        {
+            Tile* tile = new Tile(QPoint(j, i), tiles.isEmpty()?nullptr:tiles.last().at(j), innerVector.isEmpty()?nullptr: innerVector.last(), this);
+            if(j==width-1)
+            {
+                tile->setWall(Direction::east, true);
+            }
+            if(i==height-1)
+            {
+                tile->setWall(Direction::south, true);
+            }
+            innerVector.append(tile);
+        }
+        tiles.append(innerVector);
+    }
+    for(int i=0; i<playerNumber; i++)
+    {
+        Tile * t = getRandomUnoccupiedTile();
+        t->setPlayer(i);
+        players.append(t);
+    }
+    placeOuterWalls();
+    placeInnerWalls();
+
+    for (int i = 0; i < players.size(); i++){
+        emit playerMoved(i);
+    }
+    placeGoalInCorner();
+    emit goalMoved();
+    emit boardChanged();
 }
 
 void Board::setPlayerOnTile(int player, Tile* tile)
@@ -446,71 +463,8 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
         emit goalHit(moves);
     }
     history.append(h);
-	int changeOfXAxis = 0;
-	int changeOfYAxis = 0;
-	switch(d)
-	{
-	case Direction::north:
-		changeOfYAxis = -1;
-		break;
-	case Direction::east:
-		changeOfXAxis = 1;
-		break;
-	case Direction::south:
-		changeOfYAxis = 1;
-		break;
-	case Direction::west:
-		changeOfXAxis = -1;
-		break;
-	}
-	//qDebug()<< "blaaaaaa" << changeOfXAxis << "   " << changeOfYAxis;
-	Tile* currentTile = players.at(activePlayer);
-	HistoryElement h = HistoryElement();
-	h.action = static_cast<PlayerAction>((int)PlayerAction::movement+(int)d);
-	h.previousPosition = currentTile->getPosition();
-
-	Tile* nextTile = getTile(
-						 currentTile->getPosition().rx() + changeOfXAxis,
-						 currentTile->getPosition().ry() + changeOfYAxis);
-	if(nextTile == nullptr)
-	{
-		qDebug()<< "nullptr";
-
-		return;
-	}
-	while(!currentTile->getWall(d)&& nextTile->getPlayer()==-1 && (currentTile->getPosition().x()!=targetX || currentTile->getPosition().y()!=targetY))
-	{
-		bool nextTileFree = true;
-		for(Tile* player : players)
-		{
-			if(player == nextTile)
-			{
-				nextTileFree = false;
-			}
-		}
-		if(!nextTileFree)
-		{
-			break;
-		}
-		currentTile = nextTile;
-		if(!nextTile->getWall(d))
-		{
-			nextTile = getTile(
-						   currentTile->getPosition().rx() + changeOfXAxis,
-						   currentTile->getPosition().ry() + changeOfYAxis);
-		}
-		setPlayerOnTile(activePlayer, currentTile);
 
 
-	}
-
-	emit playerMoved(activePlayer);
-	moves++;
-	if(goal == currentTile && seeker == activePlayer)
-	{
-		emit goalHit(moves);
-	}
-	history.append(h);
 }
 
 void Board::changeActivePlayer(int playerNumber)

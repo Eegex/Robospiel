@@ -33,6 +33,7 @@ public:
     void changeActivePlayer(int playerNumber);
     void revert();
     void revertToBeginning();
+    void makeNewBoard(int width, int height, int playerNumber);
 public slots:
 	void startNewRound();
 	int switchPlayer(Direction d);

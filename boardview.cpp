@@ -45,6 +45,13 @@ QSize BoardView::sizeHint() const
 	return board->getSize() * 50 + QSize(10,10);
 }
 
+void BoardView::makeNewBoard(){
+
+    board -> makeNewBoard(board->getSize().width(), board->getSize().height(), board->players.length());
+
+
+}
+
 void BoardView::fillCache(QSize tileSize)
 {
 	if(!cachedPaintig)
