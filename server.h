@@ -6,6 +6,7 @@
 #include <QtNetwork>
 #include <QtCore>
 #include <QVector>
+#include "Direction.h"
 
 class Server : public QObject
 {
@@ -15,8 +16,9 @@ public:
     static void deleteInstance();
 
     void startServer(QString address, int port);
-    int sendMessageToClients(QString message);
+    int sendMessageToClients(QJsonObject additionalData);
     void closeServer();
+    bool isActive();
 private:
     Server(QObject *parent = nullptr);
     static Server instance;
@@ -27,10 +29,11 @@ signals:
     void serverStarted(QHostAddress address, int port);
     void clientsChanged(int clientCount);
     void serverClosed();
+    void actionReceived(QJsonObject data);
 
 private slots:
     void addClient();
-    void processMessageFromClient(QString message);
+    int forwardMessageToClients(QString message);
 };
 
 #endif // SERVER_H

@@ -44,6 +44,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
     connect(leaderboard->getUserOnlineWidget(), &UserOnlineWidget::biddingChangedOnline,this,&MainWidget::changeOnlyBidding);
     connect(game->getSettingsDialog(), &SettingsDialog::usernameChanged, leaderboard, &LeaderBoardWidget::setUsername);
     connect(game->getSettingsDialog(), &SettingsDialog::usercolorChanged, leaderboard, &LeaderBoardWidget::setUsercolor);
+    connect(game, &GameControll::newOnlineUser, this, &MainWidget::addExistingUser);
 }
 
 void MainWidget::setMenuBar(QMenuBar * bar)
@@ -63,26 +64,28 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	bar->addAction(aNetworking);
 }
 
+//this method is only for offline-users
 void MainWidget::addUser(struct UserData * newUser)
 {
     qDebug()<<"adduser in MainWidget";
 	User *u = new User(newUser->name, newUser->colour, this);
-	users.append(u);
+    users.append(u);
     qDebug()<< u->getName();
-    if(leaderboard->getIsOnline() == 1)
+    // adds new user in the frontend
+    leaderboard->addUser(u);
+    connect(game, &GameControll::newRound, leaderboard->getUsers()->last(), &UserBiddingWidget::resetBidding);
+    connect(game, &GameControll::biddingDone, leaderboard->getUsers()->last(), &UserBiddingWidget::deactivateBtn);
+    connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, &MainWidget::changeBidding);
+    connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingReset, this, &MainWidget::changeBidding);
+    connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int userBidding, const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
     {
-        // adds new user in the frontend
-        leaderboard->addUser(u);
-        connect(game, &GameControll::newRound, leaderboard->getUsers()->last(), &UserBiddingWidget::resetBidding);
-        connect(game, &GameControll::biddingDone, leaderboard->getUsers()->last(), &UserBiddingWidget::deactivateBtn);
-        connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, &MainWidget::changeBidding);
-        connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingReset, this, &MainWidget::changeBidding);
-        connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int userBidding, const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
-        {
-            game->triggerAction(PlayerAction::sendBidding, id);
-        });
-    }
+        game->triggerAction(PlayerAction::sendBidding, id);
+    });
+}
 
+void MainWidget::addExistingUser(User* user)
+{
+    users.append(user);
 }
 
 void MainWidget::changeBidding(int bidding, QUuid id)

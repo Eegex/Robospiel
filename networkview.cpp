@@ -187,27 +187,27 @@ void NetworkView::addServer()
 	Server::getInstance().startServer(leServerAddress->text(), leServerPort->text().toInt());
 }
 
-void NetworkView::sendToClients()
-{
-	int errorCount=Server::getInstance().sendMessageToClients(leMessageToClients->text());
-	if(errorCount!=0)
-	{
-		serverStatus->setText(tr("Message was not sent to ")+QString::number(errorCount)+tr(" clients. ")+QTime::currentTime().toString());
-	}
-}
+//void NetworkView::sendToClients()
+//{
+//	int errorCount=Server::getInstance().sendMessageToClients(leMessageToClients->text());
+//	if(errorCount!=0)
+//	{
+//		serverStatus->setText(tr("Message was not sent to ")+QString::number(errorCount)+tr(" clients. ")+QTime::currentTime().toString());
+//	}
+//}
 
 void NetworkView::addClient()
 {
 	Client::getInstance().startClient(leClientAddress->text(), leClientPort->text().toInt());
 }
 
-void NetworkView::sendToServer()
-{
-	bool okay = Client::getInstance().sendMessageToServer(leMessageToServer->text());
-	if(!okay)
-	{
-		clientStatus->setText(tr("Message was not sent to the server. ")+QTime::currentTime().toString());
-	}
-}
+//void NetworkView::sendToServer()
+//{
+//	bool okay = Client::getInstance().sendMessageToServer(leMessageToServer->text());
+//	if(!okay)
+//	{
+//		clientStatus->setText(tr("Message was not sent to the server. ")+QTime::currentTime().toString());
+//	}
+//}
 
 

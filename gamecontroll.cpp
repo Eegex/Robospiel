@@ -1,5 +1,11 @@
 #include "gamecontroll.h"
 
+#include "server.h"
+#include "client.h"
+#include "user.h"
+
+#include <QUuid>
+
 using namespace std::chrono_literals;
 
 GameControll::GameControll(QObject *parent) : QObject(parent)
@@ -7,7 +13,35 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
     countdown.setSingleShot(false);
 	countdown.setInterval(1s);
     connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
+
+
+    connect(this, &GameControll::actionTriggered, this, &GameControll::sendToServer);
+    connect(&Client::getInstance(), &Client::actionReceived, this, &GameControll::exeQTAction);
+    connect(&Server::getInstance(), &Server::actionReceived, this, &GameControll::exeQTAction);
+
 }
+
+void GameControll::sendToServer(PlayerAction a, QJsonObject info)
+{
+    info.insert("action", a);
+    if(Server::getInstance().isActive())
+    {
+        //you are the server
+        Server::getInstance().sendMessageToClients(info);
+    }
+    else if (Client::getInstance().isActive())
+    {
+        //you are the client
+        Client::getInstance().sendMessageToServer(info);
+    }
+    else
+    {
+        //you are offline
+        exeQTAction(info);
+    }
+}
+
+
 
 void GameControll::load()
 {
@@ -37,6 +71,42 @@ Board * GameControll::createBoard(int width, int height, int playerNumber)
 	return board;
 }
 
+void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return was needed?
+{
+    PlayerAction a = static_cast<PlayerAction>(data.take("action").toInt());
+    User* user;
+    switch(a)
+    {
+        case newUser:
+
+            user = new User(data.value("username").toString(), QColor(data.value("usercolor").toString()), QUuid(data.value("id").toString()), this);
+            emit newOnlineUser(user);
+            break;
+        case movePlayerEast:
+        case movePlayerNorth:
+        case movePlayerSouth:
+        case movePlayerWest:
+                board->moveActivePlayer(static_cast<Direction>(a - PlayerAction::movement));
+                break;
+        case switchPlayerEast:
+        case switchPlayerNorth:
+        case switchPlayerSouth:
+        case switchPlayerWest:
+            board->switchPlayer(static_cast<Direction>(a-PlayerAction::playerSwitch));
+            break;
+        case sendBidding:
+            switchPhase(Phase::countdown);
+            break;
+        case revert:
+            board->revert();
+            break;
+        case revertToBeginning:
+            board -> revertToBeginning();
+            break;
+    }
+
+}
+
 bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 {
 	qDebug()<<"Called function TriggerAction with parameters "<<action<<" and User ID "<<userID;
@@ -49,9 +119,7 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 			{
                 qDebug()<<"Called Function TriggerAction Inner If";
 				//we subtract movement from action to get a direction (clever enum numbers)
-
-				board->moveActivePlayer(static_cast<Direction>(action - PlayerAction::movement));
-				emit actionTriggered(action);
+                emit actionTriggered(action, QJsonObject());
 				return true;
 			}
 		}
@@ -59,8 +127,7 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 		{
 			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
 			{
-				board->switchPlayer(static_cast<Direction>(action-PlayerAction::playerSwitch));
-				emit actionTriggered(action);
+                emit actionTriggered(action, QJsonObject());
 				return true;
 			}
 		}
@@ -69,9 +136,10 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 			qDebug()<<"Currently in GameControl: triggerAction -> bidding, current Phase is "<<static_cast<int>(currentPhase);
 			if(currentPhase == Phase::search || currentPhase == Phase::countdown)
 			{
-				if(action == PlayerAction::sendBidding)
-					switchPhase(Phase::countdown); //If timer has not been started, start the dödöööö FINAL COUNTDOWN dödödödö dödödödödö
-				emit actionTriggered(action);
+                if(action == PlayerAction::sendBidding)//If timer has not been started, start the dödöööö FINAL COUNTDOWN dödödödö dödödödödö
+                {
+                }
+                emit actionTriggered(action, QJsonObject()); //TODO maybe inside the if?
 				return true;
 			}
 		}
@@ -79,15 +147,7 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 		{
 			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
 			{
-				if(action == PlayerAction::revert)
-				{
-					board->revert();
-				}
-				if(action == PlayerAction::revertToBeginning)
-                                {
-                                    board -> revertToBeginning();
-                                }
-				emit actionTriggered(action);
+                emit actionTriggered(action, QJsonObject());
 				return true;
 			}
 		}

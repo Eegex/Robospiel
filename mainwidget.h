@@ -23,7 +23,8 @@ class MainWidget : public QWidget
 	Q_OBJECT
 public:
 	explicit MainWidget(QWidget *parent = nullptr);
-	void setMenuBar(QMenuBar * bar);
+    void setMenuBar(QMenuBar * bar);
+    void addExistingUser(User *user);
 private slots:
 	void updateTimer(int remaining);
 	void changeBidding(int bidding, QUuid id);

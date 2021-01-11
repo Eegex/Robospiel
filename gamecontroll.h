@@ -44,14 +44,17 @@ private:
 	QTimer countdown;
 	int timeLeft;
 signals:
-	void actionTriggered(PlayerAction action);
+    void actionTriggered(PlayerAction action, QJsonObject additionalData);
 	void time(int secs);
 	void colorsChanged(QColor back, QColor wall, QColor grid);
     void newRound();
     void biddingDone();
+    void newOnlineUser(User* user);
 private slots:
 	void updateTimer();
-	bool switchPhase(GameControll::Phase phase);
+    bool switchPhase(GameControll::Phase phase);
+    void exeQTAction(QJsonObject data);
+    void sendToServer(PlayerAction a, QJsonObject info);
 };
 
 #endif // GAMECONTROLL_H

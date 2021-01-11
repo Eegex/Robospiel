@@ -32,7 +32,7 @@ private:
 	QGridLayout* gridServer;
 	QLineEdit* leServerAddress;
 	QLineEdit* leServerPort;
-	QLabel* serverStatus;
+    QLabel* serverStatus;
 	QLineEdit* leMessageToClients;
 
 	QWidget* clientContainer;
@@ -49,8 +49,8 @@ signals:
 private slots:
 	void addServer();
 	void addClient();
-	void sendToClients();
-    void sendToServer();
+//	void sendToClients();
+//    void sendToServer();
 
 };
 
