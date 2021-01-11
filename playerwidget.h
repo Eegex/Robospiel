@@ -8,9 +8,20 @@
 #include <QPaintEvent>
 #include <QMouseEvent>
 #include <QSequentialAnimationGroup>
+#include <QPoint>
+#include <QVector>
+#include <QTimer>
 
 #include "pawnwidget.h"
 #include "board.h"
+
+struct Animation
+{
+    QPoint target;
+    int endTime;
+    double progress;
+};
+
 
 class PlayerWidget : public PawnWidget
 {
@@ -23,8 +34,11 @@ private:
     int playerNumber;
     bool debugMode = true;
     double fractionOfTile = 0.7;
-    QSequentialAnimationGroup* animations = new QSequentialAnimationGroup();
+    QVector<Animation*> animations;
+    QTimer* animationTimer;
+    double animationRate = 2;
 
+    static double length(QPoint vector);
 protected:
 
 signals:
@@ -39,7 +53,9 @@ protected:
 	void mouseReleaseEvent(QMouseEvent *event);
 	void enterEvent(QEvent *event);
 	void leaveEvent(QEvent *event);
-	void paintEvent(QPaintEvent *event);
+    void paintEvent(QPaintEvent *event);
+private slots:
+    void animationUpdate();
 };
 
 #endif // PLAYERWIDGET_H
