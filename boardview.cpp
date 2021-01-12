@@ -10,13 +10,20 @@ void BoardView::setBoard(Board * b)
 {
 	board = b;
 	connect(board,SIGNAL(boardChanged()),this,SLOT(update()));
+	while(!playerWidgets.isEmpty())
+	{
+		delete playerWidgets.takeFirst();
+	}
+	delete goalwidget;
 	for(int i = 0; i < board->players.length();i++)
 	{
 		addPlayer(i);
 	}
 	connect(board,&Board::playerMoved,this, [&](int playerNumber){playerWidgets.at(playerNumber)->moveAnimated(tileToDesktopCoordinates(board->players.at(playerNumber)));});
 	goalwidget = new GoalWidget(QSize(20,20),board,this);
+	goalwidget->show();
 	connect(board,&Board::goalMoved,this, [&](){goalwidget->move(tileToDesktopCoordinates(board->goal));});
+	adjustSize();
 }
 
 void BoardView::setDebugOutputEnabled(bool set)

@@ -45,7 +45,7 @@ protected:
 	QVector<KeyMapping*> * mapping = nullptr;
 	void callChangeActivePlayer(Tile *t);
 	QVector<PlayerWidget* > playerWidgets;
-	GoalWidget* goalwidget;
+	GoalWidget* goalwidget = nullptr;
 	//void translateMapping(PlayerAction action);
 	//void callMoveActivePlayer(Direction d);
 	QPoint tileToDesktopCoordinates(Tile *tile);

@@ -10,6 +10,7 @@
 #include <QLCDNumber>
 #include <QPalette>
 #include <QUuid>
+#include <QWidgetAction>
 #include "user.h"
 #include "board.h"
 #include "boardeditor.h"
@@ -23,14 +24,15 @@ class MainWidget : public QWidget
 	Q_OBJECT
 public:
 	explicit MainWidget(QWidget *parent = nullptr);
-    void setMenuBar(QMenuBar * bar);
-    void addExistingUser(User *user);
+	void setMenuBar(QMenuBar * bar);
+	void addExistingUser(User *user);
 private slots:
 	void updateTimer(int remaining);
 	void changeBidding(int bidding, QUuid id);
-    void changeOnlyBidding(int bidding);
+	void changeOnlyBidding(int bidding);
 	void addUser(struct UserData * newUser);
 	void editBoard();
+	void createBoard();
 private:
 	QVector<User*> users;
 	QGridLayout * glMain = nullptr;
@@ -42,10 +44,17 @@ private:
 	QLCDNumber * lcd = nullptr;
 	QMenuBar * menuBar = nullptr;
 	QAction * aNetworking = nullptr;
-	QAction * aNewBoard = nullptr;
 	QAction * aEditBoard = nullptr;
 	QAction * aNewTarget = nullptr;
 	QAction * aSettings = nullptr;
+	QMenu * mNewBoard = nullptr;
+	QWidgetAction * waHeight = nullptr;
+	QSpinBox * sbHeight = nullptr;
+	QWidgetAction * waWidth = nullptr;
+	QSpinBox * sbWidth = nullptr;
+	QWidgetAction * waPlayer = nullptr;
+	QSpinBox * sbPlayer = nullptr;
+	QAction * aNewBoard = nullptr;
 };
 
 #endif // MAINWIDGET_H

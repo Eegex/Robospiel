@@ -3,7 +3,6 @@
 #include "server.h"
 #include "client.h"
 #include "user.h"
-
 #include <QUuid>
 
 using namespace std::chrono_literals;
@@ -13,8 +12,6 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 	countdown.setSingleShot(false);
 	countdown.setInterval(1s);
 	connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
-
-
 	connect(this, &GameControll::actionTriggered, this, &GameControll::sendToServer);
 	connect(&Client::getInstance(), &Client::actionReceived, this, &GameControll::exeQTAction);
 	connect(&Server::getInstance(), &Server::actionReceived, this, &GameControll::exeQTAction);
@@ -40,8 +37,6 @@ void GameControll::sendToServer(PlayerAction a, QJsonObject info)
 		exeQTAction(info);
 	}
 }
-
-
 
 void GameControll::load()
 {
@@ -257,6 +252,7 @@ QVector<KeyMapping*> * GameControll::getMapping()
 	}
 	return &mapping;
 }
+
 void GameControll::setMapping(QVector<KeyMapping*> mapping)
 {
 	this->mapping = mapping;

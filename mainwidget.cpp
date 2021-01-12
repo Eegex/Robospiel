@@ -11,7 +11,6 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	view->setMapping(game->getMapping());
 	connect(view,&BoardView::action,game,&GameControll::triggerAction);
 	connect(view,&BoardView::activePlayerChanged,game,&GameControll::activePlayerChanged);
-	networkView = new NetworkView;
 	lcd = new QLCDNumber(this);
 	lcd->setSegmentStyle(QLCDNumber::Flat);
 	lcd->setStyleSheet("QLCDNumber{"
@@ -42,9 +41,29 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 void MainWidget::setMenuBar(QMenuBar * bar)
 {
 	menuBar = bar;
-	aNewBoard = new QAction(tr("New Board"),this);
-	//connect(aNewBoard,&QAction::triggered,board,&Board::newBoard);
-	bar->addAction(aNewBoard);
+	mNewBoard = new QMenu(tr("New Board"),this);
+	waHeight = new QWidgetAction(this);
+	sbHeight = new QSpinBox(this);
+	waWidth = new QWidgetAction(this);
+	sbWidth = new QSpinBox(this);
+	waPlayer = new QWidgetAction(this);
+	sbPlayer = new QSpinBox(this);
+	aNewBoard = new QAction(tr("Create Board"),this);
+	sbHeight->setMinimum(5);
+	sbWidth->setMinimum(5);
+	sbPlayer->setMinimum(1);
+	waHeight->setDefaultWidget(sbHeight);
+	waWidth->setDefaultWidget(sbWidth);
+	waPlayer->setDefaultWidget(sbPlayer);
+	mNewBoard->addAction(new QAction(tr("Height:")));
+	mNewBoard->addAction(waHeight);
+	mNewBoard->addAction(new QAction(tr("Width:")));
+	mNewBoard->addAction(waWidth);
+	mNewBoard->addAction(new QAction(tr("Player count:")));
+	mNewBoard->addAction(waPlayer);
+	mNewBoard->addAction(aNewBoard);
+	connect(aNewBoard,&QAction::triggered,this,&MainWidget::createBoard);
+	bar->addMenu(mNewBoard);
 	aEditBoard = new QAction(tr("Edit Board"),this);
 	connect(aEditBoard,&QAction::triggered,this,&MainWidget::editBoard);
 	bar->addAction(aEditBoard);
@@ -54,9 +73,6 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	aSettings = new QAction(tr("Settings"),this);
 	connect(aSettings,&QAction::triggered,game,&GameControll::showSettings);
 	bar->addAction(aSettings);
-	aNetworking = new QAction(tr("Networking"),this);
-	connect(aNetworking,&QAction::triggered,networkView,&NetworkView::show);
-	bar->addAction(aNetworking);
 }
 
 //this method is only for offline-users
@@ -72,17 +88,31 @@ void MainWidget::addUser(struct UserData * newUser)
 	connect(game, &GameControll::biddingDone, leaderboard->getUsers()->last(), &UserBiddingWidget::deactivateBtn);
 	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, &MainWidget::changeBidding);
 	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingReset, this, &MainWidget::changeBidding);
-    /*connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingReset, this, [&](const int, const QUuid){
-        leaderboard->updateLayout();
-    });*/
-    connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int userBidding, const QUuid id){ //Connect the biddingChanged Signal to triggerAction with appropriate argument{
+	/*connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingReset, this, [&](const int, const QUuid){
+		leaderboard->updateLayout();
+	});*/
+	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int userBidding, const QUuid id){ //Connect the biddingChanged Signal to triggerAction with appropriate argument{
 		game->triggerAction(PlayerAction::sendBidding, id);
-    });
+	});
 }
 
 void MainWidget::addExistingUser(User* user)
 {
 	users.append(user);
+}
+
+void MainWidget::createBoard()
+{
+	if(view)
+	{
+		view->setBoard(game->createBoard(sbWidth->value(),sbHeight->value(),sbPlayer->value()));
+		glMain->addWidget(view,0,0,3,1,Qt::AlignCenter); //alignment or size dies without this line ¯\_(ツ)_/¯
+	}
+	else
+	{
+		edit->setBoard(game->createBoard(sbWidth->value(),sbHeight->value(),sbPlayer->value()));
+		glMain->addWidget(edit,0,0,3,1,Qt::AlignCenter); //same here...
+	}
 }
 
 void MainWidget::editBoard()
@@ -112,8 +142,8 @@ void MainWidget::editBoard()
 
 void MainWidget::changeBidding(int bidding, QUuid id)
 {
-    qDebug()<<"Called Function Change Bidding from "<<id.toString()<< "to" << bidding;
-    for (User *u: users)
+	qDebug()<<"Called Function Change Bidding from "<<id.toString()<< "to" << bidding;
+	for (User *u: users)
 	{
 		if (u->getId() == id)
 		{
