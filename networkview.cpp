@@ -25,9 +25,9 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 
 	QPushButton* btnStartClient = new QPushButton(tr("Start Client"), clientContainer);
 	connect(btnStartClient, &QPushButton::clicked, this, &NetworkView::addClient);
-    QPushButton* btnStopClient = new QPushButton(tr("Stop Client / Back"), clientContainer);
-    connect(btnStopClient, &QPushButton::clicked, this, [&]()->void {Client::getInstance().closeClient();
-            toChoiceMenu();});
+	QPushButton* btnStopClient = new QPushButton(tr("Stop Client / Back"), clientContainer);
+	connect(btnStopClient, &QPushButton::clicked, this, [&]()->void {Client::getInstance().closeClient();
+			toChoiceMenu();});
 	clientStatus = new QLabel(clientContainer);
 
 	//only for testing
@@ -57,11 +57,11 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 
 	QPushButton* btnStartServer = new QPushButton(tr("Start Server"), serverContainer);
 	connect(btnStartServer, &QPushButton::clicked, this, &NetworkView::addServer);
-    QPushButton* btnStopServer = new QPushButton(tr("Stop Server / Back"), serverContainer);
+	QPushButton* btnStopServer = new QPushButton(tr("Stop Server / Back"), serverContainer);
 	connect(btnStopServer, &QPushButton::clicked, this, [&]()->void
 	{
 		Server::getInstance().closeServer();
-        toChoiceMenu();
+		toChoiceMenu();
 	});
 	serverStatus = new QLabel(serverContainer);
 
@@ -72,51 +72,60 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 //    gridServer->addWidget(leMessageToClients);
 //    gridServer->addWidget(btnSendToClients);
 
-    gridServer->addWidget(leServerAddress);
-    gridServer->addWidget(leServerPort);
-    gridServer->addWidget(btnStartServer);
-    gridServer->addWidget(btnStopServer);
-    gridServer->addWidget(serverStatus);
+	QNetworkAccessManager * ipSearcher = new QNetworkAccessManager(this);
+	connect(ipSearcher,&QNetworkAccessManager::finished,this,[=](QNetworkReply * reply)
+	{
+		leServerAddress->setText(reply->readAll());
+		reply->deleteLater();
+		ipSearcher->deleteLater();
+	});
+	ipSearcher->get(QNetworkRequest({"http://api64.ipify.org/"}));
+
+	gridServer->addWidget(leServerAddress);
+	gridServer->addWidget(leServerPort);
+	gridServer->addWidget(btnStartServer);
+	gridServer->addWidget(btnStopServer);
+	gridServer->addWidget(serverStatus);
 
 	serverContainer->setLayout(gridServer);
 
 
-    btnClient = new QPushButton(tr("Join Server"));
-    btnServer = new QPushButton(tr("Start Server"));
-    btnOffline = new QPushButton(tr("Play offline"));
+	btnClient = new QPushButton(tr("Join Server"));
+	btnServer = new QPushButton(tr("Start Server"));
+	btnOffline = new QPushButton(tr("Play offline"));
 	layout->addWidget(btnClient);
 	layout->addWidget(btnServer);
-    layout->addWidget(btnOffline);
+	layout->addWidget(btnOffline);
 
 	setLayout(layout);
 
-    connect(btnClient, &QPushButton::clicked, this, [=]()->void{
-        layout->removeWidget(btnClient);
-        layout->removeWidget(btnServer);
-        layout->removeWidget(btnOffline);
-        btnClient->hide();
-        btnServer->hide();
-        btnOffline->hide();
+	connect(btnClient, &QPushButton::clicked, this, [=]()->void{
+		layout->removeWidget(btnClient);
+		layout->removeWidget(btnServer);
+		layout->removeWidget(btnOffline);
+		btnClient->hide();
+		btnServer->hide();
+		btnOffline->hide();
 
-        layout->addWidget(clientContainer);
-        clientContainer->show();
+		layout->addWidget(clientContainer);
+		clientContainer->show();
 	});
-    connect(btnServer, &QPushButton::clicked, this, [=]()->void{
-        layout->removeWidget(btnClient);
-        layout->removeWidget(btnServer);
-        layout->removeWidget(btnOffline);
-        btnClient->hide();
-        btnServer->hide();
-        btnOffline->hide();
+	connect(btnServer, &QPushButton::clicked, this, [=]()->void{
+		layout->removeWidget(btnClient);
+		layout->removeWidget(btnServer);
+		layout->removeWidget(btnOffline);
+		btnClient->hide();
+		btnServer->hide();
+		btnOffline->hide();
 
-        layout->addWidget(serverContainer);
-        serverContainer->show();
-    });
-    connect(btnOffline, &QPushButton::clicked, this, [=]()->void{
-        emit leaderboradOffline();
-    });
-    //TODO place Server::getInstance().closeServer();
-    //TODO place Client::getInstance().closeClient();
+		layout->addWidget(serverContainer);
+		serverContainer->show();
+	});
+	connect(btnOffline, &QPushButton::clicked, this, [=]()->void{
+		emit leaderboradOffline();
+	});
+	//TODO place Server::getInstance().closeServer();
+	//TODO place Client::getInstance().closeClient();
 
 
 	//connect server signals
@@ -127,7 +136,7 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 	connect(&Server::getInstance(), &Server::serverStarted, this, [=] (QHostAddress address, int port) -> void
 	{
 		serverStatus->setText(tr("Server is running. ")+QTime::currentTime().toString()+"\n"+address.toString()+":"+QString::number(port));
-        emit leaderboradOnline();
+		emit leaderboradOnline();
 	});
 	connect(&Server::getInstance(), &Server::clientsChanged, this, [=] (int clientCount) -> void
 	{
@@ -152,7 +161,7 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 	connect(&Client::getInstance(), &Client::clientStarted, this, [&]()->void
 	{
 		clientStatus->setText(tr("Client started. ")+QTime::currentTime().toString());
-        emit leaderboradOnline();
+		emit leaderboradOnline();
 	});
 	connect(&Client::getInstance(), &Client::clientClosed, this, [&]()->void
 	{
@@ -169,17 +178,17 @@ NetworkView::~NetworkView()
 
 void NetworkView::toChoiceMenu()
 {
-    layout->removeWidget(serverContainer);
-    layout->removeWidget(clientContainer);
-    serverContainer->hide();
-    clientContainer->hide();
+	layout->removeWidget(serverContainer);
+	layout->removeWidget(clientContainer);
+	serverContainer->hide();
+	clientContainer->hide();
 
-    layout->addWidget(btnClient);
-    layout->addWidget(btnServer);
-    layout->addWidget(btnOffline);
-    btnClient->show();
-    btnServer->show();
-    btnOffline->show();
+	layout->addWidget(btnClient);
+	layout->addWidget(btnServer);
+	layout->addWidget(btnOffline);
+	btnClient->show();
+	btnServer->show();
+	btnOffline->show();
 }
 
 void NetworkView::addServer()
