@@ -36,7 +36,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(game->getSettingsDialog(), &SettingsDialog::usernameChanged, leaderboard, &LeaderBoardWidget::setUsername);
 	connect(game->getSettingsDialog(), &SettingsDialog::usercolorChanged, leaderboard, &LeaderBoardWidget::setUsercolor);
 	connect(game, &GameControll::newOnlineUser, this, &MainWidget::addExistingUser);
-    connect(game, &GameControll::actionTriggered, this, [&](PlayerAction action){
+    void (GameControll::*actionTriggered)(PlayerAction, QJsonObject) = &GameControll::actionTriggered;
+    connect(game, actionTriggered, this, [&](PlayerAction action, QJsonObject){
         if(action & PlayerAction::movement) //If player wants to move, increase the number of moves the player has done. This is being done to reset the field if the user has used all their available moves.
             currentMoves++;
         qDebug()<<"Current Moves are: "<<currentMoves;
