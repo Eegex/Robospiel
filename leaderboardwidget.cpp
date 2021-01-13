@@ -78,6 +78,7 @@ void LeaderBoardWidget::newUser()
 
 void LeaderBoardWidget::goOnline()
 {
+    //TODO if online as client: send your user
     isOnline = 2;
     networkView->hide();
     lay->addWidget(userOnlineWidget);

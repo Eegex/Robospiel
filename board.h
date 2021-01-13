@@ -33,6 +33,8 @@ public:
     void changeActivePlayer(int playerNumber);
     void revert();
     void revertToBeginning();
+    QJsonObject toJSON();
+    static Board* fromJSON(QJsonObject json);
 public slots:
 	void startNewRound();
 	int switchPlayer(Direction d);
@@ -62,7 +64,8 @@ private:
 	bool placeInnerWallifFits(Tile *tile, Direction direection);
 	Direction getNextDirection(Direction direction, int numberOfClockwiseSteps);
 	bool placeOuterWallIfFits(Tile *, Direction direction);
-	void placeGoalInCorner();
+    void placeGoalInCorner();
+    Board();
 };
 
 #endif // BOARD_H

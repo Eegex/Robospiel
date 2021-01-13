@@ -8,7 +8,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	view = new BoardView(this);
 	connect(game, &GameControll::colorsChanged, view, &BoardView::updateColors);
 	leaderboard = new LeaderBoardWidget(this);
-	view->setBoard(game->createBoard(16, 16, 5));
+    view->setBoard(game->setBoard(new Board(16, 16, 5)));
 	view->setMapping(game->getMapping());
 	connect(view,&BoardView::action,game,&GameControll::triggerAction);
 	connect(view,&BoardView::activePlayerChanged,game,&GameControll::activePlayerChanged);
@@ -44,6 +44,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
     connect(leaderboard->getUserOnlineWidget(), &UserOnlineWidget::biddingChangedOnline,this,&MainWidget::changeOnlyBidding);
     connect(game->getSettingsDialog(), &SettingsDialog::usernameChanged, leaderboard, &LeaderBoardWidget::setUsername);
     connect(game->getSettingsDialog(), &SettingsDialog::usercolorChanged, leaderboard, &LeaderBoardWidget::setUsercolor);
+    connect(leaderboard, &LeaderBoardWidget::addNewUser, this, &MainWidget::addExistingUser);
     connect(game, &GameControll::newOnlineUser, this, &MainWidget::addExistingUser);
 }
 
@@ -85,7 +86,15 @@ void MainWidget::addUser(struct UserData * newUser)
 
 void MainWidget::addExistingUser(User* user)
 {
+    for(User* u: users)
+    {
+        if(u->getId()==user->getId())
+        {
+            return;
+        }
+    }
     users.append(user);
+    game->triggerAction(PlayerAction::newUser, user->getId());
 }
 
 void MainWidget::changeBidding(int bidding, QUuid id)

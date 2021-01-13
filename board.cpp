@@ -1,5 +1,7 @@
 #include <QDebug>
 #include <Direction.h>
+#include <QJsonObject>
+#include <QJsonArray>
 #include "board.h"
 
 Board::Board(int width, int height, int playerNumber, QObject *parent) : QObject(parent)
@@ -36,6 +38,124 @@ Board::Board(int width, int height, int playerNumber, QObject *parent) : QObject
 	placeOuterWalls();
 	placeInnerWalls();
 	startNewRound();
+}
+
+Board::Board()
+{
+
+}
+
+QJsonObject Board::toJSON()
+{
+    QJsonObject json;
+
+    //tiles
+    QJsonArray tileArray;
+    for(QVector<Tile*> row : tiles)
+    {
+        QJsonArray innerTileArray;
+        for(Tile* tile : row)
+        {
+            innerTileArray.append(tile.toJSON());
+        }
+        tileArray.append(innerTileArray);
+    }
+    json.insert("tiles", tileArray);
+
+    //players
+    QJsonArray playerPositions;
+    for(Tile* player: players)
+    {
+        playerPositions.append(player->getPosition().x());
+        playerPositions.append(player->getPosition().y());
+    }
+    json.insert("playerPositions", playerPositions);
+
+    //goal
+    QJsonArray goalPosition;
+    goalPosition.append(goal->getPosition().x());
+    goalPosition.append(goal->getPosition().y());
+    json.insert("goalPosition", goalPosition);
+
+    //history
+    QJsonArray historyArray;
+    for(HistoryElement historyElement : history)
+    {
+        QJsonObject historyElementJson;
+        historyElementJson.insert("action", historyElement.action);
+        historyElementJson.insert("previousPlayer", historyElement.previousPlayer);
+        QJsonArray previousPosition;
+        previousPosition.append(historyElement.previousPosition.x());
+        previousPosition.append(historyElement.previousPosition.y());
+        historyElementJson.insert("previousPosition", previousPosition);
+
+        historyArray.append(historyElementJson);
+    }
+    json.insert("history", historyArray);
+
+    json.insert("seeker", seeker);
+    json.insert("activePlayer", activePlayer);
+    json.insert("moves", moves);
+
+    return json;
+}
+
+Board* Board::fromJSON(QJsonObject json)
+{
+    Board* b = new Board();
+
+    //tiles
+    QJsonArray jsonTileArray = json.value("tiles").toArray();
+    for(int i=0; i<jsonTileArray.size(); i++)
+    {
+        QVector<Tile*> row;
+        QJsonArray jsonRow = jsonTileArray.at(i).toArray();
+        for(int j=0; j<jsonRow.size(); j++)
+        {
+            Tile * t = Tile::fromJSON(jsonRow.at(j).toObject());
+            if(i>0)
+            {
+                t->northTile = b->tiles.at(i-1).at(j);
+            }
+            if(j>0)
+            {
+                t->westTile = row.at(j-1);
+            }
+            row.append(t);
+        }
+        b->tiles.append(row);
+    }
+
+    //players
+    QJsonArray playerPositions = json.value("playerPositions").toArray();
+    for(int i=0; i<playerPositions.size(); i+=2)
+    {
+        int x = playerPositions.at(i).toInt();
+        int y = playerPositions.at(i+1).toInt();
+        b->players.append(b->tiles.at(y).at(x));
+    }
+
+    //goal
+    int x = json.value("goalPosition").toArray().at(0).toInt();
+    int y = json.value("goalPosition").toArray().at(1).toInt();
+    b->goal = b->tiles.at(y).at(x);
+
+    //history
+    for(QJsonValue historyElem : json.value("history").toArray())
+    {
+        QJsonObject jsonElem = historyElem.toObject();
+        HistoryElement he;
+        he.action = static_cast<PlayerAction>(jsonElem.value("action").toInt());
+        he.previousPlayer = jsonElem.value("previousPlayer").toInt();
+        he.previousPosition = QPoint(jsonElem.value("previousPosition").toArray().at(0).toInt(),jsonElem.value("previousPosition").toArray().at(1).toInt());
+        b->history.append(he);
+    }
+
+    b->seeker = json.value("seeker").toInt();
+    b->activePlayer = json.value("activePlayer").toInt();
+    b->moves = json.value("moves").toInt();
+
+    return b;
 }
 
 void Board::setPlayerOnTile(int player, Tile* tile)

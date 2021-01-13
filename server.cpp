@@ -80,6 +80,7 @@ void Server::addClient()
         emit clientsChanged(connections.length());
     });
     connect(connection, &ConnectionToClient::receivedMessage, this, &Server::forwardMessageToClients);
+    //TODO send board and Users to new client
 
     emit clientsChanged(connections.length());
 }
