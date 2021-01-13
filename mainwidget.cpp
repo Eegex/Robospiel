@@ -7,7 +7,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	game = new GameControll(this);
 	view = new BoardView(this);
 	leaderboard = new LeaderBoardWidget(this);
-	view->setBoard(game->createBoard(16, 16, 5));
+    view->setBoard(game->setBoard(new Board(16, 16, 5)));
 	view->setMapping(game->getMapping());
 	connect(view,&BoardView::action,game,&GameControll::triggerAction);
 	connect(view,&BoardView::activePlayerChanged,game,&GameControll::activePlayerChanged);
@@ -36,7 +36,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(game->getSettingsDialog(), &SettingsDialog::usernameChanged, leaderboard, &LeaderBoardWidget::setUsername);
 	connect(game->getSettingsDialog(), &SettingsDialog::usercolorChanged, leaderboard, &LeaderBoardWidget::setUsercolor);
 	connect(game, &GameControll::newOnlineUser, this, &MainWidget::addExistingUser);
-    connect(game, &GameControll::actionTriggered, this, [&](PlayerAction action, QJsonObject){
+    connect(game, &GameControll::actionTriggered, this, [&](PlayerAction action){
         if(action & PlayerAction::movement) //If player wants to move, increase the number of moves the player has done. This is being done to reset the field if the user has used all their available moves.
             currentMoves++;
         qDebug()<<"Current Moves are: "<<currentMoves;
@@ -127,19 +127,23 @@ void MainWidget::addUser(struct UserData * newUser)
 
 void MainWidget::addExistingUser(User* user)
 {
-	users.append(user);
+    for(User* u: users)
+        if(u->getId()==user->getId())
+            return;
+    users.append(user);
+    game->triggerAction(PlayerAction::newUser, user->getId());
 }
 
 void MainWidget::createBoard()
 {
 	if(view)
 	{
-		view->setBoard(game->createBoard(sbWidth->value(),sbHeight->value(),sbPlayer->value()));
+        view->setBoard(game->setBoard(new Board(sbWidth->value(),sbHeight->value(),sbPlayer->value())));
 		glMain->addWidget(view,0,0,3,1,Qt::AlignCenter); //alignment or size dies without this line ¯\_(ツ)_/¯
 	}
 	else
 	{
-		edit->setBoard(game->createBoard(sbWidth->value(),sbHeight->value(),sbPlayer->value()));
+        edit->setBoard(game->setBoard(new Board(sbWidth->value(),sbHeight->value(),sbPlayer->value())));
 		glMain->addWidget(edit,0,0,3,1,Qt::AlignCenter); //same here...
 	}
 }

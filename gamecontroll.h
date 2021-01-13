@@ -19,7 +19,7 @@ public:
 	enum class Phase{idle, search, countdown, presentation, freeplay};
 	explicit GameControll(QObject *parent = nullptr);
 	void load();
-	Board * createBoard(int width, int height, int playerNumber);
+    Board * setBoard(Board *newBoard);
 	//bool triggerAction(PlayerAction action, QString user); //String will need to be ID of user
 	bool triggerAction(PlayerAction action, QUuid userID);
 	Board * getBoard() const;
@@ -27,6 +27,9 @@ public:
 	Phase getCurrentPhase() const;
     SettingsDialog * getSettingsDialog();
 
+    void triggerActionsWithData(PlayerAction action, User *user);
+    QJsonObject toJSON();
+    static GameControll *fromJSON(QJsonObject json);
 public slots:
 	void showSettings();
 	void setMapping(QVector<KeyMapping *> mapping);
@@ -43,9 +46,11 @@ private:
 	//QString activeUser;
 	QUuid activeUserID;
 	QTimer countdown;
-	int timeLeft;
+    int timeLeft;
+    void triggerActionsWithData(PlayerAction action, QJsonObject data=QJsonObject());
 signals:
     void actionTriggered(PlayerAction action, QJsonObject additionalData);
+    void actionTriggered(PlayerAction action);
 	void time(int secs);
 	void colorsChanged();
     void newRound();

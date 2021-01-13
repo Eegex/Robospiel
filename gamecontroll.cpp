@@ -3,6 +3,8 @@
 #include "server.h"
 #include "client.h"
 #include "user.h"
+#include <QJsonObject>
+#include <QUuid>
 #include <QUuid>
 
 using namespace std::chrono_literals;
@@ -11,31 +13,59 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 {
 	countdown.setSingleShot(false);
 	countdown.setInterval(1s);
-	connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
-	connect(this, &GameControll::actionTriggered, this, &GameControll::sendToServer);
-	connect(&Client::getInstance(), &Client::actionReceived, this, &GameControll::exeQTAction);
-	connect(&Server::getInstance(), &Server::actionReceived, this, &GameControll::exeQTAction);
+    connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
+    connect(this, SIGNAL(&GameControll::actionTriggered), this, SLOT(&GameControll::sendToServer)); //TODO test the connection with both signals
+    connect(&Client::getInstance(), &Client::actionReceived, this, &GameControll::exeQTAction);
+    connect(&Server::getInstance(), &Server::actionReceived, this, &GameControll::exeQTAction);
 
 }
 
+QJsonObject GameControll::toJSON() //TODO test both ways of JSON
+{
+    QJsonObject json = QJsonObject();
+    json.insert("currentPhase", static_cast<int>(currentPhase));
+    json.insert("board", board->toJSON());
+    json.insert("activeUserID", activeUserID.toString());
+    json.insert("remainingTimerTime", countdown.remainingTime());
+    json.insert("timeLeft", timeLeft);
+    return json;
+}
+
+GameControll* GameControll::fromJSON(QJsonObject json)
+{
+    GameControll* g = new GameControll();
+    g->currentPhase=static_cast<Phase>(json.value("currentPhase").toInt());
+    g->setBoard(Board::fromJSON(json.value("board").toObject()));
+    g->setActiveUserID(QUuid::fromString(json.value("activeUserID").toString()));
+    g->timeLeft = json.value("timeLeft").toInt();
+    if(json.value("remainingTimerTime").toInt()!=-1)
+        QTimer::singleShot(json.value("remainingTimerTime").toInt(), g, [=]()->void{
+            g->countdown.start();
+        });
+    return g;
+}
+
+
+
 void GameControll::sendToServer(PlayerAction a, QJsonObject info)
 {
-	info.insert("action", a);
-	if(Server::getInstance().isActive())
-	{
-		//you are the server
-		Server::getInstance().sendMessageToClients(info);
-	}
-	else if (Client::getInstance().isActive())
-	{
-		//you are the client
-		Client::getInstance().sendMessageToServer(info);
-	}
-	else
-	{
-		//you are offline
-		exeQTAction(info);
-	}
+    qDebug()<<"Send to server"<<a<<info;
+    info.insert("action", a);
+    if(Server::getInstance().isActive())
+    {
+        //you are the server
+        Server::getInstance().sendMessageToClients(info);
+    }
+    else if (Client::getInstance().isActive())
+    {
+        //you are the client
+        Client::getInstance().sendMessageToServer(info);
+    }
+    else
+    {
+        //you are offline
+        exeQTAction(info);
+    }
 }
 
 void GameControll::load()
@@ -56,15 +86,15 @@ void GameControll::showSettings()
 	settings->exec();
 }
 
-Board * GameControll::createBoard(int width, int height, int playerNumber)
+Board * GameControll::setBoard(Board* newBoard)
 {
 	if(board)
 	{
 		board->deleteLater();
 		board = nullptr;
 	}
-	board = new Board(width, height, playerNumber, this);
-	if(settings)
+    board = newBoard;
+    if(settings)
 	{
 		board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
 	}
@@ -74,38 +104,50 @@ Board * GameControll::createBoard(int width, int height, int playerNumber)
 
 void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return was needed?
 {
-	PlayerAction a = static_cast<PlayerAction>(data.take("action").toInt());
-	User* user;
-	switch(a)
-	{
-		case newUser:
+    qDebug()<<"execute"<<data;
+    PlayerAction a = static_cast<PlayerAction>(data.take("action").toInt());
+    User* user;
+    switch(a)
+    {
+        case newUser:
+            user = new User(data.value("username").toString(), QColor(data.value("usercolor").toString()), QUuid(data.value("id").toString()), this);
+            emit newOnlineUser(user);
+            break;
+        case movePlayerEast:
+        case movePlayerNorth:
+        case movePlayerSouth:
+        case movePlayerWest:
+                board->moveActivePlayer(static_cast<Direction>(a - PlayerAction::movement));
+                break;
+        case switchPlayerEast:
+        case switchPlayerNorth:
+        case switchPlayerSouth:
+        case switchPlayerWest:
+            board->switchPlayer(static_cast<Direction>(a-PlayerAction::playerSwitch));
+            break;
+        case sendBidding:
+            switchPhase(Phase::countdown);
+            break;
+        case revert:
+            board->revert();
+            break;
+        case revertToBeginning:
+            board -> revertToBeginning();
+            break;
+    }
 
-			user = new User(data.value("username").toString(), QColor(data.value("usercolor").toString()), QUuid(data.value("id").toString()), this);
-			emit newOnlineUser(user);
-			break;
-		case movePlayerEast:
-		case movePlayerNorth:
-		case movePlayerSouth:
-		case movePlayerWest:
-				board->moveActivePlayer(static_cast<Direction>(a - PlayerAction::movement));
-				break;
-		case switchPlayerEast:
-		case switchPlayerNorth:
-		case switchPlayerSouth:
-		case switchPlayerWest:
-			board->switchPlayer(static_cast<Direction>(a-PlayerAction::playerSwitch));
-			break;
-		case sendBidding:
-			switchPhase(Phase::countdown);
-			break;
-		case revert:
-			board->revert();
-			break;
-		case revertToBeginning:
-			board -> revertToBeginning();
-			break;
-	}
+}
 
+void GameControll::triggerActionsWithData(PlayerAction action, User* user)
+{
+    if(action==PlayerAction::newUser)
+    {
+        QJsonObject data = QJsonObject();
+        data.insert("username", user->getName());
+        data.insert("usercolor", user->getColor().name());
+        data.insert("id", user->getId().toString());
+        emit actionTriggered(action, data);
+    }
 }
 
 bool GameControll::triggerAction(PlayerAction action, QUuid userID)
@@ -118,7 +160,7 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay) //If online only let the active user move
 			{
 				//we subtract movement from action to get a direction (clever enum numbers)
-				emit actionTriggered(action, QJsonObject());
+                emit actionTriggered(action);
 				return true;
 			}
 		}
@@ -126,20 +168,19 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 		{
 			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
 			{
-				board->switchPlayer(static_cast<Direction>(action-PlayerAction::playerSwitch));
-				emit actionTriggered(action,QJsonObject());
+                emit actionTriggered(action);
 				return true;
 			}
 		}
-		else if(action & PlayerAction::bidding)
+        else if(action & PlayerAction::bidding) //TODO submit biddingValue
 		{
 			qDebug()<<"Currently in GameControl: triggerAction -> bidding, current Phase is "<<static_cast<int>(currentPhase);
 			if(currentPhase == Phase::search || currentPhase == Phase::countdown)
 			{
-				if(action == PlayerAction::sendBidding)//If timer has not been started, start the dödöööö FINAL COUNTDOWN dödödödö dödödödödö
-				{
-				}
-				emit actionTriggered(action, QJsonObject()); //TODO maybe inside the if?
+                if(action == PlayerAction::sendBidding)//If timer has not been started, start the dödöööö FINAL COUNTDOWN dödödödö dödödödödö
+                {
+                }
+                emit actionTriggered(action); //TODO maybe inside the if?
 				return true;
 			}
 		}
@@ -147,11 +188,7 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 		{
 			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
 			{
-				if(action == PlayerAction::revert)
-				{
-					board->revert();
-				}
-				emit actionTriggered(action, QJsonObject());
+                emit actionTriggered(action);
 				return true;
 			}
 		}

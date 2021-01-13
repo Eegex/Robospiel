@@ -1,7 +1,34 @@
 #include "tile.h"
 
+#include <QJsonObject>
+
 Tile::Tile(QPoint position, Tile* north, Tile* west, QObject *parent) :  QObject(parent), position(position), northTile(north), westTile(west), playerOnThisTile(-1)
 {
+}
+
+Tile::Tile(){}
+
+QJsonObject Tile::toJSON()
+{
+    QJsonObject json;
+    json.insert("eastWall", eastWall);
+    json.insert("southWall", southWall);
+    json.insert("playerOnThisTile", playerOnThisTile);
+    json.insert("positionX", position.x());
+    json.insert("positionY", position.y());
+
+    return json;
+}
+
+//the tile still has to be coupled with its north and west neighbours
+Tile* Tile::fromJSON(QJsonObject json)
+{
+    Tile* t = new Tile();
+    t->eastWall = json.value("eastWall").toBool();
+    t->southWall = json.value("southWall").toBool();
+    t->playerOnThisTile = json.value("playerOnThisTile").toInt();
+    t->position = QPoint(json.value("positionX").toInt(), json.value("positionY").toInt());
+    return t;
 }
 
 QPoint Tile::getPosition() const

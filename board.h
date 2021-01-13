@@ -31,16 +31,17 @@ public:
 	int activePlayer = 0;
 	void moveActivePlayer(Direction d, int targetX = -1, int targetY = -1);
 	void setPlayerOnTile(int player, Tile *tile);
-	void changeActivePlayer(int playerNumber);
-	void revert();
-	void revertToBeginning();
-	int addPlayer(Tile * t);
+    void changeActivePlayer(int playerNumber);
+    void revert();
+    void revertToBeginning();
+    QJsonObject toJSON();
+    static Board* fromJSON(QJsonObject json);
+    int addPlayer(Tile * t);
 	void updateColors(QColor b, QColor w, QColor g);
     void resetMoves();
 	QColor getBackground() const;
 	QColor getPrimary() const;
 	QColor getGrid() const;
-
 public slots:
 	void startNewRound();
 	int switchPlayer(Direction d);
@@ -73,6 +74,7 @@ private:
 	Direction getNextDirection(Direction direction, int numberOfClockwiseSteps);
 	bool placeOuterWallIfFits(Tile *, Direction direction);
 	void placeGoalInCorner();
+	Board();
 };
 
 #endif // BOARD_H
