@@ -48,8 +48,9 @@ private:
 	QTimer countdown;
     int timeLeft;
     void triggerActionsWithData(PlayerAction action, QJsonObject data=QJsonObject());
+    void sendToServer(PlayerAction a);
 signals:
-    void actionTriggered(PlayerAction action, QJsonObject additionalData);
+    void actionTriggeredWithData(PlayerAction action, QJsonObject additionalData);
     void actionTriggered(PlayerAction action);
 	void time(int secs);
 	void colorsChanged();
@@ -60,7 +61,7 @@ private slots:
 	void updateTimer();
     bool switchPhase(GameControll::Phase phase);
     void exeQTAction(QJsonObject data);
-    void sendToServer(PlayerAction a, QJsonObject info);
+    void sendToServerWithData(PlayerAction a, QJsonObject info);
 };
 
 #endif // GAMECONTROLL_H

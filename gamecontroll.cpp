@@ -16,7 +16,8 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 	countdown.setInterval(1s);
     connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
 
-    connect(this, SIGNAL(&GameControll::actionTriggered), this, SLOT(&GameControll::sendToServer)); //TODO test the connection with both signals
+    connect(this, &GameControll::actionTriggeredWithData, this, &GameControll::sendToServerWithData); //TODO test the connection with both signals
+    connect(this, &GameControll::actionTriggered, this, &GameControll::sendToServer);
     connect(&Client::getInstance(), &Client::actionReceived, this, &GameControll::exeQTAction);
     connect(&Server::getInstance(), &Server::actionReceived, this, &GameControll::exeQTAction);
 
@@ -52,9 +53,9 @@ GameControll* GameControll::fromJSON(QJsonObject json)
 
 
 
-void GameControll::sendToServer(PlayerAction a, QJsonObject info)
+void GameControll::sendToServerWithData(PlayerAction a, QJsonObject info)
 {
-    qDebug()<<"Send to server"<<a<<info;
+    qDebug()<<"Send to server with data"<<a<<info;
     info.insert("action", a);
     if(Server::getInstance().isActive())
     {
@@ -70,6 +71,28 @@ void GameControll::sendToServer(PlayerAction a, QJsonObject info)
     {
         //you are offline
         exeQTAction(info);
+    }
+}
+
+void GameControll::sendToServer(PlayerAction a)
+{
+    qDebug()<<"Send to server"<<a;
+    QJsonObject json;
+    json.insert("action", a);
+    if(Server::getInstance().isActive())
+    {
+        //you are the server
+        Server::getInstance().sendMessageToClients(json);
+    }
+    else if (Client::getInstance().isActive())
+    {
+        //you are the client
+        Client::getInstance().sendMessageToServer(json);
+    }
+    else
+    {
+        //you are offline
+        exeQTAction(json);
     }
 }
 
@@ -151,7 +174,7 @@ void GameControll::triggerActionsWithData(PlayerAction action, User* user)
         data.insert("username", user->getName());
         data.insert("usercolor", user->getColor().name());
         data.insert("id", user->getId().toString());
-        emit actionTriggered(action, data);
+        emit actionTriggeredWithData(action, data);
     }
 }
 
