@@ -7,6 +7,7 @@
 #include <QButtonGroup>
 #include <QLabel>
 #include <QLineEdit>
+#include <QPushButton>
 #include <QRadioButton>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -18,20 +19,22 @@ public:
 	explicit NetworkView(QWidget *parent = nullptr);
 	~NetworkView();
 private:
+    void toChoiceMenu();
 
 	bool allowClientAndServer=false;
 
-	QGridLayout* layout;
-	QButtonGroup* choiceGroup;
-	QRadioButton* btnServer;
+    QLayout* layout;
+    QPushButton* btnClient;
+    QPushButton* btnServer;
+    QPushButton* btnOffline;
+
 	QWidget* serverContainer;
 	QGridLayout* gridServer;
 	QLineEdit* leServerAddress;
 	QLineEdit* leServerPort;
-	QLabel* serverStatus;
+    QLabel* serverStatus;
 	QLineEdit* leMessageToClients;
 
-	QRadioButton* btnClient;
 	QWidget* clientContainer;
 	QGridLayout* gridClient;
 	QLineEdit* leClientAddress;
@@ -40,13 +43,15 @@ private:
 	QLineEdit* leMessageToServer;
 
 signals:
-
+    void leaderboradOnline();
+    void leaderboradOffline();
 
 private slots:
 	void addServer();
 	void addClient();
-	void sendToClients();
-	void sendToServer();
+//	void sendToClients();
+//    void sendToServer();
+
 };
 
 #endif // NETWORKVIEW_H

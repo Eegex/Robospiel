@@ -11,6 +11,7 @@ class User : public QObject
     Q_OBJECT
 public:
     User(QString name, QColor color, QObject *parent);
+    User(QString name, QColor color, QUuid uuid, QObject *parent);
     QString getName();
     QColor getColor();
     QUuid getId();
@@ -27,6 +28,8 @@ private:
     QUuid id;
     int bidding;
     int points;
+
+    static int userCount;
 
 signals:
 

@@ -1,5 +1,5 @@
-#ifndef PLAYERCREATIONWIDGET_H
-#define PLAYERCREATIONWIDGET_H
+#ifndef USERCREATIONWIDGET_H
+#define USERCREATIONWIDGET_H
 
 #include <QWidget>
 #include <QVariant>
@@ -9,11 +9,7 @@
 #include <QColor>
 #include <QColorDialog>
 #include <QLineEdit>
-
-struct UserData{
-    QString name;
-    QColor colour;
-};
+#include "Direction.h"
 
 class UserCreationWidget : public QWidget
 {

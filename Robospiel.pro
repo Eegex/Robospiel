@@ -11,6 +11,7 @@ CONFIG += c++17
 SOURCES += \
     UserBiddingWidget.cpp \
     board.cpp \
+    boardeditor.cpp \
     goalwidget.cpp \
     leaderboardwidget.cpp \
     boardview.cpp \
@@ -30,7 +31,8 @@ SOURCES += \
     settingsdialog.cpp \
     tile.cpp \
     user.cpp \
-    usercreationwidget.cpp
+    usercreationwidget.cpp \
+    useronlinewidget.cpp
 
 HEADERS += \
     Direction.h \
@@ -38,6 +40,7 @@ HEADERS += \
     UserBiddingWidget.h \
     UserCreationWidget.h \
     board.h \
+    boardeditor.h \
     boardview.h \
     client.h \
     connectiontoclient.h \
@@ -57,7 +60,8 @@ HEADERS += \
     tile.h \
     boardview.h \
     direction.h \
-    user.h
+    user.h \
+    useronlinewidget.h
 
 TRANSLATIONS += \
 Robospiel_de_DE.ts

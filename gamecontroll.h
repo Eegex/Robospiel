@@ -19,38 +19,49 @@ public:
 	enum class Phase{idle, search, countdown, presentation, freeplay};
 	explicit GameControll(QObject *parent = nullptr);
 	void load();
-	Board * createBoard(int width, int height, int playerNumber);
+    Board * setBoard(Board *newBoard);
 	//bool triggerAction(PlayerAction action, QString user); //String will need to be ID of user
 	bool triggerAction(PlayerAction action, QUuid userID);
 	Board * getBoard() const;
 	QVector<KeyMapping*> * getMapping();
+	Phase getCurrentPhase() const;
+    SettingsDialog * getSettingsDialog();
 
+    void triggerActionsWithData(PlayerAction action, User *user);
+    QJsonObject toJSON();
+    static GameControll *fromJSON(QJsonObject json);
 public slots:
 	void showSettings();
 	void setMapping(QVector<KeyMapping *> mapping);
 	void nextTarget();
 	void remakeBoard();
-    QUuid getActiveUserID();
-    void setActiveUserID(QUuid id);
+	QUuid getActiveUserID();
+	void setActiveUserID(QUuid id);
 	void activePlayerChanged(int playerNumber);
 private:
-	Phase currentPhase = Phase::freeplay;
+	Phase currentPhase = Phase::idle; //freeplay
 	SettingsDialog * settings = nullptr;
 	QVector<KeyMapping*> mapping;
 	Board * board = nullptr;
-    //QString activeUser;
-    QUuid activeUserID;
+	//QString activeUser;
+	QUuid activeUserID;
 	QTimer countdown;
-	int timeLeft;
+    int timeLeft;
+    void triggerActionsWithData(PlayerAction action, QJsonObject data=QJsonObject());
+    void sendToServer(PlayerAction a);
 signals:
-	void actionTriggered(PlayerAction action);
+    void actionTriggeredWithData(PlayerAction action, QJsonObject additionalData);
+    void actionTriggered(PlayerAction action);
 	void time(int secs);
-	void colorsChanged(QColor back, QColor wall, QColor grid);
+	void colorsChanged();
     void newRound();
     void biddingDone();
+    void newOnlineUser(User* user);
 private slots:
 	void updateTimer();
-	bool switchPhase(GameControll::Phase phase);
+    bool switchPhase(GameControll::Phase phase);
+    void exeQTAction(QJsonObject data);
+    void sendToServerWithData(PlayerAction a, QJsonObject info);
 };
 
 #endif // GAMECONTROLL_H

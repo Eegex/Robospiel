@@ -4,7 +4,7 @@
 #include <QGridLayout>
 #include <QDebug>
 #include <QString>
-#define DEFAULTPLAYERNAME "Neuer Spieler"
+#define DEFAULTUSERNAME "Neuer Spieler"
 
 UserCreationWidget::UserCreationWidget(QWidget *parent) : QWidget(parent)
 {
@@ -24,10 +24,10 @@ UserCreationWidget::UserCreationWidget(QWidget *parent) : QWidget(parent)
 
 void UserCreationWidget::addUser()
 {
-    qDebug()<<"Addition Request of player with name "<<userNamePicker->text()<<"and colour "<<userColourPicker->selectedColor().name();
+    qDebug()<<"Addition Request of user with name "<<userNamePicker->text()<<"and colour "<<userColourPicker->selectedColor().name();
 
     struct UserData newUser;
-    newUser.name = userNamePicker->text()!=nullptr?userNamePicker->text():DEFAULTPLAYERNAME;
+    newUser.name = userNamePicker->text()!=nullptr?userNamePicker->text():DEFAULTUSERNAME;
     newUser.colour = userColourPicker->selectedColor();
     qDebug()<<"Current Colour"<<userColourPicker->selectedColor().name();
     delete userColourPicker;

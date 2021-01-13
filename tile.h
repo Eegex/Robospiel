@@ -9,7 +9,7 @@ class Tile : public QObject
 {
 	Q_OBJECT
 public:
-	Tile(QPoint position, Tile *north, Tile *west, QObject *parent);
+    Tile(QPoint position, Tile *north, Tile *west, QObject *parent);
 
 	QPoint getPosition() const;
 	void setPosition(const QPoint &value);
@@ -22,11 +22,14 @@ public:
 	Tile* westTile;
 
     void setInnerWall(Direction direction, bool set);
+    static Tile *fromJSON(QJsonObject json);
+    QJsonObject toJSON();
 private:
 	QPoint position;
 	bool eastWall=false;
 	bool southWall=false;
 	int playerOnThisTile;
+    Tile();
 
 
 signals:
