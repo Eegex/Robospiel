@@ -167,6 +167,7 @@ void Board::setPlayerOnTile(int player, Tile* tile)
 
 void Board::startNewRound()
 {
+    resetMoves();
 	seeker = r->bounded(players.size());
 	history.clear();
 	activePlayer = seeker;
@@ -772,5 +773,7 @@ int Board::switchPlayer(Direction d)
 		return activePlayer;
 	}
 }
+
+void Board::resetMoves(){moves = 0;}
 
 

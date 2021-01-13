@@ -225,3 +225,4 @@ void BoardView::keyPressEvent(QKeyEvent * event)
 	QWidget::keyPressEvent(event);
 }
 
+Board * BoardView::getBoard(){return board;}

@@ -22,8 +22,10 @@ public:
     void addUser(User * newUser);
     QVector<UserBiddingWidget*> * getUsers();
     UserCreationWidget *getUserCreationWidget();
+    unsigned int getBiddingWidgetIndexByID(QUuid id);
     UserOnlineWidget *getUserOnlineWidget();
     unsigned short getIsOnline();
+    unsigned int getNumOfUsers();
     void goOnline();
     void goOffline();
     void goUndefined();

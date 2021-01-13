@@ -19,12 +19,22 @@ LeaderBoardWidget::LeaderBoardWidget(QWidget *parent) : QWidget(parent)
     //connect(userCreationWidget, &UserCreationWidget::userAdded, this, &LeaderBoardWidget::addUser);
 }
 
+unsigned int LeaderBoardWidget::getBiddingWidgetIndexByID(QUuid id){
+    qDebug()<<"Called Function getBiddingWidgetByID in LeaderBoardWidget with ID "<<id;
+    for(unsigned int i = 0; i<numOfUsers; i++)
+        if(users[i]->getId() == id)
+            return i;
+    qDebug()<<"Couldn't find user with ID "<<id;
+    return 0;
+}
+
 void LeaderBoardWidget::updateLayout(){
     qDebug()<<"Called UpdateLayout, number of Users is "<<numOfUsers<<", isOnline is "<<isOnline;
     for(unsigned int i = 0; i<numOfUsers; i++){lay->addWidget(users.at(i), i, 0);}
     if(isOnline == offline){lay->addWidget(addBtn, numOfUsers, 0);} //New Player Button under all Players
     lay->update();
 }
+
 void LeaderBoardWidget::sortByBidding()
 {
     qDebug()<<"Called sortByBidding";
@@ -121,6 +131,7 @@ void LeaderBoardWidget::setUsername(QString name)
 }
 
 void LeaderBoardWidget::setUsercolor(QColor color){usercolor = color;}
+unsigned int LeaderBoardWidget::getNumOfUsers(){return numOfUsers;}
 unsigned short LeaderBoardWidget::getIsOnline(){return isOnline;}
 QVector<UserBiddingWidget*>* LeaderBoardWidget::getUsers(){return &users;}
 UserCreationWidget *LeaderBoardWidget::getUserCreationWidget(){return userCreationWidget;}

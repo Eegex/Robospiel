@@ -38,6 +38,7 @@ public:
     static Board* fromJSON(QJsonObject json);
     int addPlayer(Tile * t);
 	void updateColors(QColor b, QColor w, QColor g);
+    void resetMoves();
 	QColor getBackground() const;
 	QColor getPrimary() const;
 	QColor getGrid() const;
