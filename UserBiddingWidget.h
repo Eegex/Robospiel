@@ -22,7 +22,9 @@ public:
 private:
     QGridLayout * userLayout = new QGridLayout(this);
     QLabel * labelName = new QLabel(this); //name in onlineWidget
+    //QLabel * pointsName = new QLabel(this);
     int userBidding = MAX_BID;
+    int userPoints = 0;
     QUuid userId;
     QString userName;
     QColor userColor;
@@ -30,10 +32,12 @@ public slots:
     QUuid getId();
     QString getName();
     int getBidding();
+    int getPoints();
     void setId(QUuid id);
     void setBidding(int bidding);
     void setName(QString v);
     void setColor(QColor colour);
+    void incrementPoints();
     void btnPressed();
     void resetBidding();
     void deactivateBtn();

@@ -28,7 +28,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(game, &GameControll::biddingDone, this, [&]()
 	{
 		leaderboard->sortByBidding();
-		//game->setActiveUserID(leaderboard->getUsers()->first()->getId());
+        game->setActiveUserID(leaderboard->getUsers()->first()->getId());
 		qDebug()<<"Bidding is done, Users are sorted, initial player is: "<<leaderboard->getUsers()->first()->getName()<<" with id "<<game->getActiveUserID();
 	});
 	connect(leaderboard->getUserOnlineWidget(), &UserOnlineWidget::userAdded, this, &MainWidget::addUser);
@@ -36,6 +36,35 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(game->getSettingsDialog(), &SettingsDialog::usernameChanged, leaderboard, &LeaderBoardWidget::setUsername);
 	connect(game->getSettingsDialog(), &SettingsDialog::usercolorChanged, leaderboard, &LeaderBoardWidget::setUsercolor);
 	connect(game, &GameControll::newOnlineUser, this, &MainWidget::addExistingUser);
+    connect(game, &GameControll::actionTriggered, this, [&](PlayerAction action, QJsonObject){
+        if(action & PlayerAction::movement) //If player wants to move, increase the number of moves the player has done. This is being done to reset the field if the user has used all their available moves.
+            currentMoves++;
+        qDebug()<<"Current Moves are: "<<currentMoves;
+        QUuid currentPlayer = game->getActiveUserID();
+        unsigned int activeUserIndex = leaderboard->getBiddingWidgetIndexByID(currentPlayer);
+        if(currentMoves >= leaderboard->getUsers()->at(activeUserIndex)->getBidding()){ //Needs to be GEQ because otherwise the player could make an extra move as the "reached goal" signal is overriding the failure
+            qDebug()<<"User couldn't end the round in the specified bid of "<< leaderboard->getUsers()->at(activeUserIndex)->getBidding()<<", the next user is being drawn";
+            currentMoves = 0; //Reset Current Moves
+            game->getBoard()->resetMoves();
+            if(leaderboard->getNumOfUsers() > 1 && activeUserIndex < leaderboard->getNumOfUsers()-1){ //Not at last player yet, noch haben nicht alle versagt
+                UserBiddingWidget* user = leaderboard->getUsers()->at(++activeUserIndex); //Liste ist bereits sortiert (siehe oben), daher ist der nächste User in der Liste der User mit dem nächsthöheren Bidding
+                game->setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
+                game->getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
+                qDebug()<<"Active User is now "<<user->getName();
+            }else{ //Alles Versager
+                qDebug()<<"No User could end the round in their specified bid.";
+                game->nextTarget();
+            }
+        }
+    });
+    connect(view->getBoard(), &Board::goalHit, this, [&](int moves){ //This function is being called when the first player has reached their goal
+        QUuid currentPlayer = game->getActiveUserID();
+        unsigned int activeUserIndex = leaderboard->getBiddingWidgetIndexByID(currentPlayer);
+        game->nextTarget(); //Generate a new target, this should reset the current LeaderBoardWidget
+        leaderboard->getUsers()->at(activeUserIndex)->incrementPoints(); //Increment the number of points of the player that's hit their goal
+        qDebug()<<"User "<<leaderboard->getUsers()->at(activeUserIndex)->getName()<<" has successfully ended the round with "<<moves<<" moves, their current points are "<<leaderboard->getUsers()->at(activeUserIndex)->getPoints();
+        currentMoves = -1; //This needs to be done because the actionTriggered will set it to 1 immediately after a goal is hit so the next player has 1 fewer move which would be bad
+    });
 }
 
 void MainWidget::setMenuBar(QMenuBar * bar)
@@ -84,7 +113,7 @@ void MainWidget::addUser(struct UserData * newUser)
 	qDebug()<< u->getName();
 	// adds new user in the frontend
 	leaderboard->addUser(u);
-	connect(game, &GameControll::newRound, leaderboard->getUsers()->last(), &UserBiddingWidget::resetBidding);
+    connect(game, &GameControll::newRound, leaderboard->getUsers()->last(), &UserBiddingWidget::resetBidding);
 	connect(game, &GameControll::biddingDone, leaderboard->getUsers()->last(), &UserBiddingWidget::deactivateBtn);
 	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, &MainWidget::changeBidding);
 	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingReset, this, &MainWidget::changeBidding);

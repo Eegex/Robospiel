@@ -28,7 +28,7 @@ void UserBiddingWidget::resetBidding()
     accept->setEnabled(true);
     lSpinBox->setMaximum(MAX_BID);
     lSpinBox->setValue(MAX_BID);
-    qDebug()<<"SpinBox Value: "<<lSpinBox->value();
+    //qDebug()<<"SpinBox Value: "<<lSpinBox->value();
     emit biddingReset(MAX_BID, userId);
 }
 
@@ -61,7 +61,9 @@ void UserBiddingWidget::btnPressed()
     emit biddingChanged(userBidding, userId);
 }
 
+void UserBiddingWidget::incrementPoints(){userPoints++;}
 void UserBiddingWidget::setId(QUuid id){userId = id;}
 QUuid UserBiddingWidget::getId(){return userId;}
+int UserBiddingWidget::getPoints(){return userPoints;}
 int UserBiddingWidget::getBidding(){return userBidding;}
 QString UserBiddingWidget::getName(){return userName;}

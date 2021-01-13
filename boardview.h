@@ -28,6 +28,7 @@ public:
 	void setDebugOutputEnabled(bool set = true);
 	void resize(int pixelPerTile);
 	void setMapping(QVector<KeyMapping *> *value);
+    Board * getBoard();
 
 protected slots:
 	void paintEvent(QPaintEvent * event);
@@ -48,7 +49,7 @@ protected:
 	GoalWidget* goalwidget = nullptr;
 	//void translateMapping(PlayerAction action);
 	//void callMoveActivePlayer(Direction d);
-	QPoint tileToDesktopCoordinates(Tile *tile);
+    QPoint tileToDesktopCoordinates(Tile *tile);
 	virtual PlayerWidget * addPlayer(int i);
 signals:
 	void tileHovered(Tile * t);

@@ -111,8 +111,8 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 {
 	qDebug()<<"Called function TriggerAction with parameters "<<action<<" and User ID "<<userID;
-	if(activeUserID.isNull() || userID == activeUserID)
-	{
+    //if(activeUserID.isNull() || userID == activeUserID)
+    //{
 		if(action & PlayerAction::movement)
 		{
 			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay) //If online only let the active user move
@@ -155,11 +155,11 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 				return true;
 			}
 		}
-	}
+    //}
 	return false; // test kommentar
 }
 
-void GameControll::activePlayerChanged(int playerNumber)
+void GameControll::activePlayerChanged(int playerNumber) //Brauchen wir das noch? Ich dachte wir machen alles mit der ID?
 {
    if(triggerAction(PlayerAction::playerSwitch, ""))
    {

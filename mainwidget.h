@@ -35,6 +35,7 @@ private slots:
 	void createBoard();
 private:
 	QVector<User*> users;
+    int currentMoves = 0; //What the fuck
 	QGridLayout * glMain = nullptr;
 	GameControll * game = nullptr;
 	BoardView * view = nullptr;
