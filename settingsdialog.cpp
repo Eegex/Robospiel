@@ -160,7 +160,7 @@ void SettingsDialog::save()
 		savefile.write(document.toJson());
 		savefile.close();
 	}
-	emit colorsChanged(QColor(settings.value(background).toString()),QColor(settings.value(wallcolor).toString()),QColor(settings.value(gridcolor).toString()));
+	emit colorsChanged();
 	emit newMapping(keyMappings->getMapping());
 	if(isVisible())
 	{

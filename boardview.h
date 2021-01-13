@@ -24,44 +24,32 @@ class BoardView : public QWidget
 public:
 	explicit BoardView(QWidget *parent = nullptr);
 	QSize sizeHint() const;
-	void setBoard(Board * b);
+	virtual void setBoard(Board * b);
 	void setDebugOutputEnabled(bool set = true);
 	void resize(int pixelPerTile);
 	void setMapping(QVector<KeyMapping *> *value);
 
-public slots:
-	void updateColors(QColor b, QColor w, QColor g);
-
-private slots:
+protected slots:
 	void paintEvent(QPaintEvent * event);
 	void resizeEvent(QResizeEvent * event);
-	void mousePressEvent(QMouseEvent * event);
-	void mouseMoveEvent(QMouseEvent * event);
+	virtual void mousePressEvent(QMouseEvent * event);
+	virtual void mouseMoveEvent(QMouseEvent * event);
 	void keyPressEvent(QKeyEvent * event);
 
-private:
-	void fillCache(QSize tileRect);
+protected:
 	Tile * coordsToTile(QPoint p);
 	Board * board = nullptr;
-	QPixmapCache cache;
 	QSize tileSize;
 	QPoint mouseStart;
-	bool cachedPaintig = false;
-    bool showDebugOutput = false;
+	bool showDebugOutput = false;
 	QVector<KeyMapping*> * mapping = nullptr;
-	QColor background = QColor(0,0,0);
-	QColor primary = QColor(100,100,100);
-	QColor grid = QColor(50,50,50);
-//  Bitte stehen lassen, damit Nora keinen Anfall bekommt :P
-//  QColor background = QColor(0,0,0);
-//	QColor primary = QColor(100,100,100);
-//	QColor grid = QColor(50,50,50);
 	void callChangeActivePlayer(Tile *t);
 	QVector<PlayerWidget* > playerWidgets;
-	GoalWidget* goalwidget;
+	GoalWidget* goalwidget = nullptr;
 	//void translateMapping(PlayerAction action);
 	//void callMoveActivePlayer(Direction d);
 	QPoint tileToDesktopCoordinates(Tile *tile);
+	virtual PlayerWidget * addPlayer(int i);
 signals:
 	void tileHovered(Tile * t);
 	void tileClicked(Tile * t);

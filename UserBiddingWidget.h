@@ -16,16 +16,16 @@ class UserBiddingWidget : public QWidget
     Q_OBJECT
 public:
     explicit UserBiddingWidget(QWidget *parent = nullptr);
-    QPushButton * accept = new QPushButton(this);
-    QSpinBox * lSpinBox = new QSpinBox(this);
+    QPushButton * accept = new QPushButton(this); //bidBtn in onlineWidget
+    QSpinBox * lSpinBox = new QSpinBox(this); //biddingBox in onlineWidget
     bool active = true; //Needed for sorting
 private:
     QGridLayout * userLayout = new QGridLayout(this);
-    QLabel * labelName = new QLabel(this);
+    QLabel * labelName = new QLabel(this); //name in onlineWidget
+    int userBidding = MAX_BID;
     QUuid userId;
     QString userName;
     QColor userColor;
-    int userBidding = MAX_BID;
 public slots:
     QUuid getId();
     QString getName();

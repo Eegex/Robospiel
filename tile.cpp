@@ -63,6 +63,8 @@ void Tile::setWall(Direction direction, bool set)
 			westTile->setWall(Direction::east, set);
 		}
 		break;
+	case Direction::none:
+		break;
 	}
 }
 
@@ -82,7 +84,6 @@ void Tile::setInnerWall(Direction direction, bool set)
 	case Direction::east:
 		eastWall=set;
 		southWall=set;
-
 		break;
 	case Direction::south:
 		if(westTile)
@@ -100,6 +101,8 @@ void Tile::setInnerWall(Direction direction, bool set)
 		{
 			northTile->setWall(Direction::south, set);
 		}
+		break;
+	case Direction::none:
 		break;
 	}
 

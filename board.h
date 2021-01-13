@@ -6,6 +6,7 @@
 #include <QVector>
 #include <QTime>
 #include <QSize>
+#include <QColor>
 #include <QVector>
 #include "tile.h"
 
@@ -28,13 +29,18 @@ public:
 	Tile * goal;
 	int seeker = 0;
 	int activePlayer = 0;
-    void moveActivePlayer(Direction d, int targetX = -1, int targetY = -1);
+	void moveActivePlayer(Direction d, int targetX = -1, int targetY = -1);
 	void setPlayerOnTile(int player, Tile *tile);
     void changeActivePlayer(int playerNumber);
     void revert();
     void revertToBeginning();
     QJsonObject toJSON();
     static Board* fromJSON(QJsonObject json);
+    int addPlayer(Tile * t);
+	void updateColors(QColor b, QColor w, QColor g);
+	QColor getBackground() const;
+	QColor getPrimary() const;
+	QColor getGrid() const;
 public slots:
 	void startNewRound();
 	int switchPlayer(Direction d);
@@ -50,7 +56,9 @@ private:
 	QRandomGenerator * r = nullptr;
 	int moves = 0;
 	QVector<HistoryElement> history;
-	//TODO active pawn
+	QColor background = QColor(0xff,0xff,0);
+	QColor primary = QColor(0xff,0,0xff);
+	QColor grid = QColor(0,0xff,0xff);
 
 	Tile *getRandomUnoccupiedTile();
 	// for each side: -1 because there are more tiles than walls, -2 because the walls next to the sides shouldn't be set, so 3*4 = 12
@@ -64,8 +72,8 @@ private:
 	bool placeInnerWallifFits(Tile *tile, Direction direection);
 	Direction getNextDirection(Direction direction, int numberOfClockwiseSteps);
 	bool placeOuterWallIfFits(Tile *, Direction direction);
-    void placeGoalInCorner();
-    Board();
+	void placeGoalInCorner();
+	Board();
 };
 
 #endif // BOARD_H

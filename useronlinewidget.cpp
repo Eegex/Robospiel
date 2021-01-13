@@ -9,23 +9,29 @@ UserOnlineWidget::UserOnlineWidget(QWidget *parent) : QWidget(parent)
     listWidget->hide();
     lay->addWidget(listWidget);
     listWidget->show();
-    setBidding();
+    setOnlineWidget();
     setLayout(lay);
     name->setText(username);
     name->show();
     connect(bidBtn,&QPushButton::clicked, this, &UserOnlineWidget::btnPressed);
 }
 
-void UserOnlineWidget::setBidding()
+void UserOnlineWidget::setOnlineWidget()
 {
     biddingBox->setMinimum(1);
     biddingBox->setSingleStep(1);
-    bidBtn->setText("Accept Bid");
+    bidBtn->setText(BID_BTN_TEXT);
     lay->addWidget(biddingBox);
     lay->addWidget(bidBtn);
     biddingBox->show();
     bidBtn->show();
     lay->update();
+}
+
+void UserOnlineWidget::setBidding(int bidding)
+{
+    userBidding = bidding;
+    emit biddingChangedOnline(userBidding);
 }
 
 void UserOnlineWidget::btnPressed()

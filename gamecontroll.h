@@ -24,6 +24,7 @@ public:
 	bool triggerAction(PlayerAction action, QUuid userID);
 	Board * getBoard() const;
 	QVector<KeyMapping*> * getMapping();
+	Phase getCurrentPhase() const;
     SettingsDialog * getSettingsDialog();
 
     void triggerActionsWithData(PlayerAction action, User *user);
@@ -34,16 +35,16 @@ public slots:
 	void setMapping(QVector<KeyMapping *> mapping);
 	void nextTarget();
 	void remakeBoard();
-    QUuid getActiveUserID();
-    void setActiveUserID(QUuid id);
+	QUuid getActiveUserID();
+	void setActiveUserID(QUuid id);
 	void activePlayerChanged(int playerNumber);
 private:
-	Phase currentPhase = Phase::freeplay;
+	Phase currentPhase = Phase::idle; //freeplay
 	SettingsDialog * settings = nullptr;
 	QVector<KeyMapping*> mapping;
 	Board * board = nullptr;
-    //QString activeUser;
-    QUuid activeUserID;
+	//QString activeUser;
+	QUuid activeUserID;
 	QTimer countdown;
     int timeLeft;
     void triggerActionsWithData(PlayerAction action, QJsonObject data=QJsonObject());
@@ -51,7 +52,7 @@ signals:
     void actionTriggered(PlayerAction action, QJsonObject additionalData);
     void actionTriggered(PlayerAction action);
 	void time(int secs);
-	void colorsChanged(QColor back, QColor wall, QColor grid);
+	void colorsChanged();
     void newRound();
     void biddingDone();
     void newOnlineUser(User* user);

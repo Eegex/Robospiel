@@ -12,7 +12,7 @@ using namespace std::chrono_literals;
 
 GameControll::GameControll(QObject *parent) : QObject(parent)
 {
-    countdown.setSingleShot(false);
+	countdown.setSingleShot(false);
 	countdown.setInterval(1s);
     connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
 
@@ -26,7 +26,7 @@ QJsonObject GameControll::toJSON() //TODO test both ways of JSON
 {
     QJsonObject json = QJsonObject();
     json.insert("currentPhase", static_cast<int>(currentPhase));
-    json.insert("board", board.toJSON());
+    json.insert("board", board->toJSON());
     json.insert("activeUserID", activeUserID.toString());
     json.insert("remainingTimerTime", countdown.remainingTime());
     json.insert("timeLeft", timeLeft);
@@ -37,7 +37,7 @@ GameControll* GameControll::fromJSON(QJsonObject json)
 {
     GameControll* g = new GameControll();
     g->currentPhase=static_cast<Phase>(json.value("currentPhase").toInt());
-    g->setBoard(Board::fromJSON(json.value("board")));
+    g->setBoard(Board::fromJSON(json.value("board").toObject()));
     g->setActiveUserID(QUuid::fromString(json.value("activeUserID").toString()));
     g->timeLeft = json.value("timeLeft").toInt();
     if(json.value("remainingTimerTime").toInt()!=-1)
@@ -47,6 +47,7 @@ GameControll* GameControll::fromJSON(QJsonObject json)
         });
 
     }
+    return g;
 }
 
 
@@ -72,16 +73,16 @@ void GameControll::sendToServer(PlayerAction a, QJsonObject info)
     }
 }
 
-
-
 void GameControll::load()
 {
 	settings = new SettingsDialog(mapping);
 	settings->load();
-	connect(settings,&SettingsDialog::colorsChanged,this,[&](QColor back, QColor wall, QColor grid){emit colorsChanged(back,wall,grid);});
+	connect(settings,&SettingsDialog::colorsChanged,this,[&](){ board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor()); });
 	connect(settings,&SettingsDialog::newMapping,this,[&](QVector<KeyMapping*> mapping){ this->mapping = mapping; });
-    connect(settings, &SettingsDialog::newMapping, this, &GameControll::setMapping);
-    emit colorsChanged(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
+	if(board)
+	{
+		board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
+	}
 	this->mapping = settings->getMapping();
 }
 
@@ -98,6 +99,10 @@ Board * GameControll::setBoard(Board* newBoard)
 		board = nullptr;
 	}
     board = newBoard;
+    if(settings)
+	{
+		board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
+	}
 	connect(board,&Board::goalHit,this,&GameControll::nextTarget);
 	return board;
 }
@@ -157,10 +162,8 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 	{
 		if(action & PlayerAction::movement)
 		{
-            qDebug()<<"Called  function TriggerAction with Movement Parameter";
-			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
+			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay) //If online only let the active user move
 			{
-                qDebug()<<"Called Function TriggerAction Inner If";
 				//we subtract movement from action to get a direction (clever enum numbers)
                 emit actionTriggered(action);
 				return true;
@@ -200,18 +203,22 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 
 void GameControll::activePlayerChanged(int playerNumber)
 {
-   if(triggerAction(PlayerAction::playerSwitch, "")) // PROBLEM? Here we call the Action without wanting to perform it (is caught in gamecontroll right now)
+   if(triggerAction(PlayerAction::playerSwitch, ""))
    {
 	   board->changeActivePlayer(playerNumber);
    }
 }
 
+GameControll::Phase GameControll::getCurrentPhase() const
+{
+	return currentPhase;
+}
+
 void GameControll::nextTarget()
 {
-    qDebug()<<"Next Target 116";
-    emit newRound();
 	if(switchPhase(Phase::search))
 	{
+		emit newRound();
 		board->startNewRound();
 	}
 }
@@ -287,6 +294,7 @@ QVector<KeyMapping*> * GameControll::getMapping()
 	}
 	return &mapping;
 }
+
 void GameControll::setMapping(QVector<KeyMapping*> mapping)
 {
 	this->mapping = mapping;
@@ -313,5 +321,5 @@ void GameControll::updateTimer()
 
 SettingsDialog * GameControll::getSettingsDialog()
 {
-    return settings;
+	return settings;
 }

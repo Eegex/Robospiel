@@ -15,23 +15,12 @@ PlayerWidget::PlayerWidget(QSize size,  int playerNumber, Board *board, QWidget 
 
 void PlayerWidget::mousePressEvent(QMouseEvent *event)
 {
-	emit clicked(playerNumber);
+	PawnWidget::mousePressEvent(event);
+	if(!editable)
+	{
+		emit clicked(playerNumber);
+	}
 	event->accept();
-}
-
-void PlayerWidget::mouseReleaseEvent(QMouseEvent *event)
-{
-
-}
-
-void PlayerWidget::enterEvent(QEvent *event)
-{
-
-}
-
-void PlayerWidget::leaveEvent(QEvent *event)
-{
-
 }
 
 void PlayerWidget::paintEvent(QPaintEvent *event)
@@ -130,4 +119,9 @@ bool PlayerWidget::resizeWhileAnimation(double widthFactor, double heightFactor)
 	return false;
 
 
+}
+
+void PlayerWidget::setPlayer(int value)
+{
+	playerNumber = value;
 }
