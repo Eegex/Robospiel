@@ -71,41 +71,71 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 void MainWidget::setMenuBar(QMenuBar * bar)
 {
 	menuBar = bar;
-    mNewBoard = new QMenu(tr("New Game"),this);
+    mNewGame = new QMenu(tr("Board"),this);
 	waHeight = new QWidgetAction(this);
 	sbHeight = new QSpinBox(this);
 	waWidth = new QWidgetAction(this);
 	sbWidth = new QSpinBox(this);
 	waPlayer = new QWidgetAction(this);
 	sbPlayer = new QSpinBox(this);
-	sbHeight->setMinimum(5);
-	aNewBoard = new QAction(tr("Create Board"),this);
+    aNewBoard = new QAction(tr("Create Board"),this);
     connect(aNewBoard,&QAction::triggered,this,&MainWidget::createBoard);
-    aNewBoard2 = new QAction(tr("New Walls"),this);
-    connect(aNewBoard2,&QAction::triggered,view,&BoardView::makeNewBoard);
+	sbHeight->setMinimum(5);
+    //sbHeight->setValue(view->getBoard()->getSize().height());
 	sbWidth->setMinimum(5);
+    //sbWidth->setValue(view->getBoard()->getSize().width());
 	sbPlayer->setMinimum(1);
+    sbPlayer->setMaximum(sbWidth->value()*sbHeight->value()-1);
+    //sbPlayer->setValue(view->getBoard()->players.length());
 	waHeight->setDefaultWidget(sbHeight);
 	waWidth->setDefaultWidget(sbWidth);
 	waPlayer->setDefaultWidget(sbPlayer);
-	mNewBoard->addAction(new QAction(tr("Height:")));
-	mNewBoard->addAction(waHeight);
-	mNewBoard->addAction(new QAction(tr("Width:")));
-	mNewBoard->addAction(waWidth);
-	mNewBoard->addAction(new QAction(tr("Player count:")));
-	mNewBoard->addAction(waPlayer);
-	mNewBoard->addAction(aNewBoard);
-	bar->addMenu(mNewBoard);
-	aEditBoard = new QAction(tr("Edit Board"),this);
-	connect(aEditBoard,&QAction::triggered,this,&MainWidget::editBoard);
-	bar->addAction(aEditBoard);
-	bar->addAction(aNewBoard2);
-	aNewTarget = new QAction(tr("New Target"),this);
-	connect(aNewTarget,&QAction::triggered,game,&GameControll::nextTarget);
-	bar->addAction(aNewTarget);
-	aSettings = new QAction(tr("Settings"),this);
-	connect(aSettings,&QAction::triggered,game,&GameControll::showSettings);
-	bar->addAction(aSettings);
+    mNewGame->addAction(new QAction(tr("Height:")));
+    mNewGame->addAction(waHeight);
+    mNewGame->addAction(new QAction(tr("Width:")));
+    mNewGame->addAction(waWidth);
+    mNewGame->addAction(new QAction(tr("Player count:")));
+    mNewGame->addAction(waPlayer);
+    mNewGame->addAction(aNewBoard);
+    //bar->addMenu(mNewGame);
+
+
+
+
+
+
+    mNewStuff =  new QMenu(tr("New"),this);
+
+    aNewWalls = new QAction(tr("Walls"),this);
+    connect(aNewWalls,&QAction::triggered,view,&BoardView::makeNewWalls);
+    aNewSeeker = new QAction(tr("Seeker"),this);
+    connect(aNewSeeker,&QAction::triggered,view,&BoardView::makeNewSeeker);
+    aNewPlayers = new QAction(tr("Players"),this);
+    connect(aNewPlayers,&QAction::triggered,view,&BoardView::makeNewPlayers);
+    aNewAll = new QAction(tr("All"),this);
+    connect(aNewAll,&QAction::triggered,view,&BoardView::makeNewAll);
+    aNewTarget = new QAction(tr("Target"),this);
+    connect(aNewTarget,&QAction::triggered,view,&BoardView::makeNewTarget);
+
+
+    mNewStuff->addAction(aNewAll);
+    mNewStuff->addAction(aNewWalls);
+    mNewStuff->addAction(aNewPlayers);
+    mNewStuff->addAction(aNewTarget);
+    mNewStuff->addAction(aNewSeeker);
+    mNewStuff->addMenu(mNewGame);
+
+    bar->addMenu(mNewStuff);
+
+    aEditBoard = new QAction(tr("Edit Board"),this);
+    connect(aEditBoard,&QAction::triggered,this,&MainWidget::editBoard);
+    bar->addAction(aEditBoard);
+    aNextTarget = new QAction(tr("Next Target"),this);
+    connect(aNextTarget,&QAction::triggered,game,&GameControll::nextTarget);
+    bar->addAction(aNextTarget);
+    aSettings = new QAction(tr("Settings"),this);
+    connect(aSettings,&QAction::triggered,game,&GameControll::showSettings);
+    bar->addAction(aSettings);
 }
 
 //this method is only for offline-users

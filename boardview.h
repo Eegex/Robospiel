@@ -29,8 +29,11 @@ public:
 	void resize(int pixelPerTile);
 	void setMapping(QVector<KeyMapping *> *value);
     Board * getBoard();
-    void makeNewBoard();
-
+    void makeNewAll();
+    void makeNewPlayers();
+    void makeNewWalls();
+    void makeNewTarget();
+    void makeNewSeeker();
 protected slots:
 	void paintEvent(QPaintEvent * event);
 	void resizeEvent(QResizeEvent * event);

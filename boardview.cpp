@@ -43,8 +43,20 @@ QSize BoardView::sizeHint() const
     return board->getSize() * 50 + QSize(10,10);
 }
 
-void BoardView::makeNewBoard(){
+void BoardView::makeNewAll(){
     board -> makeNewBoard(board->getSize().width(), board->getSize().height(), board->players.length());
+}
+void BoardView::makeNewPlayers(){
+    board -> makeNewPlayers(board->players.length());
+}
+void BoardView::makeNewSeeker(){
+    board -> makeNewSeeker(false);
+}
+void BoardView::makeNewWalls(){
+    board -> makeNewWalls(board->getSize().width(), board->getSize().height());
+}
+void BoardView::makeNewTarget(){
+    board -> makeNewGoal();
 }
 
 Tile * BoardView::coordsToTile(QPoint p)
