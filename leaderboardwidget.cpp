@@ -60,12 +60,14 @@ void LeaderBoardWidget::sortBy(unsigned int strategy) //This is being called aft
             for(UserBiddingWidget * user : users){
                 qDebug()<<"SortByBidding: USER "<<user->getName()<<" with bidding "<<user->getBidding()<<"and timestamp: "<<user->getTimeStamp();
                 if(user->getBidding() <= minBid && isActive[users.indexOf(user)]){//If User has a lower bid than the currently lowest bid
-                    if(user->getBidding() == minBid && user->getTimeStamp() < minTimeStamp){ //check the timestamp
-                        qDebug()<<"Bidding is the same, timestamp is earlier";
-                        minWidget = user; //Set the Widget to add to the new list to the user
-                        minIndex = users.indexOf(user); //Set the index needed for deactivating the user to the current index
-                        minBid = user->getBidding(); //Set the newest lowest bid to the current user as there can be users after that one with lower bids
-                        minTimeStamp = user->getTimeStamp(); //Set User Timestamp to the current user value
+                    if(user->getBidding() == minBid){
+                        if(user->getTimeStamp() < minTimeStamp){ //check the timestamp
+                            qDebug()<<"Bidding is the same, timestamp is earlier";
+                            minWidget = user; //Set the Widget to add to the new list to the user
+                            minIndex = users.indexOf(user); //Set the index needed for deactivating the user to the current index
+                            minBid = user->getBidding(); //Set the newest lowest bid to the current user as there can be users after that one with lower bids
+                            minTimeStamp = user->getTimeStamp(); //Set User Timestamp to the current user value
+                        }
                     }
                     else{
                         qDebug()<<"Bidding of user "<<user->getName()<<" with bidding "<<user->getBidding()<<" is smaller than minimum bid of "<<minBid;
