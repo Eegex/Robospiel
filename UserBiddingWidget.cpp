@@ -10,7 +10,7 @@ UserBiddingWidget::UserBiddingWidget(QWidget *parent) : QWidget(parent)
     userLayout->addWidget(pointsName, 0, 3); //Far Right (AfD)
 	setLayout(userLayout);
     connect(accept,&QPushButton::clicked,this,&UserBiddingWidget::btnPressed); //When player has accepted bid, disable the button
-	lSpinBox->setMinimum(1);
+    lSpinBox->setMinimum(MIN_BID);
     lSpinBox->setValue(MAX_BID);
 	lSpinBox->setSingleStep(1);
     pointsName->setText("Points: "+QString::number(userPoints));

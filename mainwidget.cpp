@@ -27,7 +27,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(leaderboard->getUserCreationWidget(), &UserCreationWidget::userAdded, this, &MainWidget::addUser);
 	connect(game, &GameControll::biddingDone, this, [&]()
 	{
-		leaderboard->sortByBidding();
+        leaderboard->sortBy(bid);
         game->setActiveUserID(leaderboard->getUsers()->first()->getId());
 		qDebug()<<"Bidding is done, Users are sorted, initial player is: "<<leaderboard->getUsers()->first()->getName()<<" with id "<<game->getActiveUserID();
 	});
@@ -37,7 +37,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(game->getSettingsDialog(), &SettingsDialog::usercolorChanged, leaderboard, &LeaderBoardWidget::setUsercolor);
 	connect(game, &GameControll::newOnlineUser, this, &MainWidget::addExistingUser);
     connect(game, &GameControll::actionTriggered, this, &MainWidget::calculateGameStatus);
-    connect(view->getBoard(), &Board::goalHit, this, &MainWidget::calculateNewPlayer);
+    connect(view->getBoard(), &Board::goalHit, this, &MainWidget::calculateWinner);
 }
 
 void MainWidget::setMenuBar(QMenuBar * bar)
@@ -156,16 +156,18 @@ void MainWidget::calculateGameStatus(PlayerAction action){
             qDebug()<<"Active User is now "<<user->getName();
         }else{ //Alles Versager
             qDebug()<<"No User could end the round in their specified bid.";
+            leaderboard->sortBy(points);
             game->nextTarget();
         }
     }
 }
 
-void MainWidget::calculateNewPlayer(int moves){ //This function is being called when the first player has reached their goal
+void MainWidget::calculateWinner(int moves){ //This function is being called when the first player has reached their goal
     QUuid currentPlayer = game->getActiveUserID();
     unsigned int activeUserIndex = leaderboard->getBiddingWidgetIndexByID(currentPlayer);
     game->nextTarget(); //Generate a new target, this should reset the current LeaderBoardWidget
     leaderboard->getUsers()->at(activeUserIndex)->incrementPoints(); //Increment the number of points of the player that's hit their goal
+    leaderboard->sortBy(points);
     qDebug()<<"User "<<leaderboard->getUsers()->at(activeUserIndex)->getName()<<" has successfully ended the round with "<<moves<<" moves, their current points are "<<leaderboard->getUsers()->at(activeUserIndex)->getPoints();
     currentMoves = -1; //This needs to be done because the actionTriggered will set it to 1 immediately after a goal is hit so the next player has 1 fewer move which would be bad
 }

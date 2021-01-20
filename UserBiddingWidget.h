@@ -1,6 +1,7 @@
 #ifndef USERBIDDINGWIDGET_H
 #define USERBIDDINGWIDGET_H
 #define MAX_BID 99
+#define MIN_BID 1
 #define BID_BTN_TEXT "Accept Bid"
 
 #include <QLabel>

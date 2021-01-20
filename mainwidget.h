@@ -33,7 +33,7 @@ private slots:
 	void changeOnlyBidding(int bidding);
 	void addUser(struct UserData * newUser);
     void calculateGameStatus(PlayerAction action);
-    void calculateNewPlayer(int moves);
+    void calculateWinner(int moves);
 	void editBoard();
 	void createBoard();
 private:
