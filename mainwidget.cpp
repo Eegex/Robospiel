@@ -11,14 +11,15 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	view->setMapping(game->getMapping());
 	connect(view,&BoardView::action,game,&GameControll::triggerAction);
 	connect(view,&BoardView::activePlayerChanged,game,&GameControll::activePlayerChanged);
-    connect(view, &BoardView::lastAnimationAfterGoalHitEnded, this, [=](int moves)->void {
+    connect(view, &BoardView::lastAnimationAfterGoalHitEnded, this, &MainWidget::calculateWinner);
+    /*connect(view, &BoardView::lastAnimationAfterGoalHitEnded, this, [=](int moves)->void {
         QUuid currentPlayer = game->getActiveUserID();
         unsigned int activeUserIndex = leaderboard->getBiddingWidgetIndexByID(currentPlayer);
         game->nextTarget(); //Generate a new target, this should reset the current LeaderBoardWidget
         leaderboard->getUsers()->at(activeUserIndex)->incrementPoints(); //Increment the number of points of the player that's hit their goal
         qDebug()<<"User "<<leaderboard->getUsers()->at(activeUserIndex)->getName()<<" has successfully ended the round with "<<moves<<" moves, their current points are "<<leaderboard->getUsers()->at(activeUserIndex)->getPoints();
         currentMoves = -1; //This needs to be done because the actionTriggered will set it to 1 immediately after a goal is hit so the next player has 1 fewer move which would be bad
-    });
+    });*/
 	networkView = new NetworkView;
 	lcd = new QLCDNumber(this);
 	lcd->setSegmentStyle(QLCDNumber::Flat);
@@ -45,7 +46,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(game->getSettingsDialog(), &SettingsDialog::usernameChanged, leaderboard, &LeaderBoardWidget::setUsername);
 	connect(game->getSettingsDialog(), &SettingsDialog::usercolorChanged, leaderboard, &LeaderBoardWidget::setUsercolor);
 	connect(game, &GameControll::newOnlineUser, this, &MainWidget::addExistingUser);
-    connect(game, &GameControll::actionTriggered, this, [&](PlayerAction action){
+    connect(game, &GameControll::actionTriggered, this, &MainWidget::calculateGameStatus);
+    /*connect(game, &GameControll::actionTriggered, this, [&](PlayerAction action){
         if(action & PlayerAction::movement) //If player wants to move, increase the number of moves the player has done. This is being done to reset the field if the user has used all their available moves.
             currentMoves++;
         qDebug()<<"Current Moves are: "<<currentMoves;
@@ -65,7 +67,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
                 game->nextTarget(); //TODO wait for end of animation
             }
         }
-    });
+    });*/
     connect(leaderboard->getNetworkView(), &NetworkView::leaderboradOnline, this, &MainWidget::initializeUser);
 }
 
