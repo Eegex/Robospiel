@@ -9,7 +9,7 @@ Board::Board(int width, int height, int playerNumber, QObject *parent) : QObject
     r = new QRandomGenerator(QTime::currentTime().msecsSinceStartOfDay());
     if(playerNumber+1 > width*height)
     {
-        qDebug()<< "Board contructor was called with two many players!";
+        qDebug()<< "Board contructor was called with too many players!";
     }
 
     makeNewBoard(width, height, playerNumber);
@@ -322,7 +322,7 @@ void Board::placeOuterWalls()
             }
             else
             {
-                randSide = tiles.length()-1;
+                randSide = tiles[0].length()-1;
             }
             if(!placeOuterWallIfFits(tiles.at(y).at(randSide), Direction::south))
             {

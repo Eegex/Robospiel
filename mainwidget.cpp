@@ -81,12 +81,12 @@ void MainWidget::setMenuBar(QMenuBar * bar)
     aNewBoard = new QAction(tr("Create Board"),this);
     connect(aNewBoard,&QAction::triggered,this,&MainWidget::createBoard);
 	sbHeight->setMinimum(5);
-    //sbHeight->setValue(view->getBoard()->getSize().height());
+    sbHeight->setValue(view->getBoard()->getSize().height());
 	sbWidth->setMinimum(5);
-    //sbWidth->setValue(view->getBoard()->getSize().width());
+    sbWidth->setValue(view->getBoard()->getSize().width());
 	sbPlayer->setMinimum(1);
     sbPlayer->setMaximum(sbWidth->value()*sbHeight->value()-1);
-    //sbPlayer->setValue(view->getBoard()->players.length());
+    sbPlayer->setValue(view->getBoard()->players.length());
 	waHeight->setDefaultWidget(sbHeight);
 	waWidth->setDefaultWidget(sbWidth);
 	waPlayer->setDefaultWidget(sbPlayer);
@@ -97,12 +97,11 @@ void MainWidget::setMenuBar(QMenuBar * bar)
     mNewGame->addAction(new QAction(tr("Player count:")));
     mNewGame->addAction(waPlayer);
     mNewGame->addAction(aNewBoard);
-    //bar->addMenu(mNewGame);
 
 
 
 
-
+    //Wenn nicht gebraucht ausgrauen...
 
     mNewStuff =  new QMenu(tr("New"),this);
 
