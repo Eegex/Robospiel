@@ -43,8 +43,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 void MainWidget::setMenuBar(QMenuBar * bar)
 {
 	menuBar = bar;
-	connect(aNewBoard,&QAction::triggered,view,&BoardView::makeNewBoard);
-	mNewBoard = new QMenu(tr("New Board"),this);
+    mNewBoard = new QMenu(tr("New Game"),this);
 	waHeight = new QWidgetAction(this);
 	sbHeight = new QSpinBox(this);
 	waWidth = new QWidgetAction(this);
@@ -53,7 +52,9 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	sbPlayer = new QSpinBox(this);
 	sbHeight->setMinimum(5);
 	aNewBoard = new QAction(tr("Create Board"),this);
-	aNewBoard2 = new QAction(tr("New Board"),this);
+    connect(aNewBoard,&QAction::triggered,this,&MainWidget::createBoard);
+    aNewBoard2 = new QAction(tr("New Walls"),this);
+    connect(aNewBoard2,&QAction::triggered,view,&BoardView::makeNewBoard);
 	sbWidth->setMinimum(5);
 	sbPlayer->setMinimum(1);
 	waHeight->setDefaultWidget(sbHeight);
@@ -66,7 +67,6 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	mNewBoard->addAction(new QAction(tr("Player count:")));
 	mNewBoard->addAction(waPlayer);
 	mNewBoard->addAction(aNewBoard);
-	connect(aNewBoard,&QAction::triggered,this,&MainWidget::createBoard);
 	bar->addMenu(mNewBoard);
 	aEditBoard = new QAction(tr("Edit Board"),this);
 	connect(aEditBoard,&QAction::triggered,this,&MainWidget::editBoard);

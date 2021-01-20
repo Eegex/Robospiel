@@ -70,7 +70,7 @@ PlayerWidget * BoardView::addPlayer(int i)
 {
 	PlayerWidget * newPlayer = new PlayerWidget(QSize(50,50),i,board,this);
 	playerWidgets.append(newPlayer);
-	connect(newPlayer, &PlayerWidget::clicked,this, [&](int playerNumber){emit activePlayerChanged(playerNumber);} );
+    connect(newPlayer, &PlayerWidget::clicked,this, [&](int playerNumber){emit activePlayerChanged(playerNumber);} );
 	connect(newPlayer, &PlayerWidget::reposition, this, [&](int playerNumber){
 		playerWidgets.at(playerNumber)->move(tileToDesktopCoordinates(board->players.at(playerNumber)));
 	});

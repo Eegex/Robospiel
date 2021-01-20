@@ -195,7 +195,7 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
                 return true;
             }
         }
-        else if(action & PlayerAction::playerSwitch)
+        else if(action & PlayerAction::playerSwitch && (currentPhase == Phase::presentation || currentPhase == Phase::freeplay))
         {
             if(action != PlayerAction::playerSwitch) //if we don't want a real PlayerSwitch (withDirection), just check if we can do one (by clicking on a player)
             {
@@ -227,7 +227,7 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
     return false;
 }
 
-void GameControll::activePlayerChanged(int playerNumber) //Brauchen wir das noch? Ich dachte wir machen alles mit der ID?
+void GameControll::activePlayerChanged(int playerNumber) //Brauchen wir das noch? Ich dachte wir machen alles mit der ID? - Also momentan ja...
 {
    if(triggerAction(PlayerAction::playerSwitch, ""))
     {
