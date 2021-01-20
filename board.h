@@ -47,9 +47,8 @@ public slots:
 	int switchPlayer(Direction d);
 signals:
 	void boardChanged();
-	void playerMoved(int playerNumber);
+    void playerMoved(int playerNumber, int goalHit); //-1 when goal was not reached, number of moves otherwise
 	void goalMoved();
-	void goalHit(int usedMoves);
 protected:
 	void placeGoalAwayFromSeeker();
 private:

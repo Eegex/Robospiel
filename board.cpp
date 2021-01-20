@@ -580,12 +580,8 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 
 	}
 
-	emit playerMoved(activePlayer);
 	moves++;
-	if(goal == currentTile && seeker == activePlayer)
-	{
-		emit goalHit(moves);
-	}
+    emit playerMoved(activePlayer, (goal == currentTile && seeker == activePlayer) ? moves : -1);
 	history.append(h);
 
 }
