@@ -7,11 +7,13 @@ UserBiddingWidget::UserBiddingWidget(QWidget *parent) : QWidget(parent)
     userLayout->addWidget(labelName, 0, 0); //Left
     userLayout->addWidget(lSpinBox, 0, 1); //Center
     userLayout->addWidget(accept, 0, 2); //Right
+    userLayout->addWidget(pointsName, 0, 3); //Far Right (AfD)
 	setLayout(userLayout);
     connect(accept,&QPushButton::clicked,this,&UserBiddingWidget::btnPressed); //When player has accepted bid, disable the button
 	lSpinBox->setMinimum(1);
     lSpinBox->setValue(MAX_BID);
 	lSpinBox->setSingleStep(1);
+    pointsName->setText("Points: "+QString::number(userPoints));
     accept->setText(BID_BTN_TEXT);
 }
 
@@ -22,7 +24,7 @@ void UserBiddingWidget::deactivateBtn(){
 
 void UserBiddingWidget::resetBidding()
 {
-    qDebug("Called Function Reset Bidding in UserBiddingWidget");
+    qDebug()<<"Called Function Reset Bidding in UserBiddingWidget, User "<<userName<<" has "<<userPoints<<" points";
     userBidding = MAX_BID;
     accept->setText(BID_BTN_TEXT);
     accept->setEnabled(true);
@@ -61,7 +63,11 @@ void UserBiddingWidget::btnPressed()
     emit biddingChanged(userBidding, userId);
 }
 
-void UserBiddingWidget::incrementPoints(){userPoints++;}
+void UserBiddingWidget::incrementPoints(){
+    userPoints++;
+    pointsName->setText("Points: "+QString::number(userPoints));
+    userLayout->update();
+}
 void UserBiddingWidget::setId(QUuid id){userId = id;}
 QUuid UserBiddingWidget::getId(){return userId;}
 int UserBiddingWidget::getPoints(){return userPoints;}

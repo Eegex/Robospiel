@@ -22,7 +22,7 @@ public:
 private:
     QGridLayout * userLayout = new QGridLayout(this);
     QLabel * labelName = new QLabel(this); //name in onlineWidget
-    //QLabel * pointsName = new QLabel(this);
+    QLabel * pointsName = new QLabel(this);
     int userBidding = MAX_BID;
     int userPoints = 0;
     QUuid userId;
