@@ -11,15 +11,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	view->setMapping(game->getMapping());
 	connect(view,&BoardView::action,game,&GameControll::triggerAction);
 	connect(view,&BoardView::activePlayerChanged,game,&GameControll::activePlayerChanged);
-    connect(view, &BoardView::lastAnimationAfterGoalHitEnded, this, &MainWidget::calculateWinner);
-    /*connect(view, &BoardView::lastAnimationAfterGoalHitEnded, this, [=](int moves)->void {
-        QUuid currentPlayer = game->getActiveUserID();
-        unsigned int activeUserIndex = leaderboard->getBiddingWidgetIndexByID(currentPlayer);
-        game->nextTarget(); //Generate a new target, this should reset the current LeaderBoardWidget
-        leaderboard->getUsers()->at(activeUserIndex)->incrementPoints(); //Increment the number of points of the player that's hit their goal
-        qDebug()<<"User "<<leaderboard->getUsers()->at(activeUserIndex)->getName()<<" has successfully ended the round with "<<moves<<" moves, their current points are "<<leaderboard->getUsers()->at(activeUserIndex)->getPoints();
-        currentMoves = -1; //This needs to be done because the actionTriggered will set it to 1 immediately after a goal is hit so the next player has 1 fewer move which would be bad
-    });*/
+	connect(view, &BoardView::lastAnimationAfterGoalHitEnded, this, &MainWidget::calculateWinner);
 	networkView = new NetworkView;
 	lcd = new QLCDNumber(this);
 	lcd->setSegmentStyle(QLCDNumber::Flat);
@@ -40,8 +32,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(leaderboard->getUserCreationWidget(), &UserCreationWidget::userAdded, this, &MainWidget::addUser);
 	connect(game, &GameControll::biddingDone, this, [&]()
 	{
-        leaderboard->sortBy(bid);
-        game->setActiveUserID(leaderboard->getUsers()->first()->getId());
+		leaderboard->sortBy(bid);
+		game->setActiveUserID(leaderboard->getUsers()->first()->getId());
 		qDebug()<<"Bidding is done, Users are sorted, initial player is: "<<leaderboard->getUsers()->first()->getName()<<" with id "<<game->getActiveUserID();
 	});
 	connect(leaderboard->getUserOnlineWidget(), &UserOnlineWidget::userAdded, this, &MainWidget::addUser);
@@ -49,29 +41,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(game->getSettingsDialog(), &SettingsDialog::usernameChanged, leaderboard, &LeaderBoardWidget::setUsername);
 	connect(game->getSettingsDialog(), &SettingsDialog::usercolorChanged, leaderboard, &LeaderBoardWidget::setUsercolor);
 	connect(game, &GameControll::newOnlineUser, this, &MainWidget::addExistingUser);
-    connect(game, &GameControll::actionTriggered, this, &MainWidget::calculateGameStatus);
-    /*connect(game, &GameControll::actionTriggered, this, [&](PlayerAction action){
-        if(action & PlayerAction::movement) //If player wants to move, increase the number of moves the player has done. This is being done to reset the field if the user has used all their available moves.
-            currentMoves++;
-        qDebug()<<"Current Moves are: "<<currentMoves;
-        QUuid currentPlayer = game->getActiveUserID();
-        unsigned int activeUserIndex = leaderboard->getBiddingWidgetIndexByID(currentPlayer);
-        if(currentMoves >= leaderboard->getUsers()->at(activeUserIndex)->getBidding()){ //Needs to be GEQ because otherwise the player could make an extra move as the "reached goal" signal is overriding the failure
-            qDebug()<<"User couldn't end the round in the specified bid of "<< leaderboard->getUsers()->at(activeUserIndex)->getBidding()<<", the next user is being drawn";
-            currentMoves = 0; //Reset Current Moves
-            game->getBoard()->resetMoves();
-            if(leaderboard->getNumOfUsers() > 1 && activeUserIndex < leaderboard->getNumOfUsers()-1){ //Not at last player yet, noch haben nicht alle versagt
-                UserBiddingWidget* user = leaderboard->getUsers()->at(++activeUserIndex); //Liste ist bereits sortiert (siehe oben), daher ist der nächste User in der Liste der User mit dem nächsthöheren Bidding
-                game->setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
-                game->getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
-                qDebug()<<"Active User is now "<<user->getName();
-            }else{ //Alles Versager
-                qDebug()<<"No User could end the round in their specified bid.";
-                game->nextTarget(); //TODO wait for end of animation
-            }
-        }
-    });*/
-    connect(leaderboard->getNetworkView(), &NetworkView::leaderboradOnline, this, &MainWidget::initializeUser);
+	connect(game, &GameControll::actionTriggered, this, &MainWidget::calculateGameStatus);
+	connect(leaderboard->getNetworkView(), &NetworkView::leaderboradOnline, this, &MainWidget::initializeUser);
 }
 
 void MainWidget::setMenuBar(QMenuBar * bar)
@@ -169,53 +140,53 @@ void MainWidget::addUser(struct UserData * newUser)
 
 void MainWidget::addExistingUser(User* user)
 {
-    qDebug()<<"addExistingUser";
-    bool b = false;
-    for(User* u: users)
-        if(u->getId()==user->getId())
-            b = true;
-    if(b == false)
-    {
-        qDebug()<<"add "<<user->getId()<< " into list";
-        users.append(user);
-        game->triggerAction(PlayerAction::newUser, user->getId());
-        leaderboard->getUserOnlineWidget()->addUserToList(user);
-        leaderboard->getUserOnlineWidget()->updateUserList();
-    }
+	qDebug()<<"addExistingUser";
+	bool b = false;
+	for(User* u: users)
+		if(u->getId()==user->getId())
+			b = true;
+	if(b == false)
+	{
+		qDebug()<<"add "<<user->getId()<< " into list";
+		users.append(user);
+		game->triggerAction(PlayerAction::newUser, user->getId());
+		leaderboard->getUserOnlineWidget()->addUserToList(user);
+		leaderboard->getUserOnlineWidget()->updateUserList();
+	}
 
 }
 
 void MainWidget::calculateGameStatus(PlayerAction action){
-    if(action & PlayerAction::movement) //If player wants to move, increase the number of moves the player has done. This is being done to reset the field if the user has used all their available moves.
-        currentMoves++;
-    qDebug()<<"Current Moves are: "<<currentMoves;
-    QUuid currentPlayer = game->getActiveUserID();
-    unsigned int activeUserIndex = leaderboard->getBiddingWidgetIndexByID(currentPlayer);
-    if(currentMoves >= leaderboard->getUsers()->at(activeUserIndex)->getBidding()){ //Needs to be GEQ because otherwise the player could make an extra move as the "reached goal" signal is overriding the failure
-        qDebug()<<"User couldn't end the round in the specified bid of "<< leaderboard->getUsers()->at(activeUserIndex)->getBidding()<<", the next user is being drawn";
-        currentMoves = 0; //Reset Current Moves
-        game->getBoard()->resetMoves();
-        if(leaderboard->getNumOfUsers() > 1 && activeUserIndex < leaderboard->getNumOfUsers()-1){ //Not at last player yet, noch haben nicht alle versagt
-            UserBiddingWidget* user = leaderboard->getUsers()->at(++activeUserIndex); //Liste ist bereits sortiert (siehe oben), daher ist der nächste User in der Liste der User mit dem nächsthöheren Bidding
-            game->setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
-            game->getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
-            qDebug()<<"Active User is now "<<user->getName();
-        }else{ //Alles Versager
-            qDebug()<<"No User could end the round in their specified bid.";
-            leaderboard->sortBy(points);
-            game->nextTarget();
-        }
-    }
+	if(action & PlayerAction::movement) //If player wants to move, increase the number of moves the player has done. This is being done to reset the field if the user has used all their available moves.
+		currentMoves++;
+	qDebug()<<"Current Moves are: "<<currentMoves;
+	QUuid currentPlayer = game->getActiveUserID();
+	unsigned int activeUserIndex = leaderboard->getBiddingWidgetIndexByID(currentPlayer);
+	if(currentMoves >= leaderboard->getUsers()->at(activeUserIndex)->getBidding()){ //Needs to be GEQ because otherwise the player could make an extra move as the "reached goal" signal is overriding the failure
+		qDebug()<<"User couldn't end the round in the specified bid of "<< leaderboard->getUsers()->at(activeUserIndex)->getBidding()<<", the next user is being drawn";
+		currentMoves = 0; //Reset Current Moves
+		game->getBoard()->resetMoves();
+		if(leaderboard->getNumOfUsers() > 1 && activeUserIndex < leaderboard->getNumOfUsers()-1){ //Not at last player yet, noch haben nicht alle versagt
+			UserBiddingWidget* user = leaderboard->getUsers()->at(++activeUserIndex); //Liste ist bereits sortiert (siehe oben), daher ist der nächste User in der Liste der User mit dem nächsthöheren Bidding
+			game->setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
+			game->getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
+			qDebug()<<"Active User is now "<<user->getName();
+		}else{ //Alles Versager
+			qDebug()<<"No User could end the round in their specified bid.";
+			leaderboard->sortBy(points);
+			game->nextTarget();
+		}
+	}
 }
 
 void MainWidget::calculateWinner(int moves){ //This function is being called when the first player has reached their goal
-    QUuid currentPlayer = game->getActiveUserID();
-    unsigned int activeUserIndex = leaderboard->getBiddingWidgetIndexByID(currentPlayer);
-    game->nextTarget(); //Generate a new target, this should reset the current LeaderBoardWidget
-    leaderboard->getUsers()->at(activeUserIndex)->incrementPoints(); //Increment the number of points of the player that's hit their goal
-    leaderboard->sortBy(points);
-    qDebug()<<"User "<<leaderboard->getUsers()->at(activeUserIndex)->getName()<<" has successfully ended the round with "<<moves<<" moves, their current points are "<<leaderboard->getUsers()->at(activeUserIndex)->getPoints();
-    currentMoves = -1; //This needs to be done because the actionTriggered will set it to 1 immediately after a goal is hit so the next player has 1 fewer move which would be bad
+	QUuid currentPlayer = game->getActiveUserID();
+	unsigned int activeUserIndex = leaderboard->getBiddingWidgetIndexByID(currentPlayer);
+	game->nextTarget(); //Generate a new target, this should reset the current LeaderBoardWidget
+	leaderboard->getUsers()->at(activeUserIndex)->incrementPoints(); //Increment the number of points of the player that's hit their goal
+	leaderboard->sortBy(points);
+	qDebug()<<"User "<<leaderboard->getUsers()->at(activeUserIndex)->getName()<<" has successfully ended the round with "<<moves<<" moves, their current points are "<<leaderboard->getUsers()->at(activeUserIndex)->getPoints();
+	currentMoves = -1; //This needs to be done because the actionTriggered will set it to 1 immediately after a goal is hit so the next player has 1 fewer move which would be bad
 }
 
 void MainWidget::createBoard()
@@ -223,12 +194,12 @@ void MainWidget::createBoard()
 	if(view)
 	{
 		view->setBoard(game->setBoard(new Board(sbWidth->value(),sbHeight->value(),sbPlayer->value())));
-		glMain->addWidget(view,0,0,3,1,Qt::AlignCenter); //alignment or size dies without this line ¯\_(ツ)_/¯
+		glMain->addWidget(view,1,0,3,1,Qt::AlignCenter); //alignment or size dies without this line ¯\_(ツ)_/¯
 	}
 	else
 	{
 		edit->setBoard(game->setBoard(new Board(sbWidth->value(),sbHeight->value(),sbPlayer->value())));
-		glMain->addWidget(edit,0,0,3,1,Qt::AlignCenter); //same here...
+		glMain->addWidget(edit,1,0,3,1,Qt::AlignCenter); //same here...
 	}
 }
 
@@ -243,7 +214,7 @@ void MainWidget::editBoard()
 	{
 		edit = new BoardEditor(this);
 		edit->setBoard(game->getBoard());
-		glMain->addWidget(edit,0,0,3,1,Qt::AlignCenter);
+		glMain->addWidget(edit,1,0,3,1,Qt::AlignCenter);
 		aEditBoard->setText(tr("Stop editing"));
 		delete view;
 		view = nullptr;
@@ -255,7 +226,7 @@ void MainWidget::editBoard()
 		view->setMapping(game->getMapping());
 		connect(view,&BoardView::action,game,&GameControll::triggerAction);
 		connect(view,&BoardView::activePlayerChanged,game,&GameControll::activePlayerChanged);
-		glMain->addWidget(view,0,0,3,1,Qt::AlignCenter);
+		glMain->addWidget(view,1,0,3,1,Qt::AlignCenter);
 		aEditBoard->setText(tr("Edit Board"));
 		delete edit;
 		edit = nullptr;
@@ -279,7 +250,7 @@ void MainWidget::changeOnlyBidding(int bidding)
 {
 	qDebug()<<"changeOnly Bidding to"<<bidding;
 	users.at(0)->setBidding(bidding);
-    game->triggerAction(PlayerAction::enterBidding, users.at(0)->getId());
+	game->triggerAction(PlayerAction::enterBidding, users.at(0)->getId());
 }
 
 User * MainWidget::getMinBid()
@@ -316,9 +287,9 @@ void MainWidget::updateTimer(int remaining)
 // current user of the system is initialzed
 void MainWidget::initializeUser()
 {
-    qDebug()<<"initializeUser: ";
-    User *u = new User(leaderboard->getUsername(), leaderboard->getUsercolor(), this);
-    qDebug()<<"username: "<<leaderboard->getUsername()<<" and usercolor: "<< leaderboard->getUsercolor();
-    users.append(u);
-    game->triggerActionsWithData(PlayerAction::newUser, u);
+	qDebug()<<"initializeUser: ";
+	User *u = new User(leaderboard->getUsername(), leaderboard->getUsercolor(), this);
+	qDebug()<<"username: "<<leaderboard->getUsername()<<" and usercolor: "<< leaderboard->getUsercolor();
+	users.append(u);
+	game->triggerActionsWithData(PlayerAction::newUser, u);
 }
