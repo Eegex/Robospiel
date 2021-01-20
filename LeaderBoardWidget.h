@@ -1,5 +1,6 @@
 #ifndef LEADERBOARDWIDGET_H
 #define LEADERBOARDWIDGET_H
+#define MAX_USERS 10
 
 #include <QWidget>
 #include <QVariant>
@@ -34,7 +35,7 @@ public:
 
 private:
     QGridLayout * lay = new QGridLayout(this);
-    QPushButton * addBtn = new QPushButton(this);
+    //QPushButton * addBtn = new QPushButton(this);
     QString username;
     QColor usercolor;
     unsigned int numOfUsers = 0;
