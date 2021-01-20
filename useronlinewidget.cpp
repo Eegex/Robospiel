@@ -8,11 +8,9 @@ UserOnlineWidget::UserOnlineWidget(QWidget *parent) : QWidget(parent)
     biddingBox->hide();
     listWidget->hide();
     lay->addWidget(listWidget);
-    listWidget->show();
+    listWidget->hide();
     setOnlineWidget();
     setLayout(lay);
-    name->setText(username);
-    name->show();
     connect(bidBtn,&QPushButton::clicked, this, &UserOnlineWidget::btnPressed);
 }
 
@@ -23,6 +21,19 @@ void UserOnlineWidget::setOnlineWidget()
     bidBtn->setText(BID_BTN_TEXT);
     lay->addWidget(biddingBox);
     lay->addWidget(bidBtn);
+    name->setText(username);
+    name->show();
+
+    listWidget->setRowCount(2);
+    listWidget->setColumnCount(2);
+    QTableWidgetItem *newItem = new QTableWidgetItem(tr("%1").arg((2)*(2)));
+    newItem->setText(username);
+    listWidget->setItem(0, 0, newItem);
+    QTableWidgetItem *newItem2 = new QTableWidgetItem(tr("%1").arg((2)*(3)));
+    newItem2->setText(QString::number(userBidding));
+    listWidget->setItem(0, 1, newItem2);
+
+    listWidget->show();
     biddingBox->show();
     bidBtn->show();
     lay->update();
@@ -47,6 +58,16 @@ void UserOnlineWidget::updateName(QString newName)
     username = newName;
     name->setText(username);
     lay->update();
+}
+
+void UserOnlineWidget::addUserToList(User *u)
+{
+    users.append(u);
+}
+
+void UserOnlineWidget::updateUserList()
+{
+
 }
 
 /* void UserOnlineWidget::loadUsers()

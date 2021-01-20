@@ -35,6 +35,7 @@ private slots:
     void calculateNewPlayer(int moves);
 	void editBoard();
 	void createBoard();
+    void initializeUser();
 private:
 	QVector<User*> users;
     int currentMoves = 0; //What the fuck

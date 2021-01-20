@@ -38,6 +38,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(game, &GameControll::newOnlineUser, this, &MainWidget::addExistingUser);
     connect(game, &GameControll::actionTriggered, this, &MainWidget::calculateGameStatus);
     connect(view->getBoard(), &Board::goalHit, this, &MainWidget::calculateNewPlayer);
+
+    connect(leaderboard->getNetworkView(), &NetworkView::leaderboradOnline, this, &MainWidget::initializeUser);
 }
 
 void MainWidget::setMenuBar(QMenuBar * bar)
@@ -103,11 +105,20 @@ void MainWidget::addUser(struct UserData * newUser)
 
 void MainWidget::addExistingUser(User* user)
 {
+    qDebug()<<"addExistingUser";
+    bool b = false;
     for(User* u: users)
         if(u->getId()==user->getId())
-            return;
-    users.append(user);
-    game->triggerAction(PlayerAction::newUser, user->getId());
+            b = true;
+    if(b == false)
+    {
+        qDebug()<<"add "<<user->getId()<< " into list";
+        users.append(user);
+        game->triggerAction(PlayerAction::newUser, user->getId());
+        leaderboard->getUserOnlineWidget()->addUserToList(user);
+        leaderboard->getUserOnlineWidget()->updateUserList();
+    }
+
 }
 
 void MainWidget::calculateGameStatus(PlayerAction action){
@@ -197,6 +208,7 @@ void MainWidget::changeOnlyBidding(int bidding)
 {
 	qDebug()<<"changeOnly Bidding to"<<bidding;
 	users.at(0)->setBidding(bidding);
+    game->triggerAction(PlayerAction::enterBidding, users.at(0)->getId());
 }
 
 void MainWidget::updateTimer(int remaining)
@@ -207,4 +219,14 @@ void MainWidget::updateTimer(int remaining)
 					   "color: " + f.name() + ";"
 					   "}");
 	lcd->display(remaining);
+}
+
+// current user of the system is initialzed
+void MainWidget::initializeUser()
+{
+    qDebug()<<"initializeUser: ";
+    User *u = new User(leaderboard->getUsername(), leaderboard->getUsercolor(), this);
+    qDebug()<<"username: "<<leaderboard->getUsername()<<" and usercolor: "<< leaderboard->getUsercolor();
+    users.append(u);
+    game->triggerActionsWithData(PlayerAction::newUser, u);
 }
