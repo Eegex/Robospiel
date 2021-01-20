@@ -18,7 +18,7 @@ Board::Board(int width, int height, int playerNumber, QObject *parent) : QObject
 }
 
 void Board::makeNewBoard(int width, int height, int playerNumber){
-    makeNewWalls(  width, height);
+    makeNewWalls(width, height);
 
     makeNewPlayers(playerNumber);
 

@@ -210,6 +210,8 @@ void BoardView::mouseMoveEvent(QMouseEvent * event)
         if(moved.x() > 100)
         {
             emit swipe(Direction::east);
+            //emit PlayerAction::movePlayerEast;
+            //game->triggerAction(PlayerAction::movePlayerEast);
             qDebug() << "east";
         }
         else if(moved.x() < -100)
