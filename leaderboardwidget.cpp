@@ -141,6 +141,7 @@ void LeaderBoardWidget::newUser()
 void LeaderBoardWidget::goOnline()
 {
     //TODO if online as client: send your user
+    // TODO: check if client or server, if current user as first user to list
     isOnline = online;
     networkView->hide();
     lay->addWidget(userOnlineWidget);
@@ -188,3 +189,6 @@ unsigned short LeaderBoardWidget::getIsOnline(){return isOnline;}
 QVector<UserBiddingWidget*>* LeaderBoardWidget::getUsers(){return &users;}
 UserCreationWidget *LeaderBoardWidget::getUserCreationWidget(){return userCreationWidget;}
 UserOnlineWidget *LeaderBoardWidget::getUserOnlineWidget(){return userOnlineWidget;}
+NetworkView *LeaderBoardWidget::getNetworkView(){return networkView;}
+QString LeaderBoardWidget::getUsername(){return username;}
+QColor LeaderBoardWidget::getUsercolor(){return usercolor;}

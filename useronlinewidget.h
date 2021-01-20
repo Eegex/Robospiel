@@ -8,8 +8,9 @@
 #include <QLabel>
 #include <QUuid>
 #include <QSpinBox>
-#include <QListWidget>
+#include <QTableWidget>
 #include "Direction.h"
+#include "user.h"
 #define MAX_BID 99
 #define BID_BTN_TEXT "Accept Bid"
 
@@ -20,16 +21,19 @@ public:
     explicit UserOnlineWidget(QWidget *parent = nullptr);
     void setOnlineWidget();
     void updateName(QString newName); // TODO: same for color
+    void addUserToList(User *u);
+    void updateUserList();
 private:
     QGridLayout * lay = new QGridLayout(this);
     QPushButton * bidBtn = new QPushButton(this); //accept in biddingWidget
     QLabel * name = new QLabel(this); //labelName in biddingWdiget
     QSpinBox * biddingBox = new QSpinBox(this); //lSpinBox in biddingWidget
-    QListWidget * listWidget = new QListWidget(this);
+    QTableWidget * listWidget = new QTableWidget(this);
     int userBidding = MAX_BID;
     QUuid userId;
-    QString username = "";
+    QString username = "Hans";
     QColor usercolor;
+    QVector<User*> users;
 public slots:
     void btnPressed();
     void setBidding(int bidding);

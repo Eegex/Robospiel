@@ -34,12 +34,14 @@ public:
     void goUndefined();
     void setUsername(QString name);
     void setUsercolor(QColor color);
-
+    QString getUsername();
+    QColor getUsercolor();
+    NetworkView *getNetworkView();
 private:
     QGridLayout * lay = new QGridLayout(this);
     //QPushButton * addBtn = new QPushButton(this);
-    QString username;
-    QColor usercolor;
+    QString username = "Hans"; // for testing in MacOs
+    QColor usercolor = QColor(168, 218, 173); // for testing in MacOs
     unsigned int numOfUsers = 0;
     unsigned int currentUser = 0;
     unsigned int isOnline = undecided; // 0 = not decided, 1 = offline, 2 = online
