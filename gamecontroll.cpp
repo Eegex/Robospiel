@@ -125,7 +125,6 @@ Board * GameControll::setBoard(Board* newBoard)
 	{
 		board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
 	}
-	connect(board,&Board::goalHit,this,&GameControll::nextTarget);
 	return board;
 }
 

@@ -32,10 +32,11 @@ private slots:
 	void changeBidding(int bidding, QUuid id);
 	void changeOnlyBidding(int bidding);
 	void addUser(struct UserData * newUser);
-	void calculateGameStatus(PlayerAction action);
-	void calculateNewPlayer(int moves);
+    void calculateGameStatus(PlayerAction action);
+    void calculateWinner(int moves);
 	void editBoard();
 	void createBoard();
+    void initializeUser();
 	void updateGuide(const QString & txt);
 private:
 	QVector<User*> users;

@@ -24,20 +24,18 @@ UserCreationWidget::UserCreationWidget(QWidget *parent) : QWidget(parent)
 
 void UserCreationWidget::addUser()
 {
-	qDebug()<<"Addition Request of user with name "<<userNamePicker->text()<<"and colour "<<userColourPicker->selectedColor().name();
-
-	struct UserData newUser;
-	newUser.name = userNamePicker->text()!=nullptr?userNamePicker->text():DEFAULTUSERNAME;
-	newUser.colour = userColourPicker->selectedColor();
-	qDebug()<<"Current Colour"<<userColourPicker->selectedColor().name();
-	delete userColourPicker;
-	userColourPicker = new QColorDialog;
-	emit userAdded(&newUser);
-	connect(userColourPicker, &QColorDialog::colorSelected, this, [&](const QColor &colour)
-	{
-	   addColourBtn->setStyleSheet("background-color: "+colour.name());
-	});
-	userNamePicker->clear();
+    qDebug()<<"Addition Request of user with name "<<userNamePicker->text()<<"and colour "<<userColourPicker->selectedColor().name();
+    struct UserData newUser;
+    newUser.name = userNamePicker->text()!=nullptr?userNamePicker->text():DEFAULTUSERNAME;
+    newUser.colour = userColourPicker->selectedColor();
+    qDebug()<<"Current Colour"<<userColourPicker->selectedColor().name();
+    delete userColourPicker;
+    userColourPicker = new QColorDialog;
+    emit userAdded(&newUser);
+    connect(userColourPicker, &QColorDialog::colorSelected, this, [&](const QColor &colour)
+    {
+       addColourBtn->setStyleSheet("background-color: "+colour.name());
+    });
 }
 
 void UserCreationWidget::resetButtonColour(){addColourBtn->setStyleSheet("background-color: 0xFFFFFF");}

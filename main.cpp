@@ -28,3 +28,8 @@ int main(int argc, char *argv[])
 	w.showMaximized();
 	return a.exec();
 }
+
+//Qt::WindowFlags flags;
+//flags = Qt::Window;
+//flags |= Qt::MSWindowsFixedSizeDialogHint;
+//w.setWindowFlags(flags);
