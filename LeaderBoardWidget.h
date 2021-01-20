@@ -7,6 +7,7 @@
 #include <QGridLayout>
 #include <QVector>
 #include <QSpinBox>
+#include <QDateTime>
 #include "UserBiddingWidget.h"
 #include "UserCreationWidget.h"
 #include "useronlinewidget.h"
@@ -14,6 +15,7 @@
 #include "networkview.h"
 
 enum state {undecided, offline, online};
+enum strategy {points, bid};
 
 class LeaderBoardWidget : public QWidget
 {
@@ -32,12 +34,14 @@ public:
     void goUndefined();
     void setUsername(QString name);
     void setUsercolor(QColor color);
-
+    QString getUsername();
+    QColor getUsercolor();
+    NetworkView *getNetworkView();
 private:
     QGridLayout * lay = new QGridLayout(this);
     //QPushButton * addBtn = new QPushButton(this);
-    QString username;
-    QColor usercolor;
+    QString username = "Hans"; // for testing in MacOs
+    QColor usercolor = QColor(168, 218, 173); // for testing in MacOs
     unsigned int numOfUsers = 0;
     unsigned int currentUser = 0;
     unsigned int isOnline = undecided; // 0 = not decided, 1 = offline, 2 = online
@@ -48,7 +52,7 @@ private:
 
 
 public slots:
-    void sortByBidding();
+    void sortBy(unsigned int strategy);
     void updateLayout();
     void newUser();
 signals:

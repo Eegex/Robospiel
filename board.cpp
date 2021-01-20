@@ -41,9 +41,7 @@ void Board::makeNewPlayers(int playerNumber){
         Tile * t = getRandomUnoccupiedTile();
         t->setPlayer(i);
         players.append(t);
-    }
-    for (int i = 0; i < players.size(); i++){
-        emit playerMoved(i);
+        emit playerMoved(i,(goal == t && seeker == activePlayer) ? moves : -1);
     }
 
 }
@@ -100,8 +98,6 @@ void Board::makeNewWalls(int width, int height){
 
     emit boardChanged();
 }
-
-
 
 Board::Board()
 {
@@ -643,13 +639,9 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 
     }
 
-    emit playerMoved(activePlayer);
-    moves++;
-    if(goal == currentTile && seeker == activePlayer)
-    {
-        emit goalHit(moves);
-    }
-    history.append(h);
+	moves++;
+    emit playerMoved(activePlayer, (goal == currentTile && seeker == activePlayer) ? moves : -1);
+	history.append(h);
 
 }
 

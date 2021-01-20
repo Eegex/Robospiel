@@ -11,25 +11,28 @@ SettingsDialog::SettingsDialog(QVector<KeyMapping*> mapping, QDialog * parent) :
 	flGeneral->addRow(tr("Background color"),pbBackgroundColor);
 	flGeneral->addRow(tr("Wall color"),pbWallColor);
 	flGeneral->addRow(tr("Grid color"),pbGridColor);
+	flGeneral->addRow(tr("Show top bidder on timer"),cbTopBidding);
 	pbUserColor->setStyleSheet("background-color:" + settings.value(usercolor).toString());
 	pbBackgroundColor->setStyleSheet("background-color:" + settings.value(background).toString());
 	pbWallColor->setStyleSheet("background-color:" + settings.value(wallcolor).toString());
 	pbGridColor->setStyleSheet("background-color:" + settings.value(gridcolor).toString());
+	cbTopBidding->setChecked(getShowTopBidding());
 	twTabs->addTab(generalWidget,tr("General"));
 	keyMappings = new KeyMappingView(mapping, this);
 	twTabs->addTab(keyMappings,tr("Key mappings"));
 	lay->addWidget(pbSave);
-    connect(leUsername,&QLineEdit::editingFinished,this,[&](){
-        settings.insert(username,leUsername->text());
-        emit usernameChanged(getUsername());
-    });
-    connect(pbUserColor,&QPushButton::clicked,this,[&](){
-        settings.insert(usercolor,QColorDialog::getColor(getUsercolor()).name()); pbUserColor->setStyleSheet("background-color:" + settings.value(usercolor).toString());
-        emit usercolorChanged(getUsercolor());
-    });
+	connect(leUsername,&QLineEdit::editingFinished,this,[&](){
+		settings.insert(username,leUsername->text());
+		emit usernameChanged(getUsername());
+	});
+	connect(pbUserColor,&QPushButton::clicked,this,[&](){
+		settings.insert(usercolor,QColorDialog::getColor(getUsercolor()).name()); pbUserColor->setStyleSheet("background-color:" + settings.value(usercolor).toString());
+		emit usercolorChanged(getUsercolor());
+	});
 	connect(pbBackgroundColor,&QPushButton::clicked,this,[&](){ settings.insert(background,QColorDialog::getColor(getBackground()).name()); pbBackgroundColor->setStyleSheet("background-color:" + settings.value(background).toString()); });
 	connect(pbWallColor,&QPushButton::clicked,this,[&](){ settings.insert(wallcolor,QColorDialog::getColor(getWallcolor()).name()); pbWallColor->setStyleSheet("background-color:" + settings.value(wallcolor).toString()); });
 	connect(pbGridColor,&QPushButton::clicked,this,[&](){ settings.insert(gridcolor,QColorDialog::getColor(getGridcolor()).name()); pbGridColor->setStyleSheet("background-color:" + settings.value(gridcolor).toString()); });
+	connect(cbTopBidding,&QCheckBox::toggled,this,[&](){ settings.insert(topBidding,cbTopBidding->isChecked()); });
 	connect(pbSave,&QPushButton::clicked,this,&SettingsDialog::save);
 }
 
@@ -61,6 +64,11 @@ QColor SettingsDialog::getGridcolor() const
 QVector<KeyMapping *> SettingsDialog::getMapping() const
 {
 	return keyMappings->getMapping();
+}
+
+bool SettingsDialog::getShowTopBidding() const
+{
+	return settings.value(topBidding).toBool();
 }
 
 void SettingsDialog::load()
@@ -125,6 +133,10 @@ void SettingsDialog::load()
 	{
 		settings.insert(wallcolor,"#FF00FF");
 	}
+	if(!settings.contains(topBidding))
+	{
+		settings.insert(topBidding,false);
+	}
 	delete keyMappings;
 	keyMappings = new KeyMappingView(mapping, this); //TODO: ...?
 	twTabs->addTab(keyMappings,tr("Key mappings"));
@@ -133,6 +145,7 @@ void SettingsDialog::load()
 	pbBackgroundColor->setStyleSheet("background-color:" + settings.value(background).toString());
 	pbWallColor->setStyleSheet("background-color:" + settings.value(wallcolor).toString());
 	pbGridColor->setStyleSheet("background-color:" + settings.value(gridcolor).toString());
+	cbTopBidding->setChecked(getShowTopBidding());
 }
 
 void SettingsDialog::save()
