@@ -7,19 +7,19 @@ int User::userCount = 1;
 
 User::User(QString name, QColor color, QObject *parent) : QObject(parent), name(name), color(color)
 {
-    User::id = QUuid::createUuid();
-    if(name=="")
-    {
-        name = tr("user ")+User::userCount++;
-    }
+	User::id = QUuid::createUuid();
+	if(name=="")
+	{
+		name = tr("user ")+User::userCount++;
+	}
 }
 
 User::User(QString name, QColor color, QUuid uuid, QObject *parent) : QObject(parent), name(name), color(color), id(uuid)
 {
-    if(name=="")
-    {
-        name = tr("user ")+User::userCount++;
-    }
+	if(name=="")
+	{
+		name = tr("user ")+User::userCount++;
+	}
 }
 
 QString User::getName()
@@ -32,11 +32,11 @@ QColor User::getColor()
 }
 QUuid User::getId()
 {
-    return id;
+	return id;
 }
 int User::getBidding()
 {
-    return bidding;
+	return bidding;
 }
 int User::getPoints()
 {
@@ -53,9 +53,22 @@ void User::setColor(QColor c)
 }
 void User::setBidding(int b)
 {
-    bidding = b;
+	bidding = b;
+	if(bidding != 99)
+	{
+		lastBidding = QDateTime::currentDateTime();
+	}
+	else
+	{
+		lastBidding = QDateTime();
+	}
 }
 void User::addPoints(int p)
 {
 	points += p;
+}
+
+QDateTime User::getLastBidding() const
+{
+	return lastBidding;
 }
