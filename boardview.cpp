@@ -34,7 +34,7 @@ void BoardView::setBoard(Board * b)
         {
             goalWaitingToBeEmitted=true;
         }
-        playerWidgets.at(playerNumber)->moveAnimated(tileToDesktopCoordinates(board->players.at(playerNumber)), board->players.at(playerNumber)->getPosition(), std::max(width(), height())*0.2);
+        playerWidgets.at(playerNumber)->moveAnimated(tileToDesktopCoordinates(board->players.at(playerNumber)), board->players.at(playerNumber)->getPosition(), std::max(width(), height())*1.2);
     });
 	connect(board,&Board::goalMoved,this, [&](){goalwidget->move(tileToDesktopCoordinates(board->goal));});
 }
@@ -123,7 +123,6 @@ QPoint BoardView::tileToDesktopCoordinates(Tile* tile)
 	double tileWidth = (width() - 10) / static_cast<double>(board->getSize().width());
 	return QPoint(5+(tile->getPosition().rx())*tileWidth,5+(tile->getPosition().ry())*tileHeight);
 }
-
 
 void BoardView::paintEvent(QPaintEvent * event)
 {

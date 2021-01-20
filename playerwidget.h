@@ -8,6 +8,9 @@
 #include <QPaintEvent>
 #include <QMouseEvent>
 #include <QPropertyAnimation>
+#include <QPoint>
+#include <QVector>
+#include <QTimer>
 
 #include "pawnwidget.h"
 #include "board.h"
