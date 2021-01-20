@@ -18,9 +18,15 @@ void BoardView::setBoard(Board * b)
     for(int i = 0; i <board->players.length();i++)
     {
 		addPlayer(i);
-    }
-	connect(board,&Board::playerMoved,this, [&](int playerNumber){playerWidgets.at(playerNumber)->moveAnimated(tileToDesktopCoordinates(board->players.at(playerNumber)));});
-    goalwidget = new GoalWidget(QSize(20,20),board,this);
+	}
+    connect(board,&Board::playerMoved,this, [&](int playerNumber, int goalHit){
+        if(goalHit!=-1)
+        {
+            goalWaitingToBeEmitted=goalHit;
+        }
+        playerWidgets.at(playerNumber)->moveAnimated(tileToDesktopCoordinates(board->players.at(playerNumber)), board->players.at(playerNumber)->getPosition(), std::max(width(), height())*1.2);
+    });
+	goalwidget = new GoalWidget(QSize(20,20),board,this);
 	goalwidget->show();
     connect(board,&Board::goalMoved,this, [&](){goalwidget->move(tileToDesktopCoordinates(board->goal));});
 	adjustSize();
@@ -43,8 +49,20 @@ QSize BoardView::sizeHint() const
     return board->getSize() * 50 + QSize(10,10);
 }
 
-void BoardView::makeNewBoard(){
+void BoardView::makeNewAll(){
     board -> makeNewBoard(board->getSize().width(), board->getSize().height(), board->players.length());
+}
+void BoardView::makeNewPlayers(){
+    board -> makeNewPlayers(board->players.length());
+}
+void BoardView::makeNewSeeker(){
+    board -> makeNewSeeker(false);
+}
+void BoardView::makeNewWalls(){
+    board -> makeNewWalls(board->getSize().width(), board->getSize().height());
+}
+void BoardView::makeNewTarget(){
+    board -> makeNewGoal();
 }
 
 Tile * BoardView::coordsToTile(QPoint p)
@@ -73,6 +91,11 @@ PlayerWidget * BoardView::addPlayer(int i)
     connect(newPlayer, &PlayerWidget::clicked,this, [&](int playerNumber){emit activePlayerChanged(playerNumber);} );
 	connect(newPlayer, &PlayerWidget::reposition, this, [&](int playerNumber){
 		playerWidgets.at(playerNumber)->move(tileToDesktopCoordinates(board->players.at(playerNumber)));
+            if(goalWaitingToBeEmitted!=-1)
+            {
+                emit lastAnimationAfterGoalHitEnded(goalWaitingToBeEmitted);
+                goalWaitingToBeEmitted=-1;
+            }
 	});
 	newPlayer->move(tileToDesktopCoordinates(board->players[i]));
 	newPlayer->show();
@@ -159,22 +182,52 @@ void BoardView::paintEvent(QPaintEvent * event)
 
 void BoardView::resizeEvent(QResizeEvent * event)
 {
-    int w = event->size().width() / board->getSize().width();
-    int h = event->size().height() / board->getSize().height();
-    update();
-    for(int i = 0; i <board->players.length();i++)
-    {
-
-        playerWidgets.at(i)->setFixedSize(w,h);
-        if(!playerWidgets.at(i)->resizeWhileAnimation(event->size().width()*1.0/event->oldSize().width(),
-                                                      event->size().height()*1.0/event->oldSize().height()))
+	int w = event->size().width() / board->getSize().width();
+	int h = event->size().height() / board->getSize().height();
+	update();
+    currentEvent=*event;
+    QTimer::singleShot(50, this, [=]()->void{
+        //update players
+        for(int i = 0; i <board->players.length();i++)
         {
-            playerWidgets.at(i)->move(tileToDesktopCoordinates(board->players.at(i)));
+            playerWidgets.at(i)->setFixedSize(w,h);
+
+            //calculate all future animations
+            QVector<QPoint> targets = playerWidgets.at(i)->getTargets();
+            for(int j=0; j<targets.size(); j++)
+            {
+                 targets.replace(j,tileToDesktopCoordinates(board->getTile(targets.at(j).x(), targets.at(j).y())));
+            }
+
+            //calculate new position
+            QPoint newPosition = tileToDesktopCoordinates(board->players.at(i));
+            double factorX = 1;
+            double factorY = 1;
+            if(!currentEvent.oldSize().isEmpty() && playerWidgets.at(i)->getInAnimation())
+            {
+                factorX = currentEvent.size().width()*1.0/currentEvent.oldSize().width();
+                factorY = currentEvent.size().height()*1.0/currentEvent.oldSize().height();
+                newPosition=playerWidgets.at(i)->pos();
+                double newX=newPosition.x()*factorX;
+                double newY=newPosition.y()*factorY;
+
+                //cannot be outside of the board
+                newPosition.rx()=round(std::min(std::max(newX, tileToDesktopCoordinates(board->getTile(0, 0)).x()*1.0), tileToDesktopCoordinates(board->getTile(board->getSize().width()-1, 0)).x()*1.0));
+                newPosition.ry()=round(std::min(std::max(newY, tileToDesktopCoordinates(board->getTile(0, 0)).y()*1.0), tileToDesktopCoordinates(board->getTile(0, board->getSize().height()-1)).y()*1.0));
+            }
+
+
+            //apply
+            if(!playerWidgets.at(i)->resizeWhileAnimation(targets, newPosition, factorX, factorY))
+            {
+                playerWidgets.at(i)->move(newPosition);
+            }
         }
-    }
-    goalwidget->move(tileToDesktopCoordinates(board->goal));
-    goalwidget->setFixedSize(w,h);
-    event->accept();
+    });
+
+	goalwidget->move(tileToDesktopCoordinates(board->goal));
+	goalwidget->setFixedSize(w,h);
+	event->accept();
 }
 
 void BoardView::mousePressEvent(QMouseEvent * event)

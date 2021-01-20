@@ -14,6 +14,7 @@
 #include "networkview.h"
 
 enum state {undecided, offline, online};
+enum strategy {points, bid};
 
 class LeaderBoardWidget : public QWidget
 {
@@ -50,7 +51,7 @@ private:
 
 
 public slots:
-    void sortByBidding();
+    void sortBy(unsigned int strategy);
     void updateLayout();
     void newUser();
 signals:

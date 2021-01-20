@@ -11,6 +11,7 @@
 #include <QPalette>
 #include <QUuid>
 #include <QWidgetAction>
+#include <QAction>
 #include "user.h"
 #include "board.h"
 #include "boardeditor.h"
@@ -32,7 +33,7 @@ private slots:
 	void changeOnlyBidding(int bidding);
 	void addUser(struct UserData * newUser);
     void calculateGameStatus(PlayerAction action);
-    void calculateNewPlayer(int moves);
+    void calculateWinner(int moves);
 	void editBoard();
 	void createBoard();
     void initializeUser();
@@ -49,9 +50,10 @@ private:
 	QMenuBar * menuBar = nullptr;
 	QAction * aNetworking = nullptr;
 	QAction * aEditBoard = nullptr;
-	QAction * aNewTarget = nullptr;
+    QAction * aNextTarget = nullptr;
 	QAction * aSettings = nullptr;
-	QMenu * mNewBoard = nullptr;
+    QMenu * mNewGame = nullptr;
+    QMenu *mNewStuff = nullptr;
 	QWidgetAction * waHeight = nullptr;
 	QSpinBox * sbHeight = nullptr;
 	QWidgetAction * waWidth = nullptr;
@@ -59,7 +61,12 @@ private:
 	QWidgetAction * waPlayer = nullptr;
 	QSpinBox * sbPlayer = nullptr;
 	QAction * aNewBoard = nullptr;
-    QAction * aNewBoard2 = nullptr;
+
+    QAction * aNewWalls = nullptr;
+    QAction * aNewSeeker = nullptr;
+    QAction * aNewPlayers = nullptr;
+    QAction * aNewAll = nullptr;
+    QAction * aNewTarget = nullptr;
 };
 
 #endif // MAINWIDGET_H

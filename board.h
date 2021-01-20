@@ -42,15 +42,18 @@ public:
     void resetMoves();
 	QColor getBackground() const;
 	QColor getPrimary() const;
-	QColor getGrid() const;
+    QColor getGrid() const;
+    void makeNewPlayers(int playerNumber);
+    void makeNewWalls(int height, int width);
+    void makeNewGoal();
+    void makeNewSeeker(bool random);
 public slots:
 	void startNewRound();
 	int switchPlayer(Direction d);
 signals:
 	void boardChanged();
-	void playerMoved(int playerNumber);
+    void playerMoved(int playerNumber, int goalHit); //-1 when goal was not reached, number of moves otherwise
 	void goalMoved();
-	void goalHit(int usedMoves);
 protected:
 	void placeGoalAwayFromSeeker();
 private:
@@ -74,7 +77,7 @@ private:
 	bool placeInnerWallifFits(Tile *tile, Direction direection);
 	Direction getNextDirection(Direction direction, int numberOfClockwiseSteps);
 	bool placeOuterWallIfFits(Tile *, Direction direction);
-	void placeGoalInCorner();
+    void placeGoalInCorner();
 	Board();
 };
 

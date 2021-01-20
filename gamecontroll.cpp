@@ -125,8 +125,7 @@ Board * GameControll::setBoard(Board* newBoard)
 	{
 		board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
 	}
-    connect(board,&Board::goalHit,this,&GameControll::nextTarget);
-    return board;
+	return board;
 }
 
 void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return was needed?
