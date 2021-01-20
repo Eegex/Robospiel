@@ -7,6 +7,7 @@
 #include <QGridLayout>
 #include <QVector>
 #include <QSpinBox>
+#include <QDateTime>
 #include "UserBiddingWidget.h"
 #include "UserCreationWidget.h"
 #include "useronlinewidget.h"

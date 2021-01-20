@@ -18,6 +18,8 @@ UserBiddingWidget::UserBiddingWidget(QWidget *parent) : QWidget(parent)
 }
 
 void UserBiddingWidget::deactivateBtn(){
+    if(userBidding == MAX_BID)
+        biddingTimestamp = QDateTime::currentMSecsSinceEpoch();
     qDebug()<<"Called Function Deactivate Button in UserBiddingWidget";
     accept->setEnabled(false);
 }
@@ -30,12 +32,13 @@ void UserBiddingWidget::resetBidding()
     accept->setEnabled(true);
     lSpinBox->setMaximum(MAX_BID);
     lSpinBox->setValue(MAX_BID);
-    //qDebug()<<"SpinBox Value: "<<lSpinBox->value();
+    biddingTimestamp = QDateTime::currentMSecsSinceEpoch();
     emit biddingReset(MAX_BID, userId);
 }
 
-void UserBiddingWidget::setBidding(int bidding)
+void UserBiddingWidget::setBidding(int bidding) //Wird das noch benutzt?
 {
+    qDebug()<<"Called Function SetBidding in UserBiddingWidget";
     userBidding = bidding;
     emit biddingChanged(userBidding, userId);
 }
@@ -59,6 +62,7 @@ void UserBiddingWidget::btnPressed()
 {
     lSpinBox->setMaximum(userBidding = lSpinBox->value());
     accept->setText("Bid: "+QString::number(userBidding));
+    biddingTimestamp = QDateTime::currentMSecsSinceEpoch();
     qDebug()<<"Player "<<userName<<" changed their bidding to: "<<userBidding;
     emit biddingChanged(userBidding, userId);
 }
@@ -70,6 +74,7 @@ void UserBiddingWidget::incrementPoints(){
 }
 void UserBiddingWidget::setId(QUuid id){userId = id;}
 QUuid UserBiddingWidget::getId(){return userId;}
+unsigned long UserBiddingWidget::getTimeStamp(){return biddingTimestamp;}
 int UserBiddingWidget::getPoints(){return userPoints;}
 int UserBiddingWidget::getBidding(){return userBidding;}
 QString UserBiddingWidget::getName(){return userName;}

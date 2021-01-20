@@ -11,6 +11,7 @@
 #include <QSpinBox>
 #include <QColor>
 #include <QUuid>
+#include <QDateTime>
 
 class UserBiddingWidget : public QWidget
 {
@@ -28,11 +29,13 @@ private:
     QUuid userId;
     QString userName;
     QColor userColor;
+    unsigned long biddingTimestamp;
 public slots:
     QUuid getId();
     QString getName();
     int getBidding();
     int getPoints();
+    unsigned long getTimeStamp();
     void setId(QUuid id);
     void setBidding(int bidding);
     void setName(QString v);
