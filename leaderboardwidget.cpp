@@ -8,13 +8,14 @@ LeaderBoardWidget::LeaderBoardWidget(QWidget *parent) : QWidget(parent)
 {
     userCreationWidget->hide();
     userOnlineWidget->hide();
-    lay->addWidget(addBtn, numOfUsers, 0);
-    addBtn->hide();
+    lay->addWidget(userCreationWidget, numOfUsers, 0);
+    // lay->addWidget(addBtn, numOfUsers, 0);
+    // addBtn->hide();
     connect(networkView, &NetworkView::leaderboradOnline, this, &LeaderBoardWidget::goOnline);
     connect(networkView, &NetworkView::leaderboradOffline, this, &LeaderBoardWidget::goOffline);
     if(isOnline == undecided)
         lay->addWidget(networkView);
-    connect(addBtn,&QPushButton::clicked,this,&LeaderBoardWidget::newUser);
+    // connect(addBtn,&QPushButton::clicked,this,&LeaderBoardWidget::newUser);
     setLayout(lay);
     //connect(userCreationWidget, &UserCreationWidget::userAdded, this, &LeaderBoardWidget::addUser);
 }
@@ -31,12 +32,18 @@ unsigned int LeaderBoardWidget::getBiddingWidgetIndexByID(QUuid id){
 void LeaderBoardWidget::updateLayout(){
     qDebug()<<"Called UpdateLayout, number of Users is "<<numOfUsers<<", isOnline is "<<isOnline;
     for(unsigned int i = 0; i<numOfUsers; i++){lay->addWidget(users.at(i), i, 0);}
-    if(isOnline == offline){lay->addWidget(addBtn, numOfUsers, 0);} //New Player Button under all Players
+    // if(isOnline == offline){lay->addWidget(addBtn, numOfUsers, 0);} //New Player Button under all Players
+    if(isOnline == offline){
+        lay->addWidget(userCreationWidget, numOfUsers, 0);
+        if(numOfUsers == MAX_USERS)
+            userCreationWidget->hide();
+    } //New Player Button under all Players except when maximum Number of Players is reached
     lay->update();
 }
 
-void LeaderBoardWidget::sortByBidding()
+void LeaderBoardWidget::sortByBidding() //This is being called after the countdown has done down to 0, you cannot add a new player in this phase
 {
+    userCreationWidget->hide(); //This is just for convenience
     qDebug()<<"Called sortByBidding";
     QVector<UserBiddingWidget*> sortedUsers;
     UserBiddingWidget * minWidget;
@@ -73,11 +80,12 @@ void LeaderBoardWidget::addUser(User * newUser)
     newWidget->setId(newUser->getId());
     users.append(newWidget); //Append widget to list of users
     lay->addWidget(users.at(numOfUsers));
+    connect(newWidget, &UserBiddingWidget::biddingReset, this, [&](){
+        if(isOnline == offline && numOfUsers < MAX_USERS)
+            userCreationWidget->show(); //Bidding has been reset at this point so player addition button is back baby
+    });
     numOfUsers++; //Increment number of users, important for correct placement of button
     updateLayout();
-    //for(unsigned int i = 0; i<numOfUsers; i++){lay->addWidget(users.at(i), i, 0);}
-    //if(!isOnline){lay->addWidget(addBtn, numOfUsers, 0);} //New User Button under all Users
-    //lay->update();
 }
 
 void LeaderBoardWidget::newUser()
@@ -102,8 +110,9 @@ void LeaderBoardWidget::goOffline()
     qDebug()<<"Called Function goOffline";
     isOnline = offline;
     networkView->hide();
-    addBtn->setText("Add new User");
-    addBtn->show();
+    userCreationWidget->show();
+    // addBtn->setText("Add new User");
+    // addBtn->show();
     lay->update();
 }
 

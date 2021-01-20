@@ -31,6 +31,8 @@ private slots:
 	void changeBidding(int bidding, QUuid id);
 	void changeOnlyBidding(int bidding);
 	void addUser(struct UserData * newUser);
+    void calculateGameStatus(PlayerAction action);
+    void calculateNewPlayer(int moves);
 	void editBoard();
 	void createBoard();
 private:
