@@ -19,7 +19,6 @@ public:
     explicit UserBiddingWidget(QWidget *parent = nullptr);
     QPushButton * accept = new QPushButton(this); //bidBtn in onlineWidget
     QSpinBox * lSpinBox = new QSpinBox(this); //biddingBox in onlineWidget
-    bool active = true; //Needed for sorting
 private:
     QGridLayout * userLayout = new QGridLayout(this);
     QLabel * labelName = new QLabel(this); //name in onlineWidget
