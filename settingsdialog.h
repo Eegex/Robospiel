@@ -14,6 +14,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QCheckBox>
 #include "keymapping.h"
 #include "keymappingview.h"
 
@@ -28,6 +29,7 @@ public:
 	QColor getWallcolor() const;
 	QColor getGridcolor() const;
 	QVector<KeyMapping *> getMapping() const;
+	bool getShowTopBidding() const;
 
 public slots:
 	void load();
@@ -40,6 +42,7 @@ private:
 	QPushButton * pbBackgroundColor = new QPushButton(this);
 	QPushButton * pbWallColor = new QPushButton(this);
 	QPushButton * pbGridColor = new QPushButton(this);
+	QCheckBox * cbTopBidding = new QCheckBox(this);
 	QTabWidget * twTabs = new QTabWidget(this);
 	QPushButton * pbSave = new QPushButton(tr("Save"),this);
 	QFormLayout * flGeneral = new QFormLayout;
@@ -51,11 +54,12 @@ private:
 	const QString wallcolor = "wc";
 	const QString gridcolor = "gc";
 	const QString keymappings = "km";
+	const QString topBidding = "tb";
 signals:
 	void newMapping(QVector<KeyMapping*> mapping);
 	void colorsChanged();
-    void usernameChanged(QString name);
-    void usercolorChanged(QColor color);
+	void usernameChanged(QString name);
+	void usercolorChanged(QColor color);
 
 private slots:
 };

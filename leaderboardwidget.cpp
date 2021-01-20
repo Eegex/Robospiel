@@ -6,39 +6,39 @@
 
 LeaderBoardWidget::LeaderBoardWidget(QWidget *parent) : QWidget(parent)
 {
-    userCreationWidget->hide();
-    userOnlineWidget->hide();
-    lay->addWidget(userCreationWidget, numOfUsers, 0);
-    // lay->addWidget(addBtn, numOfUsers, 0);
-    // addBtn->hide();
-    connect(networkView, &NetworkView::leaderboradOnline, this, &LeaderBoardWidget::goOnline);
-    connect(networkView, &NetworkView::leaderboradOffline, this, &LeaderBoardWidget::goOffline);
-    if(isOnline == undecided)
-        lay->addWidget(networkView);
-    // connect(addBtn,&QPushButton::clicked,this,&LeaderBoardWidget::newUser);
-    setLayout(lay);
-    //connect(userCreationWidget, &UserCreationWidget::userAdded, this, &LeaderBoardWidget::addUser);
+	userCreationWidget->hide();
+	userOnlineWidget->hide();
+	lay->addWidget(userCreationWidget, numOfUsers, 0);
+	// lay->addWidget(addBtn, numOfUsers, 0);
+	// addBtn->hide();
+	connect(networkView, &NetworkView::leaderboradOnline, this, &LeaderBoardWidget::goOnline);
+	connect(networkView, &NetworkView::leaderboradOffline, this, &LeaderBoardWidget::goOffline);
+	if(isOnline == undecided)
+		lay->addWidget(networkView);
+	// connect(addBtn,&QPushButton::clicked,this,&LeaderBoardWidget::newUser);
+	setLayout(lay);
+	//connect(userCreationWidget, &UserCreationWidget::userAdded, this, &LeaderBoardWidget::addUser);
 }
 
 unsigned int LeaderBoardWidget::getBiddingWidgetIndexByID(QUuid id){
-    qDebug()<<"Called Function getBiddingWidgetByID in LeaderBoardWidget with ID "<<id;
-    for(unsigned int i = 0; i<numOfUsers; i++)
-        if(users[i]->getId() == id)
-            return i;
-    qDebug()<<"Couldn't find user with ID "<<id;
-    return 0;
+	qDebug()<<"Called Function getBiddingWidgetByID in LeaderBoardWidget with ID "<<id;
+	for(unsigned int i = 0; i<numOfUsers; i++)
+		if(users[i]->getId() == id)
+			return i;
+	qDebug()<<"Couldn't find user with ID "<<id;
+	return 0;
 }
 
 void LeaderBoardWidget::updateLayout(){
-    qDebug()<<"Called UpdateLayout, number of Users is "<<numOfUsers<<", isOnline is "<<isOnline;
-    for(unsigned int i = 0; i<numOfUsers; i++){lay->addWidget(users.at(i), i, 0);}
-    // if(isOnline == offline){lay->addWidget(addBtn, numOfUsers, 0);} //New Player Button under all Players
-    if(isOnline == offline){
-        lay->addWidget(userCreationWidget, numOfUsers, 0);
-        if(numOfUsers == MAX_USERS)
-            userCreationWidget->hide();
-    } //New Player Button under all Players except when maximum Number of Players is reached
-    lay->update();
+	qDebug()<<"Called UpdateLayout, number of Users is "<<numOfUsers<<", isOnline is "<<isOnline;
+	for(unsigned int i = 0; i<numOfUsers; i++){lay->addWidget(users.at(i), i, 0);}
+	// if(isOnline == offline){lay->addWidget(addBtn, numOfUsers, 0);} //New Player Button under all Players
+	if(isOnline == offline){
+		lay->addWidget(userCreationWidget, numOfUsers, 0);
+		if(numOfUsers == MAX_USERS)
+			userCreationWidget->hide();
+	} //New Player Button under all Players except when maximum Number of Players is reached
+	lay->update();
 }
 
 void LeaderBoardWidget::sortBy(unsigned int strategy) //This is being called after the countdown has done down to 0, you cannot add a new player in this phase
@@ -118,26 +118,26 @@ void LeaderBoardWidget::sortBy(unsigned int strategy) //This is being called aft
 
 void LeaderBoardWidget::addUser(User * newUser)
 {
-    qDebug()<<"LeaderBoardWidget: AddUser: Add user with name: "<<newUser->getName()<<"and id"<<newUser->getId().toString()<<"and colour "<<(newUser->getColor().isValid()?newUser->getColor().name():"0x000000");
-    UserBiddingWidget * newWidget = new UserBiddingWidget(this); //Create new BiddingWidget to display
-    newWidget->setName(newUser->getName());
-    newWidget->setColor(newUser->getColor().name());
-    newWidget->setId(newUser->getId());
-    users.append(newWidget); //Append widget to list of users
-    lay->addWidget(users.at(numOfUsers));
-    connect(newWidget, &UserBiddingWidget::biddingReset, this, [&](){
-        if(isOnline == offline && numOfUsers < MAX_USERS)
-            userCreationWidget->show(); //Bidding has been reset at this point so player addition button is back baby
-    });
-    numOfUsers++; //Increment number of users, important for correct placement of button
-    updateLayout();
+	qDebug()<<"LeaderBoardWidget: AddUser: Add user with name: "<<newUser->getName()<<"and id"<<newUser->getId().toString()<<"and colour "<<(newUser->getColor().isValid()?newUser->getColor().name():"0x000000");
+	UserBiddingWidget * newWidget = new UserBiddingWidget(this); //Create new BiddingWidget to display
+	newWidget->setName(newUser->getName());
+	newWidget->setColor(newUser->getColor().name());
+	newWidget->setId(newUser->getId());
+	users.append(newWidget); //Append widget to list of users
+	lay->addWidget(users.at(numOfUsers));
+	connect(newWidget, &UserBiddingWidget::biddingReset, this, [&](){
+		if(isOnline == offline && numOfUsers < MAX_USERS)
+			userCreationWidget->show(); //Bidding has been reset at this point so player addition button is back baby
+	});
+	numOfUsers++; //Increment number of users, important for correct placement of button
+	updateLayout();
 }
 
 void LeaderBoardWidget::newUser()
 {
-    qDebug()<<"NewUser in LeaderBoardWidget";
-    userCreationWidget->show(); //Show creation widget
-    userCreationWidget->setFocus(); //Set focus to specific window
+	qDebug()<<"NewUser in LeaderBoardWidget";
+	userCreationWidget->show(); //Show creation widget
+	userCreationWidget->setFocus(); //Set focus to specific window
 }
 
 void LeaderBoardWidget::goOnline()
@@ -153,36 +153,36 @@ void LeaderBoardWidget::goOnline()
 
 void LeaderBoardWidget::goOffline()
 {
-    qDebug()<<"Called Function goOffline";
-    isOnline = offline;
-    networkView->hide();
-    userCreationWidget->show();
-    // addBtn->setText("Add new User");
-    // addBtn->show();
-    lay->update();
+	qDebug()<<"Called Function goOffline";
+	isOnline = offline;
+	networkView->hide();
+	userCreationWidget->show();
+	// addBtn->setText("Add new User");
+	// addBtn->show();
+	lay->update();
 }
 
 void LeaderBoardWidget::goUndefined()
 {
-    isOnline = undecided;
-    if(isOnline == online)
-        lay->removeWidget(userOnlineWidget);
-    else if(isOnline == offline) {
-        for(int i = 0; i < lay->count(); i++)
-        {
-            QWidget * tmp = lay->itemAt(i)->widget();
-            if(tmp)
-                tmp->hide();
-        }
-    }
-    lay->addWidget(networkView);
-    lay->update();
+	isOnline = undecided;
+	if(isOnline == online)
+		lay->removeWidget(userOnlineWidget);
+	else if(isOnline == offline) {
+		for(int i = 0; i < lay->count(); i++)
+		{
+			QWidget * tmp = lay->itemAt(i)->widget();
+			if(tmp)
+				tmp->hide();
+		}
+	}
+	lay->addWidget(networkView);
+	lay->update();
 }
 
 void LeaderBoardWidget::setUsername(QString name)
 {
-    username = name;
-    userOnlineWidget->updateName(username);
+	username = name;
+	userOnlineWidget->updateName(username);
 }
 
 void LeaderBoardWidget::setUsercolor(QColor color){usercolor = color;}

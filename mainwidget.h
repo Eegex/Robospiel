@@ -37,9 +37,11 @@ private slots:
 	void editBoard();
 	void createBoard();
     void initializeUser();
+	void updateGuide(const QString & txt);
 private:
 	QVector<User*> users;
-    int currentMoves = 0; //What the fuck
+	int currentMoves = 0; //What the fuck // +1
+	QLabel * dlGuide = new QLabel(this);
 	QGridLayout * glMain = nullptr;
 	GameControll * game = nullptr;
 	BoardView * view = nullptr;
@@ -50,10 +52,10 @@ private:
 	QMenuBar * menuBar = nullptr;
 	QAction * aNetworking = nullptr;
 	QAction * aEditBoard = nullptr;
-    QAction * aNextTarget = nullptr;
+	QAction * aNextTarget = nullptr;
 	QAction * aSettings = nullptr;
-    QMenu * mNewGame = nullptr;
-    QMenu *mNewStuff = nullptr;
+	QMenu * mNewGame = nullptr;
+	QMenu *mNewStuff = nullptr;
 	QWidgetAction * waHeight = nullptr;
 	QSpinBox * sbHeight = nullptr;
 	QWidgetAction * waWidth = nullptr;
@@ -62,11 +64,12 @@ private:
 	QSpinBox * sbPlayer = nullptr;
 	QAction * aNewBoard = nullptr;
 
-    QAction * aNewWalls = nullptr;
-    QAction * aNewSeeker = nullptr;
-    QAction * aNewPlayers = nullptr;
-    QAction * aNewAll = nullptr;
-    QAction * aNewTarget = nullptr;
+	QAction * aNewWalls = nullptr;
+	QAction * aNewSeeker = nullptr;
+	QAction * aNewPlayers = nullptr;
+	QAction * aNewAll = nullptr;
+	QAction * aNewTarget = nullptr;
+	User * getMinBid();
 };
 
 #endif // MAINWIDGET_H
