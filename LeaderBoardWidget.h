@@ -1,5 +1,6 @@
 #ifndef LEADERBOARDWIDGET_H
 #define LEADERBOARDWIDGET_H
+#define MAX_USERS 10
 
 #include <QWidget>
 #include <QVariant>
@@ -13,6 +14,7 @@
 #include "networkview.h"
 
 enum state {undecided, offline, online};
+enum strategy {points, bid};
 
 class LeaderBoardWidget : public QWidget
 {
@@ -34,7 +36,7 @@ public:
 
 private:
     QGridLayout * lay = new QGridLayout(this);
-    QPushButton * addBtn = new QPushButton(this);
+    //QPushButton * addBtn = new QPushButton(this);
     QString username;
     QColor usercolor;
     unsigned int numOfUsers = 0;
@@ -47,7 +49,7 @@ private:
 
 
 public slots:
-    void sortByBidding();
+    void sortBy(unsigned int strategy);
     void updateLayout();
     void newUser();
 signals:

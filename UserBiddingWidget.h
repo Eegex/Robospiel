@@ -1,6 +1,7 @@
 #ifndef USERBIDDINGWIDGET_H
 #define USERBIDDINGWIDGET_H
 #define MAX_BID 99
+#define MIN_BID 1
 #define BID_BTN_TEXT "Accept Bid"
 
 #include <QLabel>
@@ -22,7 +23,7 @@ public:
 private:
     QGridLayout * userLayout = new QGridLayout(this);
     QLabel * labelName = new QLabel(this); //name in onlineWidget
-    //QLabel * pointsName = new QLabel(this);
+    QLabel * pointsName = new QLabel(this);
     int userBidding = MAX_BID;
     int userPoints = 0;
     QUuid userId;

@@ -11,8 +11,8 @@ using namespace std::chrono_literals;
 
 GameControll::GameControll(QObject *parent) : QObject(parent)
 {
-	countdown.setSingleShot(false);
-	countdown.setInterval(1s);
+    countdown.setSingleShot(false);
+    countdown.setInterval(1s);
     connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
 
     connect(this, &GameControll::actionTriggeredWithData, this, &GameControll::sendToServerWithData); //TODO test the connection with both signals
@@ -97,29 +97,29 @@ void GameControll::sendToServer(PlayerAction a)
 
 void GameControll::load()
 {
-	settings = new SettingsDialog(mapping);
-	settings->load();
+    settings = new SettingsDialog(mapping);
+    settings->load();
 	connect(settings,&SettingsDialog::colorsChanged,this,[&](){ board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor()); });
-	connect(settings,&SettingsDialog::newMapping,this,[&](QVector<KeyMapping*> mapping){ this->mapping = mapping; });
+    connect(settings,&SettingsDialog::newMapping,this,[&](QVector<KeyMapping*> mapping){ this->mapping = mapping; });
 	if(board)
 	{
 		board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
 	}
-	this->mapping = settings->getMapping();
+    this->mapping = settings->getMapping();
 }
 
 void GameControll::showSettings()
 {
-	settings->exec();
+    settings->exec();
 }
 
 Board * GameControll::setBoard(Board* newBoard)
 {
-	if(board)
-	{
-		board->deleteLater();
-		board = nullptr;
-	}
+    if(board)
+    {
+        board->deleteLater();
+        board = nullptr;
+    }
     board = newBoard;
     if(settings)
 	{
@@ -152,7 +152,11 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
             board->switchPlayer(static_cast<Direction>(a-PlayerAction::playerSwitch));
             break;
         case sendBidding:
-            switchPhase(Phase::countdown);
+            if(a == PlayerAction::sendBidding)//If timer has not been started, start the dödöööö FINAL COUNTDOWN dödödödö dödödödödö
+            {
+                switchPhase(Phase::countdown);
+            }
+
             break;
         case revert:
             board->revert();
@@ -178,56 +182,56 @@ void GameControll::triggerActionsWithData(PlayerAction action, User* user)
 
 bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 {
-	qDebug()<<"Called function TriggerAction with parameters "<<action<<" and User ID "<<userID;
+    qDebug()<<"Called function TriggerAction with parameters "<<action<<" and User ID "<<userID;
     //if(activeUserID.isNull() || userID == activeUserID)
     //{
-		if(action & PlayerAction::movement)
-		{
+        if(action & PlayerAction::movement)
+        {
 			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay) //If online only let the active user move
-			{
-				//we subtract movement from action to get a direction (clever enum numbers)
+            {
+                //we subtract movement from action to get a direction (clever enum numbers)
                 emit actionTriggered(action);
-				return true;
-			}
-		}
-		else if(action & PlayerAction::playerSwitch)
-		{
-			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
-			{
-                emit actionTriggered(action);
-				return true;
-			}
-		}
+                return true;
+            }
+        }
+        else if(action & PlayerAction::playerSwitch && (currentPhase == Phase::presentation || currentPhase == Phase::freeplay))
+        {
+            if(action != PlayerAction::playerSwitch) //if we don't want a real PlayerSwitch (withDirection), just check if we can do one (by clicking on a player)
+            {
+
+                //board->switchPlayer(static_cast<Direction>(action-PlayerAction::playerSwitch));
+                emit actionTriggered(action); // should this be outside the if?
+
+            }
+            return true;
+        }
         else if(action & PlayerAction::bidding) //TODO submit biddingValue
-		{
-			qDebug()<<"Currently in GameControl: triggerAction -> bidding, current Phase is "<<static_cast<int>(currentPhase);
-			if(currentPhase == Phase::search || currentPhase == Phase::countdown)
-			{
-                if(action == PlayerAction::sendBidding)//If timer has not been started, start the dödöööö FINAL COUNTDOWN dödödödö dödödödödö
-                {
-                }
+        {
+            qDebug()<<"Currently in GameControl: triggerAction -> bidding, current Phase is "<<static_cast<int>(currentPhase);
+            if(currentPhase == Phase::search || currentPhase == Phase::countdown)
+            {
                 emit actionTriggered(action); //TODO maybe inside the if?
-				return true;
-			}
-		}
-		else if(action & PlayerAction::other)
-		{
-			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
-			{
+                return true;
+            }
+        }
+        else if(action & PlayerAction::other)
+        {
+            if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
+            {
                 emit actionTriggered(action);
-				return true;
-			}
-		}
+                return true;
+            }
+        }
     //}
-	return false;
+    return false;
 }
 
-void GameControll::activePlayerChanged(int playerNumber) //Brauchen wir das noch? Ich dachte wir machen alles mit der ID?
+void GameControll::activePlayerChanged(int playerNumber) //Brauchen wir das noch? Ich dachte wir machen alles mit der ID? - Also momentan ja...
 {
    if(triggerAction(PlayerAction::playerSwitch, ""))
-   {
-	   board->changeActivePlayer(playerNumber);
-   }
+    {
+        board->changeActivePlayer(playerNumber);
+    }
 }
 
 GameControll::Phase GameControll::getCurrentPhase() const
@@ -240,90 +244,90 @@ void GameControll::nextTarget()
 	if(switchPhase(Phase::search))
 	{
 		emit newRound();
-		board->startNewRound();
-	}
+        board->startNewRound();
+    }
 }
 
 bool GameControll::switchPhase(GameControll::Phase phase)
 {
-	qDebug() << "GameControll::switchPhase(GameControll::Phase " << static_cast<int>(phase) << ")";
-	switch(phase)
-	{
-	case Phase::idle:
-	{
-		currentPhase = phase;
-		return true;
-	}
-	case Phase::search:
-	{
-		if(currentPhase != Phase::countdown)
-		{
-			currentPhase = phase;
-			return true;
-		}
-		break;
-	}
-	case Phase::countdown:
-	{
-		{
-			if(currentPhase == Phase::search)
-			{
-				currentPhase = phase;
-				timeLeft = 2; //60
-				emit time(timeLeft);
-				countdown.start();
-			}
-			return true;
-		}
-		break;
-	}
-	case Phase::presentation:
-	{
-		if(currentPhase == Phase::countdown)
-		{
-			emit biddingDone();
-			//Set Player to player with minimum bid, aka first player after being sorted
-			currentPhase = phase;
-			return true;
-		}
-		break;
-	}
-	case Phase::freeplay:
-	{
-		if(currentPhase == Phase::presentation)
-		{
-			currentPhase = phase;
-			return true;
-		}
-		break;
-	}
-	}
-	return false;
+    qDebug() << "GameControll::switchPhase(GameControll::Phase " << static_cast<int>(phase) << ")";
+    switch(phase)
+    {
+    case Phase::idle:
+    {
+        currentPhase = phase;
+        return true;
+    }
+    case Phase::search:
+    {
+        if(currentPhase != Phase::countdown)
+        {
+            currentPhase = phase;
+            return true;
+        }
+        break;
+    }
+    case Phase::countdown:
+    {
+        {
+            if(currentPhase == Phase::search)
+            {
+                currentPhase = phase;
+                timeLeft = 2; //60
+                emit time(timeLeft);
+                countdown.start();
+            }
+            return true;
+        }
+        break;
+    }
+    case Phase::presentation:
+    {
+        if(currentPhase == Phase::countdown)
+        {
+            emit biddingDone();
+            //Set Player to player with minimum bid, aka first player after being sorted
+            currentPhase = phase;
+            return true;
+        }
+        break;
+    }
+    case Phase::freeplay:
+    {
+        if(currentPhase == Phase::presentation)
+        {
+            currentPhase = phase;
+            return true;
+        }
+        break;
+    }
+    }
+    return false;
 }
 
 void GameControll::remakeBoard()
 {
-	switchPhase(Phase::idle);
-	countdown.stop();
+    switchPhase(Phase::idle);
+    countdown.stop();
 }
 
 QVector<KeyMapping*> * GameControll::getMapping()
 {
-	if(!settings)
-	{
-		load();
-	}
-	return &mapping;
+    if(!settings)
+    {
+        load();
+    }
+    return &mapping;
 }
 
 void GameControll::setMapping(QVector<KeyMapping*> mapping)
 {
-	this->mapping = mapping;
+    this->mapping = mapping;
 }
 
 Board * GameControll::getBoard() const
 {
-	return board;
+    return board;
 }
 
 QUuid GameControll::getActiveUserID(){return activeUserID;}
@@ -332,12 +336,12 @@ void GameControll::setActiveUserID(QUuid id){activeUserID = id;}
 
 void GameControll::updateTimer()
 {
-	if(--timeLeft <= 0)
-	{
-		countdown.stop();
-		switchPhase(Phase::presentation);
-	}
-	emit time(timeLeft);
+    if(--timeLeft <= 0)
+    {
+        countdown.stop();
+        switchPhase(Phase::presentation);
+    }
+    emit time(timeLeft);
 }
 
 SettingsDialog * GameControll::getSettingsDialog()
