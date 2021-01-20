@@ -34,7 +34,8 @@ void BoardView::setBoard(Board * b)
         {
             goalWaitingToBeEmitted=true;
         }
-        playerWidgets.at(playerNumber)->moveAnimated(tileToDesktopCoordinates(board->players.at(playerNumber)), std::max(width(), height())*1.5);});
+        playerWidgets.at(playerNumber)->moveAnimated(tileToDesktopCoordinates(board->players.at(playerNumber)), board->players.at(playerNumber)->getPosition(), std::max(width(), height())*0.2);
+    });
 	connect(board,&Board::goalMoved,this, [&](){goalwidget->move(tileToDesktopCoordinates(board->goal));});
 }
 
@@ -122,6 +123,7 @@ QPoint BoardView::tileToDesktopCoordinates(Tile* tile)
 	double tileWidth = (width() - 10) / static_cast<double>(board->getSize().width());
 	return QPoint(5+(tile->getPosition().rx())*tileWidth,5+(tile->getPosition().ry())*tileHeight);
 }
+
 
 void BoardView::paintEvent(QPaintEvent * event)
 {
@@ -228,16 +230,46 @@ void BoardView::resizeEvent(QResizeEvent * event)
 	int h = event->size().height() / board->getSize().height();
 	fillCache(QSize(w,h));
 	update();
-	for(int i = 0; i <board->players.length();i++)
-	{
+    currentEvent=*event;
+    QTimer::singleShot(50, this, [=]()->void{
+        //update players
+        for(int i = 0; i <board->players.length();i++)
+        {
+            playerWidgets.at(i)->setFixedSize(w,h);
 
-		playerWidgets.at(i)->setFixedSize(w,h);
-		if(!playerWidgets.at(i)->resizeWhileAnimation(event->size().width()*1.0/event->oldSize().width(),
-											  event->size().height()*1.0/event->oldSize().height()))
-		{
-			playerWidgets.at(i)->move(tileToDesktopCoordinates(board->players.at(i)));
-		}
-	}
+            //calculate all future animations
+            QVector<QPoint> targets = playerWidgets.at(i)->getTargets();
+            for(int j=0; j<targets.size(); j++)
+            {
+                 targets.replace(j,tileToDesktopCoordinates(board->getTile(targets.at(j).x(), targets.at(j).y())));
+            }
+
+            //calculate new position
+            QPoint newPosition = tileToDesktopCoordinates(board->players.at(i));
+            double factorX = 1;
+            double factorY = 1;
+            if(!currentEvent.oldSize().isEmpty() && playerWidgets.at(i)->getInAnimation())
+            {
+                factorX = currentEvent.size().width()*1.0/currentEvent.oldSize().width();
+                factorY = currentEvent.size().height()*1.0/currentEvent.oldSize().height();
+                newPosition=playerWidgets.at(i)->pos();
+                double newX=newPosition.x()*factorX;
+                double newY=newPosition.y()*factorY;
+
+                //cannot be outside of the board
+                newPosition.rx()=round(std::min(std::max(newX, tileToDesktopCoordinates(board->getTile(0, 0)).x()*1.0), tileToDesktopCoordinates(board->getTile(board->getSize().width()-1, 0)).x()*1.0));
+                newPosition.ry()=round(std::min(std::max(newY, tileToDesktopCoordinates(board->getTile(0, 0)).y()*1.0), tileToDesktopCoordinates(board->getTile(0, board->getSize().height()-1)).y()*1.0));
+            }
+
+
+            //apply
+            if(!playerWidgets.at(i)->resizeWhileAnimation(targets, newPosition, factorX, factorY))
+            {
+                playerWidgets.at(i)->move(newPosition);
+            }
+        }
+    });
+
 	goalwidget->move(tileToDesktopCoordinates(board->goal));
 	goalwidget->setFixedSize(w,h);
 	event->accept();

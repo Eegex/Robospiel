@@ -6,10 +6,6 @@
 PlayerWidget::PlayerWidget(QSize size,  int playerNumber, Board *board, QWidget *parent):
 	PawnWidget(size, board, parent), playerNumber(playerNumber)
 {
-	connect(animations, &QSequentialAnimationGroup::finished, this, [=]()->void{
-		animations->clear();
-		emit reposition(playerNumber);
-	});
 
 }
 
@@ -78,18 +74,30 @@ void PlayerWidget::paintEvent(QPaintEvent *event)
 	event->accept();
 }
 
-void PlayerWidget::moveAnimated(QPoint point, double speed) //speed in pixels per second
+
+double PlayerWidget::length(QPoint vector)
+{
+    return sqrt(pow(vector.x(), 2) + pow(vector.y(), 2));
+}
+
+/**
+ * @brief PlayerWidget::moveAnimated
+ * @param point the coordinates in the window
+ * @param target the coordinates of the target tile
+ * @param speed of the animation in pixels per second
+ */
+void PlayerWidget::moveAnimated(QPoint point, QPoint target, double speed)
 {
 
 	double distance;
-	if(animations->animationCount() > 0)
+    if(animations.size() > 0)
 	{
-		QPropertyAnimation * lastAnimation=dynamic_cast<QPropertyAnimation*>(animations->animationAt(animations->animationCount()-1));
-		distance = (lastAnimation->endValue().toRect().topLeft()-point).manhattanLength();
+        QPropertyAnimation * lastAnimation=dynamic_cast<QPropertyAnimation*>(animations.last().animation);
+        distance = PlayerWidget::length(lastAnimation->endValue().toRect().topLeft()-point);
 	}
 	else
 	{
-		distance = (this->pos()-point).manhattanLength();
+        distance = PlayerWidget::length(this->pos()-point);
 	}
 
 
@@ -97,37 +105,102 @@ void PlayerWidget::moveAnimated(QPoint point, double speed) //speed in pixels pe
 	animation->setDuration(1000*distance/speed);
 	animation->setEndValue(QRect(point.x(), point.y(), 0, 0));
     animation->setEasingCurve(QEasingCurve::InQuad);
+    connect(animation, &QAbstractAnimation::finished, this, [=]()->void{
+        animations.remove(0);
+        if(animations.isEmpty())
+        {
+            emit reposition(playerNumber);
+        }
+        else
+        {
+            animations.at(0).animation->start();
+        }
 
-	animations->addAnimation(animation);
-	if(animations->state() != QAbstractAnimation::Running)
+    });
+    Animation animationStruct;
+    animationStruct.animation=animation;
+    animationStruct.target=target;
+
+    animations.append(animationStruct);
+    if(animations.at(0).animation->state() != QAbstractAnimation::Running)
 	{
-		animations->start();
+        animations.at(0).animation->start();
 	}
 }
 
-bool PlayerWidget::resizeWhileAnimation(double widthFactor, double heightFactor)
+double PlayerWidget::timeFactor(QPoint delta, double factorX, double factorY)
 {
-	if(animations->currentAnimation())
-	{
-		for(int i=animations->indexOfAnimation(animations->currentAnimation()); i<animations->animationCount(); i++)
-		{
-			QPropertyAnimation* animation=dynamic_cast<QPropertyAnimation*>(animations->animationAt(i));
-			if(animation)
-			{
-				//change the endPosition
-				QRect oldEndRect = animation->endValue().toRect();
-				int newX = round(oldEndRect.x()*widthFactor);
-				int newY = round(oldEndRect.y()*heightFactor);
-				animation->setEndValue(QRect(newX, newY, 0, 0));
+    double xProportion = delta.x()/(delta.x()+delta.y());
 
-				//change the current position
-				QRect currentPosition = animation->currentValue().toRect();
-				move(QPoint(round(currentPosition.x()*widthFactor), round(currentPosition.y()*heightFactor)));
-			}
+    return xProportion*factorX + (1-xProportion)*factorY;
+}
+
+bool PlayerWidget::resizeWhileAnimation(QVector<QPoint> newTargets, QPoint newPosition, double factorX, double factorY)
+{
+    if(!animations.isEmpty() || newTargets.size()!=animations.size())
+    {
+        animations.at(0).animation->pause();
+
+        for(int i=1; i<animations.size(); i++)
+		{
+            animations.at(i).animation->setEndValue(QRect(newTargets.at(i), QSize(0, 0)));
+            double newDuration = animations.at(i).animation->duration()*timeFactor(newTargets.at(i)-newTargets.at(i-1), factorX, factorY);
+            newDuration = std::max(std::min(newDuration, MAX_DURATION), MIN_DURATION);
+            animations.at(i).animation->setDuration(newDuration);
 		}
+
+        //replace the current transition
+        QPropertyAnimation * animation = new QPropertyAnimation(this, "geometry");
+        double newDuration = (animations.at(0).animation->duration()-animations.at(0).animation->currentTime())*timeFactor(newTargets.at(0)-newPosition, factorX, factorY);
+        newDuration = std::max(std::min(newDuration, MAX_DURATION), MIN_DURATION);
+        animation->setDuration(newDuration);
+
+        animation->setEndValue(QRect(newTargets.at(0), QSize(0, 0)));
+        animation->setEasingCurve(QEasingCurve::InQuad);
+        connect(animation, &QAbstractAnimation::finished, this, [=]()->void{
+            animations.remove(0);
+            if(animations.isEmpty())
+            {
+                emit reposition(playerNumber);
+            }
+            else
+            {
+                animations.at(0).animation->start();
+            }
+
+        });
+        Animation animationStruct;
+        animationStruct.animation=animation;
+        animationStruct.target=animations.at(0).target;
+
+
+        animations.at(0).animation->stop();
+        animations.remove(0);
+        //change the current position
+        move(newPosition);
+
+        animations.insert(0, animationStruct);
+        animation->start();
+
 		return true;
 	}
 	return false;
 
+
+}
+
+bool PlayerWidget::getInAnimation()
+{
+    return (!animations.isEmpty()) && animations.at(0).animation->state() == QAbstractAnimation::Running;
+}
+
+QVector<QPoint> PlayerWidget::getTargets()
+{
+    QVector<QPoint> targets;
+    for(Animation animation : animations)
+    {
+        targets.append(animation.target);
+    }
+    return targets;
 
 }

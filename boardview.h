@@ -17,6 +17,7 @@
 #include "playerwidget.h"
 #include "goalwidget.h"
 #include <algorithm>
+#include <QTimer>
 
 
 class BoardView : public QWidget
@@ -29,7 +30,6 @@ public:
 	void setDebugOutputEnabled(bool set = true);
 	void resize(int pixelPerTile);
 	void setMapping(QVector<KeyMapping *> *value);
-
 public slots:
 	void updateColors(QColor b, QColor w, QColor g);
 
@@ -54,6 +54,7 @@ private:
 	QColor background = QColor(0,0,0);
 	QColor primary = QColor(100,100,100);
 	QColor grid = QColor(50,50,50);
+    QResizeEvent currentEvent = QResizeEvent(QSize(-1,-1), QSize(-1,-1));
 //  Bitte stehen lassen, damit Nora keinen Anfall bekommt :P
 //  QColor background = QColor(0,0,0);
 //	QColor primary = QColor(100,100,100);
