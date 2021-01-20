@@ -276,7 +276,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 			{
 				currentPhase = phase;
 				emit updateGuide(tr("counting down"));
-				timeLeft = 60; //60
+                timeLeft = 2; //60
 				emit time(timeLeft);
 				countdown.start();
 			}

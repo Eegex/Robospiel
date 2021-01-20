@@ -56,7 +56,7 @@ void LeaderBoardWidget::sortBy(unsigned int strategy) //This is being called aft
         int minIndex = 0;
         int minBid;
         for(int additionIndex = 0; additionIndex < users.size(); additionIndex++){
-            minBid = MAX_BID;
+            minBid = MAX_BID+1;
             for(UserBiddingWidget * user : users){
                 qDebug()<<"SortByBidding: USER "<<user->getName()<<" with bidding "<<user->getBidding()<<"and timestamp: "<<user->getTimeStamp();
                 if(user->getBidding() <= minBid && isActive[users.indexOf(user)]){//If User has a lower bid than the currently lowest bid
@@ -69,7 +69,7 @@ void LeaderBoardWidget::sortBy(unsigned int strategy) //This is being called aft
                             minTimeStamp = user->getTimeStamp(); //Set User Timestamp to the current user value
                         }
                     }
-                    else{
+                    else{ //Smaller MinBid
                         qDebug()<<"Bidding of user "<<user->getName()<<" with bidding "<<user->getBidding()<<" is smaller than minimum bid of "<<minBid;
                         minWidget = user; //Set the Widget to add to the new list to the user
                         minIndex = users.indexOf(user); //Set the index needed for deactivating the user to the current index
