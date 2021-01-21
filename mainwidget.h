@@ -26,21 +26,12 @@ class MainWidget : public QWidget
 public:
 	explicit MainWidget(QWidget *parent = nullptr);
 	void setMenuBar(QMenuBar * bar);
-	void addExistingUser(User *user);
 private slots:
 	void updateTimer(int remaining);
-	void changeBidding(int bidding, QUuid id);
-	void changeOnlyBidding(int bidding);
-	void addUser(struct UserData * newUser);
-    void calculateGameStatus(PlayerAction action);
-    void calculateWinner(int moves);
 	void editBoard();
 	void createBoard();
-    void initializeUser();
 	void updateGuide(const QString & txt);
 private:
-	QVector<User*> users;
-	int currentMoves = 0; //What the fuck // +1
 	QLabel * dlGuide = new QLabel(this);
 	QGridLayout * glMain = nullptr;
 	GameControll * game = nullptr;
@@ -69,7 +60,6 @@ private:
 	QAction * aNewPlayers = nullptr;
 	QAction * aNewAll = nullptr;
 	QAction * aNewTarget = nullptr;
-	User * getMinBid();
 };
 
 #endif // MAINWIDGET_H

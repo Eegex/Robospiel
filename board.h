@@ -31,28 +31,30 @@ public:
 	int activePlayer = 0;
 	void moveActivePlayer(Direction d, int targetX = -1, int targetY = -1);
 	void setPlayerOnTile(int player, Tile *tile);
-    void changeActivePlayer(int playerNumber);
-    void revert();
-    void revertToBeginning();
-    void makeNewBoard(int width, int height, int playerNumber);
-    QJsonObject toJSON();
-    static Board* fromJSON(QJsonObject json);
-    int addPlayer(Tile * t);
+	void changeActivePlayer(int playerNumber);
+	void revert();
+	void revertToBeginning();
+	void makeNewBoard(int width, int height, int playerNumber);
+	QJsonObject toJSON();
+	static Board* fromJSON(QJsonObject json);
+	int addPlayer(Tile * t);
 	void updateColors(QColor b, QColor w, QColor g);
-    void resetMoves();
+	void resetMoves();
 	QColor getBackground() const;
 	QColor getPrimary() const;
-    QColor getGrid() const;
-    void makeNewPlayers(int playerNumber);
-    void makeNewWalls(int height, int width);
-    void makeNewGoal();
-    void makeNewSeeker(bool random);
+	QColor getGrid() const;
+	void makeNewPlayers(int playerNumber);
+	void makeNewWalls(int height, int width);
+	void makeNewGoal();
+	void makeNewSeeker(bool random);
+	int getMoves() const;
+
 public slots:
 	void startNewRound();
 	int switchPlayer(Direction d);
 signals:
 	void boardChanged();
-    void playerMoved(int playerNumber, int goalHit); //-1 when goal was not reached, number of moves otherwise
+	void playerMoved(int playerNumber, int goalHit); //-1 when goal was not reached, number of moves otherwise
 	void goalMoved();
 protected:
 	void placeGoalAwayFromSeeker();
@@ -77,7 +79,7 @@ private:
 	bool placeInnerWallifFits(Tile *tile, Direction direection);
 	Direction getNextDirection(Direction direction, int numberOfClockwiseSteps);
 	bool placeOuterWallIfFits(Tile *, Direction direction);
-    void placeGoalInCorner();
+	void placeGoalInCorner();
 	Board();
 };
 

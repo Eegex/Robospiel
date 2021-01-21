@@ -18,6 +18,7 @@
 #include "goalwidget.h"
 #include <algorithm>
 #include <QTimer>
+#include <QMargins>
 
 
 class BoardView : public QWidget
@@ -30,12 +31,12 @@ public:
 	void setDebugOutputEnabled(bool set = true);
 	void resize(int pixelPerTile);
 	void setMapping(QVector<KeyMapping *> *value);
-    Board * getBoard();
-    void makeNewAll();
-    void makeNewPlayers();
-    void makeNewWalls();
-    void makeNewTarget();
-    void makeNewSeeker();
+	Board * getBoard();
+	void makeNewAll();
+	void makeNewPlayers();
+	void makeNewWalls();
+	void makeNewTarget();
+	void makeNewSeeker();
 protected slots:
 	void paintEvent(QPaintEvent * event);
 	void resizeEvent(QResizeEvent * event);
@@ -55,17 +56,17 @@ protected:
 	GoalWidget* goalwidget = nullptr;
 	//void translateMapping(PlayerAction action);
 	//void callMoveActivePlayer(Direction d);
-    QPoint tileToDesktopCoordinates(Tile *tile);
+	QPoint tileToDesktopCoordinates(Tile *tile);
 	virtual PlayerWidget * addPlayer(int i);
-    int goalWaitingToBeEmitted = -1;
-    QResizeEvent currentEvent = QResizeEvent(QSize(-1,-1), QSize(-1,-1));
+	int goalWaitingToBeEmitted = -1;
+	QResizeEvent currentEvent = QResizeEvent(QSize(-1,-1), QSize(-1,-1));
 signals:
 	void tileHovered(Tile * t);
 	void tileClicked(Tile * t);
 	void swipe(Direction d);
 	void action(PlayerAction a, QString userName);
 	void activePlayerChanged(int playerNumber);
-    void lastAnimationAfterGoalHitEnded(int moves);
+	void lastAnimationAfterGoalHitEnded(int moves);
 
 };
 

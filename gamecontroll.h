@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QTime>
 #include <QDebug>
+#include "LeaderBoardWidget.h"
 #include "user.h"
 #include "settingsdialog.h"
 #include "keymapping.h"
@@ -30,7 +31,11 @@ public:
 	void triggerActionsWithData(PlayerAction action, User *user);
 	QJsonObject toJSON();
 	static GameControll *fromJSON(QJsonObject json);
+	void setLeaderboard(LeaderBoardWidget * value);
+	User * getMinBid();
+
 public slots:
+	void calculateWinner(int moves);
 	void showSettings();
 	void setMapping(QVector<KeyMapping *> mapping);
 	void nextTarget();
@@ -38,7 +43,11 @@ public slots:
 	QUuid getActiveUserID();
 	void setActiveUserID(QUuid id);
 	void activePlayerChanged(int playerNumber);
+	void addExistingUser(User *user);
+
 private:
+	QVector<User*> users;
+	LeaderBoardWidget * leaderboard = nullptr;
 	Phase currentPhase = Phase::idle; //freeplay
 	SettingsDialog * settings = nullptr;
 	QVector<KeyMapping*> mapping;
@@ -63,6 +72,11 @@ private slots:
 	bool switchPhase(GameControll::Phase phase);
 	void exeQTAction(QJsonObject data);
 	void sendToServerWithData(PlayerAction a, QJsonObject info);
+	void calculateGameStatus();
+	void changeBidding(int bidding, QUuid id);
+	void changeOnlyBidding(int bidding);
+	void addUser(struct UserData * newUser);
+	void initializeUser();
 };
 
 #endif // GAMECONTROLL_H

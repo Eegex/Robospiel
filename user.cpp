@@ -56,11 +56,11 @@ void User::setBidding(int b)
 	bidding = b;
 	if(bidding != 99)
 	{
-		lastBidding = QDateTime::currentDateTime();
+		lastBiddingTime = QDateTime::currentDateTime().toMSecsSinceEpoch();
 	}
 	else
 	{
-		lastBidding = QDateTime();
+		lastBiddingTime = 0;
 	}
 }
 void User::addPoints(int p)
@@ -68,7 +68,7 @@ void User::addPoints(int p)
 	points += p;
 }
 
-QDateTime User::getLastBidding() const
+unsigned long User::getLastBiddingTime() const
 {
-	return lastBidding;
+	return lastBiddingTime;
 }

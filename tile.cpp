@@ -10,25 +10,25 @@ Tile::Tile(){}
 
 QJsonObject Tile::toJSON()
 {
-    QJsonObject json;
-    json.insert("eastWall", eastWall);
-    json.insert("southWall", southWall);
-    json.insert("playerOnThisTile", playerOnThisTile);
-    json.insert("positionX", position.x());
-    json.insert("positionY", position.y());
+	QJsonObject json;
+	json.insert("eastWall", eastWall);
+	json.insert("southWall", southWall);
+	json.insert("playerOnThisTile", playerOnThisTile);
+	json.insert("positionX", position.x());
+	json.insert("positionY", position.y());
 
-    return json;
+	return json;
 }
 
 //the tile still has to be coupled with its north and west neighbours
 Tile* Tile::fromJSON(QJsonObject json)
 {
-    Tile* t = new Tile();
-    t->eastWall = json.value("eastWall").toBool();
-    t->southWall = json.value("southWall").toBool();
-    t->playerOnThisTile = json.value("playerOnThisTile").toInt();
-    t->position = QPoint(json.value("positionX").toInt(), json.value("positionY").toInt());
-    return t;
+	Tile* t = new Tile();
+	t->eastWall = json.value("eastWall").toBool();
+	t->southWall = json.value("southWall").toBool();
+	t->playerOnThisTile = json.value("playerOnThisTile").toInt();
+	t->position = QPoint(json.value("positionX").toInt(), json.value("positionY").toInt());
+	return t;
 }
 
 QPoint Tile::getPosition() const
@@ -113,13 +113,21 @@ bool Tile::getWall(Direction direction)
 	switch(direction)
 	{
 	case Direction::north:
+	{
 		return northTile ? northTile->getWall(Direction::south) : true;
+	}
 	case Direction::east:
+	{
 		return eastWall;
+	}
 	case Direction::south:
+	{
 		return southWall;
+	}
 	case Direction::west:
+	{
 		return westTile ? westTile->getWall(Direction::east) : true;
+	}
 	}
 }
 
@@ -132,6 +140,3 @@ void Tile::setPlayer(int value)
 {
 	playerOnThisTile = value;
 }
-
-//TODO bool Square::isBlocked()
-
