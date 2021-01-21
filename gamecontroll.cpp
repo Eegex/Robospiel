@@ -14,7 +14,6 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 	countdown.setSingleShot(false);
 	countdown.setInterval(1s);
 	connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
-
 	connect(this, &GameControll::actionTriggeredWithData, this, &GameControll::sendToServerWithData); //TODO test the connection with both signals
 	connect(this, &GameControll::actionTriggered, this, &GameControll::sendToServer);
 	connect(&Client::getInstance(), &Client::actionReceived, this, &GameControll::exeQTAction);
@@ -142,6 +141,7 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 		case movePlayerSouth:
 		case movePlayerWest:
 				board->moveActivePlayer(static_cast<Direction>(a - PlayerAction::movement));
+                calculateGameStatus();
 				break;
 		case switchPlayerEast:
 		case switchPlayerNorth:
@@ -187,8 +187,7 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 		{
 			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay) //If online only let the active user move
 			{
-				//we subtract movement from action to get a direction (clever enum numbers)
-				calculateGameStatus();
+                //we subtract movement from action to get a direction (clever enum numbers)
 				emit actionTriggered(action);
 				return true;
 			}
@@ -230,23 +229,31 @@ void GameControll::calculateGameStatus()
 	qDebug()<<"Current Moves are: "<< board->getMoves();
 	QUuid currentPlayer = getActiveUserID();
 	unsigned int activeUserIndex = leaderboard->getBiddingWidgetIndexByID(currentPlayer);
-	if(board->getMoves() >= leaderboard->getUsers()->at(activeUserIndex)->getBidding()) //Needs to be GEQ because otherwise the player could make an extra move as the "reached goal" signal is overriding the failure
+    if(board->getMoves() >= leaderboard->getUsers()->at(activeUserIndex)->getBidding()) //Needs to be GEQ because otherwise the player could make an extra move as the "reached goal" signal is overriding the failure
 	{
-		qDebug()<<"User couldn't end the round in the specified bid of "<< leaderboard->getUsers()->at(activeUserIndex)->getBidding()<<", the next user is being drawn";
-		board->resetMoves();
-		if(leaderboard->getNumOfUsers() > 1 && activeUserIndex < leaderboard->getNumOfUsers()-1)//Not at last player yet, noch haben nicht alle versagt
-		{
-			UserBiddingWidget* user = leaderboard->getUsers()->at(++activeUserIndex); //Liste ist bereits sortiert (siehe oben), daher ist der nächste User in der Liste der User mit dem nächsthöheren Bidding
-			setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
-			getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
-			qDebug()<<"Active User is now "<<user->getName();
-		}
-		else //Alles Versager
-		{
-			qDebug()<<"No User could end the round in their specified bid.";
-			leaderboard->sortBy(points);
-			nextTarget();
-		}
+        if(board->goalHit) //Spieler hat gewonnen, die Runde ist zuende
+        {
+            calculateWinner(board->getMoves());
+        }
+        else
+        {
+            //TODO: Flag um anzuzeigen, dass der Spieler das Ziel erreicht hat?
+            qDebug()<<"User couldn't end the round in the specified bid of "<< leaderboard->getUsers()->at(activeUserIndex)->getBidding()<<", the next user is being drawn";
+            board->resetMoves();
+            if(leaderboard->getNumOfUsers() > 1 && activeUserIndex < leaderboard->getNumOfUsers()-1)//Not at last player yet, noch haben nicht alle versagt
+            {
+                UserBiddingWidget* user = leaderboard->getUsers()->at(++activeUserIndex); //Liste ist bereits sortiert (siehe oben), daher ist der nächste User in der Liste der User mit dem nächsthöheren Bidding
+                setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
+                getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
+                qDebug()<<"Active User is now "<<user->getName();
+            }
+            else //Alles Versager
+            {
+                qDebug()<<"No User could end the round in their specified bid.";
+                leaderboard->sortBy(points);
+                nextTarget();
+            }
+        }
 	}
 }
 
@@ -415,7 +422,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 			{
 				currentPhase = phase;
 				emit updateGuide(tr("counting down"));
-				timeLeft = 60; //60
+                timeLeft = 60; //60
 				emit time(timeLeft);
 				countdown.start();
 			}

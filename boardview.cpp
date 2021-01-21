@@ -22,7 +22,7 @@ void BoardView::setBoard(Board * b)
 	connect(board,&Board::playerMoved,this, [&](int playerNumber, int goalHit){
 		if(goalHit!=-1)
 		{
-			goalWaitingToBeEmitted=goalHit;
+            goalWaitingToBeEmitted=goalHit;
 		}
 		playerWidgets.at(playerNumber)->moveAnimated(tileToDesktopCoordinates(board->players.at(playerNumber)), board->players.at(playerNumber)->getPosition(), std::max(width(), height())*1.2);
 	});
