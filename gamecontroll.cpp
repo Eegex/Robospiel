@@ -142,6 +142,7 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 		case movePlayerSouth:
 		case movePlayerWest:
 				board->moveActivePlayer(static_cast<Direction>(a - PlayerAction::movement));
+				calculateGameStatus();
 				break;
 		case switchPlayerEast:
 		case switchPlayerNorth:
@@ -154,7 +155,6 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 			{
 				switchPhase(Phase::countdown);
 			}
-
 			break;
 		case revert:
 			board->revert();
@@ -163,7 +163,6 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 			board -> revertToBeginning();
 			break;
 	}
-
 }
 
 void GameControll::triggerActionsWithData(PlayerAction action, User* user)
@@ -188,7 +187,6 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay) //If online only let the active user move
 			{
 				//we subtract movement from action to get a direction (clever enum numbers)
-				calculateGameStatus();
 				emit actionTriggered(action);
 				return true;
 			}
@@ -197,10 +195,8 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 		{
 			if(action != PlayerAction::playerSwitch) //if we don't want a real PlayerSwitch (withDirection), just check if we can do one (by clicking on a player)
 			{
-
 				//board->switchPlayer(static_cast<Direction>(action-PlayerAction::playerSwitch));
 				emit actionTriggered(action); // should this be outside the if?
-
 			}
 			return true;
 		}
@@ -362,7 +358,7 @@ User * GameControll::getMinBid()
 	User * minBid = users.first();
 	for(User * u:users)
 	{
-		if(u->getBidding() < 99)
+		if(u->getBidding() < 100)
 		{
 			if(u->getBidding() < minBid->getBidding() || (u->getBidding() == minBid->getBidding() && u->getLastBiddingTime() < minBid->getLastBiddingTime()))
 			{

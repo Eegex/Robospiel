@@ -19,6 +19,8 @@
 #include <algorithm>
 #include <QTimer>
 #include <QMargins>
+#include <QGestureEvent>
+#include <QSwipeGesture>
 
 
 class BoardView : public QWidget
@@ -43,12 +45,15 @@ protected slots:
 	virtual void mousePressEvent(QMouseEvent * event);
 	virtual void mouseMoveEvent(QMouseEvent * event);
 	void keyPressEvent(QKeyEvent * event);
+	void handleKeyPress(int key);
+	bool event(QEvent * event);
 
 protected:
 	Tile * coordsToTile(QPoint p);
 	Board * board = nullptr;
 	QSize tileSize;
 	QPoint mouseStart;
+	int lastKey = 0;
 	bool showDebugOutput = false;
 	QVector<KeyMapping*> * mapping = nullptr;
 	void callChangeActivePlayer(Tile *t);
@@ -67,7 +72,6 @@ signals:
 	void action(PlayerAction a, QString userName);
 	void activePlayerChanged(int playerNumber);
 	void lastAnimationAfterGoalHitEnded(int moves);
-
 };
 
 #endif // BOARDVIEW_H

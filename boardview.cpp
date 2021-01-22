@@ -4,6 +4,8 @@ BoardView::BoardView(QWidget *parent) : QWidget(parent)
 {
 	setMouseTracking(true);
 	setFocusPolicy(Qt::FocusPolicy::StrongFocus);
+	grabGesture(Qt::PanGesture);
+	grabGesture(Qt::SwipeGesture);
 }
 
 void BoardView::setBoard(Board * b)
@@ -52,18 +54,22 @@ void BoardView::makeNewAll()
 {
 	board -> makeNewBoard(board->getSize().width(), board->getSize().height(), board->players.length());
 }
+
 void BoardView::makeNewPlayers()
 {
 	board -> makeNewPlayers(board->players.length());
 }
+
 void BoardView::makeNewSeeker()
 {
 	board -> makeNewSeeker(false);
 }
+
 void BoardView::makeNewWalls()
 {
 	board -> makeNewWalls(board->getSize().width(), board->getSize().height());
 }
+
 void BoardView::makeNewTarget()
 {
 	board -> makeNewGoal();
@@ -218,8 +224,6 @@ void BoardView::resizeEvent(QResizeEvent * event)
 				newPosition.rx()=round(std::min(std::max(newX, tileToDesktopCoordinates(board->getTile(0, 0)).x()*1.0), tileToDesktopCoordinates(board->getTile(board->getSize().width()-1, 0)).x()*1.0));
 				newPosition.ry()=round(std::min(std::max(newY, tileToDesktopCoordinates(board->getTile(0, 0)).y()*1.0), tileToDesktopCoordinates(board->getTile(0, board->getSize().height()-1)).y()*1.0));
 			}
-
-
 			//apply
 			if(!playerWidgets.at(i)->resizeWhileAnimation(targets, newPosition, factorX, factorY))
 			{
@@ -253,22 +257,22 @@ void BoardView::mouseMoveEvent(QMouseEvent * event)
 		QPoint moved = event->pos() - mouseStart;
 		if(moved.x() > 100)
 		{
-			emit swipe(Direction::east);
+			handleKeyPress(Qt::Key_F32);
 			qDebug() << "east";
 		}
 		else if(moved.x() < -100)
 		{
-			emit swipe(Direction::west);
+			handleKeyPress(Qt::Key_F34);
 			qDebug() << "west";
 		}
 		else if(moved.y() > 100)
 		{
-			emit swipe(Direction::south);
+			handleKeyPress(Qt::Key_F33);
 			qDebug() << "south";
 		}
 		else if(moved.y() < -100)
 		{
-			emit swipe(Direction::north);
+			handleKeyPress(Qt::Key_F31);
 			qDebug() << "north";
 		}
 	}
@@ -277,22 +281,69 @@ void BoardView::mouseMoveEvent(QMouseEvent * event)
 		Tile * t = coordsToTile(event->pos());
 		if(t)
 		{
-			emit tileHovered(t);
+			handleKeyPress(Qt::Key_F35);
 		}
 	}
 }
 
 void BoardView::keyPressEvent(QKeyEvent * event)
 {
+	handleKeyPress(event->key());
+	QWidget::keyPressEvent(event);
+}
+
+void BoardView::handleKeyPress(int key)
+{
+	if(key == lastKey) // FIXME: better solution
+	{
+		return;
+	}
+	lastKey = key;
 	for(const KeyMapping * k:qAsConst(*mapping))
 	{
-		if(*k == event->key())
+		if(*k == key)
 		{
 			emit action(k->getAction(), "");
 			return;
 		}
 	}
-	QWidget::keyPressEvent(event);
+}
+
+bool BoardView::event(QEvent * event)
+{
+	if(event->type() == QEvent::Gesture)
+	{
+		QGestureEvent * gestureEvent = dynamic_cast<QGestureEvent*>(event);
+		if(gestureEvent)
+		{
+			gestureEvent->accept();
+			QGesture * g = gestureEvent->gesture(Qt::SwipeGesture);
+			QSwipeGesture * sg = dynamic_cast<QSwipeGesture*>(g);
+			if(sg)
+			{
+				if (sg->state() == Qt::GestureFinished)
+				{
+					if(sg->verticalDirection() == QSwipeGesture::Up)
+					{
+						handleKeyPress(Qt::Key_F31);
+					}
+					else if(sg->horizontalDirection() == QSwipeGesture::Right)
+					{
+						handleKeyPress(Qt::Key_F32);
+					}
+					else if(sg->verticalDirection() == QSwipeGesture::Down)
+					{
+						handleKeyPress(Qt::Key_F33);
+					}
+					else if(sg->horizontalDirection() == QSwipeGesture::Left)
+					{
+						handleKeyPress(Qt::Key_F34);
+					}
+				}
+			}
+		}
+	}
+	return QWidget::event(event);
 }
 
 Board * BoardView::getBoard()

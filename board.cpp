@@ -28,7 +28,6 @@ void Board::makeNewBoard(int width, int height, int playerNumber)
 	//emit boardChanged();
 }
 
-
 void Board::makeNewPlayers(int playerNumber)
 {
 	players.clear();
@@ -102,7 +101,7 @@ QJsonObject Board::toJSON()
 
 	//tiles
 	QJsonArray tileArray;
-	for(QVector<Tile*> row : tiles)
+	for(QVector<Tile*> row : qAsConst(tiles))
 	{
 		QJsonArray innerTileArray;
 		for(Tile* tile : row)
@@ -539,16 +538,14 @@ Direction Board::getNextDirection(Direction direction, int numberOfClockwiseStep
 	{
 	case Direction::north:
 		return Direction::east;
-		break;
 	case Direction::east:
 		return Direction::south;
-		break;
 	case Direction::south:
 		return Direction::west;
-		break;
 	case Direction::west:
 		return Direction::north;
-		break;
+	case Direction::none:
+		return Direction::none;
 	}
 }
 
@@ -558,19 +555,14 @@ QString Board::printDirection(Direction direction)
 	{
 	case Direction::north:
 		return "north";
-		break;
 	case Direction::east:
 		return "east";
-		break;
 	case Direction::south:
 		return "south";
-		break;
 	case Direction::west:
 		return "west";
-		break;
 	case Direction::none:
 		return "none";
-		break;
 	}
 }
 
@@ -632,14 +624,10 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 						currentTile->getPosition().ry() + changeOfYAxis);
 		}
 		setPlayerOnTile(activePlayer, currentTile);
-
-
 	}
-
 	moves++;
 	emit playerMoved(activePlayer, (goal == currentTile && seeker == activePlayer) ? moves : -1);
 	history.append(h);
-
 }
 
 void Board::changeActivePlayer(int playerNumber)
@@ -779,7 +767,6 @@ int Board::switchPlayer(Direction d)
 				//qDebug() << "in 3rd quadrant";
 				tileAngle = tileAngle +180;
 			}
-
 			else if(delta.y()<=0 && delta.x()<0)
 			{
 				//qDebug() << "in 2nd quadrant";
@@ -811,22 +798,24 @@ int Board::switchPlayer(Direction d)
 				minFit = fittingScore;
 				//                qDebug() << "FittingAfter: " << fittingScore << minFit;
 			}
-
-
 		}
 	}
 	if(minFit < largestPossibleFittingScore)
 	{
-		//        qDebug() << "Ergebnis" << min->getPlayer();
+		//qDebug() << "Ergebnis" << min->getPlayer();
 		changeActivePlayer(min->getPlayer());
 		return min->getPlayer();
 	}
-	else{
+	else
+	{
 		return activePlayer;
 	}
 }
 
-void Board::resetMoves(){moves = 0;}
+void Board::resetMoves()
+{
+	moves = 0;
+}
 
 
 
