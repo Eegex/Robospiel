@@ -67,7 +67,7 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 
 	//TODO: Wenn nicht gebraucht ausgrauen...
 
-	mNewStuff =  new QMenu(tr("New"),this);
+    mNewStuff =  new QMenu(tr("New"),this);
 
 	aNewWalls = new QAction(tr("Walls"),this);
 	connect(aNewWalls,&QAction::triggered,view,&BoardView::makeNewWalls);
@@ -87,16 +87,36 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	mNewStuff->addAction(aNewSeeker);
 	mNewStuff->addMenu(mNewGame);
 
-	bar->addMenu(mNewStuff);
+    #ifdef __APPLE__
+    QMenu *menu1 = new QMenu(tr("Edit Board"),this);
+    aEditBoard = new QAction(tr("Edit Board"),this);
+    connect(aEditBoard,&QAction::triggered,this,&MainWidget::editBoard);
+    menu1->addAction(aEditBoard);
+    QMenu *menu2 = new QMenu(tr("Next Target"),this);
+    aNextTarget = new QAction(tr("Next Target"),this);
+    connect(aNextTarget,&QAction::triggered,game,&GameControll::nextTarget);
+    menu2->addAction(aNextTarget);
+    QMenu *menu3 = new QMenu(tr("Settings"),this);
+    aSettings = new QAction(tr("Settings"),this);
+    connect(aSettings,&QAction::triggered,game,&GameControll::showSettings);
+    menu3->addAction(aSettings);
+    bar->addMenu(mNewStuff);
+    bar->addMenu(menu1);
+    bar->addMenu(menu2);
+    bar->addMenu(menu3);
+    #else
+    bar->addMenu(mNewStuff);
 	aEditBoard = new QAction(tr("Edit Board"),this);
 	connect(aEditBoard,&QAction::triggered,this,&MainWidget::editBoard);
-	bar->addAction(aEditBoard);
+    bar->addAction(aEditBoard);
 	aNextTarget = new QAction(tr("Next Target"),this);
 	connect(aNextTarget,&QAction::triggered,game,&GameControll::nextTarget);
-	bar->addAction(aNextTarget);
+    bar->addAction(aNextTarget);
 	aSettings = new QAction(tr("Settings"),this);
 	connect(aSettings,&QAction::triggered,game,&GameControll::showSettings);
-	bar->addAction(aSettings);
+    bar->addAction(aSettings);
+    #endif
+
 }
 
 

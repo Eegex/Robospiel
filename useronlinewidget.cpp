@@ -7,7 +7,6 @@ UserOnlineWidget::UserOnlineWidget(QWidget *parent) : QWidget(parent)
     name->hide();
     biddingBox->hide();
     listWidget->hide();
-    lay->addWidget(listWidget);
     listWidget->hide();
     setOnlineWidget();
     setLayout(lay);
@@ -19,8 +18,10 @@ void UserOnlineWidget::setOnlineWidget()
     biddingBox->setMinimum(1);
     biddingBox->setSingleStep(1);
     bidBtn->setText(BID_BTN_TEXT);
+    lay->addWidget(name);
     lay->addWidget(biddingBox);
     lay->addWidget(bidBtn);
+    lay->addWidget(listWidget);
     name->setText(username);
     name->show();
 
@@ -28,9 +29,11 @@ void UserOnlineWidget::setOnlineWidget()
     listWidget->setColumnCount(2);
     QTableWidgetItem *newItem = new QTableWidgetItem(tr("%1").arg((2)*(2)));
     newItem->setText(username);
+    newItem->setData(1,userId);
     listWidget->setItem(0, 0, newItem);
     QTableWidgetItem *newItem2 = new QTableWidgetItem(tr("%1").arg((2)*(3)));
     newItem2->setText(QString::number(userBidding));
+    newItem2->setData(1,userId);
     listWidget->setItem(0, 1, newItem2);
 
     listWidget->show();
@@ -41,6 +44,14 @@ void UserOnlineWidget::setOnlineWidget()
 
 void UserOnlineWidget::setBidding(int bidding)
 {
+    for(QTableWidgetItem *item : listWidget->findItems(username,0))
+    {
+        if(item->data(1) == userId && item->text() == QString::number(userBidding))
+        {
+            item->setText(QString::number(bidding));
+            return;
+        }
+    }
     userBidding = bidding;
     emit biddingChangedOnline(userBidding);
 }
