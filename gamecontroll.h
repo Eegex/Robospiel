@@ -12,7 +12,6 @@
 #include "board.h"
 #include "Direction.h"
 
-
 class GameControll : public QObject
 {
 	Q_OBJECT

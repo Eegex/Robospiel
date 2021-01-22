@@ -626,6 +626,7 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 		setPlayerOnTile(activePlayer, currentTile);
 	}
 	moves++;
+    goalHit = (goal == currentTile && seeker == activePlayer);
 	emit playerMoved(activePlayer, (goal == currentTile && seeker == activePlayer) ? moves : -1);
 	history.append(h);
 }
