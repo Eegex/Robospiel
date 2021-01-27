@@ -26,7 +26,8 @@ class MainWidget : public QWidget
 public:
 	explicit MainWidget(QWidget *parent = nullptr);
 	void setMenuBar(QMenuBar * bar);
-	void addExistingUser(User *user);
+    void addExistingUser(User *user);
+    void enableTimerSkip(bool boolean);
 private slots:
 	void updateTimer(int remaining);
 	void changeBidding(int bidding, QUuid id);
@@ -38,6 +39,7 @@ private slots:
 	void createBoard();
     void initializeUser();
 	void updateGuide(const QString & txt);
+    void enableMenus(bool boolean);
 private:
 	QVector<User*> users;
 	int currentMoves = 0; //What the fuck // +1
@@ -49,6 +51,7 @@ private:
 	NetworkView * networkView = nullptr;
 	LeaderBoardWidget * leaderboard = nullptr;
 	QLCDNumber * lcd = nullptr;
+    QPushButton * skipBtn = nullptr;
 	QMenuBar * menuBar = nullptr;
 	QAction * aNetworking = nullptr;
 	QAction * aEditBoard = nullptr;
@@ -69,6 +72,7 @@ private:
 	QAction * aNewPlayers = nullptr;
 	QAction * aNewAll = nullptr;
 	QAction * aNewTarget = nullptr;
+    QAction * aGoToIdle = nullptr;
 	User * getMinBid();
 };
 

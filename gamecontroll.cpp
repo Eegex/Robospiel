@@ -231,7 +231,14 @@ void GameControll::activePlayerChanged(int playerNumber) //Brauchen wir das noch
    if(triggerAction(PlayerAction::playerSwitch, ""))
 	{
 		board->changeActivePlayer(playerNumber);
-	}
+   }
+}
+
+void GameControll::setIdle()
+{
+
+    switchPhase(Phase::idle);
+
 }
 
 GameControll::Phase GameControll::getCurrentPhase() const
@@ -257,6 +264,8 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	{
 		currentPhase = phase;
 		emit updateGuide(tr("idling"));
+        emit enableMenus(true);
+        emit enableTimerSkip(false);
 		return true;
 	}
 	case Phase::search:
@@ -265,6 +274,8 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 		{
 			currentPhase = phase;
 			emit updateGuide(tr("start bidding"));
+            emit enableMenus(false);
+            emit enableTimerSkip(false);
 			return true;
 		}
 		break;
@@ -276,10 +287,12 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 			{
 				currentPhase = phase;
 				emit updateGuide(tr("counting down"));
-				timeLeft = 60; //60
+                timeLeft = 60; //60
 				emit time(timeLeft);
 				countdown.start();
 			}
+            emit enableMenus(false);
+            emit enableTimerSkip(true);
 			return true;
 		}
 		break;
@@ -292,6 +305,8 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 			//Set Player to player with minimum bid, aka first player after being sorted
 			currentPhase = phase;
 			emit updateGuide(tr("present your solutions"));
+            emit enableMenus(false);
+            emit enableTimerSkip(false);
 			return true;
 		}
 		break;
@@ -302,6 +317,8 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 		{
 			currentPhase = phase;
 			emit updateGuide(tr("time to show off"));
+            emit enableMenus(false);
+            emit enableTimerSkip(false);
 			return true;
 		}
 		break;
@@ -343,10 +360,21 @@ void GameControll::updateTimer()
 {
 	if(--timeLeft <= 0)
 	{
-		countdown.stop();
-		switchPhase(Phase::presentation);
+        endTimer();
 	}
 	emit time(timeLeft);
+}
+
+void GameControll::endTimer(){
+    if(currentPhase == Phase::countdown){
+        emit time(0);
+        countdown.stop();
+        switchPhase(Phase::presentation);
+    }
+    else{
+        qDebug() << "tried to end timer that wasn't running";
+    }
+
 }
 
 SettingsDialog * GameControll::getSettingsDialog()

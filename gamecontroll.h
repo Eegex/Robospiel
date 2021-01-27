@@ -29,7 +29,8 @@ public:
 	bool showTopBidding();
 	void triggerActionsWithData(PlayerAction action, User *user);
 	QJsonObject toJSON();
-	static GameControll *fromJSON(QJsonObject json);
+    static GameControll *fromJSON(QJsonObject json);
+    void endTimer();
 public slots:
 	void showSettings();
 	void setMapping(QVector<KeyMapping *> mapping);
@@ -38,6 +39,7 @@ public slots:
 	QUuid getActiveUserID();
 	void setActiveUserID(QUuid id);
 	void activePlayerChanged(int playerNumber);
+    void setIdle();
 private:
 	Phase currentPhase = Phase::idle; //freeplay
 	SettingsDialog * settings = nullptr;
@@ -58,9 +60,11 @@ signals:
 	void biddingDone();
 	void newOnlineUser(User* user);
 	void updateGuide(const QString & txt);
+    void enableMenus(bool boolean);
+    void enableTimerSkip(bool boolean);
 private slots:
 	void updateTimer();
-	bool switchPhase(GameControll::Phase phase);
+    bool switchPhase(GameControll::Phase phase);
 	void exeQTAction(QJsonObject data);
 	void sendToServerWithData(PlayerAction a, QJsonObject info);
 };

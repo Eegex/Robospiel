@@ -7,6 +7,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	game = new GameControll(this);
 	view = new BoardView(this);
 	leaderboard = new LeaderBoardWidget(this);
+    skipBtn = new QPushButton("Skip", this);
 	view->setBoard(game->setBoard(new Board(16, 16, 5)));
 	view->setMapping(game->getMapping());
 	connect(view,&BoardView::action,game,&GameControll::triggerAction);
@@ -25,7 +26,9 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	glMain->addWidget(dlGuide,0,0,1,2,Qt::AlignHCenter);
 	glMain->addWidget(view,1,0,3,1,Qt::AlignCenter);
 	glMain->addWidget(lcd,1,1,Qt::AlignCenter);
-	glMain->addWidget(leaderboard,2,1,Qt::AlignCenter);
+    glMain->addWidget(skipBtn,2,1,Qt::AlignCenter);
+    skipBtn->setEnabled(false);
+    glMain->addWidget(leaderboard,3,1,Qt::AlignCenter);
 	connect(game,&GameControll::time,this,&MainWidget::updateTimer);
 	connect(game,&GameControll::updateGuide,this,&MainWidget::updateGuide);
 	adjustSize();
@@ -34,8 +37,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	{
 		leaderboard->sortBy(bid);
 		game->setActiveUserID(leaderboard->getUsers()->first()->getId());
-		qDebug()<<"Bidding is done, Users are sorted, initial player is: "<<leaderboard->getUsers()->first()->getName()<<" with id "<<game->getActiveUserID();
-	});
+        qDebug()<<"Bidding is done, Users are sorted, initial player is: "<<leaderboard->getUsers()->first()->getName()<<" with id "<<game->getActiveUserID();
+    });
 	connect(leaderboard->getUserOnlineWidget(), &UserOnlineWidget::userAdded, this, &MainWidget::addUser);
 	connect(leaderboard->getUserOnlineWidget(), &UserOnlineWidget::biddingChangedOnline,this,&MainWidget::changeOnlyBidding);
 	connect(game->getSettingsDialog(), &SettingsDialog::usernameChanged, leaderboard, &LeaderBoardWidget::setUsername);
@@ -43,6 +46,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(game, &GameControll::newOnlineUser, this, &MainWidget::addExistingUser);
 	connect(game, &GameControll::actionTriggered, this, &MainWidget::calculateGameStatus);
 	connect(leaderboard->getNetworkView(), &NetworkView::leaderboradOnline, this, &MainWidget::initializeUser);
+    connect(skipBtn, &QPushButton::released, game, &GameControll::endTimer);
 }
 
 void MainWidget::setMenuBar(QMenuBar * bar)
@@ -56,6 +60,7 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	waPlayer = new QWidgetAction(this);
 	sbPlayer = new QSpinBox(this);
 	aNewBoard = new QAction(tr("Create Board"),this);
+    aGoToIdle = new QAction(tr("Idle"),this);
 	connect(aNewBoard,&QAction::triggered,this,&MainWidget::createBoard);
 	sbHeight->setMinimum(5);
 	sbHeight->setValue(view->getBoard()->getSize().height());
@@ -106,6 +111,7 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 
 	bar->addMenu(mNewStuff);
 
+
 	aEditBoard = new QAction(tr("Edit Board"),this);
 	connect(aEditBoard,&QAction::triggered,this,&MainWidget::editBoard);
 	bar->addAction(aEditBoard);
@@ -115,6 +121,12 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	aSettings = new QAction(tr("Settings"),this);
 	connect(aSettings,&QAction::triggered,game,&GameControll::showSettings);
 	bar->addAction(aSettings);
+
+    connect(aGoToIdle, &QAction::triggered, game, &GameControll::setIdle);
+    bar->addAction(aGoToIdle);
+
+    connect(game, &GameControll::enableMenus, this, &MainWidget::enableMenus);
+    connect(game, &GameControll::enableTimerSkip, this, &MainWidget::enableTimerSkip);
 }
 
 //this method is only for offline-users
@@ -205,7 +217,19 @@ void MainWidget::createBoard()
 
 void MainWidget::updateGuide(const QString & txt)
 {
-	dlGuide->setText(txt);
+    dlGuide->setText(txt);
+}
+
+void MainWidget::enableMenus(bool boolean)
+{
+    mNewStuff->setEnabled(boolean);
+    aSettings->setEnabled(boolean);
+    aEditBoard->setEnabled(boolean);
+
+}
+
+void MainWidget::enableTimerSkip(bool boolean){
+    skipBtn->setEnabled(boolean);
 }
 
 void MainWidget::editBoard()
