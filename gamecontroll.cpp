@@ -14,7 +14,6 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 	countdown.setSingleShot(false);
 	countdown.setInterval(1s);
 	connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
-
 	connect(this, &GameControll::actionTriggeredWithData, this, &GameControll::sendToServerWithData); //TODO test the connection with both signals
 	connect(this, &GameControll::actionTriggered, this, &GameControll::sendToServer);
 	connect(&Client::getInstance(), &Client::actionReceived, this, &GameControll::exeQTAction);
@@ -49,8 +48,6 @@ GameControll* GameControll::fromJSON(QJsonObject json)
 	}
 	return g;
 }
-
-
 
 void GameControll::sendToServerWithData(PlayerAction a, QJsonObject info)
 {
@@ -144,6 +141,7 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 		case movePlayerSouth:
 		case movePlayerWest:
 				board->moveActivePlayer(static_cast<Direction>(a - PlayerAction::movement));
+                calculateGameStatus();
 				break;
 		case switchPlayerEast:
 		case switchPlayerNorth:
@@ -152,11 +150,10 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 			board->switchPlayer(static_cast<Direction>(a-PlayerAction::playerSwitch));
 			break;
 		case sendBidding:
-			if(a == PlayerAction::sendBidding)//If timer has not been started, start the dödöööö FINAL COUNTDOWN dödödödö dödödödödö
+            if(a == PlayerAction::sendBidding)//If timer has not been started, start the dödöööö FINAL COUNTDOWN dödödödö dödödödödö
 			{
 				switchPhase(Phase::countdown);
 			}
-
 			break;
 		case revert:
 			board->revert();
@@ -165,7 +162,6 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 			board -> revertToBeginning();
 			break;
 	}
-
 }
 
 void GameControll::triggerActionsWithData(PlayerAction action, User* user)
@@ -189,7 +185,7 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 		{
 			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay) //If online only let the active user move
 			{
-				//we subtract movement from action to get a direction (clever enum numbers)
+                //we subtract movement from action to get a direction (clever enum numbers)
 				emit actionTriggered(action);
 				return true;
 			}
@@ -198,10 +194,8 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 		{
 			if(action != PlayerAction::playerSwitch) //if we don't want a real PlayerSwitch (withDirection), just check if we can do one (by clicking on a player)
 			{
-
 				//board->switchPlayer(static_cast<Direction>(action-PlayerAction::playerSwitch));
 				emit actionTriggered(action); // should this be outside the if?
-
 			}
 			return true;
 		}
@@ -226,6 +220,121 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 	return false;
 }
 
+void GameControll::calculateGameStatus()
+{
+	qDebug()<<"Current Moves are: "<< board->getMoves();
+	QUuid currentPlayer = getActiveUserID();
+	unsigned int activeUserIndex = leaderboard->getBiddingWidgetIndexByID(currentPlayer);
+    if(board->getMoves() >= leaderboard->getUsers()->at(activeUserIndex)->getBidding()) //Needs to be GEQ because otherwise the player could make an extra move as the "reached goal" signal is overriding the failure
+	{
+        if(board->goalHit) //Spieler hat gewonnen, die Runde ist zuende
+        {
+            calculateWinner(board->getMoves());
+        }
+        else
+        {
+            //TODO: Flag um anzuzeigen, dass der Spieler das Ziel erreicht hat?
+            qDebug()<<"User couldn't end the round in the specified bid of "<< leaderboard->getUsers()->at(activeUserIndex)->getBidding()<<", the next user is being drawn";
+            board->resetMoves();
+            if(leaderboard->getNumOfUsers() > 1 && activeUserIndex < leaderboard->getNumOfUsers()-1)//Not at last player yet, noch haben nicht alle versagt
+            {
+                UserBiddingWidget* user = leaderboard->getUsers()->at(++activeUserIndex); //Liste ist bereits sortiert (siehe oben), daher ist der nächste User in der Liste der User mit dem nächsthöheren Bidding
+                setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
+                getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
+                qDebug()<<"Active User is now "<<user->getName();
+            }
+            else //Alles Versager
+            {
+                qDebug()<<"No User could end the round in their specified bid.";
+                leaderboard->sortBy(points);
+                nextTarget();
+            }
+        }
+	}
+}
+
+//this method is only for offline-users
+void GameControll::addUser(struct UserData * newUser)
+{
+	qDebug()<<"adduser in MainWidget";
+	User *u = new User(newUser->name, newUser->colour, this);
+	users.append(u);
+	qDebug()<< u->getName();
+	// adds new user in the frontend
+	leaderboard->addUser(u);
+	connect(this, &GameControll::newRound, leaderboard->getUsers()->last(), &UserBiddingWidget::resetBidding);
+	connect(this, &GameControll::biddingDone, leaderboard->getUsers()->last(), &UserBiddingWidget::deactivateBtn);
+	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, &GameControll::changeBidding);
+	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingReset, this, &GameControll::changeBidding);
+	connect(leaderboard->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int, const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
+	{
+		triggerAction(PlayerAction::sendBidding, id);
+	});
+}
+
+void GameControll::addExistingUser(User* user)
+{
+	qDebug()<<"addExistingUser";
+	bool b = false;
+	for(User * u: qAsConst(users))
+	{
+		if(u->getId()==user->getId())
+		{
+			b = true;
+		}
+	}
+	if(b == false)
+	{
+		qDebug()<<"add "<<user->getId()<< " into list";
+		users.append(user);
+		triggerAction(PlayerAction::newUser, user->getId());
+		leaderboard->getUserOnlineWidget()->addUserToList(user);
+		leaderboard->getUserOnlineWidget()->updateUserList();
+	}
+
+}
+
+void GameControll::calculateWinner(int moves) //This function is being called when the first player has reached their goal
+{
+	QUuid currentPlayer = getActiveUserID();
+	unsigned int activeUserIndex = leaderboard->getBiddingWidgetIndexByID(currentPlayer);
+	nextTarget(); //Generate a new target, this should reset the current LeaderBoardWidget
+	leaderboard->getUsers()->at(activeUserIndex)->incrementPoints(); //Increment the number of points of the player that's hit their goal
+	leaderboard->sortBy(points);
+	qDebug()<<"User "<<leaderboard->getUsers()->at(activeUserIndex)->getName()<<" has successfully ended the round with "<<moves<<" moves, their current points are "<<leaderboard->getUsers()->at(activeUserIndex)->getPoints();
+	board->resetMoves(); //This needs to be done because the actionTriggered will set it to 1 immediately after a goal is hit so the next player has 1 fewer move which would be bad
+}
+
+void GameControll::changeBidding(int bidding, QUuid id)
+{
+	qDebug()<<"Called Function Change Bidding from "<<id.toString()<< "to" << bidding;
+	for (User *u: qAsConst(users))
+	{
+		if (u->getId() == id)
+		{
+			u->setBidding(bidding);
+			break;
+		}
+	}
+}
+
+void GameControll::changeOnlyBidding(int bidding)
+{
+	qDebug()<<"changeOnly Bidding to"<<bidding;
+	users.at(0)->setBidding(bidding);
+	triggerAction(PlayerAction::enterBidding, users.at(0)->getId());
+}
+
+// current user of the system is initialzed
+void GameControll::initializeUser()
+{
+	qDebug()<<"initializeUser: ";
+	User *u = new User(leaderboard->getUsername(), leaderboard->getUsercolor(), this);
+	qDebug()<<"username: "<<leaderboard->getUsername()<<" and usercolor: "<< leaderboard->getUsercolor();
+	users.append(u);
+	triggerActionsWithData(PlayerAction::newUser, u);
+}
+
 void GameControll::activePlayerChanged(int playerNumber) //Brauchen wir das noch? Ich dachte wir machen alles mit der ID? - Also momentan ja...
 {
    if(triggerAction(PlayerAction::playerSwitch, ""))
@@ -239,6 +348,39 @@ void GameControll::setIdle()
 
     switchPhase(Phase::idle);
 
+}
+
+void GameControll::setLeaderboard(LeaderBoardWidget * value)
+{
+	leaderboard = value;
+	connect(leaderboard->getUserCreationWidget(), &UserCreationWidget::userAdded, this, &GameControll::addUser);
+	connect(this, &GameControll::biddingDone, this, [&]()
+	{
+		leaderboard->sortBy(bid);
+		setActiveUserID(leaderboard->getUsers()->first()->getId());
+		qDebug()<<"Bidding is done, Users are sorted, initial player is: "<<leaderboard->getUsers()->first()->getName()<<" with id "<< getActiveUserID();
+	});
+	connect(leaderboard->getUserOnlineWidget(), &UserOnlineWidget::userAdded, this, &GameControll::addUser);
+	connect(leaderboard->getUserOnlineWidget(), &UserOnlineWidget::biddingChangedOnline,this,&GameControll::changeOnlyBidding);
+	connect(settings, &SettingsDialog::usernameChanged, leaderboard, &LeaderBoardWidget::setUsername);
+	connect(settings, &SettingsDialog::usercolorChanged, leaderboard, &LeaderBoardWidget::setUsercolor);
+	connect(leaderboard->getNetworkView(), &NetworkView::leaderboradOnline, this, &GameControll::initializeUser);
+}
+
+User * GameControll::getMinBid()
+{
+	User * minBid = users.first();
+	for(User * u:users)
+	{
+		if(u->getBidding() < 100)
+		{
+			if(u->getBidding() < minBid->getBidding() || (u->getBidding() == minBid->getBidding() && u->getLastBiddingTime() < minBid->getLastBiddingTime()))
+			{
+				minBid = u;
+			}
+		}
+	}
+	return minBid;
 }
 
 GameControll::Phase GameControll::getCurrentPhase() const

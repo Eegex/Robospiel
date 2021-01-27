@@ -22,7 +22,7 @@ public:
 	void setColor(QColor c);
 	void setBidding(int b);
 	void addPoints(int p);
-	QDateTime getLastBidding() const;
+	unsigned long getLastBiddingTime() const;
 
 private:
 	QString name;
@@ -30,7 +30,7 @@ private:
 	QUuid id;
 	int bidding;
 	int points;
-	QDateTime lastBidding;
+	unsigned long lastBiddingTime;
 
 	static int userCount;
 

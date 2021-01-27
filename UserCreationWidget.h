@@ -18,18 +18,21 @@ public:
     explicit UserCreationWidget(QWidget *parent = nullptr);
 
 private:
-    QGridLayout * lay = new QGridLayout(this);
     QPushButton * addUserBtn = new QPushButton("Spieler hinzufügen", this); //Translate-Funktion
-    QPushButton * addColourBtn = new QPushButton("Farbe hinzufügen", this);
-    QColor * UserColor = new QColor();
     QColorDialog * userColourPicker = new QColorDialog();
     QLineEdit * userNamePicker = new QLineEdit();
+    QGridLayout * lay = new QGridLayout(this);
+    QPushButton * addColourBtn = new QPushButton("Farbe hinzufügen", this);
+    QColor * UserColor = new QColor();
     unsigned int numOfUsers = 0;
 
 public slots:
     void addUser();
     void addColour();
-    void resetButtonColour();
+    void resetFields();
+    QPushButton * getAddBtn();
+    QColorDialog * getColorDialog();
+    QLineEdit * getLineEdit();
 signals:
     void userAdded(struct UserData * newUser); //Argument: Nutzer
 };

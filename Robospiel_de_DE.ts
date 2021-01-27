@@ -2,6 +2,34 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de_DE">
 <context>
+    <name>GameControll</name>
+    <message>
+        <location filename="gamecontroll.cpp" line="259"/>
+        <source>idling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="267"/>
+        <source>start bidding</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="278"/>
+        <source>counting down</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="294"/>
+        <source>present your solutions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="304"/>
+        <source>time to show off</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>KeyInput</name>
     <message>
         <location filename="keyinput.cpp" line="25"/>
@@ -110,38 +138,77 @@
 <context>
     <name>MainWidget</name>
     <message>
-        <location filename="mainwidget.cpp" line="44"/>
         <source>New Board</source>
-        <translation>Neues Spielbrett</translation>
+        <translation type="vanished">Neues Spielbrett</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="47"/>
+        <location filename="mainwidget.cpp" line="70"/>
         <source>Height:</source>
         <translation>Höhe:</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="51"/>
+        <location filename="mainwidget.cpp" line="73"/>
         <source>Width:</source>
         <translation>Breite:</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="55"/>
+        <location filename="mainwidget.cpp" line="76"/>
         <source>Player count:</source>
         <translation>Spieleranzahl:</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="57"/>
+        <location filename="mainwidget.cpp" line="58"/>
         <source>Create Board</source>
         <translation>Spielbrett erstellen</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="61"/>
-        <location filename="mainwidget.cpp" line="124"/>
+        <location filename="mainwidget.cpp" line="51"/>
+        <source>Board</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="83"/>
+        <source>New</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="85"/>
+        <source>Walls</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="87"/>
+        <source>Seeker</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="89"/>
+        <source>Players</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="91"/>
+        <source>All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="93"/>
+        <source>Target</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="105"/>
+        <location filename="mainwidget.cpp" line="236"/>
         <source>Edit Board</source>
         <translation>Spielbrett bearbeiten</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="67"/>
+        <location filename="mainwidget.cpp" line="108"/>
+        <source>Next Target</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="111"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
@@ -150,20 +217,19 @@
         <translation type="vanished">Netzwerk</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="112"/>
+        <location filename="mainwidget.cpp" line="224"/>
         <source>Stop editing</source>
         <translation>Bearbeiten abschließen</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="64"/>
         <source>New Target</source>
-        <translation>Neues Ziel</translation>
+        <translation type="vanished">Neues Ziel</translation>
     </message>
 </context>
 <context>
     <name>NetworkView</name>
     <message>
-        <location filename="networkview.cpp" line="84"/>
+        <location filename="networkview.cpp" line="93"/>
         <source>Join Server</source>
         <translation>Server beitreten</translation>
     </message>
@@ -204,7 +270,7 @@
     </message>
     <message>
         <location filename="networkview.cpp" line="58"/>
-        <location filename="networkview.cpp" line="85"/>
+        <location filename="networkview.cpp" line="94"/>
         <source>Start Server</source>
         <translation>Starte Server</translation>
     </message>
@@ -235,47 +301,47 @@
         <translation>Zurück</translation>
     </message>
     <message>
-        <location filename="networkview.cpp" line="86"/>
+        <location filename="networkview.cpp" line="95"/>
         <source>Play offline</source>
         <translation>Offline spielen</translation>
     </message>
     <message>
-        <location filename="networkview.cpp" line="125"/>
+        <location filename="networkview.cpp" line="134"/>
         <source>Server couldn&apos;t start. </source>
         <translation>Server konnte nicht gestartet werden. </translation>
     </message>
     <message>
-        <location filename="networkview.cpp" line="129"/>
+        <location filename="networkview.cpp" line="138"/>
         <source>Server is running. </source>
         <translation>Server läuft. </translation>
     </message>
     <message>
-        <location filename="networkview.cpp" line="134"/>
+        <location filename="networkview.cpp" line="143"/>
         <source> client(s) connected to the server. </source>
         <translation> Client(s) verbunden. </translation>
     </message>
     <message>
-        <location filename="networkview.cpp" line="138"/>
+        <location filename="networkview.cpp" line="147"/>
         <source>Server stopped. </source>
         <translation>Server angehalten. </translation>
     </message>
     <message>
-        <location filename="networkview.cpp" line="146"/>
+        <location filename="networkview.cpp" line="155"/>
         <source>Error in client: </source>
         <translation>Fehler im Client: </translation>
     </message>
     <message>
-        <location filename="networkview.cpp" line="150"/>
+        <location filename="networkview.cpp" line="159"/>
         <source>Client is starting... </source>
         <translation>Client startet... </translation>
     </message>
     <message>
-        <location filename="networkview.cpp" line="154"/>
+        <location filename="networkview.cpp" line="163"/>
         <source>Client started. </source>
         <translation>Client gestartet. </translation>
     </message>
     <message>
-        <location filename="networkview.cpp" line="159"/>
+        <location filename="networkview.cpp" line="168"/>
         <source>Client stopped. </source>
         <translation>Client angehalten. </translation>
     </message>
@@ -295,7 +361,7 @@
 <context>
     <name>SettingsDialog</name>
     <message>
-        <location filename="settingsdialog.h" line="44"/>
+        <location filename="settingsdialog.h" line="47"/>
         <source>Save</source>
         <translation>Speichern</translation>
     </message>
@@ -325,18 +391,23 @@
         <translation>Rasterfarbe</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="18"/>
+        <location filename="settingsdialog.cpp" line="14"/>
+        <source>Show top bidder on timer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="settingsdialog.cpp" line="20"/>
         <source>General</source>
         <translation>Allgemein</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="20"/>
-        <location filename="settingsdialog.cpp" line="130"/>
+        <location filename="settingsdialog.cpp" line="22"/>
+        <location filename="settingsdialog.cpp" line="142"/>
         <source>Key mappings</source>
         <translation>Tastenbelegung</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="110"/>
+        <location filename="settingsdialog.cpp" line="118"/>
         <source>New User</source>
         <translation>Neuer Nutzer</translation>
     </message>
@@ -348,6 +419,15 @@
         <location filename="user.cpp" line="21"/>
         <source>user </source>
         <translation>Nutzer </translation>
+    </message>
+</context>
+<context>
+    <name>UserOnlineWidget</name>
+    <message>
+        <location filename="useronlinewidget.cpp" line="29"/>
+        <location filename="useronlinewidget.cpp" line="32"/>
+        <source>%1</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
