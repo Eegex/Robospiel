@@ -150,7 +150,7 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 			board->switchPlayer(static_cast<Direction>(a-PlayerAction::playerSwitch));
 			break;
 		case sendBidding:
-			if(a == PlayerAction::sendBidding)//If timer has not been started, start the dödöööö FINAL COUNTDOWN dödödödö dödödödödö
+            if(a == PlayerAction::sendBidding)//If timer has not been started, start the dödöööö FINAL COUNTDOWN dödödödö dödödödödö
 			{
 				switchPhase(Phase::countdown);
 			}

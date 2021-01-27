@@ -13,12 +13,17 @@ UserCreationWidget::UserCreationWidget(QWidget *parent) : QWidget(parent)
 	lay->addWidget(userNamePicker, 0, 0); //Left
 	lay->addWidget(addColourBtn, 0, 1); //Center
 	lay->addWidget(addUserBtn, 0, 2); //Right
+    setFocus();
+    setFocusPolicy(Qt::TabFocus);
+    setTabOrder(userNamePicker, addColourBtn);
+    setTabOrder(addColourBtn, addUserBtn);
+
 	connect(userColourPicker, &QColorDialog::colorSelected, this, [&](const QColor &colour)
 	{
 	   addColourBtn->setStyleSheet("background-color: "+colour.name());
 	});
 	connect(addUserBtn, &QPushButton::clicked, this, &UserCreationWidget::addUser);
-	connect(addUserBtn, &QPushButton::clicked, this, &UserCreationWidget::resetButtonColour);
+    connect(addUserBtn, &QPushButton::clicked, this, &UserCreationWidget::resetFields);
 	setLayout(lay);
 }
 
@@ -38,5 +43,11 @@ void UserCreationWidget::addUser()
     });
 }
 
-void UserCreationWidget::resetButtonColour(){addColourBtn->setStyleSheet("background-color: 0xFFFFFF");}
+void UserCreationWidget::resetFields(){
+    addColourBtn->setStyleSheet("background-color: 0xFFFFFF");
+    userNamePicker->setText("");
+}
 void UserCreationWidget::addColour(){userColourPicker->show();}
+QPushButton * UserCreationWidget::getAddBtn(){return addUserBtn;}
+QColorDialog * UserCreationWidget::getColorDialog(){return userColourPicker;}
+QLineEdit * UserCreationWidget::getLineEdit(){return userNamePicker;}

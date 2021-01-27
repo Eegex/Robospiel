@@ -8,19 +8,15 @@ LeaderBoardWidget::LeaderBoardWidget(QWidget *parent) : QWidget(parent)
 {
 	userCreationWidget->hide();
 	userOnlineWidget->hide();
-	lay->addWidget(userCreationWidget, numOfUsers, 0);
-	// lay->addWidget(addBtn, numOfUsers, 0);
-	// addBtn->hide();
-	connect(networkView, &NetworkView::leaderboradOnline, this, &LeaderBoardWidget::goOnline);
+    lay->addWidget(userCreationWidget, numOfUsers, 0);
+    connect(networkView, &NetworkView::leaderboradOnline, this, &LeaderBoardWidget::goOnline);
 	connect(networkView, &NetworkView::leaderboradOffline, this, &LeaderBoardWidget::goOffline);
-	if(isOnline == undecided)
+    if(isOnline == undecided)
 	{
 		lay->addWidget(networkView);
-	}
-	// connect(addBtn,&QPushButton::clicked,this,&LeaderBoardWidget::newUser);
+    }
 	setLayout(lay);
-	//connect(userCreationWidget, &UserCreationWidget::userAdded, this, &LeaderBoardWidget::addUser);
-}
+    }
 
 unsigned int LeaderBoardWidget::getBiddingWidgetIndexByID(QUuid id){
 	qDebug()<<"Called Function getBiddingWidgetByID in LeaderBoardWidget with ID "<<id;

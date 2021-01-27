@@ -602,7 +602,9 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 
 		return;
 	}
-	while(!currentTile->getWall(d)&& nextTile->getPlayer()==-1 && (currentTile->getPosition().x()!=targetX || currentTile->getPosition().y()!=targetY))
+    if(!currentTile->getWall(d))
+        moves++;
+    while(!currentTile->getWall(d) && nextTile->getPlayer()==-1 && (currentTile->getPosition().x()!=targetX || currentTile->getPosition().y()!=targetY))
 	{
 		bool nextTileFree = true;
 		for(Tile* player : players)
@@ -625,7 +627,7 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 		}
 		setPlayerOnTile(activePlayer, currentTile);
 	}
-	moves++;
+
     goalHit = (goal == currentTile && seeker == activePlayer);
 	emit playerMoved(activePlayer, (goal == currentTile && seeker == activePlayer) ? moves : -1);
 	history.append(h);
@@ -650,8 +652,9 @@ void Board::revert()
 		{
 			int direction = h.action-PlayerAction::movement;
 			direction = direction>(int) Direction::east ? direction>>2 : direction<<2; //invert direction
-			moveActivePlayer(static_cast<Direction>(direction), h.previousPosition.x(), h.previousPosition.y());
-			moves--;
+            moves -= 2; //Needs to account for moving the active player which will increment the number of moves by one
+            moveActivePlayer(static_cast<Direction>(direction), h.previousPosition.x(), h.previousPosition.y());
+            qDebug()<<"Player reverted their move, current moves are: "<<moves;
 		}
 		if(h.action == PlayerAction::playerSwitch)
 		{
