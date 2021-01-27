@@ -566,7 +566,7 @@ QString Board::printDirection(Direction direction)
 	}
 }
 
-void Board::moveActivePlayer(Direction d, int targetX, int targetY)
+void Board::moveActivePlayer(Direction d, int targetX, int targetY, bool isRevert)
 {
 	int changeOfXAxis = 0;
 	int changeOfYAxis = 0;
@@ -602,7 +602,7 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 
 		return;
 	}
-    if(!currentTile->getWall(d))
+    if(!currentTile->getWall(d) && !isRevert)
         moves++;
     while(!currentTile->getWall(d) && nextTile->getPlayer()==-1 && (currentTile->getPosition().x()!=targetX || currentTile->getPosition().y()!=targetY))
 	{
@@ -652,8 +652,8 @@ void Board::revert()
 		{
 			int direction = h.action-PlayerAction::movement;
 			direction = direction>(int) Direction::east ? direction>>2 : direction<<2; //invert direction
-            moves -= 2; //Needs to account for moving the active player which will increment the number of moves by one
-            moveActivePlayer(static_cast<Direction>(direction), h.previousPosition.x(), h.previousPosition.y());
+            moves--;
+            moveActivePlayer(static_cast<Direction>(direction), h.previousPosition.x(), h.previousPosition.y(), true);
             qDebug()<<"Player reverted their move, current moves are: "<<moves;
 		}
 		if(h.action == PlayerAction::playerSwitch)
