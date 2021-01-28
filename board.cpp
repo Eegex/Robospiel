@@ -636,17 +636,14 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
         history.append(h);
     }
 
-
-}
-
 void Board::changeActivePlayer(int playerNumber)
 {
-    HistoryElement h = HistoryElement();
-    h.action=PlayerAction::playerSwitch;
-    h.previousPlayer=activePlayer;
-    history.append(h);
-    activePlayer = playerNumber;
-    emit boardChanged();
+	HistoryElement h = HistoryElement();
+	h.action=PlayerAction::playerSwitch;
+	h.previousPlayer=activePlayer;
+	history.append(h);
+	activePlayer = playerNumber;
+	emit boardChanged();
 }
 
 void Board::revert()
@@ -813,8 +810,8 @@ int Board::switchPlayer(Direction d)
 	}
 	if(minFit < largestPossibleFittingScore)
 	{
-        //qDebug() << "Ergebnis" << min->getPlayer();
-        changeActivePlayer(min->getPlayer());
+		//qDebug() << "Ergebnis" << min->getPlayer();
+		changeActivePlayer(min->getPlayer());
 		return min->getPlayer();
 	}
 	else

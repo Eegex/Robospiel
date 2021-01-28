@@ -153,7 +153,7 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
         case playerSwitch:
             board->changeActivePlayer(data.value("playerNumber").toInt());
 		case sendBidding:
-			if(a == PlayerAction::sendBidding)//If timer has not been started, start the dödöööö FINAL COUNTDOWN dödödödö dödödödödö
+            if(a == PlayerAction::sendBidding)//If timer has not been started, start the dödöööö FINAL COUNTDOWN dödödödö dödödödödö
 			{
 				switchPhase(Phase::countdown);
 			}
