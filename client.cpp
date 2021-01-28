@@ -33,6 +33,9 @@ void Client::startClient(QString serverAddress, int serverPort)
 
     tcpSocket->connectToHost(serverAddress, serverPort);
 
+    //TODO send user to server
+    //sendMessageToServer()
+
 }
 
 bool Client::sendMessageToServer(QJsonObject data)

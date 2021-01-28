@@ -5,12 +5,11 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 {
 	glMain = new QGridLayout(this);
 	game = new GameControll(this);
-	view = new BoardView(this);
-	leaderboard = new LeaderBoardWidget(this);
-	view->setBoard(game->setBoard(new Board(16, 16, 5)));
-	view->setMapping(game->getMapping());
-	connect(view,&BoardView::action,game,&GameControll::triggerAction);
-	connect(view,&BoardView::activePlayerChanged,game,&GameControll::activePlayerChanged);
+    leaderboard = new LeaderBoardWidget(this);
+
+    initializeView(game->setBoard(new Board(16, 16, 5)), game->getMapping());
+
+
     //connect(view, &BoardView::lastAnimationAfterGoalHitEnded, game, &GameControll::calculateWinner);
 	networkView = new NetworkView;
 	lcd = new QLCDNumber(this);
@@ -23,7 +22,6 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	lcd->setDigitCount(2);
 	dlGuide->setMaximumHeight(30);
 	glMain->addWidget(dlGuide,0,0,1,2,Qt::AlignHCenter);
-	glMain->addWidget(view,1,0,3,1,Qt::AlignCenter);
 	glMain->addWidget(lcd,1,1,Qt::AlignCenter);
 	glMain->addWidget(leaderboard,2,1,2,1,Qt::AlignCenter);
 	connect(game,&GameControll::time,this,&MainWidget::updateTimer);
@@ -152,12 +150,8 @@ void MainWidget::editBoard()
 	}
 	else
 	{
-		view = new BoardView(this);
-		view->setBoard(game->getBoard());
-		view->setMapping(game->getMapping());
-		connect(view,&BoardView::action,game,&GameControll::triggerAction);
-		connect(view,&BoardView::activePlayerChanged,game,&GameControll::activePlayerChanged);
-		glMain->addWidget(view,1,0,3,1,Qt::AlignCenter);
+        initializeView(game->getBoard(), game->getMapping());
+
 		aEditBoard->setText(tr("Edit Board"));
 		delete edit;
 		edit = nullptr;
@@ -179,3 +173,17 @@ void MainWidget::updateTimer(int remaining)
 	lcd->display(remaining);
 }
 
+void MainWidget::initializeView(Board* b, QVector<KeyMapping*>* m)
+{
+    view = new BoardView(this);
+    view->setBoard(b);
+    view->setMapping(m);
+    connect(view,&BoardView::action,game,&GameControll::triggerAction);
+    connect(view,&BoardView::activePlayerChanged,game,[=](int playerNumber)->void
+    {
+        QJsonObject data;
+        data.insert("playerNumber", playerNumber);
+        game->triggerActionsWithData(PlayerAction::playerSwitch, data);
+    });
+    glMain->addWidget(view,1,0,3,1,Qt::AlignCenter);
+}

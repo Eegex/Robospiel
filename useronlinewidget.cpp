@@ -11,6 +11,7 @@ UserOnlineWidget::UserOnlineWidget(QWidget *parent) : QWidget(parent)
     setOnlineWidget();
     setLayout(lay);
     connect(bidBtn,&QPushButton::clicked, this, &UserOnlineWidget::btnPressed);
+    //TODO start Client
 }
 
 void UserOnlineWidget::setOnlineWidget()

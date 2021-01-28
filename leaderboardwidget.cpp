@@ -3,7 +3,7 @@
 #include "UserBiddingWidget.h"
 #include "UserCreationWidget.h"
 #include "user.h"
-
+//contains the offline and online versions of the user-table, as well as the networkview to choose between them and establish network connections.
 LeaderBoardWidget::LeaderBoardWidget(QWidget *parent) : QWidget(parent)
 {
 	userCreationWidget->hide();
@@ -171,13 +171,12 @@ void LeaderBoardWidget::newUser()
 
 void LeaderBoardWidget::goOnline()
 {
-	//TODO if online as client: send your user
-	// TODO: check if client or server, if current user as first user to list
 	isOnline = online;
 	networkView->hide();
 	lay->addWidget(userOnlineWidget);
 	userOnlineWidget->show();
 	lay->update();
+//  TODO  gameControll->->initializeUser
 }
 
 void LeaderBoardWidget::goOffline()
@@ -229,7 +228,7 @@ unsigned int LeaderBoardWidget::getNumOfUsers()
 	return numOfUsers;
 }
 
-unsigned short LeaderBoardWidget::getIsOnline()
+state LeaderBoardWidget::getOnlineState()
 {
 	return isOnline;
 }

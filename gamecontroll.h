@@ -19,19 +19,19 @@ public:
 	enum class Phase{idle, search, countdown, presentation, freeplay};
 	explicit GameControll(QObject *parent = nullptr);
 	void load();
+    bool showTopBidding();
+    bool triggerAction(PlayerAction action, QUuid userID);
+    void triggerActionsWithData(PlayerAction action, QJsonObject data);
+
 	Board * setBoard(Board *newBoard);
-	//bool triggerAction(PlayerAction action, QString user); //String will need to be ID of user
-	bool triggerAction(PlayerAction action, QUuid userID);
-	Board * getBoard() const;
+    Board * getBoard() const;
 	QVector<KeyMapping*> * getMapping();
+    User * getMinBid();
 	Phase getCurrentPhase() const;
 	SettingsDialog * getSettingsDialog();
-	bool showTopBidding();
-	void triggerActionsWithData(PlayerAction action, User *user);
 	QJsonObject toJSON();
 	static GameControll *fromJSON(QJsonObject json);
 	void setLeaderboard(LeaderBoardWidget * value);
-	User * getMinBid();
 
 public slots:
 	void calculateWinner(int moves);
@@ -41,8 +41,7 @@ public slots:
 	void remakeBoard();
 	QUuid getActiveUserID();
 	void setActiveUserID(QUuid id);
-	void activePlayerChanged(int playerNumber);
-	void addExistingUser(User *user);
+    void addOnlineUser(User *user);
 
 private:
 	QVector<User*> users;
@@ -55,11 +54,10 @@ private:
 	QUuid activeUserID;
 	QTimer countdown;
 	int timeLeft;
-	void triggerActionsWithData(PlayerAction action, QJsonObject data=QJsonObject());
 	void sendToServer(PlayerAction a);
 signals:
-	void actionTriggeredWithData(PlayerAction action, QJsonObject additionalData);
-	void actionTriggered(PlayerAction action);
+    void actionTriggeredWithData(PlayerAction action, QJsonObject additionalData);
+    void actionTriggered(PlayerAction action);
 	void time(int secs);
 	void colorsChanged();
 	void newRound();
@@ -74,8 +72,8 @@ private slots:
 	void calculateGameStatus();
 	void changeBidding(int bidding, QUuid id);
 	void changeOnlyBidding(int bidding);
-	void addUser(struct UserData * newUser);
-	void initializeUser();
+    void addOfflineUser(struct UserData * newUser);
+//	void initializeUser();
 };
 
 #endif // GAMECONTROLL_H

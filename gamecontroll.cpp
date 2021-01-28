@@ -49,6 +49,7 @@ GameControll* GameControll::fromJSON(QJsonObject json)
 	return g;
 }
 
+//forwards the message to all clients / triggers the action directly when you are offline
 void GameControll::sendToServerWithData(PlayerAction a, QJsonObject info)
 {
 	qDebug()<<"Send to server with data"<<a<<info;
@@ -70,6 +71,7 @@ void GameControll::sendToServerWithData(PlayerAction a, QJsonObject info)
 	}
 }
 
+//forwards the message to all clients / triggers the action directly when you are offline
 void GameControll::sendToServer(PlayerAction a)
 {
 	qDebug()<<"Send to server"<<a;
@@ -122,33 +124,34 @@ Board * GameControll::setBoard(Board* newBoard)
 	{
 		board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
 	}
+    connect(board, &Board::playerMoved, this, &GameControll::calculateGameStatus);
 	return board;
 }
 
+// executes different actions, because they were send by the server / triggered directly when you are offline
 void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return was needed?
 {
 	qDebug()<<"execute"<<data;
 	PlayerAction a = static_cast<PlayerAction>(data.take("action").toInt());
 	User* user;
+    UserData userData;
 	switch(a)
 	{
-		case newUser:
-			user = new User(data.value("username").toString(), QColor(data.value("usercolor").toString()), QUuid(data.value("id").toString()), this);
-			emit newOnlineUser(user);
-			break;
 		case movePlayerEast:
 		case movePlayerNorth:
 		case movePlayerSouth:
 		case movePlayerWest:
-				board->moveActivePlayer(static_cast<Direction>(a - PlayerAction::movement));
-                calculateGameStatus();
-				break;
+            //we subtract movement from action to get a direction (clever enum numbers)
+            board->moveActivePlayer(static_cast<Direction>(a - PlayerAction::movement));
+            break;
 		case switchPlayerEast:
 		case switchPlayerNorth:
 		case switchPlayerSouth:
 		case switchPlayerWest:
 			board->switchPlayer(static_cast<Direction>(a-PlayerAction::playerSwitch));
 			break;
+        case playerSwitch:
+            board->changeActivePlayer(data.value("playerNumber").toInt());
 		case sendBidding:
 			if(a == PlayerAction::sendBidding)//If timer has not been started, start the dödöööö FINAL COUNTDOWN dödödödö dödödödödö
 			{
@@ -161,21 +164,28 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 		case revertToBeginning:
 			board -> revertToBeginning();
 			break;
+        case newUser:
+            if(leaderboard->getOnlineState()==state::online)
+            {
+                //TODO not testet yet, is not in use
+                user = new User(data.value("username").toString(), QColor(data.value("usercolor").toString()), QUuid(data.value("id").toString()), this);
+                addOnlineUser(user);
+                emit newOnlineUser(user);
+            }
+            else if(leaderboard->getOnlineState()==state::offline)
+            {
+                userData.name = data.value("username").toString();
+                userData.colour = QColor(data.value("usercolor").toString());
+                addOfflineUser(&userData);
+            }
+            break;
 	}
 }
 
-void GameControll::triggerActionsWithData(PlayerAction action, User* user)
-{
-	if(action==PlayerAction::newUser)
-	{
-		QJsonObject data = QJsonObject();
-		data.insert("username", user->getName());
-		data.insert("usercolor", user->getColor().name());
-		data.insert("id", user->getId().toString());
-		emit actionTriggeredWithData(action, data);
-	}
-}
-
+//
+//Don't write actual functionality here! It only sends the actions to the server. Functionality is in exeQTdata()!!!
+//TODO what is the meaning of the return value?
+//
 bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 {
 	qDebug()<<"Called function TriggerAction with parameters "<<action<<" and User ID "<<userID;
@@ -192,12 +202,15 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 		}
 		else if(action & PlayerAction::playerSwitch && (currentPhase == Phase::presentation || currentPhase == Phase::freeplay)) //???
 		{
-			if(action != PlayerAction::playerSwitch) //if we don't want a real PlayerSwitch (withDirection), just check if we can do one (by clicking on a player)
-			{
-				//board->switchPlayer(static_cast<Direction>(action-PlayerAction::playerSwitch));
-				emit actionTriggered(action); // should this be outside the if?
+            if(action == PlayerAction::playerSwitch) //if we don't want a real PlayerSwitch (withDirection), just check if we can do one (by clicking on a player)
+            {
+                return false;
+            }
+            else
+            {
+                emit actionTriggered(action);
+                return true;
 			}
-			return true;
 		}
 		else if(action & PlayerAction::bidding) //TODO submit biddingValue
 		{
@@ -220,6 +233,12 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 	return false;
 }
 
+void GameControll::triggerActionsWithData(PlayerAction action, QJsonObject data)
+{
+    emit actionTriggeredWithData(action, data);
+}
+
+//called after each movement of a player (and when reverting, ...)
 void GameControll::calculateGameStatus()
 {
 	qDebug()<<"Current Moves are: "<< board->getMoves();
@@ -254,7 +273,8 @@ void GameControll::calculateGameStatus()
 }
 
 //this method is only for offline-users
-void GameControll::addUser(struct UserData * newUser)
+//called by exeQTActionWithData when the action is newUser and it is offline
+void GameControll::addOfflineUser(struct UserData * newUser)
 {
 	qDebug()<<"adduser in MainWidget";
 	User *u = new User(newUser->name, newUser->colour, this);
@@ -272,7 +292,8 @@ void GameControll::addUser(struct UserData * newUser)
 	});
 }
 
-void GameControll::addExistingUser(User* user)
+//called by exeQTActionWithData when the action is newUser and it is online
+void GameControll::addOnlineUser(User* user)
 {
 	qDebug()<<"addExistingUser";
 	bool b = false;
@@ -287,7 +308,6 @@ void GameControll::addExistingUser(User* user)
 	{
 		qDebug()<<"add "<<user->getId()<< " into list";
 		users.append(user);
-		triggerAction(PlayerAction::newUser, user->getId());
 		leaderboard->getUserOnlineWidget()->addUserToList(user);
 		leaderboard->getUserOnlineWidget()->updateUserList();
 	}
@@ -318,46 +338,43 @@ void GameControll::changeBidding(int bidding, QUuid id)
 	}
 }
 
-void GameControll::changeOnlyBidding(int bidding)
+void GameControll::changeOnlyBidding(int bidding) //TODO explain! What happens here? In contrast to changeBidding?
 {
 	qDebug()<<"changeOnly Bidding to"<<bidding;
 	users.at(0)->setBidding(bidding);
-	triggerAction(PlayerAction::enterBidding, users.at(0)->getId());
+    triggerAction(PlayerAction::enterBidding, users.at(0)->getId());
 }
 
-// current user of the system is initialzed
-void GameControll::initializeUser()
-{
-	qDebug()<<"initializeUser: ";
-	User *u = new User(leaderboard->getUsername(), leaderboard->getUsercolor(), this);
-	qDebug()<<"username: "<<leaderboard->getUsername()<<" and usercolor: "<< leaderboard->getUsercolor();
-	users.append(u);
-	triggerActionsWithData(PlayerAction::newUser, u);
-}
-
-void GameControll::activePlayerChanged(int playerNumber) //Brauchen wir das noch? Ich dachte wir machen alles mit der ID? - Also momentan ja...
-{
-   if(triggerAction(PlayerAction::playerSwitch, ""))
-	{
-		board->changeActivePlayer(playerNumber);
-	}
-}
+// current user of the system is initialized
+//void GameControll::initializeUser()
+//{
+//	qDebug()<<"initializeUser: ";
+//	User *u = new User(leaderboard->getUsername(), leaderboard->getUsercolor(), this);
+//	qDebug()<<"username: "<<leaderboard->getUsername()<<" and usercolor: "<< leaderboard->getUsercolor();
+//    triggerActionsWithData(PlayerAction::newUser, u); //triggers users.append(u);
+//}
 
 void GameControll::setLeaderboard(LeaderBoardWidget * value)
 {
 	leaderboard = value;
-	connect(leaderboard->getUserCreationWidget(), &UserCreationWidget::userAdded, this, &GameControll::addUser);
+    connect(leaderboard->getUserCreationWidget(), &UserCreationWidget::userAdded, this, [=](UserData* userData)->void
+    {
+        QJsonObject data = QJsonObject();
+        data.insert("username", userData->name);
+        data.insert("usercolor", userData->colour.name());
+        triggerActionsWithData(PlayerAction::newUser, data);
+    });
 	connect(this, &GameControll::biddingDone, this, [&]()
 	{
 		leaderboard->sortBy(bid);
 		setActiveUserID(leaderboard->getUsers()->first()->getId());
 		qDebug()<<"Bidding is done, Users are sorted, initial player is: "<<leaderboard->getUsers()->first()->getName()<<" with id "<< getActiveUserID();
 	});
-	connect(leaderboard->getUserOnlineWidget(), &UserOnlineWidget::userAdded, this, &GameControll::addUser);
+    connect(leaderboard->getUserOnlineWidget(), &UserOnlineWidget::userAdded, this, &GameControll::addOfflineUser); //????
 	connect(leaderboard->getUserOnlineWidget(), &UserOnlineWidget::biddingChangedOnline,this,&GameControll::changeOnlyBidding);
 	connect(settings, &SettingsDialog::usernameChanged, leaderboard, &LeaderBoardWidget::setUsername);
 	connect(settings, &SettingsDialog::usercolorChanged, leaderboard, &LeaderBoardWidget::setUsercolor);
-	connect(leaderboard->getNetworkView(), &NetworkView::leaderboradOnline, this, &GameControll::initializeUser);
+//	connect(leaderboard->getNetworkView(), &NetworkView::leaderboradOnline, this, &GameControll::initializeUser); TODO handle this when client/server is starting
 }
 
 User * GameControll::getMinBid()
@@ -418,7 +435,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 			{
 				currentPhase = phase;
 				emit updateGuide(tr("counting down"));
-                timeLeft = 60; //60
+                timeLeft = 2; //60
 				emit time(timeLeft);
 				countdown.start();
 			}

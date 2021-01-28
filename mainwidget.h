@@ -59,7 +59,8 @@ private:
 	QAction * aNewSeeker = nullptr;
 	QAction * aNewPlayers = nullptr;
 	QAction * aNewAll = nullptr;
-	QAction * aNewTarget = nullptr;
+    QAction * aNewTarget = nullptr;
+    void initializeView(Board *b, QVector<KeyMapping *> *m);
 };
 
 #endif // MAINWIDGET_H

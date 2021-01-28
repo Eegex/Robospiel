@@ -598,10 +598,10 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 				currentTile->getPosition().ry() + changeOfYAxis);
 	if(nextTile == nullptr)
 	{
-		qDebug()<< "nullptr";
-
+        qDebug()<< "nextTile was nullptr";
 		return;
 	}
+    bool actualMovement = false;
 	while(!currentTile->getWall(d)&& nextTile->getPlayer()==-1 && (currentTile->getPosition().x()!=targetX || currentTile->getPosition().y()!=targetY))
 	{
 		bool nextTileFree = true;
@@ -617,6 +617,7 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 			break;
 		}
 		currentTile = nextTile;
+        actualMovement = true;
 		if(!nextTile->getWall(d))
 		{
 			nextTile = getTile(
@@ -625,20 +626,27 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
 		}
 		setPlayerOnTile(activePlayer, currentTile);
 	}
-	moves++;
-    goalHit = (goal == currentTile && seeker == activePlayer);
-	emit playerMoved(activePlayer, (goal == currentTile && seeker == activePlayer) ? moves : -1);
-	history.append(h);
+
+    if(actualMovement)
+    {
+        moves++;
+        qDebug()<<"Moves:"<<moves;
+        goalHit = (goal == currentTile && seeker == activePlayer);
+        emit playerMoved(activePlayer, (goal == currentTile && seeker == activePlayer) ? moves : -1);
+        history.append(h);
+    }
+
+
 }
 
 void Board::changeActivePlayer(int playerNumber)
 {
-	HistoryElement h = HistoryElement();
-	h.action=PlayerAction::playerSwitch;
-	h.previousPlayer=activePlayer;
-	history.append(h);
-	activePlayer = playerNumber;
-	emit boardChanged();
+    HistoryElement h = HistoryElement();
+    h.action=PlayerAction::playerSwitch;
+    h.previousPlayer=activePlayer;
+    history.append(h);
+    activePlayer = playerNumber;
+    emit boardChanged();
 }
 
 void Board::revert()
@@ -649,9 +657,11 @@ void Board::revert()
 		if(h.action & PlayerAction::movement)
 		{
 			int direction = h.action-PlayerAction::movement;
-			direction = direction>(int) Direction::east ? direction>>2 : direction<<2; //invert direction
+            direction = direction>(int) Direction::east ? direction>>2 : direction<<2; //invert direction
+            moves -= 2; //delete the former move and do this action without incrementing moves.
+            // Has to be before moveActivePlayer(), because otherwise calculateGameStatus() would have a wrong number of moves.
 			moveActivePlayer(static_cast<Direction>(direction), h.previousPosition.x(), h.previousPosition.y());
-			moves--;
+            qDebug()<<"Moves:"<<moves;
 		}
 		if(h.action == PlayerAction::playerSwitch)
 		{
@@ -803,8 +813,8 @@ int Board::switchPlayer(Direction d)
 	}
 	if(minFit < largestPossibleFittingScore)
 	{
-		//qDebug() << "Ergebnis" << min->getPlayer();
-		changeActivePlayer(min->getPlayer());
+        //qDebug() << "Ergebnis" << min->getPlayer();
+        changeActivePlayer(min->getPlayer());
 		return min->getPlayer();
 	}
 	else
@@ -816,6 +826,7 @@ int Board::switchPlayer(Direction d)
 void Board::resetMoves()
 {
 	moves = 0;
+    qDebug()<<"Moves:"<<moves;
 }
 
 

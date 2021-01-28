@@ -40,6 +40,7 @@ void Server::startServer(QString address, int port)
 
     connect(server, &QTcpServer::newConnection, &instance, &Server::addClient);
     emit serverStarted(server->serverAddress(), server->serverPort());
+    //TODO add yourself to userlist
 }
 
 int Server::sendMessageToClients(QJsonObject additionalData)
