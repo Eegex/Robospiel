@@ -24,7 +24,7 @@ void BoardView::setBoard(Board * b)
 	connect(board,&Board::playerMoved,this, [&](int playerNumber, int goalHit){
 		if(goalHit!=-1)
 		{
-            goalWaitingToBeEmitted=goalHit;
+			goalWaitingToBeEmitted=goalHit;
 		}
 		playerWidgets.at(playerNumber)->moveAnimated(tileToDesktopCoordinates(board->players.at(playerNumber)), board->players.at(playerNumber)->getPosition(), std::max(width(), height())*1.2);
 	});
@@ -257,22 +257,42 @@ void BoardView::mouseMoveEvent(QMouseEvent * event)
 		QPoint moved = event->pos() - mouseStart;
 		if(moved.x() > 100)
 		{
-			handleKeyPress(Qt::Key_F32);
+			if(Qt::Key_F32 != lastKey) // FIXME: better solution
+			{
+				lastKey = Qt::Key_F32;
+				handleKeyPress(Qt::Key_F32);
+				return;
+			}
 			qDebug() << "east";
 		}
 		else if(moved.x() < -100)
 		{
-			handleKeyPress(Qt::Key_F34);
+			if(Qt::Key_F34 != lastKey) // FIXME: better solution
+			{
+				lastKey = Qt::Key_F34;
+				handleKeyPress(Qt::Key_F34);
+				return;
+			}
 			qDebug() << "west";
 		}
 		else if(moved.y() > 100)
 		{
-			handleKeyPress(Qt::Key_F33);
+			if(Qt::Key_F33 != lastKey) // FIXME: better solution
+			{
+				lastKey = Qt::Key_F33;
+				handleKeyPress(Qt::Key_F33);
+				return;
+			}
 			qDebug() << "south";
 		}
 		else if(moved.y() < -100)
 		{
-			handleKeyPress(Qt::Key_F31);
+			if(Qt::Key_F31 != lastKey) // FIXME: better solution
+			{
+				lastKey = Qt::Key_F31;
+				handleKeyPress(Qt::Key_F31);
+				return;
+			}
 			qDebug() << "north";
 		}
 	}
@@ -294,11 +314,6 @@ void BoardView::keyPressEvent(QKeyEvent * event)
 
 void BoardView::handleKeyPress(int key)
 {
-	if(key == lastKey) // FIXME: better solution
-	{
-		return;
-	}
-	lastKey = key;
 	for(const KeyMapping * k:qAsConst(*mapping))
 	{
 		if(*k == key)
