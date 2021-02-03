@@ -29,8 +29,6 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	glMain->addWidget(skipBtn,2,1,Qt::AlignCenter);
 	skipBtn->setEnabled(false);
 	GameControll::setLeaderboard(leaderboard);
-
-
 	connect(skipBtn, &QPushButton::released, &GameControll::getInstance(), &GameControll::endTimer);
 }
 
@@ -123,6 +121,7 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	connect(&GameControll::getInstance(), &GameControll::enableTimerSkip, this, &MainWidget::enableTimerSkip);
 	connect(sbWidth, SIGNAL(valueChanged(int)), this, SLOT(updatePlayerMaximum(int)));
 	connect(sbHeight, SIGNAL(valueChanged(int)), this, SLOT(updatePlayerMaximum(int)));
+	connectView(view);
 }
 
 void MainWidget::updatePlayerMaximum(int)
@@ -132,6 +131,10 @@ void MainWidget::updatePlayerMaximum(int)
 
 void MainWidget::connectView(BoardView * view)
 {
+	if(!aNewWalls)
+	{
+		return;
+	}
 	connect(aNewWalls,&QAction::triggered,view,&BoardView::makeNewWalls);
 	connect(aNewSeeker,&QAction::triggered,view,&BoardView::makeNewSeeker);
 	connect(aNewPlayers,&QAction::triggered,view,&BoardView::makeNewPlayers);
@@ -144,12 +147,12 @@ void MainWidget::createBoard()
 	if(view)
 	{
 		view->setBoard(GameControll::setBoard(new Board(sbWidth->value(),sbHeight->value(),sbPlayer->value())));
-		glMain->addWidget(view,1,0,3,1,Qt::AlignCenter); //alignment or size dies without this line ¯\_(ツ)_/¯
+		glMain->addWidget(view,1,0,4,1,Qt::AlignCenter); //alignment or size dies without this line ¯\_(ツ)_/¯
 	}
 	else
 	{
 		edit->setBoard(GameControll::setBoard(new Board(sbWidth->value(),sbHeight->value(),sbPlayer->value())));
-		glMain->addWidget(edit,1,0,3,1,Qt::AlignCenter); //same here...
+		glMain->addWidget(edit,1,0,4,1,Qt::AlignCenter); //same here...
 	}
 }
 
@@ -166,7 +169,8 @@ void MainWidget::enableMenus(bool boolean)
 
 }
 
-void MainWidget::enableTimerSkip(bool boolean){
+void MainWidget::enableTimerSkip(bool boolean)
+{
 	skipBtn->setEnabled(boolean);
 }
 
@@ -177,7 +181,7 @@ void MainWidget::editBoard()
 		edit = new BoardEditor(this);
 		edit->setBoard(GameControll::getBoard());
 		connectView(edit);
-		glMain->addWidget(edit,1,0,3,1,Qt::AlignCenter);
+		glMain->addWidget(edit,1,0,4,1,Qt::AlignCenter);
 		aEditBoard->setText(tr("Stop editing"));
 		delete view;
 		view = nullptr;
@@ -219,5 +223,5 @@ void MainWidget::initializeView(Board* b, QVector<KeyMapping*>* m)
 		data.insert("playerNumber", playerNumber);
 		GameControll::triggerActionsWithData(PlayerAction::playerSwitch, data);
 	});
-	glMain->addWidget(view,1,0,3,1,Qt::AlignCenter);
+	glMain->addWidget(view,1,0,4,1,Qt::AlignCenter);
 }

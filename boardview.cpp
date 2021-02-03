@@ -22,19 +22,20 @@ void BoardView::setBoard(Board * b)
 	{
 		addPlayer(i);
 	}
-	connect(board,&Board::playerMoved,this, [&](int playerNumber, int goalHit){
+	connect(board,&Board::playerMoved,this, [&](int playerNumber, int goalHit)
+	{
 		if(goalHit!=-1)
 		{
 			goalWaitingToBeEmitted=goalHit;
 		}
 		playerWidgets.at(playerNumber)->moveAnimated(tileToDesktopCoordinates(board->players.at(playerNumber)), board->players.at(playerNumber)->getPosition(), std::max(width(), height())*1.2);
 	});
-    connect(board,&Board::paintPlayers,this, [&](){
-        for (int i =0;i<playerWidgets.length() ;i++ ) {
+	connect(board,&Board::paintPlayers,this, [&](){
+		for (int i =0;i<playerWidgets.length() ;i++ ) {
 
 
-            playerWidgets.at(i)->repaint();}
-    });
+			playerWidgets.at(i)->repaint();}
+	});
 	goalwidget = new GoalWidget(QSize(20,20),board,this);
 	goalwidget->show();
 	connect(board,&Board::goalMoved,this, [&](){goalwidget->move(tileToDesktopCoordinates(board->goal));});
@@ -270,7 +271,7 @@ void BoardView::mouseMoveEvent(QMouseEvent * event)
 				handleKeyPress(Qt::Key_F32);
 				return;
 			}
-			qDebug() << "east";
+			//qDebug() << "east";
 		}
 		else if(moved.x() < -100)
 		{
@@ -280,7 +281,7 @@ void BoardView::mouseMoveEvent(QMouseEvent * event)
 				handleKeyPress(Qt::Key_F34);
 				return;
 			}
-			qDebug() << "west";
+			//qDebug() << "west";
 		}
 		else if(moved.y() > 100)
 		{
@@ -290,7 +291,7 @@ void BoardView::mouseMoveEvent(QMouseEvent * event)
 				handleKeyPress(Qt::Key_F33);
 				return;
 			}
-			qDebug() << "south";
+			//qDebug() << "south";
 		}
 		else if(moved.y() < -100)
 		{
@@ -300,7 +301,7 @@ void BoardView::mouseMoveEvent(QMouseEvent * event)
 				handleKeyPress(Qt::Key_F31);
 				return;
 			}
-			qDebug() << "north";
+			//qDebug() << "north";
 		}
 	}
 	else

@@ -16,28 +16,28 @@ class GameControll : public QObject
 {
 	Q_OBJECT
 public:
-    static GameControll& getInstance();
+	static GameControll& getInstance();
 
 	enum class Phase{idle, search, countdown, presentation, freeplay};
 
-    static void load();
-    static bool showTopBidding();
-    static bool triggerAction(PlayerAction action, QUuid userID);
-    static void triggerActionsWithData(PlayerAction action, QJsonObject data);
-    static void endTimer(); //?
-    static Board * setBoard(Board *newBoard);
-    static Board * getBoard();
-    static QVector<KeyMapping*> * getMapping();
-    static User * getMinBid();
-    static Phase getCurrentPhase();
-    static SettingsDialog * getSettingsDialog();
-    static QJsonObject toJSON();
-    static void adaptFromJSON(QJsonObject json);
-    static void setLeaderboard(LeaderBoardWidget * value);
-    static void addOnlineUser(User *user);
-    static void initializeUser();
+	static void load();
+	static bool showTopBidding();
+	static void triggerAction(PlayerAction action, QUuid userID);
+	static void triggerActionsWithData(PlayerAction action, QJsonObject data);
+	static void endTimer(); //?
+	static Board * setBoard(Board *newBoard);
+	static Board * getBoard();
+	static QVector<KeyMapping*> * getMapping();
+	static User * getMinBid();
+	static Phase getCurrentPhase();
+	static SettingsDialog * getSettingsDialog();
+	static QJsonObject toJSON();
+	static void adaptFromJSON(QJsonObject json);
+	static void setLeaderboard(LeaderBoardWidget * value);
+	static void addOnlineUser(User *user);
+	static void initializeUser();
 
-    static void initializeConnections();
+	static void initializeConnections();
 public slots:
 	void calculateWinner(int moves);
 	void showSettings();
@@ -49,7 +49,7 @@ public slots:
 	void setIdle();
 
 private:
-    static GameControll instance;
+	static GameControll instance;
 	QVector<User*> users;
 	LeaderBoardWidget * leaderboard = nullptr;
 	Phase currentPhase = Phase::idle; //freeplay
@@ -60,28 +60,28 @@ private:
 	QTimer countdown;
 	int timeLeft;
 
-    explicit GameControll(QObject *parent = nullptr);
+	explicit GameControll(QObject *parent = nullptr);
 	void sendToServer(PlayerAction a);
 signals:
-    void actionTriggeredWithData(PlayerAction action, QJsonObject additionalData);
-    void actionTriggered(PlayerAction action);
+	void actionTriggeredWithData(PlayerAction action, QJsonObject additionalData);
+	void actionTriggered(PlayerAction action);
 	void time(int secs);
 	void colorsChanged();
 	void newRound();
 	void biddingDone();
 	void newOnlineUser(User* user);
 	void updateGuide(const QString & txt);
-    void enableMenus(bool boolean);
-    void enableTimerSkip(bool boolean);
+	void enableMenus(bool boolean);
+	void enableTimerSkip(bool boolean);
 private slots:
 	void updateTimer();
-    bool switchPhase(GameControll::Phase phase);
+	bool switchPhase(GameControll::Phase phase);
 	void exeQTAction(QJsonObject data);
 	void sendToServerWithData(PlayerAction a, QJsonObject info);
 	void calculateGameStatus();
 	void changeBidding(int bidding, QUuid id);
 	void changeOnlyBidding(int bidding);
-    void addOfflineUser(struct UserData * newUser);
+	void addOfflineUser(struct UserData * newUser);
 };
 
 #endif // GAMECONTROLL_H

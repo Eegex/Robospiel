@@ -19,7 +19,7 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 	countdown.setSingleShot(false);
 	countdown.setInterval(1s);
 	connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
-	connect(this, &GameControll::actionTriggeredWithData, this, &GameControll::sendToServerWithData); //TODO test the connection with both signals
+	connect(this, &GameControll::actionTriggeredWithData, this, &GameControll::sendToServerWithData);
 	connect(this, &GameControll::actionTriggered, this, &GameControll::sendToServer);
 }
 
@@ -40,7 +40,7 @@ QJsonObject GameControll::toJSON() //TODO test both ways of JSON
 	json.insert("remainingTimerTime", instance.countdown.remainingTime());
 	json.insert("timeLeft", instance.timeLeft);
 	QJsonArray jsonUsers;
-	for(User* user : instance.users)
+	for(User * user : qAsConst(instance.users))
 	{
 		jsonUsers.append(user->toJSON());
 	}
@@ -178,6 +178,32 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 	UserData userData;
 	switch(a)
 	{
+//		case none:
+//			break;
+//		case movement:
+//			break;
+//		case bidding:
+//			break;
+//		case enterBidding:
+//			break;
+//		case clearBidding:
+//			break;
+//		case other:
+//			break;
+//		case giveUp:
+//			break;
+//		case freePlay:
+//			break;
+//		case PlayerAction::user:
+//			break;
+//		case changedUsername:
+//			break;
+//		case changedUserColor:
+//			break;
+//		case update:
+//			break;
+//		case boardUpdate:
+//			break;
 		case movePlayerEast:
 		case movePlayerNorth:
 		case movePlayerSouth:
@@ -194,11 +220,11 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 		case playerSwitch:
 			board->changeActivePlayer(data.value("playerNumber").toInt());
 		case sendBidding:
-				switchPhase(Phase::countdown);
-				if (leaderboard->getOnlineState()==state::online)
-				{
+			switchPhase(Phase::countdown);
+			if (leaderboard->getOnlineState()==state::online)
+			{
 				leaderboard->getUserOnlineWidget()->setBidding(QUuid(data.value("id").toString()),data.value("bidding").toInt());
-				}
+			}
 
 			break;
 		case revert:
@@ -232,49 +258,43 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 //Don't write actual functionality here! It only sends the actions to the server. Functionality is in exeQTdata()!!!
 //TODO what is the meaning of the return value?
 //
-bool GameControll::triggerAction(PlayerAction action, QUuid userID)
+void GameControll::triggerAction(PlayerAction action, QUuid userID)
 {
 	qDebug()<<"Called function TriggerAction with parameters "<<action<<" and User ID "<<userID;
-		if(action & PlayerAction::movement)
+	if(action & PlayerAction::movement)
+	{
+		if(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay) //If online only let the active user move
 		{
-			if(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay) //If online only let the active user move
-			{
-				//we subtract movement from action to get a direction (clever enum numbers)
-				emit instance.actionTriggered(action);
-				return true;
-			}
+			emit instance.actionTriggered(action);
+			return;
 		}
-		else if(action & PlayerAction::playerSwitch && (instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay)) //???
+	}
+	else if(action & PlayerAction::playerSwitch && (instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay)) //???
+	{
+		if(action != PlayerAction::playerSwitch)
 		{
-			if(action == PlayerAction::playerSwitch) //if we don't want a real PlayerSwitch (withDirection), just check if we can do one (by clicking on a player)
-			{
-				return false;
-			}
-			else
-			{
-				emit instance.actionTriggered(action);
-				return true;
-			}
+			emit instance.actionTriggered(action);
+			return;
 		}
-		else if(action & PlayerAction::bidding) //TODO submit biddingValue
+	}
+	else if(action & PlayerAction::bidding) //TODO submit biddingValue
+	{
+		qDebug()<<"Currently in GameControl: triggerAction -> bidding, current Phase is "<<static_cast<int>(instance.currentPhase);
+		if(instance.currentPhase == Phase::search || instance.currentPhase == Phase::countdown)
 		{
-			qDebug()<<"Currently in GameControl: triggerAction -> bidding, current Phase is "<<static_cast<int>(instance.currentPhase);
-			if(instance.currentPhase == Phase::search || instance.currentPhase == Phase::countdown)
-			{
-				emit instance.actionTriggered(action); //TODO maybe inside the if?
-				return true;
-			}
+			emit instance.actionTriggered(action);
+			return;
 		}
-		else if(action & PlayerAction::other)
+	}
+	else if(action & PlayerAction::other)
+	{
+		if(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay)
 		{
-			if(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay)
-			{
-				emit instance.actionTriggered(action);
-				return true;
-			}
+			emit instance.actionTriggered(action);
+			return;
 		}
-	//}
-	return false;
+	}
+	return;
 }
 
 void GameControll::triggerActionsWithData(PlayerAction action, QJsonObject data)
@@ -304,7 +324,8 @@ void GameControll::triggerActionsWithData(PlayerAction action, QJsonObject data)
 //called after each movement of a player (and when reverting, ...)
 void GameControll::calculateGameStatus()
 {
-	if(leaderboard->getOnlineState() == offline){
+	if(leaderboard->getOnlineState() == offline)
+	{
 		qDebug()<<"Current Moves are: "<< board->getMoves();
 		QUuid currentPlayer = getActiveUserID();
 		unsigned int activeUserIndex = leaderboard->getOfflineLeaderBoardWidget()->getBiddingWidgetIndexByID(currentPlayer);
@@ -318,7 +339,6 @@ void GameControll::calculateGameStatus()
 			{
 				//TODO: Flag um anzuzeigen, dass der Spieler das Ziel erreicht hat?
 				qDebug()<<"User couldn't end the round in the specified bid of "<< leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->getBidding()<<", the next user is being drawn";
-				board->resetMoves();
 				if(leaderboard->getOfflineLeaderBoardWidget()->getNumOfUsers() > 1 && activeUserIndex < leaderboard->getNumOfUsers()-1)//Not at last player yet, noch haben nicht alle versagt
 				{
 					UserBiddingWidget* user = leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(++activeUserIndex); //Liste ist bereits sortiert (siehe oben), daher ist der nächste User in der Liste der User mit dem nächsthöheren Bidding
@@ -530,7 +550,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 			{
 				currentPhase = phase;
 				emit updateGuide(tr("counting down"));
-				timeLeft = 2; //60
+				timeLeft = 60; //60
 				emit time(timeLeft);
 				countdown.start();
 			}

@@ -43,21 +43,21 @@ public:
 	QColor getBackground() const;
 	QColor getPrimary() const;
 	QColor getGrid() const;
-    QColor getPlayerColorLow() const;
-    QColor getPlayerColorHigh() const;
+	QColor getPlayerColorLow() const;
+	QColor getPlayerColorHigh() const;
 	void makeNewPlayers(int playerNumber);
 	void makeNewWalls(int height, int width);
 	void makeNewGoal();
 	void makeNewSeeker(bool random);
 	int getMoves() const;
-    void updateColors(QColor b, QColor w, QColor g, QColor p1, QColor p2);
+	void updateColors(QColor b, QColor w, QColor g, QColor p1, QColor p2);
 public slots:
 	void startNewRound();
 	int switchPlayer(Direction d);
 signals:
 	void boardChanged();
-    void paintPlayers();
-    void playerMoved(int playerNumber, int goalHit); //-1 when goal was not reached, number of moves otherwise
+	void paintPlayers();
+	void playerMoved(int playerNumber, int goalHit); //-1 when goal was not reached, number of moves otherwise
 	void goalMoved();
 protected:
 	void placeGoalAwayFromSeeker();
@@ -69,8 +69,8 @@ private:
 	QColor background = QColor(0xff,0xff,0);
 	QColor primary = QColor(0xff,0,0xff);
 	QColor grid = QColor(0,0xff,0xff);
-    QColor playerHigh = QColor(0,0xff,0xff);
-    QColor playerLow = QColor(0,0xff,0xff);
+	QColor playerHigh = QColor(0,0xff,0xff);
+	QColor playerLow = QColor(0,0xff,0xff);
 
 	Tile *getRandomUnoccupiedTile();
 	// for each side: -1 because there are more tiles than walls, -2 because the walls next to the sides shouldn't be set, so 3*4 = 12
@@ -85,9 +85,9 @@ private:
 	Direction getNextDirection(Direction direction, int numberOfClockwiseSteps);
 	bool placeOuterWallIfFits(Tile *, Direction direction);
 	void placeGoalInCorner();
-    Board();
-    bool isTileCorner(Tile *tile);
-    Tile *getRandomTile();
+	Board();
+	bool isTileCorner(Tile *tile);
+	Tile *getRandomTile();
 };
 
 #endif // BOARD_H
