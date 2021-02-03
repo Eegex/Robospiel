@@ -656,7 +656,7 @@ void Board::revert()
 		{
 			int direction = h.action-PlayerAction::movement;
 			direction = direction>(int) Direction::east ? direction>>2 : direction<<2; //invert direction
-			moves -= 2; //delete the former move and do this action without incrementing moves.
+            moves -= 2; //delete the former move and do this action without incrementing moves.
 			// Has to be before moveActivePlayer(), because otherwise calculateGameStatus() would have a wrong number of moves.
 			moveActivePlayer(static_cast<Direction>(direction), h.previousPosition.x(), h.previousPosition.y());
 			qDebug()<<"Moves:"<<moves;

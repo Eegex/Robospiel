@@ -6,9 +6,9 @@
 //contains the offline and online versions of the user-table, as well as the networkview to choose between them and establish network connections.
 LeaderBoardWidget::LeaderBoardWidget(QWidget *parent) : QWidget(parent)
 {
-	userCreationWidget->hide();
-	userOnlineWidget->hide();
-    lay->addWidget(userCreationWidget, numOfUsers, 0);
+    //userCreationWidget->hide();
+    userOnlineWidget->hide();
+    //lay->addWidget(userCreationWidget, numOfUsers, 0);
     connect(networkView, &NetworkView::leaderboardOnline, this, &LeaderBoardWidget::goOnline);
     connect(networkView, &NetworkView::leaderboardOffline, this, &LeaderBoardWidget::goOffline);
     if(isOnline == undecided)
@@ -18,7 +18,7 @@ LeaderBoardWidget::LeaderBoardWidget(QWidget *parent) : QWidget(parent)
 	setLayout(lay);
     }
 
-unsigned int LeaderBoardWidget::getBiddingWidgetIndexByID(QUuid id){
+/*unsigned int LeaderBoardWidget::getBiddingWidgetIndexByID(QUuid id){
 	qDebug()<<"Called Function getBiddingWidgetByID in LeaderBoardWidget with ID "<<id;
 	for(unsigned int i = 0; i<numOfUsers; i++)
 	{
@@ -136,9 +136,9 @@ void LeaderBoardWidget::sortBy(unsigned int strategy) //This is being called aft
 		}
 	}
 	updateLayout();
-}
+}*/
 
-void LeaderBoardWidget::addUser(User * newUser)
+/*void LeaderBoardWidget::addUser(User * newUser)
 {
 	qDebug()<<"LeaderBoardWidget: AddUser: Add user with name: "<<newUser->getName()<<"and id"<<newUser->getId().toString()<<"and colour "<<(newUser->getColor().isValid()?newUser->getColor().name():"0x000000");
 	UserBiddingWidget * newWidget = new UserBiddingWidget(this); //Create new BiddingWidget to display
@@ -163,7 +163,7 @@ void LeaderBoardWidget::newUser() //not used?
 	qDebug()<<"NewUser in LeaderBoardWidget";
 	userCreationWidget->show(); //Show creation widget
 	userCreationWidget->setFocus(); //Set focus to specific window
-}
+}*/
 
 void LeaderBoardWidget::goOnline()
 {
@@ -179,8 +179,9 @@ void LeaderBoardWidget::goOffline()
 {
 	qDebug()<<"Called Function goOffline";
 	isOnline = offline;
-	networkView->hide();
-	userCreationWidget->show();
+    networkView->hide();
+    lay->addWidget(offlineLeaderBoardWidget);
+    //userCreationWidget->show();
 	// addBtn->setText("Add new User");
 	// addBtn->show();
 	lay->update();
@@ -219,9 +220,19 @@ void LeaderBoardWidget::setUsercolor(QColor color)
 	usercolor = color;
 }
 
+void LeaderBoardWidget::setOfflineLeaderBoardWidget(OfflineLeaderBoardWidget *value)
+{
+offlineLeaderBoardWidget = value;
+}
+
 unsigned int LeaderBoardWidget::getNumOfUsers()
 {
 	return numOfUsers;
+}
+
+OfflineLeaderBoardWidget *LeaderBoardWidget::getOfflineLeaderBoardWidget()
+{
+return offlineLeaderBoardWidget;
 }
 
 state LeaderBoardWidget::getOnlineState()

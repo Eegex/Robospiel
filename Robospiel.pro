@@ -24,6 +24,7 @@ SOURCES += \
     main.cpp \
     mainwidget.cpp \
     mainwindow.cpp \
+    offlineleaderboardwidget.cpp \
     pawnwidget.cpp \
     networkview.cpp \
     playerwidget.cpp \
@@ -53,6 +54,7 @@ HEADERS += \
     mainwidget.h \
     mainwindow.h \
     networkview.h \
+    offlineleaderboardwidget.h \
     pawnwidget.h \
     playerwidget.h \
     server.h \
