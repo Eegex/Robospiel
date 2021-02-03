@@ -49,3 +49,48 @@ void PawnWidget::mouseMoveEvent(QMouseEvent * event)
 	}
 	event->accept();
 }
+
+QColor PawnWidget::getPlayerColor(int playerIndex){ //maybe not the perfect place for this method... but playerWidgets and goalwidgets need it and it's right there...
+    QColor colorLow = board->getPlayerColorLow();
+    QColor colorHigh = board->getPlayerColorHigh();
+    int playerNum = board->players.length();
+     QColor color;
+
+    if(ownPlayerColors){
+
+        playerNum --; //we want the endColor to be displayed!
+
+        double hueStep = (colorLow.hue() - colorHigh.hue())/playerNum;
+        double satStep = (colorLow.saturation() - colorHigh.saturation())/playerNum;
+        double brightStep = (colorLow.value() - colorHigh.value())/playerNum;
+
+
+        color.setHsv(colorLow.hue() - playerIndex*hueStep,colorLow.saturation() - playerIndex*satStep, colorLow.value() - playerIndex*brightStep);
+
+//        if(playerIndex ==0){
+//            qDebug() << "Origin" << colorLow << colorHigh;
+//            qDebug() << "Farbelow" << colorLow.hue() << colorLow.saturation() << colorLow.value();
+//            qDebug() << "Farbehigh" << colorHigh.hue() << colorHigh.saturation() << colorHigh.value();
+//        }
+
+//        qDebug() << "Farbe: " << playerIndex << color.hue() << color.saturation() << color.value();
+
+//        qDebug() << "Steps: " << hueStep << satStep << brightStep;
+
+    }
+
+    else{
+
+        int playerNum = board->players.length();
+            double stepSize = 359/playerNum;
+
+            color.setHsv(playerIndex*stepSize,200,200);
+    }
+
+
+
+
+    return color;
+
+}
+

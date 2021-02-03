@@ -12,10 +12,9 @@ void GoalWidget::paintEvent(QPaintEvent *event)
 	double width = bounds.width()*fractionOfTile;
 	double height = bounds.height()*fractionOfTile;
 
-	int playerNum = board->players.length();
-	double stepSize = 359/playerNum;
-	QColor color;
-	color.setHsv(board->seeker*stepSize,200,200);
+
+    QColor color = getPlayerColor(board->seeker);
+
 
 	QPainter painter;
 

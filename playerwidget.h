@@ -33,6 +33,7 @@ public:
 private:
     int playerNumber;
     bool debugMode = true;
+
     double fractionOfTile = 0.7;
     QVector<Animation> animations;
     double MAX_DURATION = 5000.0;
@@ -40,6 +41,7 @@ private:
 
     double length(QPoint vector);
     double timeFactor(QPoint delta, double factorX, double factorY);
+    QColor getPlayerCl();
 protected:
 	void mousePressEvent(QMouseEvent *event);
 	void paintEvent(QPaintEvent *event);

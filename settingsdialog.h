@@ -31,6 +31,8 @@ public:
 	QVector<KeyMapping *> getMapping() const;
 	bool getShowTopBidding() const;
 
+    QColor getPlayerColorLow() const;
+    QColor getPlayerColorHigh() const;
 public slots:
 	void load();
 	void save();
@@ -42,6 +44,8 @@ private:
 	QPushButton * pbBackgroundColor = new QPushButton(this);
 	QPushButton * pbWallColor = new QPushButton(this);
 	QPushButton * pbGridColor = new QPushButton(this);
+    QPushButton * pbPlayerColorLow = new QPushButton(this);
+    QPushButton * pbPlayerColorHigh = new QPushButton(this);
 	QCheckBox * cbTopBidding = new QCheckBox(this);
 	QTabWidget * twTabs = new QTabWidget(this);
 	QPushButton * pbSave = new QPushButton(tr("Save"),this);
@@ -55,6 +59,8 @@ private:
 	const QString gridcolor = "gc";
 	const QString keymappings = "km";
 	const QString topBidding = "tb";
+    const QString playercolorlow = "pcl";
+    const QString playercolorhigh = "pch";
 signals:
 	void newMapping(QVector<KeyMapping*> mapping);
 	void colorsChanged();

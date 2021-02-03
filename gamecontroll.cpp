@@ -96,11 +96,12 @@ void GameControll::load()
 {
 	settings = new SettingsDialog(mapping);
 	settings->load();
-	connect(settings,&SettingsDialog::colorsChanged,this,[&](){ board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor()); });
+    connect(settings,&SettingsDialog::colorsChanged,this,[&](){ board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor(), settings->getPlayerColorLow(), settings->getPlayerColorHigh()); });
 	connect(settings,&SettingsDialog::newMapping,this,[&](QVector<KeyMapping*> mapping){ this->mapping = mapping; });
+
 	if(board)
 	{
-		board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
+        board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor(), settings->getPlayerColorLow(), settings->getPlayerColorHigh());
 	}
 	this->mapping = settings->getMapping();
 }
@@ -120,7 +121,7 @@ Board * GameControll::setBoard(Board* newBoard)
 	board = newBoard;
 	if(settings)
 	{
-		board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
+        board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor(), settings->getPlayerColorLow(), settings->getPlayerColorHigh());
 	}
 	return board;
 }

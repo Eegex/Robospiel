@@ -30,6 +30,7 @@ public:
 private slots:
 	void updateTimer(int remaining);
 	void editBoard();
+    void updatePlayerMaximum(int i);
 	void createBoard();
 	void updateGuide(const QString & txt);
     void enableMenus(bool boolean);

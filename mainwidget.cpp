@@ -39,6 +39,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 
 void MainWidget::setMenuBar(QMenuBar * bar)
 {
+
+
 	menuBar = bar;
 	mNewGame = new QMenu(tr("Board"),this);
 	waHeight = new QWidgetAction(this);
@@ -55,7 +57,7 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	sbWidth->setMinimum(5);
 	sbWidth->setValue(view->getBoard()->getSize().width());
 	sbPlayer->setMinimum(1);
-	sbPlayer->setMaximum(sbWidth->value()*sbHeight->value()-1);
+    sbPlayer->setMaximum((sbWidth->value()*sbHeight->value())-1);
 	sbPlayer->setValue(view->getBoard()->players.length());
 	waHeight->setDefaultWidget(sbHeight);
 	waWidth->setDefaultWidget(sbWidth);
@@ -133,7 +135,14 @@ void MainWidget::setMenuBar(QMenuBar * bar)
     connect(game, &GameControll::enableMenus, this, &MainWidget::enableMenus);
     connect(game, &GameControll::enableTimerSkip, this, &MainWidget::enableTimerSkip);
 
+    connect(sbWidth, SIGNAL(valueChanged(int)), this, SLOT(updatePlayerMaximum(int)));
 
+
+
+}
+
+void MainWidget::updatePlayerMaximum(int i){
+    sbPlayer->setMaximum(sbWidth->value()*sbHeight->value()-1);
 }
 
 

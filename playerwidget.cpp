@@ -4,64 +4,77 @@
 #include "QDebug"
 
 PlayerWidget::PlayerWidget(QSize size,  int playerNumber, Board *board, QWidget *parent):
-	PawnWidget(size, board, parent), playerNumber(playerNumber)
+    PawnWidget(size, board, parent), playerNumber(playerNumber)
 {
 
 }
 
 void PlayerWidget::mousePressEvent(QMouseEvent *event)
 {
-	PawnWidget::mousePressEvent(event);
-	if(!editable)
-	{
-		emit clicked(playerNumber);
-	}
-	event->accept();
+    PawnWidget::mousePressEvent(event);
+    if(!editable)
+    {
+        emit clicked(playerNumber);
+    }
+    event->accept();
 }
+
+
+
 
 void PlayerWidget::paintEvent(QPaintEvent *event)
 {
-	QRect bounds = rect();
-	double width = bounds.width()*fractionOfTile;
-	double height = bounds.height()*fractionOfTile;
 
-	int playerNum = board->players.length();
-	double stepSize = 359/playerNum;
-	QColor color;
-	color.setHsv(playerNumber*stepSize,200,200);
+    QRect bounds = rect();
+    double width = bounds.width()*fractionOfTile;
+    double height = bounds.height()*fractionOfTile;
 
-	QPainter painter;
+    QColor color = getPlayerCl();
+    QPainter painter;
 
-	QPen pen;
-	pen.setColor(color);
+    QPen pen;
+    pen.setColor(color);
 
-	QSize offset = bounds.size() - QSize(width, height);
+    QSize offset = bounds.size() - QSize(width, height);
 
-	bounds.moveTopLeft({(int) offset.width()/2, (int) offset.height()/2});
-	bounds.setSize(QSize((int) width, (int) height));
+    bounds.moveTopLeft({(int) offset.width()/2, (int) offset.height()/2});
+    bounds.setSize(QSize((int) width, (int) height));
 
-	if(painter.begin(this))
+    if(painter.begin(this))
 
-	{
+    {
 
-		painter.setBrush(color.darker(200));
-		painter.setPen(pen);
-		if(board->activePlayer == playerNumber)
-		{
-			painter.setBrush(color);
-			painter.setPen(color.lighter(130));
-		}
-		painter.drawEllipse(bounds);
-		if(debugMode)
-		{
-			pen.setColor(QColor(255,0,255));
-			painter.setPen(pen);
-			painter.drawText(this->rect().center(), QString::number(playerNumber));
-		}
-		painter.end();
-	}
-	event->accept();
+        painter.setBrush(color.darker(200));
+        painter.setPen(pen);
+        if(board->activePlayer == playerNumber)
+        {
+            painter.setBrush(color);
+            painter.setPen(color.lighter(130));
+        }
+        painter.drawEllipse(bounds);
+        if(debugMode)
+        {
+            QColor debugColor = *new QColor(0,0,0);
+            if(getPlayerCl().value()<200){
+                debugColor = *new QColor(255,255,255);
+            }
+            pen.setColor(debugColor);
+            painter.setPen(pen);
+            painter.drawText(this->rect().center(), QString::number(playerNumber));
+        }
+        painter.end();
+    }
+    event->accept();
 }
+
+
+
+QColor PlayerWidget::getPlayerCl(){
+
+    return getPlayerColor(playerNumber);
+
+}
+
 
 
 double PlayerWidget::length(QPoint vector)
@@ -78,21 +91,21 @@ double PlayerWidget::length(QPoint vector)
 void PlayerWidget::moveAnimated(QPoint point, QPoint target, double speed)
 {
 
-	double distance;
+    double distance;
     if(animations.size() > 0)
-	{
+    {
         QPropertyAnimation * lastAnimation=dynamic_cast<QPropertyAnimation*>(animations.last().animation);
         distance = PlayerWidget::length(lastAnimation->endValue().toRect().topLeft()-point);
-	}
-	else
-	{
+    }
+    else
+    {
         distance = PlayerWidget::length(this->pos()-point);
-	}
+    }
 
 
-	QPropertyAnimation * animation = new QPropertyAnimation(this, "geometry");
-	animation->setDuration(1000*distance/speed);
-	animation->setEndValue(QRect(point.x(), point.y(), 0, 0));
+    QPropertyAnimation * animation = new QPropertyAnimation(this, "geometry");
+    animation->setDuration(1000*distance/speed);
+    animation->setEndValue(QRect(point.x(), point.y(), 0, 0));
     animation->setEasingCurve(QEasingCurve::InQuad);
     connect(animation, &QAbstractAnimation::finished, this, [=]()->void{
         animations.remove(0);
@@ -112,9 +125,9 @@ void PlayerWidget::moveAnimated(QPoint point, QPoint target, double speed)
 
     animations.append(animationStruct);
     if(animations.at(0).animation->state() != QAbstractAnimation::Running)
-	{
+    {
         animations.at(0).animation->start();
-	}
+    }
 }
 
 double PlayerWidget::timeFactor(QPoint delta, double factorX, double factorY)
@@ -131,12 +144,12 @@ bool PlayerWidget::resizeWhileAnimation(QVector<QPoint> newTargets, QPoint newPo
         animations.at(0).animation->pause();
 
         for(int i=1; i<animations.size(); i++)
-		{
+        {
             animations.at(i).animation->setEndValue(QRect(newTargets.at(i), QSize(0, 0)));
             double newDuration = animations.at(i).animation->duration()*timeFactor(newTargets.at(i)-newTargets.at(i-1), factorX, factorY);
             newDuration = std::max(std::min(newDuration, MAX_DURATION), MIN_DURATION);
             animations.at(i).animation->setDuration(newDuration);
-		}
+        }
 
         //replace the current transition
         QPropertyAnimation * animation = new QPropertyAnimation(this, "geometry");
@@ -171,9 +184,9 @@ bool PlayerWidget::resizeWhileAnimation(QVector<QPoint> newTargets, QPoint newPo
         animations.insert(0, animationStruct);
         animation->start();
 
-		return true;
-	}
-	return false;
+        return true;
+    }
+    return false;
 
 
 }
@@ -196,5 +209,5 @@ QVector<QPoint> PlayerWidget::getTargets()
 
 void PlayerWidget::setPlayer(int value)
 {
-	playerNumber = value;
+    playerNumber = value;
 }
