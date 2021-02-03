@@ -11,8 +11,8 @@ class User : public QObject
 {
 	Q_OBJECT
 public:
-	User(QString name, QColor color, QObject *parent);
-	User(QString name, QColor color, QUuid uuid, QObject *parent);
+    User(QString name, QColor color, QObject *parent=nullptr);
+//	User(QString name, QColor color, QUuid uuid, QObject *parent);
 	QString getName();
 	QColor getColor();
 	QUuid getId();
@@ -24,7 +24,10 @@ public:
 	void addPoints(int p);
 	unsigned long getLastBiddingTime() const;
 
+    QJsonObject toJSON();
+    static User* fromJSON(QJsonObject json);
 private:
+    User(QObject *parent=nullptr);
 	QString name;
 	QColor color;
 	QUuid id;

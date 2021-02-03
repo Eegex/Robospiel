@@ -32,7 +32,6 @@ void Client::startClient(QString serverAddress, int serverPort)
     //connect(tcpSocket, QAbstractSocket::errorOccurred, this, [=](QAbstractSocket::SocketError socketError) -> void {emit errorInClient(socketError);});
 
     tcpSocket->connectToHost(serverAddress, serverPort);
-
 }
 
 bool Client::sendMessageToServer(QJsonObject data)

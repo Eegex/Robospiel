@@ -37,7 +37,6 @@ private slots:
 private:
 	QLabel * dlGuide = new QLabel(this);
 	QGridLayout * glMain = nullptr;
-	GameControll * game = nullptr;
 	BoardView * view = nullptr;
 	BoardEditor * edit = nullptr;
 	NetworkView * networkView = nullptr;
@@ -63,9 +62,10 @@ private:
 	QAction * aNewSeeker = nullptr;
 	QAction * aNewPlayers = nullptr;
 	QAction * aNewAll = nullptr;
-	QAction * aNewTarget = nullptr;
+    QAction * aNewTarget = nullptr;
     QAction * aGoToIdle = nullptr;
 
+    void initializeView(Board *b, QVector<KeyMapping *> *m);
 };
 
 #endif // MAINWIDGET_H

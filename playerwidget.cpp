@@ -15,8 +15,8 @@ void PlayerWidget::mousePressEvent(QMouseEvent *event)
     if(!editable)
     {
         emit clicked(playerNumber);
-    }
     event->accept();
+}
 }
 
 
@@ -79,7 +79,7 @@ QColor PlayerWidget::getPlayerCl(){
 
 double PlayerWidget::length(QPoint vector)
 {
-    return sqrt(pow(vector.x(), 2) + pow(vector.y(), 2));
+	return sqrt(pow(vector.x(), 2) + pow(vector.y(), 2));
 }
 
 /**
@@ -118,10 +118,10 @@ void PlayerWidget::moveAnimated(QPoint point, QPoint target, double speed)
             animations.at(0).animation->start();
         }
 
-    });
-    Animation animationStruct;
-    animationStruct.animation=animation;
-    animationStruct.target=target;
+	});
+	Animation animationStruct;
+	animationStruct.animation=animation;
+	animationStruct.target=target;
 
     animations.append(animationStruct);
     if(animations.at(0).animation->state() != QAbstractAnimation::Running)
@@ -132,16 +132,16 @@ void PlayerWidget::moveAnimated(QPoint point, QPoint target, double speed)
 
 double PlayerWidget::timeFactor(QPoint delta, double factorX, double factorY)
 {
-    double xProportion = delta.x()/(delta.x()+delta.y());
+	double xProportion = delta.x()/(delta.x()+delta.y());
 
-    return xProportion*factorX + (1-xProportion)*factorY;
+	return xProportion*factorX + (1-xProportion)*factorY;
 }
 
 bool PlayerWidget::resizeWhileAnimation(QVector<QPoint> newTargets, QPoint newPosition, double factorX, double factorY)
 {
-    if(!animations.isEmpty() || newTargets.size()!=animations.size())
-    {
-        animations.at(0).animation->pause();
+	if(!animations.isEmpty() || newTargets.size()!=animations.size())
+	{
+		animations.at(0).animation->pause();
 
         for(int i=1; i<animations.size(); i++)
         {
@@ -151,38 +151,38 @@ bool PlayerWidget::resizeWhileAnimation(QVector<QPoint> newTargets, QPoint newPo
             animations.at(i).animation->setDuration(newDuration);
         }
 
-        //replace the current transition
-        QPropertyAnimation * animation = new QPropertyAnimation(this, "geometry");
-        double newDuration = (animations.at(0).animation->duration()-animations.at(0).animation->currentTime())*timeFactor(newTargets.at(0)-newPosition, factorX, factorY);
-        newDuration = std::max(std::min(newDuration, MAX_DURATION), MIN_DURATION);
-        animation->setDuration(newDuration);
+		//replace the current transition
+		QPropertyAnimation * animation = new QPropertyAnimation(this, "geometry");
+		double newDuration = (animations.at(0).animation->duration()-animations.at(0).animation->currentTime())*timeFactor(newTargets.at(0)-newPosition, factorX, factorY);
+		newDuration = std::max(std::min(newDuration, MAX_DURATION), MIN_DURATION);
+		animation->setDuration(newDuration);
 
-        animation->setEndValue(QRect(newTargets.at(0), QSize(0, 0)));
-        animation->setEasingCurve(QEasingCurve::InQuad);
-        connect(animation, &QAbstractAnimation::finished, this, [=]()->void{
-            animations.remove(0);
-            if(animations.isEmpty())
-            {
-                emit reposition(playerNumber);
-            }
-            else
-            {
-                animations.at(0).animation->start();
-            }
+		animation->setEndValue(QRect(newTargets.at(0), QSize(0, 0)));
+		animation->setEasingCurve(QEasingCurve::InQuad);
+		connect(animation, &QAbstractAnimation::finished, this, [=]()->void{
+			animations.remove(0);
+			if(animations.isEmpty())
+			{
+				emit reposition(playerNumber);
+			}
+			else
+			{
+				animations.at(0).animation->start();
+			}
 
-        });
-        Animation animationStruct;
-        animationStruct.animation=animation;
-        animationStruct.target=animations.at(0).target;
+		});
+		Animation animationStruct;
+		animationStruct.animation=animation;
+		animationStruct.target=animations.at(0).target;
 
 
-        animations.at(0).animation->stop();
-        animations.remove(0);
-        //change the current position
-        move(newPosition);
+		animations.at(0).animation->stop();
+		animations.remove(0);
+		//change the current position
+		move(newPosition);
 
-        animations.insert(0, animationStruct);
-        animation->start();
+		animations.insert(0, animationStruct);
+		animation->start();
 
         return true;
     }
@@ -193,17 +193,17 @@ bool PlayerWidget::resizeWhileAnimation(QVector<QPoint> newTargets, QPoint newPo
 
 bool PlayerWidget::getInAnimation()
 {
-    return (!animations.isEmpty()) && animations.at(0).animation->state() == QAbstractAnimation::Running;
+	return (!animations.isEmpty()) && animations.at(0).animation->state() == QAbstractAnimation::Running;
 }
 
 QVector<QPoint> PlayerWidget::getTargets()
 {
-    QVector<QPoint> targets;
-    for(Animation animation : animations)
-    {
-        targets.append(animation.target);
-    }
-    return targets;
+	QVector<QPoint> targets;
+	for(Animation animation : animations)
+	{
+		targets.append(animation.target);
+	}
+	return targets;
 
 }
 

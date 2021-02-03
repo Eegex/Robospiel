@@ -122,7 +122,7 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 		serverContainer->show();
 	});
 	connect(btnOffline, &QPushButton::clicked, this, [=]()->void{
-		emit leaderboradOffline();
+		emit leaderboardOffline();
 	});
 	//TODO place Server::getInstance().closeServer();
 	//TODO place Client::getInstance().closeClient();
@@ -136,7 +136,7 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 	connect(&Server::getInstance(), &Server::serverStarted, this, [=] (QHostAddress address, int port) -> void
 	{
 		serverStatus->setText(tr("Server is running. ")+QTime::currentTime().toString()+"\n"+address.toString()+":"+QString::number(port));
-		emit leaderboradOnline();
+		emit leaderboardOnline();
 	});
 	connect(&Server::getInstance(), &Server::clientsChanged, this, [=] (int clientCount) -> void
 	{
@@ -161,7 +161,7 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 	connect(&Client::getInstance(), &Client::clientStarted, this, [&]()->void
 	{
 		clientStatus->setText(tr("Client started. ")+QTime::currentTime().toString());
-		emit leaderboradOnline();
+		emit leaderboardOnline();
 	});
 	connect(&Client::getInstance(), &Client::clientClosed, this, [&]()->void
 	{

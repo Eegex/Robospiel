@@ -38,6 +38,14 @@ Direction BoardEditor::tileBorder(QPoint p)
 	return Direction::none;
 }
 
+QRect BoardEditor::rect(Tile * t)
+{
+	int x = 5 + t->getPosition().x() * tileSize.width();
+	int y = 5 + t->getPosition().y() * tileSize.height();
+	QRect r(x,y,tileSize.width(),tileSize.height());
+	return r;
+}
+
 void BoardEditor::placePawn(PawnWidget * pawn)
 {
 	PlayerWidget * player = dynamic_cast<PlayerWidget*>(pawn);
@@ -47,7 +55,7 @@ void BoardEditor::placePawn(PawnWidget * pawn)
 		int playerNumber = playerWidgets.indexOf(player);
 		board->players.at(playerNumber)->setPlayer(-1);
 		Tile * newPlayer = coordsToTile(player->mapToParent(player->rect().center()));
-		if(newPlayer)
+		if(newPlayer && newPlayer->getPlayer() == -1)
 		{
 			newPlayer->setPlayer(playerNumber);
 			board->players[playerNumber] = newPlayer;
@@ -82,7 +90,8 @@ void BoardEditor::mousePressEvent(QMouseEvent * event)
 	if(t)
 	{
 		Direction d = tileBorder(event->pos());
-		if(d == Direction::none)
+		QRect r = rect(t) - QMargins(5,5,5,5);
+		if(d == Direction::none && r.contains(event->pos()))
 		{
 			addPlayer(board->addPlayer(t));
 		}
@@ -126,7 +135,6 @@ void BoardEditor::setBoard(Board * b)
 	goalwidget->setEditable();
 	connect(goalwidget,&PawnWidget::placeMe,this,&BoardEditor::placePawn);
 }
-
 
 PlayerWidget * BoardEditor::addPlayer(int i)
 {

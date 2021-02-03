@@ -635,12 +635,10 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY, bool isRever
                 currentTile->getPosition().ry() + changeOfYAxis);
     if(nextTile == nullptr)
     {
-        qDebug()<< "nullptr";
-
+		qDebug()<< "nextTile was nullptr";
         return;
     }
-    if(!currentTile->getWall(d) && !isRevert)
-        moves++;
+	bool actualMovement = false;
     while(!currentTile->getWall(d) && nextTile->getPlayer()==-1 && (currentTile->getPosition().x()!=targetX || currentTile->getPosition().y()!=targetY))
     {
         bool nextTileFree = true;
@@ -656,6 +654,7 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY, bool isRever
             break;
         }
         currentTile = nextTile;
+		actualMovement = true;
         if(!nextTile->getWall(d))
         {
             nextTile = getTile(
@@ -665,9 +664,14 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY, bool isRever
         setPlayerOnTile(activePlayer, currentTile);
     }
 
+	if(actualMovement)
+	{
+		moves++;
+		qDebug()<<"Moves:"<<moves;
     goalHit = (goal == currentTile && seeker == activePlayer);
     emit playerMoved(activePlayer, (goal == currentTile && seeker == activePlayer) ? moves : -1);
     history.append(h);
+}
 }
 
 void Board::changeActivePlayer(int playerNumber)
@@ -689,9 +693,10 @@ void Board::revert()
         {
             int direction = h.action-PlayerAction::movement;
             direction = direction>(int) Direction::east ? direction>>2 : direction<<2; //invert direction
-            moves--;
-            moveActivePlayer(static_cast<Direction>(direction), h.previousPosition.x(), h.previousPosition.y(), true);
-            qDebug()<<"Player reverted their move, current moves are: "<<moves;
+            moves -= 2; //delete the former move and do this action without incrementing moves.
+			// Has to be before moveActivePlayer(), because otherwise calculateGameStatus() would have a wrong number of moves.
+			moveActivePlayer(static_cast<Direction>(direction), h.previousPosition.x(), h.previousPosition.y());
+			qDebug()<<"Moves:"<<moves;
         }
         if(h.action == PlayerAction::playerSwitch)
         {
@@ -859,6 +864,7 @@ int Board::switchPlayer(Direction d)
 void Board::resetMoves()
 {
     moves = 0;
+	qDebug()<<"Moves:"<<moves;
 }
 
 

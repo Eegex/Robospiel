@@ -13,10 +13,9 @@
 #include "useronlinewidget.h"
 #include "user.h"
 #include "networkview.h"
+#include "offlineleaderboardwidget.h"
 
 enum state {undecided, offline, online};
-enum strategy {points, bid};
-
 class LeaderBoardWidget : public QWidget
 {
 	Q_OBJECT
@@ -27,7 +26,7 @@ public:
 	UserCreationWidget *getUserCreationWidget();
 	unsigned int getBiddingWidgetIndexByID(QUuid id);
 	UserOnlineWidget *getUserOnlineWidget();
-	unsigned short getIsOnline();
+    state getOnlineState();
 	unsigned int getNumOfUsers();
 	void goOnline();
 	void goOffline();
@@ -37,28 +36,35 @@ public:
 	QString getUsername();
 	QColor getUsercolor();
 	NetworkView *getNetworkView();
+    OfflineLeaderBoardWidget *getOfflineLeaderBoardWidget();
+    void setOfflineLeaderBoardWidget(OfflineLeaderBoardWidget *value);
+
 private:
-	QGridLayout * lay = new QGridLayout(this);
-	//QPushButton * addBtn = new QPushButton(this);
-	QString username = "Hans"; // for testing in MacOs
+    QGridLayout * lay = new QGridLayout(this);
+    //QPushButton * addBtn = new QPushButton(this);
+    QString username = "Hans"; // for testing in MacOs
 	QColor usercolor = QColor(168, 218, 173); // for testing in MacOs
 	unsigned int numOfUsers = 0;
 	unsigned int currentUser = 0;
-	unsigned int isOnline = undecided; // 0 = not decided, 1 = offline, 2 = online
+    state isOnline = undecided; // 0 = not decided, 1 = offline, 2 = online
 	QVector<UserBiddingWidget*> users; //Several Users, Array of Widgets for individual users
-	UserCreationWidget * userCreationWidget = new UserCreationWidget(nullptr);
+    OfflineLeaderBoardWidget * offlineLeaderBoardWidget = new OfflineLeaderBoardWidget(nullptr);
+    UserCreationWidget * userCreationWidget = new UserCreationWidget(nullptr);
 	UserOnlineWidget * userOnlineWidget = new UserOnlineWidget(nullptr);
 	NetworkView * networkView = new NetworkView(nullptr);
 
 public slots:
-	void sortBy(unsigned int strategy);
-	void updateLayout();
-	void newUser();
+    //void sortBy(unsigned int strategy);
+    //void updateLayout();
+    //void newUser();
 signals:
-	void userAdded(struct Userdata * newUser);
+    void userAdded(struct Userdata * newUser);
+    void onlineUserAdded(User* user);
 
 };
 
 #endif // LEADERBOARDWIDGET_H
+
+
 
 

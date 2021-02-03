@@ -21,6 +21,7 @@ protected:
 private slots:
 	void placePawn(PawnWidget * pawn);
 private:
+	QRect rect(Tile * t);
 	Tile * lastTile = nullptr;
 	Direction lastDirection = Direction::none;
 };
