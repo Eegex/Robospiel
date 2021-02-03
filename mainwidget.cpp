@@ -136,6 +136,7 @@ void MainWidget::setMenuBar(QMenuBar * bar)
     connect(game, &GameControll::enableTimerSkip, this, &MainWidget::enableTimerSkip);
 
     connect(sbWidth, SIGNAL(valueChanged(int)), this, SLOT(updatePlayerMaximum(int)));
+    connect(sbHeight, SIGNAL(valueChanged(int)), this, SLOT(updatePlayerMaximum(int)));
 
 
 
