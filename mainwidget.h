@@ -26,14 +26,14 @@ class MainWidget : public QWidget
 public:
 	explicit MainWidget(QWidget *parent = nullptr);
 	void setMenuBar(QMenuBar * bar);
-    void enableTimerSkip(bool boolean);
+	void enableTimerSkip(bool boolean);
 private slots:
 	void updateTimer(int remaining);
 	void editBoard();
-    void updatePlayerMaximum(int i);
+	void updatePlayerMaximum(int i);
 	void createBoard();
 	void updateGuide(const QString & txt);
-    void enableMenus(bool boolean);
+	void enableMenus(bool boolean);
 private:
 	QLabel * dlGuide = new QLabel(this);
 	QGridLayout * glMain = nullptr;
@@ -42,7 +42,7 @@ private:
 	NetworkView * networkView = nullptr;
 	LeaderBoardWidget * leaderboard = nullptr;
 	QLCDNumber * lcd = nullptr;
-    QPushButton * skipBtn = nullptr;
+	QPushButton * skipBtn = nullptr;
 	QMenuBar * menuBar = nullptr;
 	QAction * aNetworking = nullptr;
 	QAction * aEditBoard = nullptr;
@@ -62,10 +62,11 @@ private:
 	QAction * aNewSeeker = nullptr;
 	QAction * aNewPlayers = nullptr;
 	QAction * aNewAll = nullptr;
-    QAction * aNewTarget = nullptr;
-    QAction * aGoToIdle = nullptr;
+	QAction * aNewTarget = nullptr;
+	QAction * aGoToIdle = nullptr;
 
-    void initializeView(Board *b, QVector<KeyMapping *> *m);
+	void initializeView(Board *b, QVector<KeyMapping *> *m);
+	void connectView(BoardView * view);
 };
 
 #endif // MAINWIDGET_H

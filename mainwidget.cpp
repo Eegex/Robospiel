@@ -73,15 +73,10 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	mNewStuff =  new QMenu(tr("New"),this);
 
 	aNewWalls = new QAction(tr("Walls"),this);
-	connect(aNewWalls,&QAction::triggered,view,&BoardView::makeNewWalls);
 	aNewSeeker = new QAction(tr("Seeker"),this);
-	connect(aNewSeeker,&QAction::triggered,view,&BoardView::makeNewSeeker);
 	aNewPlayers = new QAction(tr("Players"),this);
-	connect(aNewPlayers,&QAction::triggered,view,&BoardView::makeNewPlayers);
 	aNewAll = new QAction(tr("All"),this);
-	connect(aNewAll,&QAction::triggered,view,&BoardView::makeNewAll);
 	aNewTarget = new QAction(tr("Target"),this);
-	connect(aNewTarget,&QAction::triggered,view,&BoardView::makeNewTarget);
 
 	mNewStuff->addAction(aNewAll);
 	mNewStuff->addAction(aNewWalls);
@@ -123,24 +118,26 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	bar->addAction(aGoToIdle);
 
 #endif
-
 	connect(aGoToIdle, &QAction::triggered, &GameControll::getInstance(), &GameControll::setIdle);
-
-
 	connect(&GameControll::getInstance(), &GameControll::enableMenus, this, &MainWidget::enableMenus);
 	connect(&GameControll::getInstance(), &GameControll::enableTimerSkip, this, &MainWidget::enableTimerSkip);
-
 	connect(sbWidth, SIGNAL(valueChanged(int)), this, SLOT(updatePlayerMaximum(int)));
 	connect(sbHeight, SIGNAL(valueChanged(int)), this, SLOT(updatePlayerMaximum(int)));
-
-
-
 }
 
-void MainWidget::updatePlayerMaximum(int i){
+void MainWidget::updatePlayerMaximum(int)
+{
 	sbPlayer->setMaximum(sbWidth->value()*sbHeight->value()-1);
 }
 
+void MainWidget::connectView(BoardView * view)
+{
+	connect(aNewWalls,&QAction::triggered,view,&BoardView::makeNewWalls);
+	connect(aNewSeeker,&QAction::triggered,view,&BoardView::makeNewSeeker);
+	connect(aNewPlayers,&QAction::triggered,view,&BoardView::makeNewPlayers);
+	connect(aNewAll,&QAction::triggered,view,&BoardView::makeNewAll);
+	connect(aNewTarget,&QAction::triggered,view,&BoardView::makeNewTarget);
+}
 
 void MainWidget::createBoard()
 {
@@ -179,6 +176,7 @@ void MainWidget::editBoard()
 	{
 		edit = new BoardEditor(this);
 		edit->setBoard(GameControll::getBoard());
+		connectView(edit);
 		glMain->addWidget(edit,1,0,3,1,Qt::AlignCenter);
 		aEditBoard->setText(tr("Stop editing"));
 		delete view;
@@ -187,7 +185,6 @@ void MainWidget::editBoard()
 	else
 	{
 		initializeView(GameControll::getBoard(), GameControll::getMapping());
-
 		aEditBoard->setText(tr("Edit Board"));
 		delete edit;
 		edit = nullptr;
@@ -214,6 +211,7 @@ void MainWidget::initializeView(Board* b, QVector<KeyMapping*>* m)
 	view = new BoardView(this);
 	view->setBoard(b);
 	view->setMapping(m);
+	connectView(view);
 	connect(view,&BoardView::action,&GameControll::getInstance(),&GameControll::triggerAction);
 	connect(view,&BoardView::activePlayerChanged,&GameControll::getInstance(),[=](int playerNumber)->void
 	{
