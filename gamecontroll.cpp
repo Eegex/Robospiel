@@ -138,12 +138,12 @@ void GameControll::load()
     instance.settings->load();
     connect(instance.settings, &SettingsDialog::colorsChanged, &GameControll::getInstance(),[&]()
     {
-        instance.board->updateColors(instance.settings->getBackground(),instance.settings->getWallcolor(),instance.settings->getGridcolor());
+        instance.board->updateColors(instance.settings->getBackground(), instance.settings->getWallcolor(), instance.settings->getGridcolor(), instance.settings->getPlayerColorLow(), instance.settings->getPlayerColorHigh());
     });
     connect(instance.settings, &SettingsDialog::newMapping, &GameControll::getInstance(),[&](QVector<KeyMapping*> mapping){ mapping = mapping; });
     if(instance.board)
 	{
-        instance.board->updateColors(instance.settings->getBackground(),instance.settings->getWallcolor(),instance.settings->getGridcolor());
+        instance.board->updateColors(instance.settings->getBackground(), instance.settings->getWallcolor(), instance.settings->getGridcolor(), instance.settings->getPlayerColorLow(), instance.settings->getPlayerColorHigh());
 	}
     instance.mapping = instance.settings->getMapping();
 }
@@ -163,7 +163,7 @@ Board * GameControll::setBoard(Board* newBoard)
     instance.board = newBoard;
     if(instance.settings)
 	{
-        instance.board->updateColors(instance.settings->getBackground(), instance.settings->getWallcolor(), instance.settings->getGridcolor());
+        instance.board->updateColors(instance.settings->getBackground(), instance.settings->getWallcolor(), instance.settings->getGridcolor(), instance.settings->getPlayerColorLow(), instance.settings->getPlayerColorHigh());
 	}
     connect(instance.board, &Board::playerMoved, &GameControll::getInstance(), &GameControll::calculateGameStatus);
     return instance.board;
@@ -609,10 +609,10 @@ void GameControll::updateTimer()
 }
 
 void GameControll::endTimer(){
-    if(currentPhase == Phase::countdown){
-        emit time(0);
-        countdown.stop();
-        switchPhase(Phase::presentation);
+    if(instance.currentPhase == Phase::countdown){
+        emit instance.time(0);
+        instance.countdown.stop();
+        instance.switchPhase(Phase::presentation);
     }
     else{
         qDebug() << "tried to end timer that wasn't running";

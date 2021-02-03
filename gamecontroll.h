@@ -46,8 +46,6 @@ public slots:
 	void remakeBoard();
 	QUuid getActiveUserID();
 	void setActiveUserID(QUuid id);
-	void activePlayerChanged(int playerNumber);
-	void addExistingUser(User *user);
 	void setIdle();
 
 private:

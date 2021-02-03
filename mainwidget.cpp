@@ -33,7 +33,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	GameControll::setLeaderboard(leaderboard);
 
 
-	connect(skipBtn, &QPushButton::released, game, &GameControll::endTimer);
+    connect(skipBtn, &QPushButton::released, &GameControll::getInstance(), &GameControll::endTimer);
 }
 
 void MainWidget::setMenuBar(QMenuBar * bar)
@@ -128,11 +128,11 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 
     #endif
 
-    connect(aGoToIdle, &QAction::triggered, game, &GameControll::setIdle);
+    connect(aGoToIdle, &QAction::triggered, &GameControll::getInstance(), &GameControll::setIdle);
 
 
-    connect(game, &GameControll::enableMenus, this, &MainWidget::enableMenus);
-    connect(game, &GameControll::enableTimerSkip, this, &MainWidget::enableTimerSkip);
+    connect(&GameControll::getInstance(), &GameControll::enableMenus, this, &MainWidget::enableMenus);
+    connect(&GameControll::getInstance(), &GameControll::enableTimerSkip, this, &MainWidget::enableTimerSkip);
 
     connect(sbWidth, SIGNAL(valueChanged(int)), this, SLOT(updatePlayerMaximum(int)));
     connect(sbHeight, SIGNAL(valueChanged(int)), this, SLOT(updatePlayerMaximum(int)));
