@@ -11,15 +11,15 @@ SettingsDialog::SettingsDialog(QVector<KeyMapping*> mapping, QDialog * parent) :
 	flGeneral->addRow(tr("Background color"),pbBackgroundColor);
 	flGeneral->addRow(tr("Wall color"),pbWallColor);
 	flGeneral->addRow(tr("Grid color"),pbGridColor);
-    flGeneral->addRow(tr("Player color start"),pbPlayerColorLow);
-    flGeneral->addRow(tr("Player color end"),pbPlayerColorHigh);
+	flGeneral->addRow(tr("Player color start"),pbPlayerColorLow);
+	flGeneral->addRow(tr("Player color end"),pbPlayerColorHigh);
 	flGeneral->addRow(tr("Show top bidder on timer"),cbTopBidding);
 	pbUserColor->setStyleSheet("background-color:" + settings.value(usercolor).toString());
 	pbBackgroundColor->setStyleSheet("background-color:" + settings.value(background).toString());
 	pbWallColor->setStyleSheet("background-color:" + settings.value(wallcolor).toString());
 	pbGridColor->setStyleSheet("background-color:" + settings.value(gridcolor).toString());
-    pbPlayerColorLow->setStyleSheet("background-color:" + settings.value(playercolorlow).toString());
-    pbPlayerColorHigh->setStyleSheet("background-color:" + settings.value(playercolorhigh).toString());
+	pbPlayerColorLow->setStyleSheet("background-color:" + settings.value(playercolorlow).toString());
+	pbPlayerColorHigh->setStyleSheet("background-color:" + settings.value(playercolorhigh).toString());
 	cbTopBidding->setChecked(getShowTopBidding());
 	twTabs->addTab(generalWidget,tr("General"));
 	keyMappings = new KeyMappingView(mapping, this);
@@ -36,9 +36,9 @@ SettingsDialog::SettingsDialog(QVector<KeyMapping*> mapping, QDialog * parent) :
 	connect(pbBackgroundColor,&QPushButton::clicked,this,[&](){ settings.insert(background,QColorDialog::getColor(getBackground()).name()); pbBackgroundColor->setStyleSheet("background-color:" + settings.value(background).toString()); });
 	connect(pbWallColor,&QPushButton::clicked,this,[&](){ settings.insert(wallcolor,QColorDialog::getColor(getWallcolor()).name()); pbWallColor->setStyleSheet("background-color:" + settings.value(wallcolor).toString()); });
 	connect(pbGridColor,&QPushButton::clicked,this,[&](){ settings.insert(gridcolor,QColorDialog::getColor(getGridcolor()).name()); pbGridColor->setStyleSheet("background-color:" + settings.value(gridcolor).toString()); });
-    connect(pbPlayerColorLow,&QPushButton::clicked,this,[&](){ settings.insert(playercolorlow,QColorDialog::getColor(getPlayerColorLow()).name()); pbPlayerColorLow->setStyleSheet("background-color:" + settings.value(playercolorlow).toString()); });
-    connect(pbPlayerColorHigh,&QPushButton::clicked,this,[&](){ settings.insert(playercolorhigh,QColorDialog::getColor(getPlayerColorHigh()).name()); pbPlayerColorHigh->setStyleSheet("background-color:" + settings.value(playercolorhigh).toString()); });
-    connect(cbTopBidding,&QCheckBox::toggled,this,[&](){ settings.insert(topBidding,cbTopBidding->isChecked()); });
+	connect(pbPlayerColorLow,&QPushButton::clicked,this,[&](){ settings.insert(playercolorlow,QColorDialog::getColor(getPlayerColorLow()).name()); pbPlayerColorLow->setStyleSheet("background-color:" + settings.value(playercolorlow).toString()); });
+	connect(pbPlayerColorHigh,&QPushButton::clicked,this,[&](){ settings.insert(playercolorhigh,QColorDialog::getColor(getPlayerColorHigh()).name()); pbPlayerColorHigh->setStyleSheet("background-color:" + settings.value(playercolorhigh).toString()); });
+	connect(cbTopBidding,&QCheckBox::toggled,this,[&](){ settings.insert(topBidding,cbTopBidding->isChecked()); });
 	connect(pbSave,&QPushButton::clicked,this,&SettingsDialog::save);
 }
 
@@ -68,11 +68,11 @@ QColor SettingsDialog::getGridcolor() const
 }
 QColor SettingsDialog::getPlayerColorLow() const
 {
-    return QColor(settings.value(playercolorlow).toString());
+	return QColor(settings.value(playercolorlow).toString());
 }
 QColor SettingsDialog::getPlayerColorHigh() const
 {
-    return QColor(settings.value(playercolorhigh).toString());
+	return QColor(settings.value(playercolorhigh).toString());
 }
 
 QVector<KeyMapping *> SettingsDialog::getMapping() const
@@ -147,14 +147,14 @@ void SettingsDialog::load()
 	{
 		settings.insert(wallcolor,"#FF00FF");
 	}
-    if(!settings.contains(playercolorhigh))
-    {
-        settings.insert(playercolorhigh,"#FF0000");
-    }
-    if(!settings.contains(playercolorlow))
-    {
-        settings.insert(playercolorlow,"#FF0000");
-    }
+	if(!settings.contains(playercolorhigh))
+	{
+		settings.insert(playercolorhigh,"#FF0000");
+	}
+	if(!settings.contains(playercolorlow))
+	{
+		settings.insert(playercolorlow,"#FF0001");
+	}
 	if(!settings.contains(topBidding))
 	{
 		settings.insert(topBidding,false);
@@ -167,8 +167,8 @@ void SettingsDialog::load()
 	pbBackgroundColor->setStyleSheet("background-color:" + settings.value(background).toString());
 	pbWallColor->setStyleSheet("background-color:" + settings.value(wallcolor).toString());
 	pbGridColor->setStyleSheet("background-color:" + settings.value(gridcolor).toString());
-    pbPlayerColorLow->setStyleSheet("background-color:" + settings.value(playercolorlow).toString());
-    pbPlayerColorHigh->setStyleSheet("background-color:" + settings.value(playercolorhigh).toString());
+	pbPlayerColorLow->setStyleSheet("background-color:" + settings.value(playercolorlow).toString());
+	pbPlayerColorHigh->setStyleSheet("background-color:" + settings.value(playercolorhigh).toString());
 	cbTopBidding->setChecked(getShowTopBidding());
 
 

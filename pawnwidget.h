@@ -15,7 +15,7 @@ public:
 	void move(QPoint point);
 	void setEditable(bool value = true);
 
-    QColor getPlayerColor(int playerIndex);
+	QColor getPlayerColor(int playerIndex);
 protected:
 	Board* board;
 	bool editable = false;
@@ -25,7 +25,7 @@ protected:
 	virtual void mouseReleaseEvent(QMouseEvent * event);
 	virtual void mouseMoveEvent(QMouseEvent * event);
 
-    bool ownPlayerColors = true;
+	bool ownPlayerColors = true;
 
 
 signals:

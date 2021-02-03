@@ -2,7 +2,7 @@
 
 #include <QJsonObject>
 
-Tile::Tile(QPoint position, Tile* north, Tile* west, QObject *parent) :  QObject(parent), position(position), northTile(north), westTile(west), playerOnThisTile(-1)
+Tile::Tile(QPoint position, Tile* north, Tile* west, QObject *parent) :  QObject(parent), northTile(north), westTile(west), position(position), playerOnThisTile(-1)
 {
 }
 
@@ -127,6 +127,10 @@ bool Tile::getWall(Direction direction)
 	case Direction::west:
 	{
 		return westTile ? westTile->getWall(Direction::east) : true;
+	}
+	case Direction::none:
+	{
+		return false;
 	}
 	}
 }
