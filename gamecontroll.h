@@ -35,6 +35,7 @@ public:
     static void adaptFromJSON(QJsonObject json);
     static void setLeaderboard(LeaderBoardWidget * value);
     static void addOnlineUser(User *user);
+    static void initializeUser();
 
     static void initializeConnections();
 public slots:

@@ -176,7 +176,7 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 	User* user;
     UserData userData;
 	switch(a)
-	{
+    {
 		case movePlayerEast:
 		case movePlayerNorth:
 		case movePlayerSouth:
@@ -193,10 +193,12 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
         case playerSwitch:
             board->changeActivePlayer(data.value("playerNumber").toInt());
 		case sendBidding:
-            if(a == PlayerAction::sendBidding)//If timer has not been started, start the dödöööö FINAL COUNTDOWN dödödödö dödödödödö
-			{
 				switchPhase(Phase::countdown);
-			}
+				if (leaderboard->getOnlineState()==state::online)
+				{
+				leaderboard->getUserOnlineWidget()->setBidding(QUuid(data.value("id").toString()),data.value("bidding").toInt());
+				}
+
 			break;
 		case revert:
 			board->revert();
@@ -278,6 +280,25 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 void GameControll::triggerActionsWithData(PlayerAction action, QJsonObject data)
 {
     emit instance.actionTriggeredWithData(action, data);
+    // Annalenas version:
+    //if(action==PlayerAction::newUser)
+    //{
+    //	QJsonObject data = QJsonObject();
+    //	data.insert("username", user->getName());
+    //	data.insert("usercolor", user->getColor().name());
+    //	data.insert("id", user->getId().toString());
+    //	emit actionTriggeredWithData(action, data);
+    //} else if (action == PlayerAction::sendBidding)
+    //{
+    //    qDebug()<<"Currently in GameControl: triggerActionWithData -> bidding, current Phase is "<<static_cast<int>(currentPhase);
+    //    if(currentPhase == Phase::search || currentPhase == Phase::countdown)
+    //    {
+    //        QJsonObject data = QJsonObject();
+    //        data.insert("bidding", user->getBidding());
+    //        data.insert("id", user->getId().toString());
+    //        emit actionTriggeredWithData(action, data);
+    //    }
+    //}
 }
 
 //called after each movement of a player (and when reverting, ...)
@@ -384,7 +405,21 @@ void GameControll::changeOnlyBidding(int bidding) //TODO explain! What happens h
 {
 	qDebug()<<"changeOnly Bidding to"<<bidding;
 	users.at(0)->setBidding(bidding);
-    triggerAction(PlayerAction::enterBidding, users.at(0)->getId());
+    triggerActionsWithData(PlayerAction::sendBidding, users.at(0)->toJSON());
+}
+
+// current user of the system is initialzed
+void GameControll::initializeUser()
+{
+	qDebug()<<"initializeUser: ";
+    User *u = new User(instance.leaderboard->getUsername(), instance.leaderboard->getUsercolor());
+	qDebug()<<"username: "<<instance.leaderboard->getUsername()<<" and usercolor: "<< instance.leaderboard->getUsercolor();
+    instance.users.append(u);
+    instance.leaderboard->getUserOnlineWidget()->addUserToList(u);
+    instance.leaderboard->getUserOnlineWidget()->updateName(u->getName());
+    instance.leaderboard->getUserOnlineWidget()->setUserID(u->getId());
+    instance.leaderboard->getUserOnlineWidget()->setTable();
+    triggerActionsWithData(PlayerAction::newUser, u->toJSON());
 }
 
 void GameControll::setLeaderboard(LeaderBoardWidget * value)
@@ -410,6 +445,9 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
     connect(instance.leaderboard, &LeaderBoardWidget::onlineUserAdded, &GameControll::getInstance(), [=](User* user)->void {
                 triggerActionsWithData(PlayerAction::newUser, user->toJSON());
     });
+    connect(instance.settings, &SettingsDialog::usernameChanged,instance.leaderboard->getUserOnlineWidget(),&UserOnlineWidget::updateName);
+    instance.leaderboard->getUserOnlineWidget()->updateName(instance.settings->getUsername());
+
 }
 
 User * GameControll::getMinBid()
