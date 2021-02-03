@@ -92,11 +92,11 @@ void MainWidget::setMenuBar(QMenuBar * bar)
     menu1->addAction(aEditBoard);
     QMenu *menu2 = new QMenu(tr("Next Target"),this);
     aNextTarget = new QAction(tr("Next Target"),this);
-    connect(aNextTarget,&QAction::triggered,game,&GameControll::nextTarget);
+    connect(aNextTarget,&QAction::triggered,&GameControll::getInstance(),&GameControll::nextTarget);
     menu2->addAction(aNextTarget);
     QMenu *menu3 = new QMenu(tr("Settings"),this);
     aSettings = new QAction(tr("Settings"),this);
-    connect(aSettings,&QAction::triggered,game,&GameControll::showSettings);
+    connect(aSettings,&QAction::triggered,&GameControll::getInstance(),&GameControll::showSettings);
     menu3->addAction(aSettings);
     bar->addMenu(mNewStuff);
     bar->addMenu(menu1);
