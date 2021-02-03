@@ -9,8 +9,8 @@ LeaderBoardWidget::LeaderBoardWidget(QWidget *parent) : QWidget(parent)
 	userCreationWidget->hide();
 	userOnlineWidget->hide();
     lay->addWidget(userCreationWidget, numOfUsers, 0);
-    connect(networkView, &NetworkView::leaderboradOnline, this, &LeaderBoardWidget::goOnline);
-	connect(networkView, &NetworkView::leaderboradOffline, this, &LeaderBoardWidget::goOffline);
+    connect(networkView, &NetworkView::leaderboardOnline, this, &LeaderBoardWidget::goOnline);
+    connect(networkView, &NetworkView::leaderboardOffline, this, &LeaderBoardWidget::goOffline);
     if(isOnline == undecided)
 	{
 		lay->addWidget(networkView);
@@ -158,7 +158,7 @@ void LeaderBoardWidget::addUser(User * newUser)
 	updateLayout();
 }
 
-void LeaderBoardWidget::newUser()
+void LeaderBoardWidget::newUser() //not used?
 {
 	qDebug()<<"NewUser in LeaderBoardWidget";
 	userCreationWidget->show(); //Show creation widget
@@ -172,7 +172,7 @@ void LeaderBoardWidget::goOnline()
 	lay->addWidget(userOnlineWidget);
 	userOnlineWidget->show();
 	lay->update();
-//  TODO  gameControll->->initializeUser
+    emit onlineUserAdded(new User(username, usercolor, this));
 }
 
 void LeaderBoardWidget::goOffline()
@@ -188,7 +188,6 @@ void LeaderBoardWidget::goOffline()
 
 void LeaderBoardWidget::goUndefined()
 {
-	isOnline = undecided;
 	if(isOnline == online)
 	{
 		lay->removeWidget(userOnlineWidget);
@@ -206,6 +205,7 @@ void LeaderBoardWidget::goUndefined()
 	}
 	lay->addWidget(networkView);
 	lay->update();
+    isOnline = undecided;
 }
 
 void LeaderBoardWidget::setUsername(QString name)

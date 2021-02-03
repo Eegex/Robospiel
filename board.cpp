@@ -635,6 +635,7 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY)
         emit playerMoved(activePlayer, (goal == currentTile && seeker == activePlayer) ? moves : -1);
         history.append(h);
     }
+}
 
 void Board::changeActivePlayer(int playerNumber)
 {

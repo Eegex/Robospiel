@@ -34,7 +34,6 @@ private slots:
 private:
 	QLabel * dlGuide = new QLabel(this);
 	QGridLayout * glMain = nullptr;
-	GameControll * game = nullptr;
 	BoardView * view = nullptr;
 	BoardEditor * edit = nullptr;
 	NetworkView * networkView = nullptr;

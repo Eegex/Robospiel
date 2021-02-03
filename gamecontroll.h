@@ -16,23 +16,27 @@ class GameControll : public QObject
 {
 	Q_OBJECT
 public:
+    static GameControll& getInstance();
+
 	enum class Phase{idle, search, countdown, presentation, freeplay};
-	explicit GameControll(QObject *parent = nullptr);
-	void load();
-    bool showTopBidding();
-    bool triggerAction(PlayerAction action, QUuid userID);
-    void triggerActionsWithData(PlayerAction action, QJsonObject data);
 
-	Board * setBoard(Board *newBoard);
-    Board * getBoard() const;
-	QVector<KeyMapping*> * getMapping();
-    User * getMinBid();
-	Phase getCurrentPhase() const;
-	SettingsDialog * getSettingsDialog();
-	QJsonObject toJSON();
-	static GameControll *fromJSON(QJsonObject json);
-	void setLeaderboard(LeaderBoardWidget * value);
+    static void load();
+    static bool showTopBidding();
+    static bool triggerAction(PlayerAction action, QUuid userID);
+    static void triggerActionsWithData(PlayerAction action, QJsonObject data);
 
+    static Board * setBoard(Board *newBoard);
+    static Board * getBoard();
+    static QVector<KeyMapping*> * getMapping();
+    static User * getMinBid();
+    static Phase getCurrentPhase();
+    static SettingsDialog * getSettingsDialog();
+    static QJsonObject toJSON();
+    static void adaptFromJSON(QJsonObject json);
+    static void setLeaderboard(LeaderBoardWidget * value);
+    static void addOnlineUser(User *user);
+
+    static void initializeConnections();
 public slots:
 	void calculateWinner(int moves);
 	void showSettings();
@@ -41,19 +45,20 @@ public slots:
 	void remakeBoard();
 	QUuid getActiveUserID();
 	void setActiveUserID(QUuid id);
-    void addOnlineUser(User *user);
 
 private:
+    static GameControll instance;
 	QVector<User*> users;
 	LeaderBoardWidget * leaderboard = nullptr;
 	Phase currentPhase = Phase::idle; //freeplay
 	SettingsDialog * settings = nullptr;
 	QVector<KeyMapping*> mapping;
 	Board * board = nullptr;
-	//QString activeUser;
 	QUuid activeUserID;
 	QTimer countdown;
 	int timeLeft;
+
+    explicit GameControll(QObject *parent = nullptr);
 	void sendToServer(PlayerAction a);
 signals:
     void actionTriggeredWithData(PlayerAction action, QJsonObject additionalData);
@@ -73,7 +78,6 @@ private slots:
 	void changeBidding(int bidding, QUuid id);
 	void changeOnlyBidding(int bidding);
     void addOfflineUser(struct UserData * newUser);
-//	void initializeUser();
 };
 
 #endif // GAMECONTROLL_H

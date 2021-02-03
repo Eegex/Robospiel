@@ -8,6 +8,11 @@
 #include <QUuid>
 
 using namespace std::chrono_literals;
+GameControll GameControll::instance;
+GameControll& GameControll::getInstance()
+{
+    return instance;
+}
 
 GameControll::GameControll(QObject *parent) : QObject(parent)
 {
@@ -16,37 +21,69 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 	connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
 	connect(this, &GameControll::actionTriggeredWithData, this, &GameControll::sendToServerWithData); //TODO test the connection with both signals
 	connect(this, &GameControll::actionTriggered, this, &GameControll::sendToServer);
-	connect(&Client::getInstance(), &Client::actionReceived, this, &GameControll::exeQTAction);
-	connect(&Server::getInstance(), &Server::actionReceived, this, &GameControll::exeQTAction);
+}
 
+//This relies on Server and Client singletons.
+//Initialization of static variables can happen in random order, so this has to wait, until all static variables are present.
+void GameControll::initializeConnections()
+{
+    connect(&Server::getInstance(), &Server::actionReceived, &GameControll::getInstance(), &GameControll::exeQTAction);
+    connect(&Client::getInstance(), &Client::actionReceived, &GameControll::getInstance(), &GameControll::exeQTAction);
 }
 
 QJsonObject GameControll::toJSON() //TODO test both ways of JSON
 {
 	QJsonObject json = QJsonObject();
-	json.insert("currentPhase", static_cast<int>(currentPhase));
-	json.insert("board", board->toJSON());
-	json.insert("activeUserID", activeUserID.toString());
-	json.insert("remainingTimerTime", countdown.remainingTime());
-	json.insert("timeLeft", timeLeft);
+    json.insert("currentPhase", static_cast<int>(instance.currentPhase));
+    json.insert("board", instance.board->toJSON());
+    json.insert("activeUserID", instance.activeUserID.toString());
+    json.insert("remainingTimerTime", instance.countdown.remainingTime());
+    json.insert("timeLeft", instance.timeLeft);
+    QJsonArray jsonUsers;
+    for(User* user : instance.users)
+    {
+        jsonUsers.append(user->toJSON());
+    }
+    json.insert("users", jsonUsers);
 	return json;
 }
 
-GameControll* GameControll::fromJSON(QJsonObject json)
+void GameControll::adaptFromJSON(QJsonObject json)
 {
-	GameControll* g = new GameControll();
-	g->currentPhase=static_cast<Phase>(json.value("currentPhase").toInt());
-	g->setBoard(Board::fromJSON(json.value("board").toObject()));
-	g->setActiveUserID(QUuid::fromString(json.value("activeUserID").toString()));
-	g->timeLeft = json.value("timeLeft").toInt();
+    instance.currentPhase=static_cast<Phase>(json.value("currentPhase").toInt());
+    setBoard(Board::fromJSON(json.value("board").toObject()));
+    instance.setActiveUserID(QUuid::fromString(json.value("activeUserID").toString()));
+    instance.timeLeft = json.value("timeLeft").toInt();
+    instance.countdown.stop();
 	if(json.value("remainingTimerTime").toInt()!=-1)
 	{
-		QTimer::singleShot(json.value("remainingTimerTime").toInt(), g, [=]()->void{
-			g->countdown.start();
+        QTimer::singleShot(json.value("remainingTimerTime").toInt(), &instance, [=]()->void{
+            instance.countdown.start();
 		});
 
 	}
-	return g;
+
+    instance.users.clear();
+    setLeaderboard(new LeaderBoardWidget());
+    QJsonArray jsonUsers = json.value("users").toArray();
+    for(int i=0; i<jsonUsers.size(); i++)
+    {
+        QJsonObject jsonUser = jsonUsers.at(i).toObject();
+        if(instance.leaderboard->getOnlineState()==online)
+        {
+            addOnlineUser(User::fromJSON(jsonUser));
+        }
+        else if(instance.leaderboard->getOnlineState()==offline)
+        {
+            UserData userData;
+            //some data present in the inline version is "missing" here,
+            //but it shouldn't be a problem, because it is created in addOfflineUser()
+            //and it doesn't have to be present yet, because it isn't shared via internet
+            userData.name = jsonUser.value("name").toString();
+            userData.colour = QColor(jsonUser.value("color").toString());
+            instance.addOfflineUser(&userData);
+        }
+    }
 }
 
 //forwards the message to all clients / triggers the action directly when you are offline
@@ -96,15 +133,18 @@ void GameControll::sendToServer(PlayerAction a)
 
 void GameControll::load()
 {
-	settings = new SettingsDialog(mapping);
-	settings->load();
-	connect(settings,&SettingsDialog::colorsChanged,this,[&](){ board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor()); });
-	connect(settings,&SettingsDialog::newMapping,this,[&](QVector<KeyMapping*> mapping){ this->mapping = mapping; });
-	if(board)
+    instance.settings = new SettingsDialog(instance.mapping);
+    instance.settings->load();
+    connect(instance.settings, &SettingsDialog::colorsChanged, &GameControll::getInstance(),[&]()
+    {
+        instance.board->updateColors(instance.settings->getBackground(),instance.settings->getWallcolor(),instance.settings->getGridcolor());
+    });
+    connect(instance.settings, &SettingsDialog::newMapping, &GameControll::getInstance(),[&](QVector<KeyMapping*> mapping){ mapping = mapping; });
+    if(instance.board)
 	{
-		board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
+        instance.board->updateColors(instance.settings->getBackground(),instance.settings->getWallcolor(),instance.settings->getGridcolor());
 	}
-	this->mapping = settings->getMapping();
+    instance.mapping = instance.settings->getMapping();
 }
 
 void GameControll::showSettings()
@@ -114,18 +154,18 @@ void GameControll::showSettings()
 
 Board * GameControll::setBoard(Board* newBoard)
 {
-	if(board)
+    if(instance.board)
 	{
-		board->deleteLater();
-		board = nullptr;
+        instance.board->deleteLater();
+        instance.board = nullptr;
 	}
-	board = newBoard;
-	if(settings)
+    instance.board = newBoard;
+    if(instance.settings)
 	{
-		board->updateColors(settings->getBackground(),settings->getWallcolor(),settings->getGridcolor());
+        instance.board->updateColors(instance.settings->getBackground(), instance.settings->getWallcolor(), instance.settings->getGridcolor());
 	}
-    connect(board, &Board::playerMoved, this, &GameControll::calculateGameStatus);
-	return board;
+    connect(instance.board, &Board::playerMoved, &GameControll::getInstance(), &GameControll::calculateGameStatus);
+    return instance.board;
 }
 
 // executes different actions, because they were send by the server / triggered directly when you are offline
@@ -168,17 +208,19 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
             if(leaderboard->getOnlineState()==state::online)
             {
                 //TODO not testet yet, is not in use
-                user = new User(data.value("username").toString(), QColor(data.value("usercolor").toString()), QUuid(data.value("id").toString()), this);
+                user = User::fromJSON(data);
                 addOnlineUser(user);
                 emit newOnlineUser(user);
             }
             else if(leaderboard->getOnlineState()==state::offline)
             {
-                userData.name = data.value("username").toString();
-                userData.colour = QColor(data.value("usercolor").toString());
+                userData.name = data.value("name").toString();
+                userData.colour = QColor(data.value("color").toString());
                 addOfflineUser(&userData);
             }
             break;
+        case completeUpdate:
+            adaptFromJSON(data);
 	}
 }
 
@@ -193,14 +235,14 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 	//{
 		if(action & PlayerAction::movement)
 		{
-			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay) //If online only let the active user move
+            if(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay) //If online only let the active user move
 			{
                 //we subtract movement from action to get a direction (clever enum numbers)
-				emit actionTriggered(action);
+                emit instance.actionTriggered(action);
 				return true;
 			}
 		}
-		else if(action & PlayerAction::playerSwitch && (currentPhase == Phase::presentation || currentPhase == Phase::freeplay)) //???
+        else if(action & PlayerAction::playerSwitch && (instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay)) //???
 		{
             if(action == PlayerAction::playerSwitch) //if we don't want a real PlayerSwitch (withDirection), just check if we can do one (by clicking on a player)
             {
@@ -208,24 +250,24 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
             }
             else
             {
-                emit actionTriggered(action);
+                emit instance.actionTriggered(action);
                 return true;
 			}
 		}
 		else if(action & PlayerAction::bidding) //TODO submit biddingValue
 		{
-			qDebug()<<"Currently in GameControl: triggerAction -> bidding, current Phase is "<<static_cast<int>(currentPhase);
-			if(currentPhase == Phase::search || currentPhase == Phase::countdown)
+            qDebug()<<"Currently in GameControl: triggerAction -> bidding, current Phase is "<<static_cast<int>(instance.currentPhase);
+            if(instance.currentPhase == Phase::search || instance.currentPhase == Phase::countdown)
 			{
-				emit actionTriggered(action); //TODO maybe inside the if?
+                emit instance.actionTriggered(action); //TODO maybe inside the if?
 				return true;
 			}
 		}
 		else if(action & PlayerAction::other)
 		{
-			if(currentPhase == Phase::presentation || currentPhase == Phase::freeplay)
+            if(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay)
 			{
-				emit actionTriggered(action);
+                emit instance.actionTriggered(action);
 				return true;
 			}
 		}
@@ -235,7 +277,7 @@ bool GameControll::triggerAction(PlayerAction action, QUuid userID)
 
 void GameControll::triggerActionsWithData(PlayerAction action, QJsonObject data)
 {
-    emit actionTriggeredWithData(action, data);
+    emit instance.actionTriggeredWithData(action, data);
 }
 
 //called after each movement of a player (and when reverting, ...)
@@ -297,7 +339,7 @@ void GameControll::addOnlineUser(User* user)
 {
 	qDebug()<<"addExistingUser";
 	bool b = false;
-	for(User * u: qAsConst(users))
+    for(User * u: qAsConst(instance.users))
 	{
 		if(u->getId()==user->getId())
 		{
@@ -307,9 +349,9 @@ void GameControll::addOnlineUser(User* user)
 	if(b == false)
 	{
 		qDebug()<<"add "<<user->getId()<< " into list";
-		users.append(user);
-		leaderboard->getUserOnlineWidget()->addUserToList(user);
-		leaderboard->getUserOnlineWidget()->updateUserList();
+        instance.users.append(user);
+        instance.leaderboard->getUserOnlineWidget()->addUserToList(user);
+        instance.leaderboard->getUserOnlineWidget()->updateUserList();
 	}
 
 }
@@ -345,42 +387,35 @@ void GameControll::changeOnlyBidding(int bidding) //TODO explain! What happens h
     triggerAction(PlayerAction::enterBidding, users.at(0)->getId());
 }
 
-// current user of the system is initialized
-//void GameControll::initializeUser()
-//{
-//	qDebug()<<"initializeUser: ";
-//	User *u = new User(leaderboard->getUsername(), leaderboard->getUsercolor(), this);
-//	qDebug()<<"username: "<<leaderboard->getUsername()<<" and usercolor: "<< leaderboard->getUsercolor();
-//    triggerActionsWithData(PlayerAction::newUser, u); //triggers users.append(u);
-//}
-
 void GameControll::setLeaderboard(LeaderBoardWidget * value)
 {
-	leaderboard = value;
-    connect(leaderboard->getUserCreationWidget(), &UserCreationWidget::userAdded, this, [=](UserData* userData)->void
+    instance.leaderboard = value;
+    connect(instance.leaderboard->getUserCreationWidget(), &UserCreationWidget::userAdded, &GameControll::getInstance(), [=](UserData* userData)->void
     {
         QJsonObject data = QJsonObject();
-        data.insert("username", userData->name);
-        data.insert("usercolor", userData->colour.name());
+        data.insert("name", userData->name);
+        data.insert("color", userData->colour.name());
         triggerActionsWithData(PlayerAction::newUser, data);
     });
-	connect(this, &GameControll::biddingDone, this, [&]()
+    connect(&GameControll::getInstance(), &GameControll::biddingDone, &GameControll::getInstance(), [&]()
 	{
-		leaderboard->sortBy(bid);
-		setActiveUserID(leaderboard->getUsers()->first()->getId());
-		qDebug()<<"Bidding is done, Users are sorted, initial player is: "<<leaderboard->getUsers()->first()->getName()<<" with id "<< getActiveUserID();
+        instance.leaderboard->sortBy(bid);
+        instance.setActiveUserID(instance.leaderboard->getUsers()->first()->getId());
+        qDebug()<<"Bidding is done, Users are sorted, initial player is: "<<instance.leaderboard->getUsers()->first()->getName()<<" with id "<< instance.getActiveUserID();
 	});
-    connect(leaderboard->getUserOnlineWidget(), &UserOnlineWidget::userAdded, this, &GameControll::addOfflineUser); //????
-	connect(leaderboard->getUserOnlineWidget(), &UserOnlineWidget::biddingChangedOnline,this,&GameControll::changeOnlyBidding);
-	connect(settings, &SettingsDialog::usernameChanged, leaderboard, &LeaderBoardWidget::setUsername);
-	connect(settings, &SettingsDialog::usercolorChanged, leaderboard, &LeaderBoardWidget::setUsercolor);
-//	connect(leaderboard->getNetworkView(), &NetworkView::leaderboradOnline, this, &GameControll::initializeUser); TODO handle this when client/server is starting
+    connect(instance.leaderboard->getUserOnlineWidget(), &UserOnlineWidget::userAdded, &GameControll::getInstance(), &GameControll::addOfflineUser); //????
+    connect(instance.leaderboard->getUserOnlineWidget(), &UserOnlineWidget::biddingChangedOnline,&GameControll::getInstance(),&GameControll::changeOnlyBidding);
+    connect(instance.settings, &SettingsDialog::usernameChanged, instance.leaderboard, &LeaderBoardWidget::setUsername);
+    connect(instance.settings, &SettingsDialog::usercolorChanged, instance.leaderboard, &LeaderBoardWidget::setUsercolor);
+    connect(instance.leaderboard, &LeaderBoardWidget::onlineUserAdded, &GameControll::getInstance(), [=](User* user)->void {
+                triggerActionsWithData(PlayerAction::newUser, user->toJSON());
+    });
 }
 
 User * GameControll::getMinBid()
 {
-	User * minBid = users.first();
-	for(User * u:users)
+    User * minBid = instance.users.first();
+    for(User * u:instance.users)
 	{
 		if(u->getBidding() < 100)
 		{
@@ -393,9 +428,9 @@ User * GameControll::getMinBid()
 	return minBid;
 }
 
-GameControll::Phase GameControll::getCurrentPhase() const
+GameControll::Phase GameControll::getCurrentPhase()
 {
-	return currentPhase;
+    return instance.currentPhase;
 }
 
 void GameControll::nextTarget()
@@ -477,11 +512,11 @@ void GameControll::remakeBoard()
 
 QVector<KeyMapping*> * GameControll::getMapping()
 {
-	if(!settings)
+    if(!instance.settings)
 	{
 		load();
 	}
-	return &mapping;
+    return &instance.mapping;
 }
 
 void GameControll::setMapping(QVector<KeyMapping*> mapping)
@@ -489,9 +524,9 @@ void GameControll::setMapping(QVector<KeyMapping*> mapping)
 	this->mapping = mapping;
 }
 
-Board * GameControll::getBoard() const
+Board * GameControll::getBoard()
 {
-	return board;
+    return instance.board;
 }
 
 QUuid GameControll::getActiveUserID(){return activeUserID;}
@@ -510,14 +545,14 @@ void GameControll::updateTimer()
 
 SettingsDialog * GameControll::getSettingsDialog()
 {
-	return settings;
+    return instance.settings;
 }
 
 bool GameControll::showTopBidding()
 {
-	if(!settings)
+    if(!instance.settings)
 	{
 		load();
 	}
-	return settings->getShowTopBidding();
+    return instance.settings->getShowTopBidding();
 }

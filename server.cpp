@@ -1,5 +1,6 @@
 #include "server.h"
 #include "Direction.h"
+#include "gamecontroll.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -40,7 +41,6 @@ void Server::startServer(QString address, int port)
 
     connect(server, &QTcpServer::newConnection, &instance, &Server::addClient);
     emit serverStarted(server->serverAddress(), server->serverPort());
-    //TODO add yourself to userlist
 }
 
 int Server::sendMessageToClients(QJsonObject additionalData)
@@ -66,6 +66,7 @@ int Server::forwardMessageToClients(QString message)
 
 void Server::addClient()
 {
+    qDebug()<<"Added new Client to Server";
     QTcpSocket* tcpServerConnection = server->nextPendingConnection();
     if (!tcpServerConnection) {
         return;
@@ -81,7 +82,12 @@ void Server::addClient()
         emit clientsChanged(connections.length());
     });
     connect(connection, &ConnectionToClient::receivedMessage, this, &Server::forwardMessageToClients);
-    //TODO send board and Users to new client
+
+    //send board and users to new client
+    QJsonObject state = GameControll::toJSON();
+    state.insert("action", PlayerAction::completeUpdate);
+    QJsonDocument document(state);
+    connection->sendMessage(QString::fromUtf8(document.toJson()));
 
     emit clientsChanged(connections.length());
 }

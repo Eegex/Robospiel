@@ -55,7 +55,8 @@ public slots:
 	void updateLayout();
 	void newUser();
 signals:
-	void userAdded(struct Userdata * newUser);
+    void userAdded(struct Userdata * newUser);
+    void onlineUserAdded(User* user);
 
 };
 
