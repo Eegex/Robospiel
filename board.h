@@ -29,8 +29,8 @@ public:
 	Tile * goal;
 	int seeker = 0;
 	int activePlayer = 0;
-    bool goalHit = 0;
-    void moveActivePlayer(Direction d, int targetX = -1, int targetY = -1);
+	bool goalHit = 0;
+	void moveActivePlayer(Direction d, int targetX = -1, int targetY = -1, bool isRevert = false);
 	void setPlayerOnTile(int player, Tile *tile);
 	void changeActivePlayer(int playerNumber);
 	void revert();
