@@ -8,6 +8,7 @@
 #include <QVector>
 #include <QSpinBox>
 #include <QDateTime>
+#include <QString>
 #include "UserBiddingWidget.h"
 #include "UserCreationWidget.h"
 #include "useronlinewidget.h"
@@ -15,52 +16,21 @@
 #include "networkview.h"
 #include "offlineleaderboardwidget.h"
 
-enum state {undecided, offline, online};
 class LeaderBoardWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit LeaderBoardWidget(QWidget *parent = nullptr);
-	void addUser(User * newUser);
-	QVector<UserBiddingWidget*> * getUsers();
-	UserCreationWidget *getUserCreationWidget();
-	unsigned int getBiddingWidgetIndexByID(QUuid id);
-	UserOnlineWidget *getUserOnlineWidget();
-    state getOnlineState();
-	unsigned int getNumOfUsers();
-	void goOnline();
-	void goOffline();
-	void goUndefined();
-	void setUsername(QString name);
-	void setUsercolor(QColor color);
-	QString getUsername();
-	QColor getUsercolor();
-	NetworkView *getNetworkView();
-    OfflineLeaderBoardWidget *getOfflineLeaderBoardWidget();
-    void setOfflineLeaderBoardWidget(OfflineLeaderBoardWidget *value);
-
-private:
-    QGridLayout * lay = new QGridLayout(this);
-    //QPushButton * addBtn = new QPushButton(this);
-    QString username = "Hans"; // for testing in MacOs
-	QColor usercolor = QColor(168, 218, 173); // for testing in MacOs
-	unsigned int numOfUsers = 0;
-	unsigned int currentUser = 0;
-    state isOnline = undecided; // 0 = not decided, 1 = offline, 2 = online
-	QVector<UserBiddingWidget*> users; //Several Users, Array of Widgets for individual users
-    OfflineLeaderBoardWidget * offlineLeaderBoardWidget = new OfflineLeaderBoardWidget(nullptr);
-    UserCreationWidget * userCreationWidget = new UserCreationWidget(nullptr);
-	UserOnlineWidget * userOnlineWidget = new UserOnlineWidget(nullptr);
-	NetworkView * networkView = new NetworkView(nullptr);
+    virtual void addUser(User* user) = 0;
+    virtual void sortBy(int strategy) = 0;
 
 public slots:
-    //void sortBy(unsigned int strategy);
-    //void updateLayout();
-    //void newUser();
-signals:
-    void userAdded(struct Userdata * newUser);
-    void onlineUserAdded(User* user);
+    virtual void updateBidding(QUuid id, int bidding) = 0;
+    virtual void updateName(QUuid id, QString name) = 0;
+    virtual void updateColor(QUuid id, QColor color) = 0;
 
+signals:
+    virtual void userAdded(User* u) = 0;
+    virtual void biddingAccepted(QUuid userId, int bidding) = 0;
 };
 
 #endif // LEADERBOARDWIDGET_H

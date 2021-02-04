@@ -10,11 +10,11 @@
 #include <QSpinBox>
 #include <QTableWidget>
 #include "Direction.h"
+#include "LeaderBoardWidget.h"
 #include "user.h"
 #define MAX_BID 99
-#define BID_BTN_TEXT tr("Accept Bid")
 
-class UserOnlineWidget : public QWidget
+class UserOnlineWidget : public LeaderBoardWidget
 {
 	Q_OBJECT
 public:

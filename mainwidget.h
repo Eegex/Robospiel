@@ -19,6 +19,7 @@
 #include "settingsdialog.h"
 #include "gamecontroll.h"
 #include "LeaderBoardWidget.h"
+#include "userview.h"
 
 class MainWidget : public QWidget
 {
@@ -40,7 +41,7 @@ private:
 	BoardView * view = nullptr;
 	BoardEditor * edit = nullptr;
 	NetworkView * networkView = nullptr;
-	LeaderBoardWidget * leaderboard = nullptr;
+    UserView * userView = nullptr;
 	QLCDNumber * lcd = nullptr;
 	QPushButton * skipBtn = nullptr;
 	QMenuBar * menuBar = nullptr;
