@@ -13,7 +13,7 @@
 #include "UserCreationWidget.h"
 #include "user.h"
 
-enum strategy {points, bid};
+
 
 class OfflineLeaderBoardWidget : public QWidget
 {
@@ -36,7 +36,6 @@ private:
     QVector<UserBiddingWidget*> users; //Several Users, Array of Widgets for individual users
     UserCreationWidget * userCreationWidget = new UserCreationWidget(nullptr);
 public slots:
-    void sortBy(unsigned int strategy);
     void updateLayout();
     //void newUser();
 

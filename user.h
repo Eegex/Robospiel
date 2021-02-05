@@ -12,7 +12,6 @@ class User : public QObject
 	Q_OBJECT
 public:
     User(QString name, QColor color, QObject *parent=nullptr);
-//	User(QString name, QColor color, QUuid uuid, QObject *parent);
 	QString getName();
 	QColor getColor();
 	QUuid getId();
@@ -22,10 +21,13 @@ public:
 	void setColor(QColor c);
 	void setBidding(int b);
 	void addPoints(int p);
-	unsigned long getLastBiddingTime() const;
+    unsigned long getTimeStamp() const;
 
     QJsonObject toJSON();
     static User* fromJSON(QJsonObject json);
+    void incrementPoints();
+    void setTimeStamp(unsigned long value);
+
 private:
     User(QObject *parent=nullptr);
 	QString name;
@@ -33,11 +35,12 @@ private:
 	QUuid id;
 	int bidding;
 	int points;
-	unsigned long lastBiddingTime;
+    unsigned long timeStamp;
 
 	static int userCount;
 
 signals:
+    void pointsChanged(int points);
 
 
 };

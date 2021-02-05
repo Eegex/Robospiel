@@ -12,6 +12,7 @@
 #include "board.h"
 #include "Direction.h"
 
+enum strategy {points, bid};
 class GameControll : public QObject
 {
 	Q_OBJECT
@@ -37,7 +38,10 @@ public:
 	static void addOnlineUser(User *user);
 	static void initializeUser();
 
-	static void initializeConnections();
+    static void initializeConnections();
+    void addUser(User *user);
+
+    void sortBy(strategy strategy);
 public slots:
 	void calculateWinner(int moves);
 	void showSettings();
@@ -62,6 +66,9 @@ private:
 
 	explicit GameControll(QObject *parent = nullptr);
 	void sendToServer(PlayerAction a);
+    User *getUserById(QUuid id);
+    User *getNextUser(QUuid lastUserId);
+    int getUserIndexById(QUuid id);
 signals:
 	void actionTriggeredWithData(PlayerAction action, QJsonObject additionalData);
 	void actionTriggered(PlayerAction action);

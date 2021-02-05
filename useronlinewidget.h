@@ -40,7 +40,6 @@ public slots:
     void setBidding(QUuid id, int bidding);
     void updateName(QString newName); // TODO: same for color
 signals:
-	void userAdded(struct UserData * newUser);
 	void biddingChangedOnline(int userBidding);
 };
 

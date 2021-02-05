@@ -219,8 +219,8 @@ void Board::startNewRound()
 {
 	resetMoves();
 	makeNewSeeker(true);
+    activePlayer = seeker;
 	history.clear();
-	activePlayer = seeker;
 	//goal only in corner?
 	makeNewGoal();
 	//else:

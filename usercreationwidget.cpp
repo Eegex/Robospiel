@@ -4,7 +4,10 @@
 #include <QGridLayout>
 #include <QDebug>
 #include <QString>
-#define DEFAULTUSERNAME "Neuer Spieler"
+#include "gamecontroll.h"
+#include "Direction.h"
+#include "user.h"
+#define DEFAULTUSERNAME tr("New User")
 
 UserCreationWidget::UserCreationWidget(QWidget *parent) : QWidget(parent)
 {
@@ -30,13 +33,12 @@ UserCreationWidget::UserCreationWidget(QWidget *parent) : QWidget(parent)
 void UserCreationWidget::addUser()
 {
     qDebug()<<"Addition Request of user with name "<<userNamePicker->text()<<"and colour "<<userColourPicker->selectedColor().name();
-    struct UserData newUser;
-    newUser.name = userNamePicker->text()!=nullptr?userNamePicker->text():DEFAULTUSERNAME;
-    newUser.colour = userColourPicker->selectedColor();
+    User* user = new User(userNamePicker->text()!=nullptr?userNamePicker->text():DEFAULTUSERNAME, userColourPicker->selectedColor());
     qDebug()<<"Current Colour"<<userColourPicker->selectedColor().name();
     delete userColourPicker;
     userColourPicker = new QColorDialog;
-    emit userAdded(&newUser);
+
+    GameControll::triggerActionsWithData(PlayerAction::newUser, user->toJSON());
     connect(userColourPicker, &QColorDialog::colorSelected, this, [&](const QColor &colour)
     {
        addColourBtn->setStyleSheet("background-color: "+colour.name());

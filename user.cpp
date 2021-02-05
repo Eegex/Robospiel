@@ -28,6 +28,11 @@ User::User(QObject *parent) : QObject(parent)
 
 }
 
+void User::setTimeStamp(unsigned long value)
+{
+    timeStamp = value;
+}
+
 QJsonObject User::toJSON()
 {
     QJsonObject json;
@@ -50,8 +55,14 @@ User* User::fromJSON(QJsonObject json)
     user->id = QUuid(json.value("id").toString());
     user->setBidding(json.value("bidding").toInt());
     user->points = json.value("points").toInt();
-    user->lastBiddingTime = json.value("lastBiddingTime").toString().toULong();
+    user->timeStamp = json.value("lastBiddingTime").toString().toULong();
     return user;
+}
+
+void User::incrementPoints()
+{
+    points++;
+    emit pointsChanged(points);
 }
 
 QString User::getName()
@@ -89,11 +100,11 @@ void User::setBidding(int b)
 	bidding = b;
 	if(bidding != 99)
 	{
-		lastBiddingTime = QDateTime::currentDateTime().toMSecsSinceEpoch();
+        timeStamp = QDateTime::currentDateTime().toMSecsSinceEpoch();
 	}
 	else
 	{
-		lastBiddingTime = 0;
+        timeStamp = 0;
 	}
 }
 
@@ -102,7 +113,7 @@ void User::addPoints(int p)
 	points += p;
 }
 
-unsigned long User::getLastBiddingTime() const
+unsigned long User::getTimeStamp() const
 {
-	return lastBiddingTime;
+    return timeStamp;
 }
