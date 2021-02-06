@@ -17,7 +17,7 @@ class GameControll : public QObject
 	Q_OBJECT
 public:
 	static GameControll& getInstance();
-
+    QVector<User*> sortedUsers;
 	enum class Phase{idle, search, countdown, presentation, freeplay};
 
 	static void load();
@@ -36,6 +36,7 @@ public:
 	static void setLeaderboard(LeaderBoardWidget * value);
 	static void addOnlineUser(User *user);
 	static void initializeUser();
+    void sortUsers(unsigned int strategy, QVector<User*>* sortedUsers);
 
 	static void initializeConnections();
 public slots:

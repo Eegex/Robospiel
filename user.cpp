@@ -37,7 +37,7 @@ QJsonObject User::toJSON()
     json.insert("bidding", getBidding());
     json.insert("points", getPoints());
 
-    QString timeStampString = QString("%1").arg(getLastBiddingTime());
+    QString timeStampString = QString("%1").arg(getTimeStamp());
     json.insert("lastBiddingTime", timeStampString);
     return json;
 }
@@ -102,7 +102,7 @@ void User::addPoints(int p)
 	points += p;
 }
 
-unsigned long User::getLastBiddingTime() const
+unsigned long User::getTimeStamp() const
 {
 	return lastBiddingTime;
 }

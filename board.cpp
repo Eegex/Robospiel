@@ -668,6 +668,7 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY, bool isRever
 		}
 		qDebug()<<"Moves:"<<moves;
 		goalHit = (goal == currentTile && seeker == activePlayer);
+        qDebug()<<"Currently in Board Class, the goal has"<<(goalHit?"been hit!":"!NOT! been hit!");
 		if(!isRevert)
 		{
 			history.append(h);

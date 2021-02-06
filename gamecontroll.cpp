@@ -321,18 +321,85 @@ void GameControll::triggerActionsWithData(PlayerAction action, QJsonObject data)
 	//}
 }
 
+void GameControll::sortUsers(unsigned int strategy, QVector<User*>* sortedUsers){
+    qDebug()<<"Called Function sortUsers with strategy"<<(strategy == 0?"Points":"Bidding");
+    sortedUsers->clear(); //Clear the vector with previously sorted Users
+    unsigned long minTimeStamp = QDateTime::currentMSecsSinceEpoch(); //TimeStamp at this point, used to compare against for the first user, this is needed because one doesn't know if users contains anything
+    bool isActive[users.size()];
+    memset(isActive, 1, users.size()); //Activate all Users
+    if(strategy == bid){
+        User* minUser;
+        unsigned int minIndex = 0;
+        int minBid;
+        for(int additionIndex = 0; additionIndex < users.size(); additionIndex++){
+            minBid = MAX_BID + 1;
+            for(User* user : users){
+                if(user->getBidding() <= minBid && isActive[users.indexOf(user)]){//If User has a lower bid than the currently lowest bid
+                    if(user->getBidding() == minBid){
+                        if(user->getTimeStamp() < minTimeStamp){ //check the timestamp
+                            //qDebug()<<"Bidding is the same, timestamp is earlier";
+                            minUser = user; //Set the Widget to add to the new list to the user
+                            minIndex = users.indexOf(user); //Set the index needed for deactivating the user to the current index
+                            minBid = user->getBidding(); //Set the newest lowest bid to the current user as there can be users after that one with lower bids
+                            minTimeStamp = user->getTimeStamp(); //Set User Timestamp to the current user value
+                        }
+                    }
+                    else{
+                        //qDebug()<<"Bidding of user "<<user->getName()<<" with bidding "<<user->getBidding()<<" is smaller than minimum bid of "<<minBid;
+                        minUser = user; //Set the Widget to add to the new list to the user
+                        minIndex = users.indexOf(user); //Set the index needed for deactivating the user to the current index
+                        minBid = user->getBidding(); //Set the newest lowest bid to the current user as there can be users after that one with lower bids
+                        minTimeStamp = user->getTimeStamp(); //Set User Timestamp to the current user value
+                    }
+                }
+            }
+            isActive[minIndex] = false; //Deactivate user
+            sortedUsers->append(minUser);  //Append to List given by Pointer sortedUsers
+        }
+    }
+    if(strategy == points)
+    {
+        User* maxUser;
+        int maxIndex = 0;
+        int maxPts;
+        for(int additionIndex = 0; additionIndex < users.size(); additionIndex++)
+        {
+            maxPts = 0;
+            for(User* user : users)
+            {
+                //qDebug()<<"SortByPoints: USER "<<user->getName()<<" with points "<<user->getPoints()<<"and timestamp: "<<user->getTimeStamp();
+                if(user->getPoints() >= maxPts && isActive[users.indexOf(user)])//If User has more points than the current maximum
+                {
+                    //qDebug()<<"Points of user "<<user->getName()<<" with points "<<user->getPoints()<<" is larger than maximum amount of "<<maxPts;
+                    maxUser = user; //Set the Widget to add to the new list to the user
+                    maxIndex = users.indexOf(user); //Set the index needed for deactivating the user to the current index
+                    maxPts = user->getPoints(); //Set the newest largest number of points to the current user as there can be users after that one with larger number of points
+                    minTimeStamp = user->getTimeStamp(); //Set the User Time stamp to the current user value
+                }
+            }
+            isActive[maxIndex] = false; //Deactivate user
+            sortedUsers->append(maxUser);
+        }
+    }
+    for(int i = 0; i<users.size(); i++)
+        qDebug()<<"SortedUsers: User "<<i<<": "<<sortedUsers->at(i)->getName()<<" with"<<(strategy == 0?"points: ":"bid: ")<<(strategy == 0?sortedUsers->at(i)->getPoints():sortedUsers->at(i)->getBidding())<<" and timestamp "<<sortedUsers->at(i)->getTimeStamp();
+}
+
 //called after each movement of a player (and when reverting, ...)
 void GameControll::calculateGameStatus()
 {
+    qDebug()<<"Called Function CalculateGameStatus in "<<leaderboard->getOnlineState()<<" mode, the goal has"<<(board->goalHit?"been hit!":"!NOT! been hit!");
 	if(leaderboard->getOnlineState() == offline)
 	{
 		qDebug()<<"Current Moves are: "<< board->getMoves();
 		QUuid currentPlayer = getActiveUserID();
+        //Get Active User Index
 		unsigned int activeUserIndex = leaderboard->getOfflineLeaderBoardWidget()->getBiddingWidgetIndexByID(currentPlayer);
 		if(board->getMoves() >= leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->getBidding()) //Needs to be GEQ because otherwise the player could make an extra move as the "reached goal" signal is overriding the failure
 		{
 			if(board->goalHit) //Spieler hat gewonnen, die Runde ist zuende
 			{
+                qDebug()<<"The Goal has been hit, calculating the winner now!";
 				calculateWinner(board->getMoves());
 			}
 			else
@@ -349,7 +416,7 @@ void GameControll::calculateGameStatus()
 				else //Alles Versager
 				{
 					qDebug()<<"No User could end the round in their specified bid.";
-					leaderboard->getOfflineLeaderBoardWidget()->sortBy(points);
+                    sortUsers(points, &sortedUsers);
 					nextTarget();
 				}
 			}
@@ -406,11 +473,11 @@ void GameControll::calculateWinner(int moves) //This function is being called wh
 {
 	QUuid currentPlayer = getActiveUserID();
 	if(leaderboard->getOnlineState() == offline){
-		qDebug()<<"Goal has been hit!";
+        qDebug()<<"The Goal has been hit, currently in GameControl -> calculateWinner Function with "<<moves<<" moves!";
 		unsigned int activeUserIndex = leaderboard->getOfflineLeaderBoardWidget()->getBiddingWidgetIndexByID(currentPlayer);
 		nextTarget(); //Generate a new target, this should reset the current LeaderBoardWidget
 		leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->incrementPoints(); //Increment the number of points of the player that's hit their goal
-		leaderboard->getOfflineLeaderBoardWidget()->sortBy(points);
+        sortUsers(points, &sortedUsers);
 		qDebug()<<"User "<<leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->getName()<<" has successfully ended the round with "<<moves<<" moves, their current points are "<<leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->getPoints();
 		board->resetMoves(); //This needs to be done because the actionTriggered will set it to 1 immediately after a goal is hit so the next player has 1 fewer move which would be bad
 	}
@@ -470,8 +537,9 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
 	});
 	connect(&GameControll::getInstance(), &GameControll::biddingDone, &GameControll::getInstance(), [&]()
 	{
-		instance.leaderboard->getOfflineLeaderBoardWidget()->sortBy(bid);
-		qDebug()<<"ActiveUserID is"<<instance.getActiveUserID();
+        //instance.leaderboard->getOfflineLeaderBoardWidget()->sortBy(bid);
+        instance.sortUsers(bid, &instance.sortedUsers);
+        qDebug()<<"ActiveUserID is"<<instance.getActiveUserID();
 		qDebug()<<"Attempting to switch to new Player, first ID is "<<instance.leaderboard->getOfflineLeaderBoardWidget()->getUsers()->first()->getId();
 		instance.setActiveUserID(instance.leaderboard->getOfflineLeaderBoardWidget()->getUsers()->first()->getId());
 		qDebug()<<"Bidding is done, Users are sorted, initial player is: "<<instance.leaderboard->getOfflineLeaderBoardWidget()->getUsers()->first()->getName()<<" with id "<< instance.getActiveUserID();
@@ -495,7 +563,7 @@ User * GameControll::getMinBid()
 	{
 		if(u->getBidding() < 100)
 		{
-			if(u->getBidding() < minBid->getBidding() || (u->getBidding() == minBid->getBidding() && u->getLastBiddingTime() < minBid->getLastBiddingTime()))
+            if(u->getBidding() < minBid->getBidding() || (u->getBidding() == minBid->getBidding() && u->getTimeStamp() < minBid->getTimeStamp()))
 			{
 				minBid = u;
 			}

@@ -22,7 +22,7 @@ public:
 	void setColor(QColor c);
 	void setBidding(int b);
 	void addPoints(int p);
-	unsigned long getLastBiddingTime() const;
+    unsigned long getTimeStamp() const;
 
     QJsonObject toJSON();
     static User* fromJSON(QJsonObject json);
