@@ -25,6 +25,10 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	glMain->addWidget(leaderboard,3,1,2,1,Qt::AlignCenter);
 	connect(&GameControll::getInstance(),&GameControll::time,this,&MainWidget::updateTimer);
 	connect(&GameControll::getInstance(),&GameControll::updateGuide,this,&MainWidget::updateGuide);
+    connect(&GameControll::getInstance(), &GameControll::newBoard, this, [=](Board* newBoard)
+    {
+        initializeView(newBoard, GameControll::getMapping());
+    });
 	adjustSize();
 	glMain->addWidget(skipBtn,2,1,Qt::AlignCenter);
 	skipBtn->setEnabled(false);
@@ -212,6 +216,10 @@ void MainWidget::updateTimer(int remaining)
 
 void MainWidget::initializeView(Board* b, QVector<KeyMapping*>* m)
 {
+    if(view)
+    {
+        view->deleteLater();
+    }
 	view = new BoardView(this);
 	view->setBoard(b);
 	view->setMapping(m);

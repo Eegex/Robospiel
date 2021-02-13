@@ -37,6 +37,7 @@ QJsonObject GameControll::toJSON() //TODO test both ways of JSON
 	json.insert("currentPhase", static_cast<int>(instance.currentPhase));
 	json.insert("board", instance.board->toJSON());
 	json.insert("activeUserID", instance.activeUserID.toString());
+    json.insert("searchTime", instance.searchTime);
 	json.insert("remainingTimerTime", instance.countdown.remainingTime());
 	json.insert("timeLeft", instance.timeLeft);
 	QJsonArray jsonUsers;
@@ -53,8 +54,9 @@ void GameControll::adaptFromJSON(QJsonObject json)
 	instance.currentPhase=static_cast<Phase>(json.value("currentPhase").toInt());
 	setBoard(Board::fromJSON(json.value("board").toObject()));
 	instance.setActiveUserID(QUuid::fromString(json.value("activeUserID").toString()));
+    instance.searchTime = json.value("searchTime").toInt();
 	instance.timeLeft = json.value("timeLeft").toInt();
-	instance.countdown.stop();
+    instance.countdown.stop();
 	if(json.value("remainingTimerTime").toInt()!=-1)
 	{
 		QTimer::singleShot(json.value("remainingTimerTime").toInt(), &instance, [=]()->void{
@@ -62,9 +64,7 @@ void GameControll::adaptFromJSON(QJsonObject json)
 		});
 
 	}
-
 	instance.users.clear();
-	setLeaderboard(new LeaderBoardWidget());
 	QJsonArray jsonUsers = json.value("users").toArray();
 	for(int i=0; i<jsonUsers.size(); i++)
 	{
@@ -85,6 +85,7 @@ void GameControll::adaptFromJSON(QJsonObject json)
 			instance.addOfflineUser(&userData);
 		}
 	}
+    //TODO when merged with leaderboardbranch: update view
 }
 
 //forwards the message to all clients / triggers the action directly when you are offline
@@ -155,17 +156,17 @@ void GameControll::showSettings()
 
 Board * GameControll::setBoard(Board* newBoard)
 {
-	if(instance.board)
-	{
-		instance.board->deleteLater();
-		instance.board = nullptr;
-	}
+    if(instance.board)
+    {
+        instance.board->deleteLater();
+    }
 	instance.board = newBoard;
 	if(instance.settings)
 	{
 		instance.board->updateColors(instance.settings->getBackground(), instance.settings->getWallcolor(), instance.settings->getGridcolor(), instance.settings->getPlayerColorLow(), instance.settings->getPlayerColorHigh());
 	}
 	connect(instance.board, &Board::playerMoved, &GameControll::getInstance(), &GameControll::calculateGameStatus);
+    emit instance.newBoard(instance.board);
 	return instance.board;
 }
 
@@ -618,7 +619,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 			{
 				currentPhase = phase;
 				emit updateGuide(tr("counting down"));
-				timeLeft = 60; //60
+                timeLeft = searchTime; //60
 				emit time(timeLeft);
 				countdown.start();
 			}

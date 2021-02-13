@@ -18,8 +18,8 @@ public:
 	bool getWall(Direction direction);
 	int getPlayer() const;
 	void setPlayer(int value);
-	Tile* northTile;
-	Tile* westTile;
+    Tile* northTile = nullptr;
+    Tile* westTile = nullptr;
 
     void setInnerWall(Direction direction, bool set);
     static Tile *fromJSON(QJsonObject json);

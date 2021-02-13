@@ -32,7 +32,7 @@ public:
 	bool goalHit = 0;
 	void moveActivePlayer(Direction d, int targetX = -1, int targetY = -1, bool isRevert = false);
 	void setPlayerOnTile(int player, Tile *tile);
-	void changeActivePlayer(int playerNumber);
+    void changeActivePlayer(int playerNumber, bool isRevert=false);
 	void revert();
 	void revertToBeginning();
 	void makeNewBoard(int width, int height, int playerNumber);
@@ -50,7 +50,7 @@ public:
 	void makeNewGoal();
 	void makeNewSeeker(bool random);
 	int getMoves() const;
-	void updateColors(QColor b, QColor w, QColor g, QColor p1, QColor p2);
+    void updateColors(QColor b, QColor w, QColor g, QColor p1, QColor p2);
 public slots:
 	void startNewRound();
 	int switchPlayer(Direction d);
@@ -71,6 +71,7 @@ private:
 	QColor grid = QColor(0,0xff,0xff);
 	QColor playerHigh = QColor(0,0xff,0xff);
 	QColor playerLow = QColor(0,0xff,0xff);
+
 
 	Tile *getRandomUnoccupiedTile();
 	// for each side: -1 because there are more tiles than walls, -2 because the walls next to the sides shouldn't be set, so 3*4 = 12

@@ -53,13 +53,14 @@ private:
 	static GameControll instance;
 	QVector<User*> users;
 	LeaderBoardWidget * leaderboard = nullptr;
-	Phase currentPhase = Phase::idle; //freeplay
+    Phase currentPhase = Phase::idle; //freeplay
 	SettingsDialog * settings = nullptr;
 	QVector<KeyMapping*> mapping;
 	Board * board = nullptr;
 	QUuid activeUserID;
 	QTimer countdown;
 	int timeLeft;
+    int searchTime=60;
 
 	explicit GameControll(QObject *parent = nullptr);
 	void sendToServer(PlayerAction a);
@@ -74,6 +75,7 @@ signals:
 	void updateGuide(const QString & txt);
 	void enableMenus(bool boolean);
 	void enableTimerSkip(bool boolean);
+    void newBoard(Board* b);
 private slots:
 	void updateTimer();
 	bool switchPhase(GameControll::Phase phase);

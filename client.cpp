@@ -74,7 +74,7 @@ void Client::closeClient()
 
 bool Client::isActive()
 {
-    return tcpSocket->state()==QAbstractSocket::BoundState;
+    return (tcpSocket->state()==QAbstractSocket::BoundState) ||(tcpSocket->state()==QAbstractSocket::ConnectedState);
 }
 
 Client::~Client()

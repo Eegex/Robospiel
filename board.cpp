@@ -205,6 +205,7 @@ Board* Board::fromJSON(QJsonObject json)
 	b->activePlayer = json.value("activePlayer").toInt();
 	b->moves = json.value("moves").toInt();
 
+
 	return b;
 }
 
@@ -677,12 +678,15 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY, bool isRever
 	}
 }
 
-void Board::changeActivePlayer(int playerNumber)
+void Board::changeActivePlayer(int playerNumber, bool isRevert)
 {
-	HistoryElement h = HistoryElement();
-	h.action=PlayerAction::playerSwitch;
-	h.previousPlayer=activePlayer;
-	history.append(h);
+    if(!isRevert)
+    {
+        HistoryElement h = HistoryElement();
+        h.action=PlayerAction::playerSwitch;
+        h.previousPlayer=activePlayer;
+        history.append(h);
+    }
 	activePlayer = playerNumber;
 	emit boardChanged();
 }
@@ -704,7 +708,7 @@ void Board::revert()
 		}
 		if(h.action == PlayerAction::playerSwitch)
 		{
-			changeActivePlayer(h.previousPlayer);
+            changeActivePlayer(h.previousPlayer, true);
 		}
 	}
 	//TODO delete history after each presentation and after the freeplay-phase
