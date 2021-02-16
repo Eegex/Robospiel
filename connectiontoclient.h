@@ -8,20 +8,20 @@
 
 class ConnectionToClient: public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    bool sendMessage(QString message);
-    ConnectionToClient(QObject *parent, QTcpSocket *tcpSocket);
+	bool sendMessage(QString message);
+	ConnectionToClient(QObject *parent, QTcpSocket *tcpSocket);
 private:
-    QTcpSocket* tcpSocket;
-    QDataStream streamFromClient;
+	QTcpSocket* tcpSocket;
+	QDataStream streamFromClient;
 
 signals:
-    void receivedMessage(QString message);
-    void deleteConnection(ConnectionToClient* self);
+	void receivedMessage(QString message);
+	void deleteConnection(ConnectionToClient* self);
 
 private slots:
-    void receiveMessage();
+	void receiveMessage();
 };
 
 #endif // CONNECTIONTOCLIENT_H

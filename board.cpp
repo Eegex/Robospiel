@@ -2,6 +2,7 @@
 #include <Direction.h>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QDataStream>
 #include "board.h"
 
 Board::Board()
@@ -95,13 +96,153 @@ void Board::makeNewWalls(int width, int height)
 	emit boardChanged();
 }
 
+QString Board::toBinary()
+{
+	QByteArray binary;
+	QDataStream s(&binary,QIODevice::WriteOnly);
+	s << static_cast<quint8>(tiles.size());
+	s << static_cast<quint8>(tiles.at(0).size());
+	QVector<QPoint> eastWalls;
+	QVector<QPoint> southWalls;
+	for(QVector<Tile*> row : qAsConst(tiles))
+	{
+		for(Tile* tile : row)
+		{
+			if(tile->getWall(Direction::east))
+			{
+				eastWalls.append(tile->getPosition());
+			}
+			if(tile->getWall(Direction::south))
+			{
+				southWalls.append(tile->getPosition());
+			}
+		}
+	}
+	s << static_cast<quint16>(eastWalls.size());
+	for(QPoint p:eastWalls)
+	{
+		s << static_cast<quint8>(p.x()) << static_cast<quint8>(p.y());
+	}
+	s << static_cast<quint16>(southWalls.size());
+	for(QPoint p:southWalls)
+	{
+		s << static_cast<quint8>(p.x()) << static_cast<quint8>(p.y());
+	}
+	s << static_cast<quint8>(players.size());
+	for(Tile* player: qAsConst(players))
+	{
+		s << static_cast<quint8>(player->getPosition().x());
+		s << static_cast<quint8>(player->getPosition().y());
+	}
+	s << static_cast<quint8>(goal->getPosition().x());
+	s << static_cast<quint8>(goal->getPosition().y());
+	s << static_cast<quint16>(history.size());
+	for(HistoryElement historyElement : qAsConst(history))
+	{
+		s << static_cast<quint8>(historyElement.action);
+		s << static_cast<quint8>(historyElement.previousPlayer);
+		s << static_cast<quint8>(historyElement.previousPosition.x());
+		s << static_cast<quint8>(historyElement.previousPosition.y());
+	}
+	s << static_cast<quint8>(seeker);
+	s << static_cast<quint8>(activePlayer);
+	s << static_cast<quint8>(moves);
+	return QString::fromUtf8(binary.toBase64());
+}
+
+Board * Board::fromBinary(const QString base64)
+{
+	QByteArray data = QByteArray::fromBase64(base64.toUtf8());
+	QDataStream s(&data,QIODevice::ReadOnly);
+	quint8 height, width, playerSize, seeker, activePlayer, moves;
+	quint8 x, y, action, prevPlayer;
+	quint16 eastWallSize, southWallSize, historySize;
+	QVector<QPoint> eastWalls;
+	QVector<QPoint> southWalls;
+	QVector<QPoint> playerPos;
+	QVector<HistoryElement> history;
+	// Read data
+	s >> height >> width >> eastWallSize;
+	for(int i = 0; i < eastWallSize;i++)
+	{
+		s >> x >> y;
+		eastWalls << QPoint(x,y);
+	}
+	s >> southWallSize;
+	for(int i = 0; i < southWallSize;i++)
+	{
+		s >> x >> y;
+		southWalls << QPoint(x,y);
+	}
+	s >> playerSize;
+	for(int i = 0; i < playerSize;i++)
+	{
+		s >> x >> y;
+		playerPos << QPoint(x,y);
+	}
+	s >> x >> y;
+	QPoint goal = QPoint(x,y);
+	s >> historySize;
+	for(int i = 0; i < historySize;i++)
+	{
+		s >> action >> prevPlayer >> x >> y;
+		HistoryElement he;
+		he.action = static_cast<PlayerAction>(action);
+		he.previousPlayer = prevPlayer;
+		he.previousPosition = QPoint(x,y);
+		history.append(he);
+	}
+	s >> seeker >> activePlayer >> moves;
+	// Construct Board
+	Board * newBoard = new Board();
+	newBoard->tiles.clear();
+	for(int i=0; i < height; i++)
+	{
+		QVector<Tile*> innerVector;
+		for(int j=0; j < width; j++)
+		{
+			Tile* tile = new Tile(QPoint(j, i), newBoard->tiles.isEmpty()?nullptr:newBoard->tiles.last().at(j), innerVector.isEmpty()?nullptr: innerVector.last(), newBoard);
+			if(j==width-1)
+			{
+				tile->setWall(Direction::east, true);
+			}
+			if(i==height-1)
+			{
+				tile->setWall(Direction::south, true);
+			}
+			innerVector.append(tile);
+		}
+		newBoard->tiles.append(innerVector);
+	}
+	for(const QPoint & w:qAsConst(eastWalls))
+	{
+		newBoard->getTile(w.x(),w.y())->setWall(Direction::east,true);
+	}
+	for(const QPoint & w:qAsConst(southWalls))
+	{
+		newBoard->getTile(w.x(),w.y())->setWall(Direction::south,true);
+	}
+	for(const QPoint & w:qAsConst(playerPos))
+	{
+		Tile * t = newBoard->getTile(w.x(),w.y());
+		t->setPlayer(newBoard->players.size());
+		newBoard->players.append(t);
+	}
+	newBoard->goal = newBoard->getTile(goal.x(),goal.y());
+	newBoard->history = history;
+	newBoard->seeker = seeker;
+	newBoard->activePlayer = activePlayer;
+	newBoard->moves = moves;
+	return newBoard;
+}
+
 QJsonObject Board::toJSON()
 {
 	QJsonObject json;
 
 	//tiles
 	QJsonArray tileArray;
-	for(QVector<Tile*> row : qAsConst(tiles))
+	for(const QVector<Tile*> &row : qAsConst(tiles))
 	{
 		QJsonArray innerTileArray;
 		for(Tile* tile : row)
@@ -146,7 +287,6 @@ QJsonObject Board::toJSON()
 	json.insert("seeker", seeker);
 	json.insert("activePlayer", activePlayer);
 	json.insert("moves", moves);
-
 	return json;
 }
 
@@ -669,7 +809,7 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY, bool isRever
 		}
 		qDebug()<<"Moves:"<<moves;
 		goalHit = (goal == currentTile && seeker == activePlayer);
-        qDebug()<<"Currently in Board Class, the goal has"<<(goalHit?"been hit!":"!NOT! been hit!");
+		qDebug()<<"Currently in Board Class, the goal has"<<(goalHit?"been hit!":"!NOT! been hit!");
 		if(!isRevert)
 		{
 			history.append(h);
@@ -680,13 +820,13 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY, bool isRever
 
 void Board::changeActivePlayer(int playerNumber, bool isRevert)
 {
-    if(!isRevert)
-    {
-        HistoryElement h = HistoryElement();
-        h.action=PlayerAction::playerSwitch;
-        h.previousPlayer=activePlayer;
-        history.append(h);
-    }
+	if(!isRevert)
+	{
+		HistoryElement h = HistoryElement();
+		h.action=PlayerAction::playerSwitch;
+		h.previousPlayer=activePlayer;
+		history.append(h);
+	}
 	activePlayer = playerNumber;
 	emit boardChanged();
 }
@@ -708,7 +848,7 @@ void Board::revert()
 		}
 		if(h.action == PlayerAction::playerSwitch)
 		{
-            changeActivePlayer(h.previousPlayer, true);
+			changeActivePlayer(h.previousPlayer, true);
 		}
 	}
 	//TODO delete history after each presentation and after the freeplay-phase
