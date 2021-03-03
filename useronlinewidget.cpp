@@ -1,10 +1,11 @@
 #include "useronlinewidget.h"
 #include <QDebug>
+#include <QBrush>
 
-UserOnlineWidget::UserOnlineWidget(QWidget *parent) : QWidget(parent)
+UserOnlineWidget::UserOnlineWidget()
 {
     bidBtn->hide();
-    name->hide();
+    lname->hide();
     biddingBox->hide();
     listWidget->hide();
     listWidget->hide();
@@ -17,16 +18,15 @@ UserOnlineWidget::UserOnlineWidget(QWidget *parent) : QWidget(parent)
 
 void UserOnlineWidget::setOnlineWidget()
 {
-    qDebug()<<"First things first";
     biddingBox->setMinimum(1);
     biddingBox->setSingleStep(1);
     bidBtn->setText(BID_BTN_TEXT);
-    lay->addWidget(name);
+    lay->addWidget(lname);
     lay->addWidget(biddingBox);
     lay->addWidget(bidBtn);
     lay->addWidget(listWidget);
-    name->setText(username);
-    name->show();
+    lname->setText(username);
+    lname->show();
 
     setTable();
 
@@ -47,6 +47,9 @@ void UserOnlineWidget::setTable()
     QTableWidgetItem *newItem = new QTableWidgetItem(tr("%1").arg((2)*(2)));
     newItem->setText(username);
     newItem->setData(1,userId);
+    QBrush brush;
+    brush.setColor(usercolor);
+    newItem->setForeground(brush);
     listWidget->setItem(0, 0, newItem);
     // set bidding column
     QTableWidgetItem *newItem2 = new QTableWidgetItem(tr("%1").arg((2)*(3)));
@@ -61,41 +64,78 @@ void UserOnlineWidget::setTable()
 
 }
 
-void UserOnlineWidget::setBidding(QUuid id, int bidding)
-{
-    qDebug()<<"useronlinewidget setBidding to "<<bidding;
-    QString name = "";
-    for(User *u : users)
-    {
-        if(u->getId() == id)
-        {
-            name = u->getName();
-        }
-    }
-    for(QTableWidgetItem *item : listWidget->findItems(name,0))
-    {
-        if(item->data(1) == id && item->text() == name)
-        {
-            listWidget->item(item->row(),item->column()+1)->setText(QString::number(bidding));
-            return;
-        }
-    }
-    userBidding = bidding;
-    // emit biddingChangedOnline(userBidding);
-}
-
 void UserOnlineWidget::btnPressed()
 {
     biddingBox->setMaximum(userBidding = biddingBox->value());
     bidBtn->setText("Bid: "+QString::number(userBidding));
     qDebug()<<"Player changed their bidding to: "<<userBidding;
-    emit biddingChangedOnline(userBidding);
+    emit biddingAccepted(userId, userBidding);
 }
 
-void UserOnlineWidget::updateName(QString newName)
+void UserOnlineWidget::updateBidding(QUuid id, int bidding)
 {
+    qDebug()<<"useronlinewidget updateBidding to "<<bidding;
+    User * tmpUser = findUser(id);
+    QString name = "";
+    if (tmpUser != nullptr)
+    {
+        name = tmpUser->getName();
+        for(QTableWidgetItem *item : listWidget->findItems(name,0))
+        {
+            if(item->data(1) == id && item->text() == name)
+            {
+                listWidget->item(item->row(),item->column()+1)->setText(QString::number(bidding));
+                return;
+            }
+        }
+    }
+    // userBidding = bidding; notwendig?
+    // emit biddingChangedOnline(userBidding);
+}
+
+void UserOnlineWidget::updateName(QUuid id, QString newName)
+{
+    qDebug()<<"useronlinewidget updateName to "<<newName;
+    User * tmpUser = findUser(id);
+    QString name = "";
+    if (tmpUser != nullptr)
+    {
+        name = tmpUser->getName();
+        for(QTableWidgetItem *item : listWidget->findItems(name,0))
+        {
+            if(item->data(1) == id && item->text() == name)
+            {
+                listWidget->item(item->row(),item->column())->setText(newName);
+                return;
+            }
+        }
+    }
     username = newName;
-    name->setText(username);
+    lname->setText(username);
+    lay->update();
+}
+
+void UserOnlineWidget::updateColor(QUuid id, QColor color)
+{
+    qDebug()<<"useronlinewidget updateColor to "<<color.name();
+    User * tmpUser = findUser(id);
+    QString name = "";
+    if (tmpUser != nullptr)
+    {
+        name = tmpUser->getName();
+        for(QTableWidgetItem *item : listWidget->findItems(name,0))
+        {
+            if(item->data(1) == id && item->text() == name)
+            {
+                QBrush brush;
+                brush.setColor(color);
+                listWidget->item(item->row(),item->column())->setForeground(brush);;
+                return;
+            }
+        }
+    }
+    usercolor = color;
+    lname->setStyleSheet("color: "+color.name());
     lay->update();
 }
 
@@ -104,7 +144,12 @@ void UserOnlineWidget::addUserToList(User *u)
     users.append(u);
 }
 
-void UserOnlineWidget::updateUserList()
+void UserOnlineWidget::deactivateInput()
+{
+
+}
+
+void UserOnlineWidget::updateAllUsers()
 {
 
 }
@@ -114,7 +159,14 @@ void UserOnlineWidget::setUserID(QUuid id)
     userId = id;
 }
 
-/* void UserOnlineWidget::loadUsers()
+User * UserOnlineWidget::findUser(QUuid id)
 {
-
-} */
+    for(User *u : users)
+    {
+        if(u->getId() == id)
+        {
+            return u;
+        }
+    }
+    return nullptr; //bessere Lösung
+}
