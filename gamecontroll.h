@@ -17,7 +17,7 @@ class GameControll : public QObject
 	Q_OBJECT
 public:
 	static GameControll& getInstance();
-    QVector<User*> sortedUsers;
+	QVector<User*> sortedUsers;
 	enum class Phase{idle, search, countdown, presentation, freeplay};
 
 	static void load();
@@ -36,7 +36,7 @@ public:
 	static void setLeaderboard(LeaderBoardWidget * value);
 	static void addOnlineUser(User *user);
 	static void initializeUser();
-    void sortUsers(unsigned int strategy, QVector<User*>* sortedUsers);
+	void sortUsers(unsigned int strategy, QVector<User*>* sortedUsers);
 
     static void initializeConnections();
     void addDefaultUsers();
@@ -54,14 +54,14 @@ private:
 	static GameControll instance;
 	QVector<User*> users;
 	LeaderBoardWidget * leaderboard = nullptr;
-    Phase currentPhase = Phase::search; //freeplay
+	Phase currentPhase = Phase::freeplay; //freeplay
 	SettingsDialog * settings = nullptr;
 	QVector<KeyMapping*> mapping;
 	Board * board = nullptr;
 	QUuid activeUserID;
 	QTimer countdown;
 	int timeLeft;
-    int searchTime=60;
+	int searchTime=60;
 
 	explicit GameControll(QObject *parent = nullptr);
 	void sendToServer(PlayerAction a);
@@ -76,7 +76,7 @@ signals:
 	void updateGuide(const QString & txt);
 	void enableMenus(bool boolean);
 	void enableTimerSkip(bool boolean);
-    void newBoard(Board* b);
+	void newBoard(Board* b);
 private slots:
 	void updateTimer();
 	bool switchPhase(GameControll::Phase phase);
