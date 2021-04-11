@@ -41,6 +41,7 @@ public:
     static void initializeConnections();
     void sortUsers(unsigned int strategy, QVector<User *> *sortedUsers);
     void triggerAction(PlayerAction action, QUuid userID);
+    void addDefaultUsers();
 public slots:
 	void calculateWinner(int moves);
 	void showSettings();
@@ -62,7 +63,7 @@ private:
 	QUuid activeUserID;
 	QTimer countdown;
 	int timeLeft;
-    int searchTime=60;
+	int searchTime=60;
 
     explicit GameControll(QObject *parent = nullptr);
 	void sendToServer(PlayerAction a);

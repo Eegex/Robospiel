@@ -6,12 +6,12 @@
 
 enum class Direction{none = 0x0, north = 0x1, east = 0x2, south = 0x4, west = 0x8};
 
-enum PlayerAction{none = 0x0, movement = 0b10000, movePlayerNorth = 0b10001,movePlayerEast = 0x12,movePlayerSouth = 0x14,movePlayerWest = 0x18,
-                        playerSwitch = 32, switchPlayerNorth = 0b100001,switchPlayerEast = 0x22,switchPlayerSouth = 0x24,switchPlayerWest = 0x28,
-						bidding = 0x40, enterBidding = 0x41, sendBidding = 0x42, clearBidding = 0x44,
+enum PlayerAction{none = 0x0, movement = 16, movePlayerNorth = 17,movePlayerEast = 18,movePlayerSouth = 20,movePlayerWest = 24,
+						playerSwitch = 32, switchPlayerNorth = 33,switchPlayerEast = 34,switchPlayerSouth = 36,switchPlayerWest = 40,
+						bidding = 64, enterBidding = 65, sendBidding = 66, clearBidding = 68,
 						other = 128, giveUp = 129, revert = 130, revertToBeginning= 132, freePlay = 136,
-                        user = 0x100, newUser = 0x101, changedUsername = 0x102, changedUserColor = 0x104,
-                        update = 0x200, completeUpdate = 0x201, boardUpdate = 0x202};
+						user = 0x100, newUser = 0x101, changedUsername = 0x102, changedUserColor = 0x104,
+						update = 0x200, completeUpdate = 0x201, boardUpdate = 0x202};
 
 struct UserData
 {

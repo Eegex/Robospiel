@@ -25,7 +25,7 @@ protected:
 	virtual void mouseReleaseEvent(QMouseEvent * event);
 	virtual void mouseMoveEvent(QMouseEvent * event);
 
-	bool ownPlayerColors = true;
+    bool ownPlayerColors = false;
 
 
 signals:

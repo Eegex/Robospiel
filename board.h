@@ -32,7 +32,7 @@ public:
 	bool goalHit = 0;
 	void moveActivePlayer(Direction d, int targetX = -1, int targetY = -1, bool isRevert = false);
 	void setPlayerOnTile(int player, Tile *tile);
-    void changeActivePlayer(int playerNumber, bool isRevert=false);
+	void changeActivePlayer(int playerNumber, bool isRevert=false);
 	void revert();
 	void revertToBeginning();
 	void makeNewBoard(int width, int height, int playerNumber);
@@ -50,7 +50,9 @@ public:
 	void makeNewGoal();
 	void makeNewSeeker(bool random);
 	int getMoves() const;
-    void updateColors(QColor b, QColor w, QColor g, QColor p1, QColor p2);
+	void updateColors(QColor b, QColor w, QColor g, QColor p1, QColor p2);
+	QString toBinary();
+	static Board * fromBinary(const QString base64);
 public slots:
 	void startNewRound();
 	int switchPlayer(Direction d);

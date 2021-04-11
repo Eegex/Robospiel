@@ -1,3 +1,4 @@
+#include "gamecontroll.h"
 #include <QDebug>
 #include "LeaderBoardWidget.h"
 #include "UserBiddingWidget.h"
@@ -38,6 +39,7 @@ void LeaderBoardWidget::goOffline()
 	// addBtn->setText("Add new User");
 	// addBtn->show();
 	lay->update();
+    GameControll::getInstance().addDefaultUsers();
 }
 
 void LeaderBoardWidget::goUndefined()
