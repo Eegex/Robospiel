@@ -30,7 +30,7 @@ public:
 	explicit BoardView(QWidget *parent = nullptr);
 	QSize sizeHint() const;
 	virtual void setBoard(Board * b);
-	void setDebugOutputEnabled(bool set = true);
+    void setDebugOutputEnabled(bool set = true);
 	void resize(int pixelPerTile);
 	void setMapping(QVector<KeyMapping *> *value);
 	Board * getBoard();
@@ -54,7 +54,7 @@ protected:
 	QSize tileSize;
 	QPoint mouseStart;
 	int lastKey = 0;
-	bool showDebugOutput = true;
+    bool showDebugOutput = false;
 	QVector<KeyMapping*> * mapping = nullptr;
 	void callChangeActivePlayer(Tile *t);
 	QVector<PlayerWidget* > playerWidgets;

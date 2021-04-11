@@ -126,75 +126,75 @@ PlayerWidget * BoardView::addPlayer(int i)
 
 void BoardView::paintEvent(QPaintEvent * event)
 {
-	QPainter painter;
-	painter.begin(this);
-	QPen debug(QColor(255,0,255));
-	QPen gridPen(board->getGrid(),1,Qt::SolidLine,Qt::RoundCap);
-	QPen player(QColor(0,0,0),2,Qt::SolidLine,Qt::RoundCap);
-	double tileHeight = (height() - 10) / static_cast<double>(board->getSize().height());
-	double tileWidth = (width() - 10) / static_cast<double>(board->getSize().width());
-	QPen wallPen(board->getPrimary(),std::min(tileHeight, tileWidth)*0.1,Qt::SolidLine,Qt::SquareCap);
-	tileSize = QSize(tileWidth,tileHeight);
-	painter.setPen(gridPen);
-	painter.setBrush(board->getBackground());
-	painter.drawRect(this->rect() - QMargins(0,0,1,1));
-	for(int y = 0; y < board->getSize().height(); y++)
-	{
-		for(int x = 0; x < board->getSize().width(); x++)
-		{
-			QRect tile(5+x*tileWidth,5+y*tileHeight,tileWidth,tileHeight);
-			painter.drawRect(tile);
-		}
-	}
-	painter.setPen(wallPen);
-	for(int x = 0; x < board->getSize().width(); x++)
-	{
-		for(int y = 0; y < board->getSize().height(); y++)
-		{
-			int key = (board->getTile(x,y)->getWall(Direction::north)?static_cast<int>(Direction::north):0) |
-					  (board->getTile(x,y)->getWall(Direction::east)?static_cast<int>(Direction::east):0) |
-					  (board->getTile(x,y)->getWall(Direction::south)?static_cast<int>(Direction::south):0) |
-					  (board->getTile(x,y)->getWall(Direction::west)?static_cast<int>(Direction::west):0);
+    QPainter painter;
+    painter.begin(this);
+    QPen debug(QColor(255,0,255));
+    QPen gridPen(board->getGrid(),1,Qt::SolidLine,Qt::RoundCap);
+    QPen player(QColor(0,0,0),2,Qt::SolidLine,Qt::RoundCap);
+    double tileHeight = (height() - 10) / static_cast<double>(board->getSize().height());
+    double tileWidth = (width() - 10) / static_cast<double>(board->getSize().width());
+    QPen wallPen(board->getPrimary(),std::min(tileHeight, tileWidth)*0.1,Qt::SolidLine,Qt::SquareCap);
+    tileSize = QSize(tileWidth,tileHeight);
+    painter.setPen(gridPen);
+    painter.setBrush(board->getBackground());
+    painter.drawRect(this->rect() - QMargins(0,0,1,1));
+    for(int y = 0; y < board->getSize().height(); y++)
+    {
+        for(int x = 0; x < board->getSize().width(); x++)
+        {
+            QRect tile(5+x*tileWidth,5+y*tileHeight,tileWidth,tileHeight);
+            painter.drawRect(tile);
+        }
+    }
+    painter.setPen(wallPen);
+    for(int x = 0; x < board->getSize().width(); x++)
+    {
+        for(int y = 0; y < board->getSize().height(); y++)
+        {
+            int key = (board->getTile(x,y)->getWall(Direction::north)?static_cast<int>(Direction::north):0) |
+                      (board->getTile(x,y)->getWall(Direction::east)?static_cast<int>(Direction::east):0) |
+                      (board->getTile(x,y)->getWall(Direction::south)?static_cast<int>(Direction::south):0) |
+                      (board->getTile(x,y)->getWall(Direction::west)?static_cast<int>(Direction::west):0);
 
-			QRect tile(5+x*tileWidth,5+y*tileHeight,tileWidth,tileHeight);
-			QRect outerTile(5+x*tileWidth-2,5+y*tileHeight-2,tileWidth+6,tileHeight+6); // falls man doch nochmal fancy walls will
+            QRect tile(5+x*tileWidth,5+y*tileHeight,tileWidth,tileHeight);
+            QRect outerTile(5+x*tileWidth-2,5+y*tileHeight-2,tileWidth+6,tileHeight+6); // falls man doch nochmal fancy walls will
 
-			if(key & static_cast<int>(Direction::north))
-			{
+            if(key & static_cast<int>(Direction::north))
+            {
 
-				painter.drawLine(tile.topLeft(),tile.topRight());
+                painter.drawLine(tile.topLeft(),tile.topRight());
 
 
-			}
-			if(key & static_cast<int>(Direction::east))
-			{
-				painter.drawLine(tile.topRight(),tile.bottomRight());
-			}
-			if(key & static_cast<int>(Direction::south))
-			{
-				painter.drawLine(tile.bottomRight(),tile.bottomLeft());
-			}
-			if(key & static_cast<int>(Direction::west))
-			{
-				painter.drawLine(tile.bottomLeft(),tile.topLeft());
-			}
-		}
-	}
-	if(showDebugOutput)
-	{
-		painter.setPen(debug);
-		for(int x = 0; x < board->getSize().width(); x++)
-		{
-			for(int y = 0; y < board->getSize().height(); y++)
-			{
-				QRect tile(x*tileWidth,y*tileHeight,tileWidth,tileHeight);
-				int playerNumber = board->getTile(x,y)->getPlayer();
-				painter.drawText(QRect(8+x*tile.width(),8+y*tile.height(),tile.width(),tile.height()),"(" + QString::number(x) + "/" + QString::number(y) + ")\nPlayer: " + (playerNumber+1?QString::number(playerNumber):"none"));
-			}
-		}
-	}
-	painter.end();
-	event->accept();
+            }
+            if(key & static_cast<int>(Direction::east))
+            {
+                painter.drawLine(tile.topRight(),tile.bottomRight());
+            }
+            if(key & static_cast<int>(Direction::south))
+            {
+                painter.drawLine(tile.bottomRight(),tile.bottomLeft());
+            }
+            if(key & static_cast<int>(Direction::west))
+            {
+                painter.drawLine(tile.bottomLeft(),tile.topLeft());
+            }
+        }
+    }
+    if(showDebugOutput)
+    {
+        painter.setPen(debug);
+        for(int x = 0; x < board->getSize().width(); x++)
+        {
+            for(int y = 0; y < board->getSize().height(); y++)
+            {
+                QRect tile(x*tileWidth,y*tileHeight,tileWidth,tileHeight);
+                int playerNumber = board->getTile(x,y)->getPlayer();
+                painter.drawText(QRect(8+x*tile.width(),8+y*tile.height(),tile.width(),tile.height()),"(" + QString::number(x) + "/" + QString::number(y) + ")\nPlayer: " + (playerNumber+1?QString::number(playerNumber):"none"));
+            }
+        }
+    }
+    painter.end();
+    event->accept();
 }
 
 void BoardView::resizeEvent(QResizeEvent * event)

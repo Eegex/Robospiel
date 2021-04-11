@@ -65,6 +65,7 @@ void GameControll::adaptFromJSON(QJsonObject json)
 
 	}
 	instance.users.clear();
+   // setLeaderboard(new LeaderBoardWidget());
 	QJsonArray jsonUsers = json.value("users").toArray();
 	for(int i=0; i<jsonUsers.size(); i++)
 	{
@@ -270,7 +271,7 @@ void GameControll::triggerAction(PlayerAction action, QUuid userID)
 			return;
 		}
 	}
-	else if(action & PlayerAction::playerSwitch && (instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay)) //???
+        else if(action & PlayerAction::playerSwitch && (instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay))
 	{
 		if(action != PlayerAction::playerSwitch)
 		{
@@ -298,8 +299,16 @@ void GameControll::triggerAction(PlayerAction action, QUuid userID)
 	return;
 }
 
-void GameControll::triggerActionsWithData(PlayerAction action, QJsonObject data)
+void GameControll::triggerActionWithData(PlayerAction action, QJsonObject data)
 {
+    if(action == PlayerAction::playerSwitch && !(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay)){ //make sure you can only click players in the right phases
+        return;
+    }
+    if(action == PlayerAction::sendBidding && !(instance.currentPhase == Phase::search || instance.currentPhase == Phase::countdown))
+    {
+        return;
+    }
+
 	emit instance.actionTriggeredWithData(action, data);
 	// Annalenas version:
 	//if(action==PlayerAction::newUser)
@@ -501,7 +510,7 @@ void GameControll::changeOnlyBidding(int bidding) //TODO explain! What happens h
 {
 	qDebug()<<"changeOnly Bidding to"<<bidding;
 	users.at(0)->setBidding(bidding);
-	triggerActionsWithData(PlayerAction::sendBidding, users.at(0)->toJSON());
+    triggerActionWithData(PlayerAction::sendBidding, users.at(0)->toJSON());
 }
 
 // current user of the system is initialzed
@@ -515,7 +524,7 @@ void GameControll::initializeUser()
 	instance.leaderboard->getUserOnlineWidget()->updateName(u->getName());
 	instance.leaderboard->getUserOnlineWidget()->setUserID(u->getId());
 	instance.leaderboard->getUserOnlineWidget()->setTable();
-	triggerActionsWithData(PlayerAction::newUser, u->toJSON());
+    triggerActionWithData(PlayerAction::newUser, u->toJSON());
 }
 
 void GameControll::setIdle()
@@ -534,7 +543,7 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
 		QJsonObject data = QJsonObject();
 		data.insert("name", userData->name);
 		data.insert("color", userData->colour.name());
-		triggerActionsWithData(PlayerAction::newUser, data);
+        triggerActionWithData(PlayerAction::newUser, data);
 	});
 	connect(&GameControll::getInstance(), &GameControll::biddingDone, &GameControll::getInstance(), [&]()
 	{
@@ -550,7 +559,7 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
 	connect(instance.settings, &SettingsDialog::usernameChanged, instance.leaderboard, &LeaderBoardWidget::setUsername);
 	connect(instance.settings, &SettingsDialog::usercolorChanged, instance.leaderboard, &LeaderBoardWidget::setUsercolor);
 	connect(instance.leaderboard, &LeaderBoardWidget::onlineUserAdded, &GameControll::getInstance(), [=](User* user)->void {
-				triggerActionsWithData(PlayerAction::newUser, user->toJSON());
+                triggerActionWithData(PlayerAction::newUser, user->toJSON());
 	});
 	connect(instance.settings, &SettingsDialog::usernameChanged,instance.leaderboard->getUserOnlineWidget(),&UserOnlineWidget::updateName);
 	instance.leaderboard->getUserOnlineWidget()->updateName(instance.settings->getUsername());
