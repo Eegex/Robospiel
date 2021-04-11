@@ -38,7 +38,8 @@ public:
 	static void initializeUser();
     void sortUsers(unsigned int strategy, QVector<User*>* sortedUsers);
 
-	static void initializeConnections();
+    static void initializeConnections();
+    void addDefaultUsers();
 public slots:
 	void calculateWinner(int moves);
 	void showSettings();
@@ -53,7 +54,7 @@ private:
 	static GameControll instance;
 	QVector<User*> users;
 	LeaderBoardWidget * leaderboard = nullptr;
-    Phase currentPhase = Phase::idle; //freeplay
+    Phase currentPhase = Phase::search; //freeplay
 	SettingsDialog * settings = nullptr;
 	QVector<KeyMapping*> mapping;
 	Board * board = nullptr;

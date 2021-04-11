@@ -31,7 +31,7 @@ void GameControll::initializeConnections()
 	connect(&Client::getInstance(), &Client::actionReceived, &GameControll::getInstance(), &GameControll::exeQTAction);
 }
 
-QJsonObject GameControll::toJSON() //TODO test both ways of JSON
+QJsonObject GameControll::toJSON() //TODO make sure the replaced Objects don't get lost
 {
 	QJsonObject json = QJsonObject();
 	json.insert("currentPhase", static_cast<int>(instance.currentPhase));
@@ -392,16 +392,18 @@ void GameControll::calculateGameStatus()
     qDebug()<<"Called Function CalculateGameStatus in "<<leaderboard->getOnlineState()<<" mode, the goal has"<<(board->goalHit?"been hit!":"!NOT! been hit!");
 	if(leaderboard->getOnlineState() == offline)
 	{
-		qDebug()<<"Current Moves are: "<< board->getMoves();
 		QUuid currentPlayer = getActiveUserID();
         //Get Active User Index
 		unsigned int activeUserIndex = leaderboard->getOfflineLeaderBoardWidget()->getBiddingWidgetIndexByID(currentPlayer);
+        qDebug()<<"Current Moves are: "<< board->getMoves()<<", bidding is "<<leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->getBidding();
 		if(board->getMoves() >= leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->getBidding()) //Needs to be GEQ because otherwise the player could make an extra move as the "reached goal" signal is overriding the failure
 		{
 			if(board->goalHit) //Spieler hat gewonnen, die Runde ist zuende
 			{
                 qDebug()<<"The Goal has been hit, calculating the winner now!";
+                emit updateGuide(tr("Goal has been hit by ")+leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->getName());
 				calculateWinner(board->getMoves());
+
 			}
 			else
 			{
@@ -413,10 +415,12 @@ void GameControll::calculateGameStatus()
 					setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
 					getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
 					qDebug()<<"Active User is now "<<user->getName();
+                    emit updateGuide(tr("Present your solution, ")+user->getName());
 				}
 				else //Alles Versager
 				{
 					qDebug()<<"No User could end the round in their specified bid.";
+                    emit updateGuide(tr("No one found the goal"));
                     sortUsers(points, &sortedUsers);
 					nextTarget();
 				}
@@ -540,6 +544,7 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
 	{
         //instance.leaderboard->getOfflineLeaderBoardWidget()->sortBy(bid);
         instance.sortUsers(bid, &instance.sortedUsers);
+        emit instance.updateGuide(tr("Present your solution, ")+instance.leaderboard->getOfflineLeaderBoardWidget()->getUsers()->first()->getName());
         qDebug()<<"ActiveUserID is"<<instance.getActiveUserID();
 		qDebug()<<"Attempting to switch to new Player, first ID is "<<instance.leaderboard->getOfflineLeaderBoardWidget()->getUsers()->first()->getId();
 		instance.setActiveUserID(instance.leaderboard->getOfflineLeaderBoardWidget()->getUsers()->first()->getId());
@@ -633,10 +638,9 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	{
 		if(currentPhase == Phase::countdown)
 		{
+            //Set Player to player with minimum bid, aka first player after being sorted
 			emit biddingDone();
-			//Set Player to player with minimum bid, aka first player after being sorted
 			currentPhase = phase;
-			emit updateGuide(tr("present your solutions"));
 			emit enableMenus(false);
 			emit enableTimerSkip(false);
 			return true;
@@ -721,4 +725,29 @@ bool GameControll::showTopBidding()
 		load();
 	}
 	return instance.settings->getShowTopBidding();
+}
+
+
+void GameControll::addDefaultUsers()
+{
+    QJsonObject anna = QJsonObject();
+    anna.insert("name", "Annalena");
+    anna.insert("color", "#5CAD52");
+    triggerActionsWithData(PlayerAction::newUser, anna);
+    QJsonObject doro = QJsonObject();
+    doro.insert("name", "Dorothee");
+    doro.insert("color", "#8A1BC1");
+    triggerActionsWithData(PlayerAction::newUser, doro);
+    QJsonObject jan = QJsonObject();
+    jan.insert("name", "Jan");
+    jan.insert("color", "#FF7300");
+    triggerActionsWithData(PlayerAction::newUser, jan);
+    QJsonObject luca = QJsonObject();
+    luca.insert("name", "Luca");
+    luca.insert("color", "#FF6700");
+    triggerActionsWithData(PlayerAction::newUser, luca);
+    QJsonObject nora = QJsonObject();
+    nora.insert("name", "Nora");
+    nora.insert("color", "#2A656B");
+    triggerActionsWithData(PlayerAction::newUser, nora);
 }
