@@ -5,6 +5,7 @@
 #define BID_BTN_TEXT "Accept Bid"
 
 #include "user.h"
+#include "LeaderBoardWidget.h"
 
 #include <QLabel>
 #include <QPushButton>
@@ -15,13 +16,14 @@
 #include <QUuid>
 #include <QDateTime>
 
-class UserBiddingWidget : public QWidget
+class UserBiddingWidget : public LeaderBoardWidget //public QWidget
 {
     Q_OBJECT
 public:
-    explicit UserBiddingWidget(User* u, QWidget *parent = nullptr);
+    explicit UserBiddingWidget(User* u/*, QWidget *parent = nullptr*/);
     QPushButton * accept = new QPushButton(this); //bidBtn in onlineWidget
     QSpinBox * lSpinBox = new QSpinBox(this); //biddingBox in onlineWidget
+    QUuid getId();
 private:
     QGridLayout * userLayout = new QGridLayout(this);
     QLabel * labelName = new QLabel(this); //name in onlineWidget

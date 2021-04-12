@@ -2,7 +2,7 @@
 #include "UserBiddingWidget.h"
 #include "mainwindow.h"
 
-UserBiddingWidget::UserBiddingWidget(User* u, QWidget *parent) : QWidget(parent)
+UserBiddingWidget::UserBiddingWidget(User* u/*, QWidget *parent*/)// : QWidget(parent)
 {
     user = u;
 	userLayout->addWidget(labelName, 0, 0); //Left
@@ -46,4 +46,6 @@ void UserBiddingWidget::btnPressed()
     emit biddingChanged(lSpinBox->value(), QDateTime::currentMSecsSinceEpoch(), user->getId());
     qDebug()<<"Player "<<user->getName()<<" changed their bidding to: "<<lSpinBox->value();
 }
+
+QUuid UserBiddingWidget::getId(){return user->getId();}
 

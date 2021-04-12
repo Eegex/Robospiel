@@ -10,12 +10,13 @@
 #include <QSpinBox>
 #include <QDateTime>
 #include "UserBiddingWidget.h"
+#include "LeaderBoardWidget.h"
 #include "UserCreationWidget.h"
 #include "user.h"
 
 
 
-class OfflineLeaderBoardWidget : public QWidget
+class OfflineLeaderBoardWidget : public LeaderBoardWidget
 {
     Q_OBJECT
 public:
