@@ -13,7 +13,6 @@
 #include "LeaderBoardWidget.h"
 #include "UserCreationWidget.h"
 #include "user.h"
-#include "LeaderBoardWidget.h"
 #include "gamecontroll.h"
 
 

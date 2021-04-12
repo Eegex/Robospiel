@@ -500,13 +500,13 @@ void GameControll::changeOnlyBidding(int bidding) //TODO explain! What happens h
 }
 
 // current user of the system is initialzed (only when server or client starts)
-//TODO use this function
-void GameControll::initializeUser()
+User* GameControll::initializeUser()
 {
-    qDebug()<<"initializeUser: ";
     User* u = new User(instance.getSettingsDialog()->getUsername(), instance.getSettingsDialog()->getUsercolor());
-    //TODO tell userOnlineWidget, that u is the local user
+    qDebug()<<"initializeUser with id: "<<u->getId();
+    //TODO
     triggerActionsWithData(PlayerAction::newUser, u->toJSON());
+    return u;
 }
 
 void GameControll::setIdle()

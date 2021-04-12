@@ -4,6 +4,9 @@
 
 OnlineLeaderboardWidget::OnlineLeaderboardWidget()
 {
+}
+
+void OnlineLeaderboardWidget::initialize() {
     bidBtn->hide();
     lname->hide();
     biddingBox->hide();
@@ -12,8 +15,8 @@ OnlineLeaderboardWidget::OnlineLeaderboardWidget()
     setOnlineWidget();
     setLayout(lay);
 
-
     connect(bidBtn,&QPushButton::clicked, this, &OnlineLeaderboardWidget::btnPressed);
+
 }
 
 void OnlineLeaderboardWidget::setOnlineWidget()
@@ -25,7 +28,7 @@ void OnlineLeaderboardWidget::setOnlineWidget()
     lay->addWidget(biddingBox);
     lay->addWidget(bidBtn);
     lay->addWidget(listWidget);
-    lname->setText(username);
+    lname->setText(localUser->getName());
     lname->show();
 
     setTable();
@@ -45,23 +48,28 @@ void OnlineLeaderboardWidget::setTable()
     listWidget->setHorizontalHeaderLabels(header);
     // set name column
     QTableWidgetItem *newItem = new QTableWidgetItem(tr("%1").arg((2)*(2)));
-    newItem->setText(username);
-    newItem->setData(1,userId);
+    newItem->setText(localUser->getName());
+    newItem->setData(1,localUser->getId());
     QBrush brush;
-    brush.setColor(usercolor);
+    brush.setColor(localUser->getColor());
     newItem->setForeground(brush);
     listWidget->setItem(0, 0, newItem);
     // set bidding column
     QTableWidgetItem *newItem2 = new QTableWidgetItem(tr("%1").arg((2)*(3)));
     newItem2->setText(QString::number(userBidding));
-    newItem2->setData(1,userId);
+    newItem2->setData(1,localUser->getId());
     listWidget->setItem(0, 1, newItem2);
     // set point column
     QTableWidgetItem *newItem3 = new QTableWidgetItem(tr("%1").arg((2)*(4)));
     newItem3->setText(QString::number(0));
-    newItem3->setData(1,userId);
+    newItem3->setData(1,localUser->getId());
     listWidget->setItem(0, 2, newItem3);
 
+}
+
+void OnlineLeaderboardWidget::setLocalUser(User *u)
+{
+    localUser = u;
 }
 
 void OnlineLeaderboardWidget::btnPressed()
@@ -69,7 +77,7 @@ void OnlineLeaderboardWidget::btnPressed()
     biddingBox->setMaximum(userBidding = biddingBox->value());
     bidBtn->setText("Bid: "+QString::number(userBidding));
     qDebug()<<"Player changed their bidding to: "<<userBidding;
-    emit biddingAccepted(userId, userBidding);
+    emit biddingAccepted(localUser->getId(), userBidding);
 }
 
 void OnlineLeaderboardWidget::updateBidding(QUuid id, int bidding)
@@ -110,8 +118,11 @@ void OnlineLeaderboardWidget::updateName(QUuid id, QString newName)
             }
         }
     }
-    username = newName;
-    lname->setText(username);
+    if (localUser->getId() == id)
+    {
+        localUser->setName(newName);
+        lname->setText(newName);
+    }
     lay->update();
 }
 
@@ -134,8 +145,11 @@ void OnlineLeaderboardWidget::updateColour(QUuid id, QColor color)
             }
         }
     }
-    usercolor = color;
-    lname->setStyleSheet("color: "+color.name());
+    if (localUser->getId() == id)
+    {
+        localUser->setColor(color);
+        lname->setStyleSheet("color: "+color.name());
+    }
     lay->update();
 }
 
@@ -157,11 +171,6 @@ void OnlineLeaderboardWidget::activateInput()
 void OnlineLeaderboardWidget::updateAllUsers()
 {
 
-}
-
-void OnlineLeaderboardWidget::setUserID(QUuid id)
-{
-    userId = id;
 }
 
 User * OnlineLeaderboardWidget::findUser(QUuid id)

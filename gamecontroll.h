@@ -36,7 +36,7 @@ public:
 	static void adaptFromJSON(QJsonObject json);
 	static void setLeaderboard(LeaderBoardWidget * value);
 	static void addOnlineUser(User *user);
-	static void initializeUser();
+    static User* initializeUser();
 
     static void initializeConnections();
 	QVector<User*>* getUsers();

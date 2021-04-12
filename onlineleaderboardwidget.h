@@ -12,7 +12,7 @@
 #include "Direction.h"
 #include "LeaderBoardWidget.h"
 #include "user.h"
-#define MAX_BID 99
+#include "gamecontroll.h"
 
 class OnlineLeaderboardWidget : public LeaderBoardWidget
 {
@@ -22,8 +22,9 @@ public:
     void setOnlineWidget();
     void addUser(User *u);
     void updateUserList();
-    void setUserID(QUuid uid);
     void setTable();
+    void setLocalUser(User *u);
+    void initialize();
 private:
     QGridLayout * lay = new QGridLayout(this);
 	QPushButton * bidBtn = new QPushButton(this); //accept in biddingWidget
@@ -31,9 +32,7 @@ private:
 	QSpinBox * biddingBox = new QSpinBox(this); //lSpinBox in biddingWidget
 	QTableWidget * listWidget = new QTableWidget(this);
     int userBidding = MAX_BID;
-	QUuid userId;
-    QString username = "Player"; //for testing
-    QColor usercolor = QColor(Qt::green);// green for testing
+    User * localUser;
 	QVector<User*> users;
 
     User * findUser(QUuid id);
