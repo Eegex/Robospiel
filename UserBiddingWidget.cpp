@@ -41,6 +41,10 @@ void UserBiddingWidget::updateLayout()
     }
 }
 
+void UserBiddingWidget::updateBidding(int bidding){
+    lSpinBox->setValue(bidding);
+}
+
 void UserBiddingWidget::btnPressed()
 {
     emit biddingChanged(lSpinBox->value(), QDateTime::currentMSecsSinceEpoch(), user->getId());

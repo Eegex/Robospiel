@@ -13,7 +13,7 @@
 #include <QUuid>
 #include <QDateTime>
 
-class UserBiddingWidget : public LeaderBoardWidget //public QWidget
+class UserBiddingWidget : public QWidget
 {
     Q_OBJECT
 public:
@@ -28,6 +28,7 @@ private:
     User* user;
     void updateLayout();
 public slots:
+    void updateBidding(int bidding);
     void btnPressed();
     //void resetBidding();
     void deactivateBtn();

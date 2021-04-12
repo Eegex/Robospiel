@@ -1,10 +1,11 @@
 #include <QDebug>
+#include <QUuid>
 #include "offlineleaderboardwidget.h"
 #include "UserBiddingWidget.h"
 #include "UserCreationWidget.h"
 #include "user.h"
 
-OfflineLeaderBoardWidget::OfflineLeaderBoardWidget(QWidget *parent) : QWidget(parent)
+OfflineLeaderBoardWidget::OfflineLeaderBoardWidget(LeaderBoardWidget *parent) : LeaderBoardWidget(parent)
 {
 	lay->addWidget(userCreationWidget, numOfUsers, 0); //No need to hide anymore
 	setLayout(lay);
@@ -41,7 +42,7 @@ void OfflineLeaderBoardWidget::updateLayout(){
 void OfflineLeaderBoardWidget::addUser(User * newUser)
 {
 	qDebug()<<"LeaderBoardWidget: AddUser: Add user with name: "<<newUser->getName()<<"and id"<<newUser->getId().toString()<<"and colour "<<(newUser->getColor().isValid()?newUser->getColor().name():"0x000000");
-    UserBiddingWidget * newWidget = new UserBiddingWidget(newUser, this); //Create new BiddingWidget to display
+    UserBiddingWidget * newWidget = new UserBiddingWidget(newUser); //Create new BiddingWidget to display
 	users.append(newWidget); //Append widget to list of users
 	lay->addWidget(users.at(numOfUsers));
 	connect(newWidget, &UserBiddingWidget::biddingReset, this,[&]()
@@ -53,6 +54,13 @@ void OfflineLeaderBoardWidget::addUser(User * newUser)
 	});
 	numOfUsers++; //Increment number of users, important for correct placement of button
 	updateLayout();
+}
+
+void OfflineLeaderBoardWidget::updateBidding(QUuid id, int bidding){
+    for(UserBiddingWidget* ubw : users){
+        if(ubw->getId() == id)
+            ubw->updateBidding(bidding);
+    }
 }
 
 unsigned int OfflineLeaderBoardWidget::getNumOfUsers()
