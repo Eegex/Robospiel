@@ -14,6 +14,7 @@ UserBiddingWidget::UserBiddingWidget(User* u/*, QWidget *parent*/)// : QWidget(p
 	lSpinBox->setMinimum(MIN_BID);
 	lSpinBox->setSingleStep(1);
     updateLayout();
+	qDebug()<<"In Creation of UserBiddingWidget, Name is: "<<labelName<<" points are "<<lSpinBox->value();
 }
 
 void UserBiddingWidget::deactivateBtn(){
@@ -23,6 +24,12 @@ void UserBiddingWidget::deactivateBtn(){
 	}
 	qDebug()<<"Called Function Deactivate Button in UserBiddingWidget";
 	accept->setEnabled(false);
+}
+
+void UserBiddingWidget::activateBtn(){
+	qDebug()<<"Called Function Activate Button in UserBiddingWidget";
+	accept->setEnabled(true);
+	lSpinBox->setEnabled(true);
 }
 
 void UserBiddingWidget::updateLayout()
@@ -43,12 +50,28 @@ void UserBiddingWidget::updateLayout()
 
 void UserBiddingWidget::updateBidding(int bidding){
     lSpinBox->setValue(bidding);
+	updateLayout();
+}
+
+void UserBiddingWidget::updateName(QString name){
+	labelName->setText(name);
+	updateLayout();
+}
+
+void UserBiddingWidget::updateColour(QColor colour){
+	labelName->setStyleSheet("color: "+colour.name());
+	updateLayout();
 }
 
 void UserBiddingWidget::btnPressed()
 {
     emit biddingChanged(lSpinBox->value(), QDateTime::currentMSecsSinceEpoch(), user->getId());
-    qDebug()<<"Player "<<user->getName()<<" changed their bidding to: "<<lSpinBox->value();
+	qDebug()<<"Player "<<user->getName()<<" changed their bidding to: "<<lSpinBox->value();
+}
+
+User* UserBiddingWidget::getUser()
+{
+	return user;
 }
 
 QUuid UserBiddingWidget::getId()

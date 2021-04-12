@@ -39,6 +39,7 @@ public:
 	static void initializeUser();
 
     static void initializeConnections();
+	QVector<User*>* getUsers();
     void addUser(User *user);
 
     void sortBy(strategy strategy);

@@ -33,13 +33,14 @@ private:
 	QString name;
 	QColor color;
 	QUuid id;
-	int bidding;
-	int points;
+	int bidding = 99;
+	int points = 0;
     unsigned long timeStamp;
 
 	static int userCount;
 
 signals:
+	void biddingChanged(QUuid id, int bid);
     void pointsChanged(int points);
 
 

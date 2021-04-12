@@ -23,6 +23,7 @@ SOURCES += \
     main.cpp \
     mainwidget.cpp \
     mainwindow.cpp \
+    onlineleaderboardwidget.cpp \
     offlineleaderboardwidget.cpp \
     pawnwidget.cpp \
     networkview.cpp \
@@ -32,7 +33,6 @@ SOURCES += \
     tile.cpp \
     user.cpp \
     usercreationwidget.cpp \
-    useronlinewidget.cpp \
     userview.cpp
 
 HEADERS += \
@@ -54,6 +54,7 @@ HEADERS += \
     mainwidget.h \
     mainwindow.h \
     networkview.h \
+    onlineleaderboardwidget.h \
     offlineleaderboardwidget.h \
     pawnwidget.h \
     playerwidget.h \
@@ -63,7 +64,6 @@ HEADERS += \
     boardview.h \
     direction.h \
     user.h \
-    useronlinewidget.h \
     userview.h
 
 TRANSLATIONS += \

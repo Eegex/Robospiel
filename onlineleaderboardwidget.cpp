@@ -115,7 +115,7 @@ void OnlineLeaderboardWidget::updateName(QUuid id, QString newName)
     lay->update();
 }
 
-void OnlineLeaderboardWidget::updateColor(QUuid id, QColor color)
+void OnlineLeaderboardWidget::updateColour(QUuid id, QColor color)
 {
     qDebug()<<"useronlinewidget updateColor to "<<color.name();
     User * tmpUser = findUser(id);
@@ -147,6 +147,11 @@ void OnlineLeaderboardWidget::addUser(User *u)
 void OnlineLeaderboardWidget::deactivateInput()
 {
 
+}
+
+void OnlineLeaderboardWidget::activateInput()
+{
+	qDebug()<<"Schäm dich annalena";
 }
 
 void OnlineLeaderboardWidget::updateAllUsers()

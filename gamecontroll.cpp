@@ -205,8 +205,9 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 			break;
 		case playerSwitch:
 			board->changeActivePlayer(data.value("playerNumber").toInt());
+			break;
 		case sendBidding:
-			switchPhase(Phase::countdown);
+			switchPhase(Phase::countdown); 
             getUserById(QUuid(data.value("userId").toString()))->setBidding(data.value("bidding").toInt());
 			break;
 		case revert:
@@ -295,32 +296,32 @@ void GameControll::triggerActionsWithData(PlayerAction action, QJsonObject data)
 void GameControll::calculateGameStatus()
 {
 
-		qDebug()<<"Current Moves are: "<< board->getMoves();
-        if(board->getMoves() >= getUserById(activeUserID)->getBidding()) //Needs to be GEQ because otherwise the player could make an extra move as the "reached goal" signal is overriding the failure
+	qDebug()<<"Current Moves are: "<< board->getMoves()<<", User Bidding is "<<getUserById(activeUserID)->getBidding();
+	if(board->getMoves() <= getUserById(activeUserID)->getBidding())
+	{
+		if(board->goalHit) //Spieler hat gewonnen, die Runde ist zuende
 		{
-			if(board->goalHit) //Spieler hat gewonnen, die Runde ist zuende
-			{
-				calculateWinner(board->getMoves());
-			}
-			else
-			{
-				//TODO: Flag um anzuzeigen, dass der Spieler das Ziel erreicht hat?
-                qDebug()<<"User couldn't end the round in the specified bid of "<< getUserById(activeUserID)->getBidding()<<", the next user is being drawn";
-                if(getNextUser(activeUserID))//Not at last player yet, noch haben nicht alle versagt
-				{
-                    User* user = getNextUser(activeUserID); //Liste ist bereits sortiert (siehe oben), daher ist der nächste User in der Liste der User mit dem nächsthöheren Bidding
-					setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
-					getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
-					qDebug()<<"Active User is now "<<user->getName();
-				}
-				else //Alles Versager
-				{
-					qDebug()<<"No User could end the round in their specified bid.";
-                    sortBy(points);
-					nextTarget();
-				}
-			}
+			calculateWinner(board->getMoves());
 		}
+	}
+	else
+	{
+		//TODO: Flag um anzuzeigen, dass der Spieler das Ziel erreicht hat?
+		qDebug()<<"User couldn't end the round in the specified bid of "<< getUserById(activeUserID)->getBidding()<<", the next user is being drawn";
+		if(getNextUser(activeUserID))//Not at last player yet, noch haben nicht alle versagt
+		{
+			User* user = getNextUser(activeUserID); //Liste ist bereits sortiert (siehe oben), daher ist der nächste User in der Liste der User mit dem nächsthöheren Bidding
+			setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
+			getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
+			qDebug()<<"Active User is now "<<user->getName();
+		}
+		else //Alles Versager
+		{
+			qDebug()<<"No User could end the round in their specified bid.";
+			sortBy(points);
+			nextTarget();
+		}
+	}
 }
 
 int GameControll::getUserIndexById(QUuid id)
@@ -569,7 +570,7 @@ void GameControll::nextTarget()
         {
             u->setBidding(MAX_BID);
         }
-
+		leaderboard->activateInput();
 		board->startNewRound();
 	}
 }
@@ -708,4 +709,9 @@ bool GameControll::showTopBidding()
 		load();
 	}
 	return instance.settings->getShowTopBidding();
+}
+
+QVector<User*>* GameControll::getUsers()
+{
+	return &users;
 }

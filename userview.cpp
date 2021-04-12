@@ -9,17 +9,20 @@ UserView::UserView(QWidget *parent) : QWidget(parent)
         layout->removeWidget(network);
         layout->addWidget(leaderboard, 0, 0);
         layout->addWidget(btnBack, 1, 0);
+		GameControll::getInstance().setLeaderboard(leaderboard);
     });
-    //connect(network, &NetworkView::leaderboardOffline, this, [=](){
-    //    leaderboard = new OfflineLeaderBoardWidget();
-    //    layout->removeWidget(network);
-    //    layout->addWidget(leaderboard, 0, 0);
-    //    layout->addWidget(btnBack,1,0);
-    //});
+	connect(network, &NetworkView::leaderboardOffline, this, [=](){
+		leaderboard = new OfflineLeaderBoardWidget();
+		layout->removeWidget(network);
+		layout->addWidget(leaderboard, 0, 0);
+		layout->addWidget(btnBack,1,0);
+		GameControll::getInstance().setLeaderboard(leaderboard);
+	});
     connect(btnBack, &QPushButton::pressed, this, [=](){
         layout->removeWidget(leaderboard);
         layout->removeWidget(btnBack);
         layout->addWidget(network, 0, 0);
+		GameControll::getInstance().setLeaderboard(leaderboard);
     });
     layout = new QGridLayout(this);
     layout->addWidget(network, 0, 0);

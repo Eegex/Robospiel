@@ -43,9 +43,10 @@ public slots:
     void updateBidding(QUuid id, int bidding);
     // void updateName(QString newName); before
     void updateName(QUuid id, QString name);
-    void updateColor(QUuid id, QColor color);
+	void updateColour(QUuid id, QColor color);
     void deactivateInput(); //TODO
     void updateAllUsers(); //TODO
+	void activateInput(); //TODO
 signals:
     // void biddingChangedOnline(int userBidding); before
     void userAdded(User* u); //TODO

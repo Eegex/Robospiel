@@ -14,6 +14,7 @@
 #include "UserCreationWidget.h"
 #include "user.h"
 #include "LeaderBoardWidget.h"
+#include "gamecontroll.h"
 
 
 
@@ -21,7 +22,7 @@ class OfflineLeaderBoardWidget : public LeaderBoardWidget
 {
     Q_OBJECT
 public:
-    explicit OfflineLeaderBoardWidget(LeaderBoardWidget *parent = nullptr);
+	explicit OfflineLeaderBoardWidget();
     void addUser(User * newUser);
     QVector<UserBiddingWidget*> * getUsers();
     UserCreationWidget *getUserCreationWidget();
@@ -39,6 +40,11 @@ private:
     UserCreationWidget * userCreationWidget = new UserCreationWidget(nullptr);
 public slots:
     void updateBidding(QUuid id, int bidding);
+	void updateName(QUuid id, QString name);
+	void updateColour(QUuid id, QColor colour);
+	void updateAllUsers();
+	void deactivateInput();
+	void activateInput();
     void updateLayout();
     //void newUser();
 

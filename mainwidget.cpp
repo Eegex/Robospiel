@@ -6,7 +6,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	GameControll::initializeConnections();
 	glMain = new QGridLayout(this);
     userView = new UserView(this);
-    GameControll::setLeaderboard(userView->getLeaderboard());
+	//GameControll::setLeaderboard(userView->getLeaderboard());
 	skipBtn = new QPushButton("Skip", this);
 	initializeView(GameControll::setBoard(new Board(16, 16, 5)), GameControll::getMapping());
 	//connect(view, &BoardView::lastAnimationAfterGoalHitEnded, game, &GameControll::calculateWinner);
@@ -29,7 +29,6 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	adjustSize();
 	glMain->addWidget(skipBtn,2,1,Qt::AlignCenter);
 	skipBtn->setEnabled(false);
-    GameControll::setLeaderboard(userView->getLeaderboard());
 	connect(skipBtn, &QPushButton::released, &GameControll::getInstance(), &GameControll::endTimer);
 }
 

@@ -21,6 +21,7 @@ public:
     QPushButton * accept = new QPushButton(this); //bidBtn in onlineWidget
     QSpinBox * lSpinBox = new QSpinBox(this); //biddingBox in onlineWidget
     QUuid getId();
+	User* getUser();
 private:
     QGridLayout * userLayout = new QGridLayout(this);
     QLabel * labelName = new QLabel(this); //name in onlineWidget
@@ -29,9 +30,12 @@ private:
     void updateLayout();
 public slots:
     void updateBidding(int bidding);
+	void updateName(QString name);
+	void updateColour(QColor colour);
     void btnPressed();
     //void resetBidding();
     void deactivateBtn();
+	void activateBtn();
 
 signals:
     void biddingChanged(int userBidding, unsigned long timeStamp, QUuid id);

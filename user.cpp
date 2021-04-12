@@ -106,6 +106,7 @@ void User::setBidding(int b)
 	{
         timeStamp = 0;
 	}
+	emit biddingChanged(id, b);
 }
 
 void User::addPoints(int p)

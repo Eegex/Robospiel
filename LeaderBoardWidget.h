@@ -24,13 +24,14 @@ public:
 public slots:
     virtual void updateBidding(QUuid id, int bidding) = 0;
     virtual void updateName(QUuid id, QString name) = 0;
-    virtual void updateColor(QUuid id, QColor color) = 0;
+	virtual void updateColour(QUuid id, QColor color) = 0;
     virtual void deactivateInput() = 0;
-    virtual void updateAllUsers() = 0;
+	virtual void activateInput() = 0;
+	virtual void updateAllUsers() = 0; //Change List to reflect current game status
 
 signals:
     void userAdded(User* u);
-    void biddingAccepted(QUuid userId, int bidding);
+	void biddingAccepted(QUuid userId, int bidding);
 };
 
 #endif // LEADERBOARDWIDGET_H
