@@ -25,7 +25,7 @@ public:
     void setUserID(QUuid uid);
     void setTable();
 private:
-	QGridLayout * lay = new QGridLayout(this);
+    QGridLayout * lay = new QGridLayout(this);
 	QPushButton * bidBtn = new QPushButton(this); //accept in biddingWidget
     QLabel * lname = new QLabel(this); //labelName in biddingWdiget
 	QSpinBox * biddingBox = new QSpinBox(this); //lSpinBox in biddingWidget

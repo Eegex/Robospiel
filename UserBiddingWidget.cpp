@@ -47,5 +47,7 @@ void UserBiddingWidget::btnPressed()
     qDebug()<<"Player "<<user->getName()<<" changed their bidding to: "<<lSpinBox->value();
 }
 
-QUuid UserBiddingWidget::getId(){return user->getId();}
-
+QUuid UserBiddingWidget::getId()
+{
+    return user->getId();
+}
