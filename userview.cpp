@@ -1,6 +1,6 @@
 #include "userview.h"
 
-//Container for NetworkView and online/offline-LeaderbordWidget
+//Container for NetworkView and online/offline-LeaderboardWidget
 UserView::UserView(QWidget *parent) : QWidget(parent)
 {
     network = new NetworkView();
@@ -10,12 +10,12 @@ UserView::UserView(QWidget *parent) : QWidget(parent)
         layout->addWidget(leaderboard, 0, 0);
         layout->addWidget(btnBack, 1, 0);
     });
-    connect(network, &NetworkView::leaderboardOffline, this, [=](){
-        leaderboard = new OfflineLeaderboardWidget();
-        layout->removeWidget(network);
-        layout->addWidget(leaderboard, 0, 0);
-        layout->addWidget(btnBack,1,0);
-    });
+    //connect(network, &NetworkView::leaderboardOffline, this, [=](){
+    //    leaderboard = new OfflineLeaderBoardWidget();
+    //    layout->removeWidget(network);
+    //    layout->addWidget(leaderboard, 0, 0);
+    //    layout->addWidget(btnBack,1,0);
+    //});
     connect(btnBack, &QPushButton::pressed, this, [=](){
         layout->removeWidget(leaderboard);
         layout->removeWidget(btnBack);
