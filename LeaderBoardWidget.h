@@ -11,7 +11,6 @@
 #include <QString>
 #include "UserBiddingWidget.h"
 #include "UserCreationWidget.h"
-#include "useronlinewidget.h"
 #include "user.h"
 #include "networkview.h"
 #include "offlineleaderboardwidget.h"

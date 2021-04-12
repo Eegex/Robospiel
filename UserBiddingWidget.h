@@ -22,6 +22,7 @@ public:
     explicit UserBiddingWidget(User* u, QWidget *parent = nullptr);
     QPushButton * accept = new QPushButton(this); //bidBtn in onlineWidget
     QSpinBox * lSpinBox = new QSpinBox(this); //biddingBox in onlineWidget
+    QUuid getId(); // needed for offlineleaderboardwidget
 private:
     QGridLayout * userLayout = new QGridLayout(this);
     QLabel * labelName = new QLabel(this); //name in onlineWidget
