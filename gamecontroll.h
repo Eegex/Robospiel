@@ -88,7 +88,7 @@ private slots:
 	void calculateGameStatus();
 	void changeBidding(int bidding, QUuid id);
 	void changeOnlyBidding(int bidding);
-	void addOfflineUser(struct UserData * newUser);
+    //void addOfflineUser(struct UserData * newUser);
 };
 
 #endif // GAMECONTROLL_H

@@ -1,6 +1,9 @@
 #ifndef LEADERBOARDWIDGET_H
 #define LEADERBOARDWIDGET_H
 #define MAX_USERS 10
+#define MAX_BID 99
+#define MIN_BID 1
+#define BID_BTN_TEXT tr("Accept Bid")
 
 #include <QWidget>
 #include <QVariant>
@@ -9,11 +12,8 @@
 #include <QSpinBox>
 #include <QDateTime>
 #include <QString>
-#include "UserBiddingWidget.h"
-#include "UserCreationWidget.h"
 #include "user.h"
 #include "networkview.h"
-#include "offlineleaderboardwidget.h"
 
 class LeaderBoardWidget : public QWidget
 {
@@ -29,8 +29,8 @@ public slots:
     virtual void updateAllUsers() = 0;
 
 signals:
-    virtual void userAdded(User* u) = 0;
-    virtual void biddingAccepted(QUuid userId, int bidding) = 0;
+    void userAdded(User* u);
+    void biddingAccepted(QUuid userId, int bidding);
 };
 
 #endif // LEADERBOARDWIDGET_H

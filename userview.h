@@ -2,6 +2,8 @@
 #define USERVIEW_H
 
 #include "LeaderBoardWidget.h"
+#include "offlineleaderboardwidget.h"
+#include "onlineleaderboardwidget.h"
 #include <QWidget>
 #include "networkview.h"
 

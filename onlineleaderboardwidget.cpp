@@ -1,8 +1,8 @@
-#include "useronlinewidget.h"
+#include "onlineleaderboardwidget.h"
 #include <QDebug>
 #include <QBrush>
 
-UserOnlineWidget::UserOnlineWidget()
+OnlineLeaderboardWidget::OnlineLeaderboardWidget()
 {
     bidBtn->hide();
     lname->hide();
@@ -13,10 +13,10 @@ UserOnlineWidget::UserOnlineWidget()
     setLayout(lay);
 
 
-    connect(bidBtn,&QPushButton::clicked, this, &UserOnlineWidget::btnPressed);
+    connect(bidBtn,&QPushButton::clicked, this, &OnlineLeaderboardWidget::btnPressed);
 }
 
-void UserOnlineWidget::setOnlineWidget()
+void OnlineLeaderboardWidget::setOnlineWidget()
 {
     biddingBox->setMinimum(1);
     biddingBox->setSingleStep(1);
@@ -36,7 +36,7 @@ void UserOnlineWidget::setOnlineWidget()
     lay->update();
 }
 
-void UserOnlineWidget::setTable()
+void OnlineLeaderboardWidget::setTable()
 {
     qDebug()<<"list widget wird erstellt";
     listWidget->setRowCount(1);
@@ -64,7 +64,7 @@ void UserOnlineWidget::setTable()
 
 }
 
-void UserOnlineWidget::btnPressed()
+void OnlineLeaderboardWidget::btnPressed()
 {
     biddingBox->setMaximum(userBidding = biddingBox->value());
     bidBtn->setText("Bid: "+QString::number(userBidding));
@@ -72,7 +72,7 @@ void UserOnlineWidget::btnPressed()
     emit biddingAccepted(userId, userBidding);
 }
 
-void UserOnlineWidget::updateBidding(QUuid id, int bidding)
+void OnlineLeaderboardWidget::updateBidding(QUuid id, int bidding)
 {
     qDebug()<<"useronlinewidget updateBidding to "<<bidding;
     User * tmpUser = findUser(id);
@@ -93,7 +93,7 @@ void UserOnlineWidget::updateBidding(QUuid id, int bidding)
     // emit biddingChangedOnline(userBidding);
 }
 
-void UserOnlineWidget::updateName(QUuid id, QString newName)
+void OnlineLeaderboardWidget::updateName(QUuid id, QString newName)
 {
     qDebug()<<"useronlinewidget updateName to "<<newName;
     User * tmpUser = findUser(id);
@@ -115,7 +115,7 @@ void UserOnlineWidget::updateName(QUuid id, QString newName)
     lay->update();
 }
 
-void UserOnlineWidget::updateColor(QUuid id, QColor color)
+void OnlineLeaderboardWidget::updateColor(QUuid id, QColor color)
 {
     qDebug()<<"useronlinewidget updateColor to "<<color.name();
     User * tmpUser = findUser(id);
@@ -139,27 +139,27 @@ void UserOnlineWidget::updateColor(QUuid id, QColor color)
     lay->update();
 }
 
-void UserOnlineWidget::addUserToList(User *u)
+void OnlineLeaderboardWidget::addUser(User *u)
 {
     users.append(u);
 }
 
-void UserOnlineWidget::deactivateInput()
+void OnlineLeaderboardWidget::deactivateInput()
 {
 
 }
 
-void UserOnlineWidget::updateAllUsers()
+void OnlineLeaderboardWidget::updateAllUsers()
 {
 
 }
 
-void UserOnlineWidget::setUserID(QUuid id)
+void OnlineLeaderboardWidget::setUserID(QUuid id)
 {
     userId = id;
 }
 
-User * UserOnlineWidget::findUser(QUuid id)
+User * OnlineLeaderboardWidget::findUser(QUuid id)
 {
     for(User *u : users)
     {

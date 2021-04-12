@@ -1,5 +1,5 @@
-#ifndef USERONLINEWIDGET_H
-#define USERONLINEWIDGET_H
+#ifndef ONLINELEADERBOARDWIDGET_H
+#define ONLINELEADERBOARDWIDGET_H
 
 #include <QWidget>
 #include <QGridLayout>
@@ -14,13 +14,13 @@
 #include "user.h"
 #define MAX_BID 99
 
-class UserOnlineWidget : public LeaderBoardWidget
+class OnlineLeaderboardWidget : public LeaderBoardWidget
 {
 	Q_OBJECT
 public:
-    explicit UserOnlineWidget();
+    explicit OnlineLeaderboardWidget();
     void setOnlineWidget();
-	void addUserToList(User *u);
+    void addUser(User *u);
     void updateUserList();
     void setUserID(QUuid uid);
     void setTable();
@@ -49,7 +49,7 @@ public slots:
 signals:
     // void biddingChangedOnline(int userBidding); before
     void userAdded(User* u); //TODO
-    void biddingAccepted(QUuid userId, int bidding); // before: biddingChangedOnline
+    //void biddingAccepted(QUuid userId, int bidding); // before: biddingChangedOnline
 };
 
-#endif // USERONLINEWIDGET_H
+#endif // ONLINELEADERBOARDWIDGET_H
