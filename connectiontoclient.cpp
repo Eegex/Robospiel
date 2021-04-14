@@ -17,12 +17,14 @@ void ConnectionToClient::receiveMessage()
 	QString message;
 	streamFromClient >> message;
 
-	if (!streamFromClient.commitTransaction())
-	{
-		return;
-	}
-	emit receivedMessage(message);
-	receiveMessage();
+    if (!streamFromClient.commitTransaction())
+    {
+        return;
+    }
+    emit receivedMessage(message);
+
+    //process the next message, which might have be blocked by the current one, which was to long to be transmitted at once
+    receiveMessage();
 }
 
 bool ConnectionToClient::sendMessage(QString message)

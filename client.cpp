@@ -54,20 +54,20 @@ bool Client::sendMessageToServer(QJsonObject data)
 
 void Client::processMessageFromServer()
 {
-	streamFromServer.startTransaction();
+    QString message;
+    streamFromServer.startTransaction();
+    streamFromServer >> message;
 
-	QString message;
-	streamFromServer >> message;
-	if (!streamFromServer.commitTransaction())
-	{
-		return;
-	}
+    if (!streamFromServer.commitTransaction())
+    {
+        return;
+    }
 
-	qDebug()<<"Client received: "<<message;
+    QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
+    emit actionReceived(data);
 
-	QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
-	emit actionReceived(data);
-	processMessageFromServer();
+    //process the next message, which might have be blocked by the current one, which was to long to be transmitted at once
+    processMessageFromServer();
 }
 
 void Client::closeClient()

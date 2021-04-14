@@ -18,14 +18,14 @@ Board::Board(int width, int height, int playerNumber, QObject *parent) : QObject
 		qDebug()<< "Board contructor was called with too many players!";
 	}
 	makeNewBoard(width, height, playerNumber);
-	startNewRound();
+    startNewRound();
 }
 
 void Board::makeNewBoard(int width, int height, int playerNumber)
 {
 	makeNewWalls(width, height);
 	makeNewPlayers(playerNumber);
-	makeNewGoal();
+    makeNewGoal();
 	//emit boardChanged();
 }
 
@@ -411,10 +411,30 @@ Tile* Board::getRandomUnoccupiedTile()
 		{
 			tileIsValid = false;
 		}
-		if(counter>100000)
+        if(counter>100000)
 		{
-			qDebug() << "Can't find any unoccupied tile";
-			return nullptr;
+            for(int i =0; i<tiles.size(); i++){
+                for(int j = 0; j<tiles.at(0).size(); j++){
+                    initialTile = tiles.at(i).at(j);
+                    tileIsValid = true;
+                    for(Tile* player : players)
+                    {
+                        if(player == initialTile)
+                        {
+                            tileIsValid = false;
+                        }
+                    }
+                    if(goal == initialTile)
+                    {
+                        tileIsValid = false;
+                    }
+                }
+                if(!tileIsValid){
+                    qDebug() << "Can't find any unoccupied tile";
+                    return nullptr;
+                }
+            }
+
 		}
 	}
 	return initialTile;
@@ -654,10 +674,15 @@ bool Board::isTileCorner(Tile* tile){
 
 void Board::placeGoalAwayFromSeeker()
 {
+
 	bool inRowOrColWithSeeker = true;
 	while(inRowOrColWithSeeker)
 	{
+
 		goal = getRandomUnoccupiedTile();
+        if(goal==nullptr){
+            goal = getRandomUnoccupiedTile();
+        }
 		if(!(goal->getPosition().rx() == players.at(seeker)->getPosition().rx()) &&
 				!(goal->getPosition().ry() == players.at(seeker)->getPosition().ry())    )
 		{
