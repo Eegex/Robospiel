@@ -25,10 +25,10 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	glMain->addWidget(leaderboard,3,1,2,1,Qt::AlignCenter);
 	connect(&GameControll::getInstance(),&GameControll::time,this,&MainWidget::updateTimer);
 	connect(&GameControll::getInstance(),&GameControll::updateGuide,this,&MainWidget::updateGuide);
-    connect(&GameControll::getInstance(), &GameControll::newBoard, this, [=](Board* newBoard)
-    {
-        initializeView(newBoard, GameControll::getMapping());
-    });
+	connect(&GameControll::getInstance(), &GameControll::newBoard, this, [=](Board* newBoard)
+	{
+		initializeView(newBoard, GameControll::getMapping());
+	});
 	adjustSize();
 	glMain->addWidget(skipBtn,2,1,Qt::AlignCenter);
 	skipBtn->setEnabled(false);
@@ -170,7 +170,6 @@ void MainWidget::enableMenus(bool boolean)
 	mNewStuff->setEnabled(boolean);
 	aSettings->setEnabled(boolean);
 	aEditBoard->setEnabled(boolean);
-
 }
 
 void MainWidget::enableTimerSkip(bool boolean)
@@ -207,19 +206,29 @@ void MainWidget::updateTimer(int remaining)
 	{
 		f = top->getColor();
 	}
-	lcd->setStyleSheet("QLCDNumber{"
+	if(f.value() < 100)
+	{
+		lcd->setStyleSheet("QLCDNumber{"
+						   "background-color: #FFFFFF;"
+						   "color: " + f.name() + ";"
+						   "}");
+	}
+	else
+	{
+		lcd->setStyleSheet("QLCDNumber{"
 					   "background-color: #000000;"
 					   "color: " + f.name() + ";"
 					   "}");
+	}
 	lcd->display(remaining);
 }
 
 void MainWidget::initializeView(Board* b, QVector<KeyMapping*>* m)
 {
-    if(view)
-    {
-        view->deleteLater();
-    }
+	if(view)
+	{
+		view->deleteLater();
+	}
 	view = new BoardView(this);
 	view->setBoard(b);
 	view->setMapping(m);

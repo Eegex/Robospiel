@@ -10,7 +10,6 @@ BoardView::BoardView(QWidget *parent) : QWidget(parent)
 
 void BoardView::setBoard(Board * b)
 {
-
 	board = b;
 	connect(board,SIGNAL(boardChanged()),this,SLOT(update()));
 	while(!playerWidgets.isEmpty())
@@ -18,6 +17,8 @@ void BoardView::setBoard(Board * b)
 		delete playerWidgets.takeFirst();
 	}
 	delete goalwidget;
+	goalwidget = new GoalWidget(QSize(20,20),board,this);
+	goalwidget->show();
 	for(int i = 0; i <board->players.length();i++)
 	{
 		addPlayer(i);
@@ -30,14 +31,14 @@ void BoardView::setBoard(Board * b)
 		}
 		playerWidgets.at(playerNumber)->moveAnimated(tileToDesktopCoordinates(board->players.at(playerNumber)), board->players.at(playerNumber)->getPosition(), std::max(width(), height())*1.2);
 	});
-	connect(board,&Board::paintPlayers,this, [&](){
-		for (int i =0;i<playerWidgets.length() ;i++ ) {
-
-
-			playerWidgets.at(i)->repaint();}
-	});
-	goalwidget = new GoalWidget(QSize(20,20),board,this);
-	goalwidget->show();
+	connect(board,&Board::paintPlayers,this, [&]()
+	{
+		for (int i =0;i<playerWidgets.length() ;i++ )
+		{
+			playerWidgets.at(i)->repaint();
+		}
+	}
+	);
 	connect(board,&Board::goalMoved,this, [&](){goalwidget->move(tileToDesktopCoordinates(board->goal));});
 	adjustSize();
 }
@@ -121,6 +122,7 @@ PlayerWidget * BoardView::addPlayer(int i)
 	});
 	newPlayer->move(tileToDesktopCoordinates(board->players[i]));
 	newPlayer->show();
+	newPlayer->raise();
 	return newPlayer;
 }
 
