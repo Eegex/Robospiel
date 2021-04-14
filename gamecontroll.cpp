@@ -742,21 +742,21 @@ void GameControll::addDefaultUsers()
     QJsonObject anna = QJsonObject();
     anna.insert("name", "Annalena");
     anna.insert("color", "#5CAD52");
-    triggerActionsWithData(PlayerAction::newUser, anna);
+    GameControll::triggerActionWithData(PlayerAction::newUser, anna);
     QJsonObject doro = QJsonObject();
     doro.insert("name", "Dorothee");
     doro.insert("color", "#8A1BC1");
-    triggerActionsWithData(PlayerAction::newUser, doro);
+    triggerActionWithData(PlayerAction::newUser, doro);
     QJsonObject jan = QJsonObject();
     jan.insert("name", "Jan");
     jan.insert("color", "#FF7300");
-    triggerActionsWithData(PlayerAction::newUser, jan);
+    triggerActionWithData(PlayerAction::newUser, jan);
     QJsonObject luca = QJsonObject();
     luca.insert("name", "Luca");
     luca.insert("color", "#FF6700");
-    triggerActionsWithData(PlayerAction::newUser, luca);
+    triggerActionWithData(PlayerAction::newUser, luca);
     QJsonObject nora = QJsonObject();
     nora.insert("name", "Nora");
     nora.insert("color", "#2A656B");
-    triggerActionsWithData(PlayerAction::newUser, nora);
+    triggerActionWithData(PlayerAction::newUser, nora);
 }
