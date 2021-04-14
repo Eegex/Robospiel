@@ -7,7 +7,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	glMain = new QGridLayout(this);
 	leaderboard = new LeaderBoardWidget(this);
 	skipBtn = new QPushButton("Skip", this);
-    initializeView(GameControll::setBoard(new Board(5, 5, 24)), GameControll::getMapping());
+    initializeView(GameControll::setBoard(new Board(10, 10, 5)), GameControll::getMapping());
 	//connect(view, &BoardView::lastAnimationAfterGoalHitEnded, game, &GameControll::calculateWinner);
 	networkView = new NetworkView;
 	lcd = new QLCDNumber(this);
