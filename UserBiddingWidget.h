@@ -26,7 +26,7 @@ private:
     QGridLayout * userLayout = new QGridLayout(this);
     QLabel * labelName = new QLabel(this); //name in onlineWidget
     QLabel * pointsName = new QLabel(this);
-    User* user;
+	User* user;
     void updateLayout();
 public slots:
     void updateBidding(int bidding);

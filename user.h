@@ -22,7 +22,7 @@ public:
 	void setBidding(int b);
 	void addPoints(int p);
     unsigned long getTimeStamp() const;
-
+	char hasBid = false;
     QJsonObject toJSON();
     static User* fromJSON(QJsonObject json);
     void incrementPoints();
@@ -35,8 +35,7 @@ private:
 	QUuid id;
 	int bidding = 99;
 	int points = 0;
-    unsigned long timeStamp;
-
+	unsigned long timeStamp;
 	static int userCount;
 
 signals:

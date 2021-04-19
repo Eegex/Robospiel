@@ -18,7 +18,7 @@ UserBiddingWidget::UserBiddingWidget(User* u/*, QWidget *parent*/)// : QWidget(p
 }
 
 void UserBiddingWidget::deactivateBtn(){
-    if(user->getBidding() == MAX_BID)
+	if(!user->hasBid)
 	{
         user->setTimeStamp(QDateTime::currentMSecsSinceEpoch());
 	}
@@ -38,7 +38,7 @@ void UserBiddingWidget::updateLayout()
     labelName->setStyleSheet("color: "+user->getColor().name());
     pointsName->setText("Points: "+QString::number(user->getPoints()));
     lSpinBox->setMaximum(user->getBidding());
-    if(user->getBidding()==MAX_BID)
+	if(!user->hasBid)
     {
         accept->setText(BID_BTN_TEXT);
     }
@@ -65,6 +65,7 @@ void UserBiddingWidget::updateColour(QColor colour){
 
 void UserBiddingWidget::btnPressed()
 {
+	user->hasBid = true;
     emit biddingChanged(lSpinBox->value(), QDateTime::currentMSecsSinceEpoch(), user->getId());
 	qDebug()<<"Player "<<user->getName()<<" changed their bidding to: "<<lSpinBox->value();
 }
