@@ -204,7 +204,7 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 			board->switchPlayer(static_cast<Direction>(a-PlayerAction::playerSwitch));
 			break;
 		case playerSwitch:
-			board->changeActivePlayer(data.value("playerNumber").toInt(), );
+            board->changeActivePlayer(data.value("playerNumber").toInt(), data.value("isRevert").toBool());
 			break;
 		case sendBidding:
 			switchPhase(Phase::countdown); 
@@ -227,7 +227,6 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 
 //
 //Don't write actual functionality here! It only sends the actions to the server. Functionality is in exeQTdata()!!!
-//TODO what is the meaning of the return value?
 //
 void GameControll::triggerAction(PlayerAction action, QUuid userID)
 {
@@ -244,7 +243,10 @@ void GameControll::triggerAction(PlayerAction action, QUuid userID)
 	{
 		if(action != PlayerAction::playerSwitch)
 		{
-			emit instance.actionTriggered(action);
+            QJsonObject json;
+            json.insert("isRevert", false);
+            qDebug()<<"playerSwitch is called in triggerAction with isRevert=False!";
+            emit instance.actionTriggeredWithData(action, json);
 			return;
 		}
 	}
