@@ -98,7 +98,7 @@ void User::setColor(QColor c)
 void User::setBidding(int b)
 {
 	bidding = b;
-	if(bidding != 99)
+	if(hasBid)
 	{
         timeStamp = QDateTime::currentDateTime().toMSecsSinceEpoch();
 	}
