@@ -11,12 +11,11 @@ void OnlineLeaderboardWidget::initialize() {
     lname->hide();
     biddingBox->hide();
     listWidget->hide();
-    listWidget->hide();
     setOnlineWidget();
     setLayout(lay);
 
     connect(bidBtn,&QPushButton::clicked, this, &OnlineLeaderboardWidget::btnPressed);
-
+    connect(this, &OnlineLeaderboardWidget::updateLayout, listWidget, &QTableWidget::clearContents);
 }
 
 void OnlineLeaderboardWidget::setOnlineWidget()
@@ -96,7 +95,7 @@ void OnlineLeaderboardWidget::updateBidding(QUuid id, int bidding)
                 return;
             }
         }
-    }
+    }s
     // userBidding = bidding; notwendig?
     // emit biddingChangedOnline(userBidding);
 }
@@ -160,17 +159,53 @@ void OnlineLeaderboardWidget::addUser(User *u)
 
 void OnlineLeaderboardWidget::deactivateInput()
 {
-
+    /*if(localUser->hasBid)
+    {
+        localUser->setTimeStamp(QDateTime::currentMSecsSinceEpoch());
+    } */
+    bidBtn->setEnabled(false);
+    biddingBox->setEnabled(false);
 }
 
 void OnlineLeaderboardWidget::activateInput()
 {
-	qDebug()<<"Schäm dich annalena";
+    bidBtn->setEnabled(true);
+    biddingBox->setEnabled(true);
 }
 
 void OnlineLeaderboardWidget::updateAllUsers()
 {
+    qDebug()<<"Called Function UpdateAllUsers in OnlineLeaderBoardWidget\n";
+    users = *GameControll::getInstance().getUsers();
+    updateLayout();
+}
 
+void OnlineLeaderboardWidget::updateLayout()
+{
+    int row = 0;
+    int column = 0;
+    for(User* u : users)
+    {
+        // set name column
+        QTableWidgetItem *newItem = new QTableWidgetItem(tr("%1").arg((row+2)*(column+2)));
+        newItem->setText(u->getName());
+        newItem->setData(1,u->getId());
+        QBrush brush;
+        brush.setColor(u->getColor());
+        newItem->setForeground(brush);
+        listWidget->setItem(row, column, newItem);
+        // set bidding column
+        QTableWidgetItem *newItem2 = new QTableWidgetItem(tr("%1").arg((row+2)*(column+3)));
+        newItem2->setText(QString::number(userBidding));
+        newItem2->setData(1,u->getId());
+        listWidget->setItem(row, column+1, newItem2);
+        // set point column
+        QTableWidgetItem *newItem3 = new QTableWidgetItem(tr("%1").arg((row+2)*(column+4)));
+        newItem3->setText(QString::number(0));
+        newItem3->setData(1,u->getId());
+        listWidget->setItem(row, column+2, newItem3);
+        row += 1;
+    }
 }
 
 User * OnlineLeaderboardWidget::findUser(QUuid id)
