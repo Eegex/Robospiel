@@ -32,7 +32,7 @@ public:
 	bool goalHit = 0;
 	void moveActivePlayer(Direction d, int targetX = -1, int targetY = -1, bool isRevert = false);
 	void setPlayerOnTile(int player, Tile *tile);
-	void changeActivePlayer(int playerNumber);
+	void changeActivePlayer(int playerNumber, bool isRevert);
 	void revert();
 	void revertToBeginning();
 	void makeNewBoard(int width, int height, int playerNumber);
