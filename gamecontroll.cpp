@@ -21,6 +21,8 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 	connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
 	connect(this, &GameControll::actionTriggeredWithData, this, &GameControll::sendToServerWithData);
 	connect(this, &GameControll::actionTriggered, this, &GameControll::sendToServer);
+	connect(&guideTimer,&QTimer::timeout,this,&GameControll::nextGuide);
+	r = new QRandomGenerator(QTime::currentTime().msecsSinceStartOfDay());
 }
 
 //This relies on Server and Client singletons.
@@ -271,7 +273,7 @@ void GameControll::triggerAction(PlayerAction action, QUuid userID)
 			return;
 		}
 	}
-        else if(action & PlayerAction::playerSwitch && (instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay))
+		else if(action & PlayerAction::playerSwitch && (instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay))
 	{
 		if(action != PlayerAction::playerSwitch)
 		{
@@ -301,13 +303,13 @@ void GameControll::triggerAction(PlayerAction action, QUuid userID)
 
 void GameControll::triggerActionWithData(PlayerAction action, QJsonObject data)
 {
-    if(action == PlayerAction::playerSwitch && !(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay)){ //make sure you can only click players in the right phases
-        return;
-    }
-    if(action == PlayerAction::sendBidding && !(instance.currentPhase == Phase::search || instance.currentPhase == Phase::countdown))
-    {
-        return;
-    }
+	if(action == PlayerAction::playerSwitch && !(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay)){ //make sure you can only click players in the right phases
+		return;
+	}
+	if(action == PlayerAction::sendBidding && !(instance.currentPhase == Phase::search || instance.currentPhase == Phase::countdown))
+	{
+		return;
+	}
 
 	emit instance.actionTriggeredWithData(action, data);
 	// Annalenas version:
@@ -404,33 +406,34 @@ void GameControll::calculateGameStatus()
 		QUuid currentPlayer = getActiveUserID();
 		//Get Active User Index
 		unsigned int activeUserIndex = leaderboard->getOfflineLeaderBoardWidget()->getBiddingWidgetIndexByID(currentPlayer);
-        qDebug()<<"Current Moves are: "<< board->getMoves()<<", bidding is "<<leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->getBidding();
+		qDebug()<<"Current Moves are: "<< board->getMoves()<<", bidding is "<<leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->getBidding();
 		if(board->getMoves() >= leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->getBidding()) //Needs to be GEQ because otherwise the player could make an extra move as the "reached goal" signal is overriding the failure
 		{
 			if(board->goalHit) //Spieler hat gewonnen, die Runde ist zuende
 			{
-                qDebug()<<"The Goal has been hit, calculating the winner now!";
-                emit updateGuide(tr("Goal has been hit by ")+leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->getName());
+				qDebug() << "The Goal has been hit, calculating the winner now!";
+				const QString & username = leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->getName();
+				showGuide({tr("Goal has been hit by ")+username+"[]"});
 				calculateWinner(board->getMoves());
 
 			}
 			else
 			{
 				//TODO: Flag um anzuzeigen, dass der Spieler das Ziel erreicht hat?
-				qDebug()<<"User couldn't end the round in the specified bid of "<< leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->getBidding()<<", the next user is being drawn";
+				qDebug() << "User couldn't end the round in the specified bid of " << leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->getBidding()<<", the next user is being drawn";
 				if(leaderboard->getOfflineLeaderBoardWidget()->getNumOfUsers() > 1 && activeUserIndex < leaderboard->getNumOfUsers()-1)//Not at last player yet, noch haben nicht alle versagt
 				{
 					UserBiddingWidget* user = leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(++activeUserIndex); //Liste ist bereits sortiert (siehe oben), daher ist der nächste User in der Liste der User mit dem nächsthöheren Bidding
 					setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
 					getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
-					qDebug()<<"Active User is now "<<user->getName();
-                    emit updateGuide(tr("Present your solution, ")+user->getName());
+					qDebug() << "Active User is now " << user->getName();
+					showGuide({tr("Present your solution, ") + user->getName() + "[]"});
 				}
 				else //Alles Versager
 				{
-					qDebug()<<"No User could end the round in their specified bid.";
-                    emit updateGuide(tr("No one found the goal"));
-                    sortUsers(points, &sortedUsers);
+					qDebug() << "No User could end the round in their specified bid.";
+					showGuide({tr("No one found the goal[]")});
+					sortUsers(points, &sortedUsers);
 					nextTarget();
 				}
 			}
@@ -442,12 +445,12 @@ void GameControll::calculateGameStatus()
 //called by exeQTActionWithData when the action is newUser and it is offline
 void GameControll::addOfflineUser(struct UserData * newUser)
 {
-	qDebug()<<"Called function adduser in GameControl";
+	qDebug() << "Called function adduser in GameControl";
 	if(leaderboard->getOnlineState() == offline){
-		qDebug()<<"Running in Offline Mode, adding an Offline User!";
+		qDebug() << "Running in Offline Mode, adding an Offline User!";
 		User *u = new User(newUser->name, newUser->colour, this);
 		users.append(u);
-		qDebug()<<"New User Name: "<<u->getName();
+		qDebug() << "New User Name: " << u->getName();
 		// adds new user in the frontend
 		leaderboard->getOfflineLeaderBoardWidget()->addUser(u);
 		connect(this, &GameControll::newRound, leaderboard->getOfflineLeaderBoardWidget()->getUsers()->last(), &UserBiddingWidget::resetBidding);
@@ -464,7 +467,7 @@ void GameControll::addOfflineUser(struct UserData * newUser)
 //called by exeQTActionWithData when the action is newUser and it is online
 void GameControll::addOnlineUser(User* user)
 {
-	qDebug()<<"addExistingUser";
+	qDebug() << "addExistingUser";
 	bool b = false;
 	for(User * u: qAsConst(instance.users))
 	{
@@ -475,7 +478,7 @@ void GameControll::addOnlineUser(User* user)
 	}
 	if(b == false)
 	{
-		qDebug()<<"add "<<user->getId()<< " into list";
+		qDebug() << "add " << user->getId() << " into list";
 		instance.users.append(user);
 		instance.leaderboard->getUserOnlineWidget()->addUserToList(user);
 		instance.leaderboard->getUserOnlineWidget()->updateUserList();
@@ -514,7 +517,7 @@ void GameControll::changeOnlyBidding(int bidding) //TODO explain! What happens h
 {
 	qDebug()<<"changeOnly Bidding to"<<bidding;
 	users.at(0)->setBidding(bidding);
-    triggerActionWithData(PlayerAction::sendBidding, users.at(0)->toJSON());
+	triggerActionWithData(PlayerAction::sendBidding, users.at(0)->toJSON());
 }
 
 // current user of the system is initialzed
@@ -528,7 +531,7 @@ void GameControll::initializeUser()
 	instance.leaderboard->getUserOnlineWidget()->updateName(u->getName());
 	instance.leaderboard->getUserOnlineWidget()->setUserID(u->getId());
 	instance.leaderboard->getUserOnlineWidget()->setTable();
-    triggerActionWithData(PlayerAction::newUser, u->toJSON());
+	triggerActionWithData(PlayerAction::newUser, u->toJSON());
 }
 
 void GameControll::setIdle()
@@ -547,14 +550,15 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
 		QJsonObject data = QJsonObject();
 		data.insert("name", userData->name);
 		data.insert("color", userData->colour.name());
-        triggerActionWithData(PlayerAction::newUser, data);
+		triggerActionWithData(PlayerAction::newUser, data);
 	});
 	connect(&GameControll::getInstance(), &GameControll::biddingDone, &GameControll::getInstance(), [&]()
 	{
-        //instance.leaderboard->getOfflineLeaderBoardWidget()->sortBy(bid);
-        instance.sortUsers(bid, &instance.sortedUsers);
-        emit instance.updateGuide(tr("Present your solution, ")+instance.leaderboard->getOfflineLeaderBoardWidget()->getUsers()->first()->getName());
-        qDebug()<<"ActiveUserID is"<<instance.getActiveUserID();
+		//instance.leaderboard->getOfflineLeaderBoardWidget()->sortBy(bid);
+		instance.sortUsers(bid, &instance.sortedUsers);
+		const QString & username = instance.leaderboard->getOfflineLeaderBoardWidget()->getUsers()->first()->getName();
+		showGuide({tr("Present your solution, ")+username+"[]"});
+		qDebug()<<"ActiveUserID is"<<instance.getActiveUserID();
 		qDebug()<<"Attempting to switch to new Player, first ID is "<<instance.leaderboard->getOfflineLeaderBoardWidget()->getUsers()->first()->getId();
 		instance.setActiveUserID(instance.leaderboard->getOfflineLeaderBoardWidget()->getUsers()->first()->getId());
 		qDebug()<<"Bidding is done, Users are sorted, initial player is: "<<instance.leaderboard->getOfflineLeaderBoardWidget()->getUsers()->first()->getName()<<" with id "<< instance.getActiveUserID();
@@ -564,7 +568,7 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
 	connect(instance.settings, &SettingsDialog::usernameChanged, instance.leaderboard, &LeaderBoardWidget::setUsername);
 	connect(instance.settings, &SettingsDialog::usercolorChanged, instance.leaderboard, &LeaderBoardWidget::setUsercolor);
 	connect(instance.leaderboard, &LeaderBoardWidget::onlineUserAdded, &GameControll::getInstance(), [=](User* user)->void {
-                triggerActionWithData(PlayerAction::newUser, user->toJSON());
+				triggerActionWithData(PlayerAction::newUser, user->toJSON());
 	});
 	connect(instance.settings, &SettingsDialog::usernameChanged,instance.leaderboard->getUserOnlineWidget(),&UserOnlineWidget::updateName);
 	instance.leaderboard->getUserOnlineWidget()->updateName(instance.settings->getUsername());
@@ -609,7 +613,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	case Phase::idle:
 	{
 		currentPhase = phase;
-		emit updateGuide(tr("idling"));
+		showGuide({tr("boooring[]"),tr("i am not creative[2000]at all[2000]fuck you[]")});
 		emit enableMenus(true);
 		emit enableTimerSkip(false);
 		return true;
@@ -619,7 +623,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 		if(currentPhase != Phase::countdown)
 		{
 			currentPhase = phase;
-			emit updateGuide(tr("start bidding"));
+			showGuide({tr("start bidding[]"),tr("let'se go[]")});
 			emit enableMenus(false);
 			emit enableTimerSkip(false);
 			return true;
@@ -632,7 +636,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 			if(currentPhase == Phase::search)
 			{
 				currentPhase = phase;
-				emit updateGuide(tr("counting down"));
+				showGuide({tr("counting down[]")});
 				timeLeft = searchTime; //60
 				emit time(timeLeft);
 				countdown.start();
@@ -647,7 +651,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	{
 		if(currentPhase == Phase::countdown)
 		{
-            //Set Player to player with minimum bid, aka first player after being sorted
+			//Set Player to player with minimum bid, aka first player after being sorted
 			emit biddingDone();
 			currentPhase = phase;
 			emit enableMenus(false);
@@ -661,7 +665,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 		if(currentPhase == Phase::presentation)
 		{
 			currentPhase = phase;
-			emit updateGuide(tr("time to show off"));
+			showGuide({tr("time to show off")});
 			emit enableMenus(false);
 			emit enableTimerSkip(false);
 			return true;
@@ -739,24 +743,54 @@ bool GameControll::showTopBidding()
 
 void GameControll::addDefaultUsers()
 {
-    QJsonObject anna = QJsonObject();
-    anna.insert("name", "Annalena");
-    anna.insert("color", "#5CAD52");
-    GameControll::triggerActionWithData(PlayerAction::newUser, anna);
-    QJsonObject doro = QJsonObject();
-    doro.insert("name", "Dorothee");
-    doro.insert("color", "#8A1BC1");
-    triggerActionWithData(PlayerAction::newUser, doro);
-    QJsonObject jan = QJsonObject();
-    jan.insert("name", "Jan");
-    jan.insert("color", "#FF7300");
-    triggerActionWithData(PlayerAction::newUser, jan);
-    QJsonObject luca = QJsonObject();
-    luca.insert("name", "Luca");
-    luca.insert("color", "#FF6700");
-    triggerActionWithData(PlayerAction::newUser, luca);
-    QJsonObject nora = QJsonObject();
-    nora.insert("name", "Nora");
-    nora.insert("color", "#2A656B");
-    triggerActionWithData(PlayerAction::newUser, nora);
+	QJsonObject anna = QJsonObject();
+	anna.insert("name", "Annalena");
+	anna.insert("color", "#5CAD52");
+	triggerActionWithData(PlayerAction::newUser, anna);
+	QJsonObject doro = QJsonObject();
+	doro.insert("name", "Dorothee");
+	doro.insert("color", "#8A1BC1");
+	triggerActionWithData(PlayerAction::newUser, doro);
+	QJsonObject jan = QJsonObject();
+	jan.insert("name", "Jan");
+	jan.insert("color", "#FF7300");
+	triggerActionWithData(PlayerAction::newUser, jan);
+	QJsonObject luca = QJsonObject();
+	luca.insert("name", "Luca");
+	luca.insert("color", "#FF6700");
+	triggerActionWithData(PlayerAction::newUser, luca);
+	QJsonObject nora = QJsonObject();
+	nora.insert("name", "Nora");
+	nora.insert("color", "#2A656B");
+	triggerActionWithData(PlayerAction::newUser, nora);
+}
+
+void GameControll::showGuide(const QStringList & texts)
+{
+	QString text = texts.at(instance.r->bounded(texts.size()));
+	assert(text.endsWith("]"));
+	QStringList list = text.split(QRegularExpression("[\\[\\]]"),Qt::KeepEmptyParts);
+	list.removeLast();
+	assert(list.size() % 2 == 0);
+	for(int i = 0;i < list.size() - 1;i += 2)
+	{
+		bool ok = false;
+		int duration = list.at(i+1).toInt(&ok);
+		if(!ok)
+		{
+			duration = 1000;
+		}
+		instance.guideList.append({list.at(i),duration});
+	}
+	instance.nextGuide();
+}
+
+void GameControll::nextGuide()
+{
+	if(!guideList.isEmpty())
+	{
+		const GuideLine & gl = guideList.takeFirst();
+		emit updateGuide(gl.line);
+		guideTimer.start(gl.duration);
+	}
 }
