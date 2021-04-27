@@ -333,7 +333,8 @@ void GameControll::triggerActionWithData(PlayerAction action, QJsonObject data)
 	//}
 }
 
-void GameControll::sortUsers(unsigned int strategy, QVector<User*>* sortedUsers){
+void GameControll::sortUsers(unsigned int strategy, QVector<User*>* sortedUsers)
+{
 	qDebug()<<"Called Function sortUsers with strategy"<<(strategy == 0?"Points":"Bidding");
 	sortedUsers->clear(); //Clear the vector with previously sorted Users
 	unsigned long minTimeStamp = QDateTime::currentMSecsSinceEpoch(); //TimeStamp at this point, used to compare against for the first user, this is needed because one doesn't know if users contains anything
@@ -345,7 +346,7 @@ void GameControll::sortUsers(unsigned int strategy, QVector<User*>* sortedUsers)
 		int minBid;
 		for(int additionIndex = 0; additionIndex < users.size(); additionIndex++){
 			minBid = MAX_BID + 1;
-			for(User* user : users){
+			for(User* user : qAsConst(users)){
 				if(user->getBidding() <= minBid && isActive[users.indexOf(user)]){//If User has a lower bid than the currently lowest bid
 					if(user->getBidding() == minBid){
 						if(user->getTimeStamp() < minTimeStamp){ //check the timestamp
@@ -557,7 +558,7 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
 		//instance.leaderboard->getOfflineLeaderBoardWidget()->sortBy(bid);
 		instance.sortUsers(bid, &instance.sortedUsers);
 		const QString & username = instance.leaderboard->getOfflineLeaderBoardWidget()->getUsers()->first()->getName();
-		showGuide({tr("Present your solution, ")+username+"[]"});
+		showGuide({tr("Present your solution, ")+username+"[]",tr("Your turn, ")+username+"[]"});
 		qDebug()<<"ActiveUserID is"<<instance.getActiveUserID();
 		qDebug()<<"Attempting to switch to new Player, first ID is "<<instance.leaderboard->getOfflineLeaderBoardWidget()->getUsers()->first()->getId();
 		instance.setActiveUserID(instance.leaderboard->getOfflineLeaderBoardWidget()->getUsers()->first()->getId());
@@ -572,13 +573,12 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
 	});
 	connect(instance.settings, &SettingsDialog::usernameChanged,instance.leaderboard->getUserOnlineWidget(),&UserOnlineWidget::updateName);
 	instance.leaderboard->getUserOnlineWidget()->updateName(instance.settings->getUsername());
-
 }
 
 User * GameControll::getMinBid()
 {
 	User * minBid = instance.users.first();
-	for(User * u:instance.users)
+	for(User * u:qAsConst(instance.users))
 	{
 		if(u->getBidding() < 100)
 		{
@@ -767,7 +767,7 @@ void GameControll::addDefaultUsers()
 
 void GameControll::showGuide(const QStringList & texts)
 {
-	QString text = texts.at(instance.r->bounded(texts.size()));
+	QString text = texts.at(instance.r->bounded(texts.size())); //TODO: synchronize?
 	assert(text.endsWith("]"));
 	QStringList list = text.split(QRegularExpression("[\\[\\]]"),Qt::KeepEmptyParts);
 	list.removeLast();

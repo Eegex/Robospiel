@@ -4,27 +4,53 @@
 <context>
     <name>GameControll</name>
     <message>
-        <location filename="gamecontroll.cpp" line="259"/>
-        <source>idling</source>
+        <location filename="gamecontroll.cpp" line="416"/>
+        <source>Goal has been hit by </source>
+        <translation>Ziel wurde getroffen von </translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="430"/>
+        <location filename="gamecontroll.cpp" line="560"/>
+        <source>Present your solution, </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="gamecontroll.cpp" line="267"/>
-        <source>start bidding</source>
+        <location filename="gamecontroll.cpp" line="435"/>
+        <source>No one found the goal[]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="gamecontroll.cpp" line="278"/>
-        <source>counting down</source>
+        <location filename="gamecontroll.cpp" line="560"/>
+        <source>Your turn, </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="gamecontroll.cpp" line="294"/>
-        <source>present your solutions</source>
+        <location filename="gamecontroll.cpp" line="616"/>
+        <source>boooring[]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="gamecontroll.cpp" line="304"/>
+        <location filename="gamecontroll.cpp" line="616"/>
+        <source>i am not creative[2000]at all[2000]fuck you[]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="626"/>
+        <source>start bidding[]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="626"/>
+        <source>let&apos;se go[]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="639"/>
+        <source>counting down[]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="668"/>
         <source>time to show off</source>
         <translation type="unfinished"></translation>
     </message>
@@ -142,73 +168,84 @@
         <translation type="vanished">Neues Spielbrett</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="70"/>
+        <location filename="mainwidget.cpp" line="62"/>
         <source>Height:</source>
         <translation>Höhe:</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="73"/>
+        <location filename="mainwidget.cpp" line="65"/>
         <source>Width:</source>
         <translation>Breite:</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="76"/>
+        <location filename="mainwidget.cpp" line="68"/>
         <source>Player count:</source>
         <translation>Spieleranzahl:</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="58"/>
+        <location filename="mainwidget.cpp" line="49"/>
         <source>Create Board</source>
         <translation>Spielbrett erstellen</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="51"/>
+        <location filename="mainwidget.cpp" line="42"/>
         <source>Board</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="83"/>
+        <location filename="mainwidget.cpp" line="50"/>
+        <source>Idle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwidget.cpp" line="75"/>
         <source>New</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="85"/>
+        <location filename="mainwidget.cpp" line="77"/>
         <source>Walls</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="87"/>
+        <location filename="mainwidget.cpp" line="78"/>
         <source>Seeker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="89"/>
+        <location filename="mainwidget.cpp" line="79"/>
         <source>Players</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="91"/>
+        <location filename="mainwidget.cpp" line="80"/>
         <source>All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="93"/>
+        <location filename="mainwidget.cpp" line="81"/>
         <source>Target</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="105"/>
-        <location filename="mainwidget.cpp" line="236"/>
+        <location filename="mainwidget.cpp" line="91"/>
+        <location filename="mainwidget.cpp" line="92"/>
+        <location filename="mainwidget.cpp" line="111"/>
+        <location filename="mainwidget.cpp" line="195"/>
         <source>Edit Board</source>
         <translation>Spielbrett bearbeiten</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="108"/>
+        <location filename="mainwidget.cpp" line="95"/>
+        <location filename="mainwidget.cpp" line="96"/>
+        <location filename="mainwidget.cpp" line="114"/>
         <source>Next Target</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="111"/>
+        <location filename="mainwidget.cpp" line="99"/>
+        <location filename="mainwidget.cpp" line="100"/>
+        <location filename="mainwidget.cpp" line="117"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
@@ -217,7 +254,7 @@
         <translation type="vanished">Netzwerk</translation>
     </message>
     <message>
-        <location filename="mainwidget.cpp" line="224"/>
+        <location filename="mainwidget.cpp" line="188"/>
         <source>Stop editing</source>
         <translation>Bearbeiten abschließen</translation>
     </message>
@@ -361,7 +398,7 @@
 <context>
     <name>SettingsDialog</name>
     <message>
-        <location filename="settingsdialog.h" line="47"/>
+        <location filename="settingsdialog.h" line="51"/>
         <source>Save</source>
         <translation>Speichern</translation>
     </message>
@@ -392,22 +429,32 @@
     </message>
     <message>
         <location filename="settingsdialog.cpp" line="14"/>
+        <source>Player color start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="settingsdialog.cpp" line="15"/>
+        <source>Player color end</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="settingsdialog.cpp" line="16"/>
         <source>Show top bidder on timer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="20"/>
+        <location filename="settingsdialog.cpp" line="24"/>
         <source>General</source>
         <translation>Allgemein</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="22"/>
-        <location filename="settingsdialog.cpp" line="142"/>
+        <location filename="settingsdialog.cpp" line="26"/>
+        <location filename="settingsdialog.cpp" line="164"/>
         <source>Key mappings</source>
         <translation>Tastenbelegung</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="118"/>
+        <location filename="settingsdialog.cpp" line="132"/>
         <source>New User</source>
         <translation>Neuer Nutzer</translation>
     </message>
@@ -415,8 +462,7 @@
 <context>
     <name>User</name>
     <message>
-        <location filename="user.cpp" line="13"/>
-        <location filename="user.cpp" line="21"/>
+        <location filename="user.cpp" line="14"/>
         <source>user </source>
         <translation>Nutzer </translation>
     </message>
@@ -424,8 +470,24 @@
 <context>
     <name>UserOnlineWidget</name>
     <message>
-        <location filename="useronlinewidget.cpp" line="29"/>
-        <location filename="useronlinewidget.cpp" line="32"/>
+        <location filename="useronlinewidget.cpp" line="44"/>
+        <source>Names</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="useronlinewidget.cpp" line="44"/>
+        <source>Bidding</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="useronlinewidget.cpp" line="44"/>
+        <source>Points</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="useronlinewidget.cpp" line="47"/>
+        <location filename="useronlinewidget.cpp" line="52"/>
+        <location filename="useronlinewidget.cpp" line="57"/>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
