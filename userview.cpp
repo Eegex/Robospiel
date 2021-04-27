@@ -6,12 +6,12 @@ UserView::UserView(QWidget *parent) : QWidget(parent)
     network = new NetworkView();
     connect(network, &NetworkView::leaderboardOnline, this, [=](){
         leaderboard = new OnlineLeaderboardWidget();
+        GameControll::getInstance().setLeaderboard(leaderboard);
         dynamic_cast<OnlineLeaderboardWidget*>(leaderboard)->setLocalUser(GameControll::getInstance().initializeUser());
         dynamic_cast<OnlineLeaderboardWidget*>(leaderboard)->initialize();
         network->hide();
         layout->addWidget(leaderboard, 0, 0);
         layout->addWidget(btnBack, 1, 0);
-		GameControll::getInstance().setLeaderboard(leaderboard);
     });
 	connect(network, &NetworkView::leaderboardOffline, this, [=](){
 		leaderboard = new OfflineLeaderBoardWidget();

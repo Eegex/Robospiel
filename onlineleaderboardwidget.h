@@ -21,10 +21,11 @@ public:
     explicit OnlineLeaderboardWidget();
     void setOnlineWidget();
     void addUser(User *u);
-    void updateUserList();
+    // void updateUserList(); -> warum?
     void setTable();
     void setLocalUser(User *u);
     void initialize();
+    void updateLayout();
 private:
     QGridLayout * lay = new QGridLayout(this);
 	QPushButton * bidBtn = new QPushButton(this); //accept in biddingWidget
@@ -43,9 +44,9 @@ public slots:
     // void updateName(QString newName); before
     void updateName(QUuid id, QString name);
 	void updateColour(QUuid id, QColor color);
-    void deactivateInput(); //TODO
+    void deactivateInput();
     void updateAllUsers(); //TODO
-	void activateInput(); //TODO
+    void activateInput();
 signals:
     // void biddingChangedOnline(int userBidding); before
     void userAdded(User* u); //TODO
