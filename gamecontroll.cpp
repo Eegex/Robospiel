@@ -9,6 +9,7 @@
 
 using namespace std::chrono_literals;
 GameControll GameControll::instance;
+
 GameControll& GameControll::getInstance()
 {
 	return instance;
@@ -158,7 +159,7 @@ Board * GameControll::setBoard(Board* newBoard)
 // executes different actions, because they were send by the server / triggered directly when you are offline
 void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return was needed?
 {
-	qDebug()<<"execute"<<data;
+//	qDebug()<<"execute"<<data;
 	PlayerAction a = static_cast<PlayerAction>(data.take("action").toInt());
 	User* user;
 	UserData userData;
@@ -303,30 +304,43 @@ void GameControll::calculateGameStatus()
 	{*/
 		if(board->goalHit) //Spieler hat gewonnen, die Runde ist zuende
 		{
-			calculateWinner(board->getMoves());
+            actionWhenAnimationEnded = &GameControll::calculateWinner;
+            qDebug()<<"actionWhenAnimationEnded = calculateWinner";
 		}
 	//}
-	else
+    else
 	{
 		if(board->getMoves() >= getUserById(activeUserID)->getBidding()){
 			//TODO: Flag um anzuzeigen, dass der Spieler das Ziel erreicht hat?
 			qDebug()<<"User couldn't end the round in the specified bid of "<< getUserById(activeUserID)->getBidding()<<", the next user is being drawn";
 			if(getNextUser(activeUserID))//Not at last player yet, noch haben nicht alle versagt
 			{
-				qDebug()<<"Acquiring next User";
-				User* user = getNextUser(activeUserID); //Liste ist bereits sortiert (siehe oben), daher ist der nächste User in der Liste der User mit dem nächsthöheren Bidding
-				setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
-				getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
-				qDebug()<<"Active User is now "<<user->getName();
+                actionWhenAnimationEnded = &GameControll::resetForNextUser;
+                qDebug()<<"actionWhenAnimationEnded = resetFornextuser";
 			}
 			else //Alles Versager
 			{
 				qDebug()<<"No User could end the round in their specified bid.";
-				sortBy(points);
-				nextTarget();
+                actionWhenAnimationEnded = &GameControll::resetAndNextTarget;
+                qDebug()<<"actionWhenAnimationEnded = resetAndNextTarget";
 			}
 		}
 	}
+}
+
+void GameControll::resetAndNextTarget()
+{
+    getBoard()->revertToBeginning();
+    nextTarget();
+}
+
+void GameControll::resetForNextUser()
+{
+    qDebug()<<"Acquiring next User";
+    User* user = getNextUser(activeUserID); //Liste ist bereits sortiert (siehe oben), daher ist der nächste User in der Liste der User mit dem nächsthöheren Bidding
+    setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
+    getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
+    qDebug()<<"Active User is now "<<user->getName();
 }
 
 int GameControll::getUserIndexById(QUuid id)
@@ -462,14 +476,13 @@ void GameControll::addUser(User* user)
     }
 }
 
-void GameControll::calculateWinner(int moves) //This function is being called when the first player has reached their goal
+void GameControll::calculateWinner() //This function is being called when the first player has reached their goal
 {
     QUuid activeUserId = getActiveUserID();
     User* activeUser = getUserById(activeUserId);
     nextTarget(); //Generate a new target, this should reset the current LeaderBoardWidget
     activeUser->incrementPoints();
-    sortBy(points);
-    qDebug()<<"User "<<activeUser->getName()<<" has successfully ended the round with "<<moves<<" moves, their current points are "<<activeUser->getPoints();
+    qDebug()<<"User "<<activeUser->getName()<<" has successfully ended the round with "<<board->getMoves()<<" moves, their current points are "<<activeUser->getPoints();
 }
 
 User* GameControll::getUserById(QUuid id)
@@ -568,17 +581,19 @@ GameControll::Phase GameControll::getCurrentPhase()
 
 void GameControll::nextTarget()
 {
-	if(switchPhase(Phase::search))
-	{
+    qDebug()<<"next target!!";
+    if(switchPhase(Phase::search))
+    {
+        sortBy(points);
         //reset all biddings
         for(User* u: users)
         {
-			u->hasBid = false;
+            u->hasBid = false;
             u->setBidding(MAX_BID);
         }
-		leaderboard->activateInput();
-		board->startNewRound();
-	}
+        leaderboard->activateInput();
+        board->startNewRound();
+    }
 }
 
 bool GameControll::switchPhase(GameControll::Phase phase)
@@ -720,4 +735,14 @@ bool GameControll::showTopBidding()
 QVector<User*>* GameControll::getUsers()
 {
 	return &users;
+}
+
+GameControll::functionPointer GameControll::getActionWhenAnimationEnded()
+{
+    return instance.actionWhenAnimationEnded;
+}
+void GameControll::setActionWhenAnimationEnded(functionPointer function)
+{
+    instance.actionWhenAnimationEnded=function;
+    qDebug()<<"actionWhenAnimationEnded was set to"<<function;
 }

@@ -24,10 +24,6 @@ void BoardView::setBoard(Board * b)
 	}
 	connect(board,&Board::playerMoved,this, [&](int playerNumber, int goalHit)
 	{
-		if(goalHit!=-1)
-		{
-			goalWaitingToBeEmitted=goalHit;
-		}
 		playerWidgets.at(playerNumber)->moveAnimated(tileToDesktopCoordinates(board->players.at(playerNumber)), board->players.at(playerNumber)->getPosition(), std::max(width(), height())*1.2);
 	});
 	connect(board,&Board::paintPlayers,this, [&](){
@@ -113,11 +109,7 @@ PlayerWidget * BoardView::addPlayer(int i)
 	connect(newPlayer, &PlayerWidget::reposition, this, [&](int playerNumber)
 	{
 		playerWidgets.at(playerNumber)->move(tileToDesktopCoordinates(board->players.at(playerNumber)));
-		if(goalWaitingToBeEmitted!=-1)
-		{
-			emit lastAnimationAfterGoalHitEnded(goalWaitingToBeEmitted);
-			goalWaitingToBeEmitted=-1;
-		}
+        emit animationEnded();
 	});
 	newPlayer->move(tileToDesktopCoordinates(board->players[i]));
 	newPlayer->show();

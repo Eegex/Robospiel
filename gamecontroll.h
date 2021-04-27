@@ -17,6 +17,7 @@ class GameControll : public QObject
 {
 	Q_OBJECT
 public:
+    typedef void(GameControll::*functionPointer)();
 	static GameControll& getInstance();
 
 	enum class Phase{idle, search, countdown, presentation, freeplay};
@@ -43,8 +44,11 @@ public:
     void addUser(User *user);
 
     void sortBy(strategy strategy);
+
+    static functionPointer getActionWhenAnimationEnded();
+    static void setActionWhenAnimationEnded(functionPointer function);
 public slots:
-	void calculateWinner(int moves);
+    void calculateWinner();
 	void showSettings();
 	void setMapping(QVector<KeyMapping *> mapping);
 	void nextTarget();
@@ -52,6 +56,7 @@ public slots:
 	QUuid getActiveUserID();
 	void setActiveUserID(QUuid id);
 	void setIdle();
+
 
 private:
 	static GameControll instance;
@@ -64,12 +69,16 @@ private:
 	QUuid activeUserID;
 	QTimer countdown;
 	int timeLeft;
+    functionPointer actionWhenAnimationEnded = nullptr; //TODO include in json?
+
 
 	explicit GameControll(QObject *parent = nullptr);
 	void sendToServer(PlayerAction a);
     User *getUserById(QUuid id);
     User *getNextUser(QUuid lastUserId);
     int getUserIndexById(QUuid id);
+    void resetForNextUser();
+    void resetAndNextTarget();
 signals:
 	void actionTriggeredWithData(PlayerAction action, QJsonObject additionalData);
 	void actionTriggered(PlayerAction action);

@@ -216,6 +216,13 @@ void MainWidget::initializeView(Board* b, QVector<KeyMapping*>* m)
 	view->setBoard(b);
 	view->setMapping(m);
 	connectView(view);
+    connect(view, &BoardView::animationEnded, &GameControll::getInstance(), [=]()->void{
+        if(GameControll::getActionWhenAnimationEnded())
+        {
+            (GameControll::getInstance().*GameControll::getActionWhenAnimationEnded())();
+            GameControll::setActionWhenAnimationEnded(nullptr);
+        }
+    });
 	connect(view,&BoardView::action,&GameControll::getInstance(),&GameControll::triggerAction);
 	connect(view,&BoardView::activePlayerChanged,&GameControll::getInstance(),[=](int playerNumber)->void
 	{
