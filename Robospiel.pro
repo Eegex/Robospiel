@@ -13,7 +13,6 @@ SOURCES += \
     board.cpp \
     boardeditor.cpp \
     goalwidget.cpp \
-    leaderboardwidget.cpp \
     boardview.cpp \
     client.cpp \
     connectiontoclient.cpp \
@@ -24,6 +23,7 @@ SOURCES += \
     main.cpp \
     mainwidget.cpp \
     mainwindow.cpp \
+    onlineleaderboardwidget.cpp \
     offlineleaderboardwidget.cpp \
     pawnwidget.cpp \
     networkview.cpp \
@@ -33,7 +33,7 @@ SOURCES += \
     tile.cpp \
     user.cpp \
     usercreationwidget.cpp \
-    useronlinewidget.cpp
+    userview.cpp
 
 HEADERS += \
     Direction.h \
@@ -54,6 +54,7 @@ HEADERS += \
     mainwidget.h \
     mainwindow.h \
     networkview.h \
+    onlineleaderboardwidget.h \
     offlineleaderboardwidget.h \
     pawnwidget.h \
     playerwidget.h \
@@ -63,7 +64,7 @@ HEADERS += \
     boardview.h \
     direction.h \
     user.h \
-    useronlinewidget.h
+    userview.h
 
 TRANSLATIONS += \
 Robospiel_de_DE.ts

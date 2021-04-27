@@ -360,8 +360,8 @@ void Board::startNewRound()
 {
 	resetMoves();
 	makeNewSeeker(true);
+    activePlayer = seeker;
 	history.clear();
-	activePlayer = seeker;
 	//goal only in corner?
 	makeNewGoal();
 	//else:
@@ -1023,7 +1023,7 @@ int Board::switchPlayer(Direction d)
 	if(minFit < largestPossibleFittingScore)
 	{
 		//qDebug() << "Ergebnis" << min->getPlayer();
-		changeActivePlayer(min->getPlayer());
+		changeActivePlayer(min->getPlayer(), false);
 		return min->getPlayer();
 	}
 	else

@@ -1,8 +1,8 @@
 #ifndef USERBIDDINGWIDGET_H
 #define USERBIDDINGWIDGET_H
-#define MAX_BID 99
-#define MIN_BID 1
-#define BID_BTN_TEXT "Accept Bid"
+
+#include "user.h"
+#include "LeaderBoardWidget.h"
 
 #include <QLabel>
 #include <QPushButton>
@@ -17,38 +17,28 @@ class UserBiddingWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit UserBiddingWidget(QWidget *parent = nullptr);
+    explicit UserBiddingWidget(User* u/*, QWidget *parent = nullptr*/);
     QPushButton * accept = new QPushButton(this); //bidBtn in onlineWidget
     QSpinBox * lSpinBox = new QSpinBox(this); //biddingBox in onlineWidget
+    QUuid getId();
+	User* getUser();
 private:
     QGridLayout * userLayout = new QGridLayout(this);
     QLabel * labelName = new QLabel(this); //name in onlineWidget
     QLabel * pointsName = new QLabel(this);
-    int userBidding = MAX_BID;
-    int userPoints = 0;
-    QUuid userId;
-    QString userName;
-    QColor userColor;
-    unsigned long biddingTimestamp;
+	User* user;
+    void updateLayout();
 public slots:
-    QUuid getId();
-    QString getName();
-    int getBidding();
-    int getPoints();
-    unsigned long getTimeStamp();
-    void setId(QUuid id);
-    void setBidding(int bidding);
-    void setName(QString v);
-    void setColor(QColor colour);
-    void incrementPoints();
+    void updateBidding(int bidding);
+	void updateName(QString name);
+	void updateColour(QColor colour);
     void btnPressed();
-    void resetBidding();
+    //void resetBidding();
     void deactivateBtn();
+	void activateBtn();
 
 signals:
-    void biddingChanged(int userBidding, QUuid id);
-    void nameChanged();
-    void colourChanged();
+    void biddingChanged(int userBidding, unsigned long timeStamp, QUuid id);
     void biddingReset(int playerBidding, QUuid id);
 };
 

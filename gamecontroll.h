@@ -12,6 +12,7 @@
 #include "board.h"
 #include "Direction.h"
 
+enum strategy {points, bid};
 class GameControll : public QObject
 {
 	Q_OBJECT
@@ -48,12 +49,18 @@ public:
 	static void initializeUser();
 	static void showGuide(const QStringList & texts);
 
-	static void initializeConnections();
-	void sortUsers(unsigned int strategy, QVector<User *> *sortedUsers);
+    static void initializeConnections();
+	QVector<User*>* getUsers();
+    void addUser(User *user);
+
+    void sortBy(strategy strategy);
+
+    static functionPointer getActionWhenAnimationEnded();
+    static void setActionWhenAnimationEnded(functionPointer function);void addDefaultUsers();
 	void triggerAction(PlayerAction action, QUuid userID);
 	void addDefaultUsers();
 public slots:
-	void calculateWinner(int moves);
+    void calculateWinner();
 	void showSettings();
 	void setMapping(QVector<KeyMapping *> mapping);
 	void nextTarget();
@@ -76,10 +83,16 @@ private:
 	QUuid activeUserID;
 	QTimer countdown;
 	int timeLeft;
+    functionPointer actionWhenAnimationEnded = nullptr; //TODO include in json?
 	int searchTime=60;
 
 	explicit GameControll(QObject *parent = nullptr);
 	void sendToServer(PlayerAction a);
+    User *getUserById(QUuid id);
+    User *getNextUser(QUuid lastUserId);
+    int getUserIndexById(QUuid id);
+    void resetForNextUser();
+    void resetAndNextTarget();
 signals:
 	void actionTriggeredWithData(PlayerAction action, QJsonObject additionalData);
 	void actionTriggered(PlayerAction action);
@@ -100,7 +113,6 @@ private slots:
 	void calculateGameStatus();
 	void changeBidding(int bidding, QUuid id);
 	void changeOnlyBidding(int bidding);
-	void addOfflineUser(struct UserData * newUser);
 	void nextGuide();
 };
 

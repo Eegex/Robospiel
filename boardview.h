@@ -63,7 +63,6 @@ protected:
 	//void callMoveActivePlayer(Direction d);
 	QPoint tileToDesktopCoordinates(Tile *tile);
 	virtual PlayerWidget * addPlayer(int i);
-	int goalWaitingToBeEmitted = -1;
 	QResizeEvent currentEvent = QResizeEvent(QSize(-1,-1), QSize(-1,-1));
 signals:
 	void tileHovered(Tile * t);
@@ -71,7 +70,7 @@ signals:
 	void swipe(Direction d);
 	void action(PlayerAction a, QString userName);
 	void activePlayerChanged(int playerNumber);
-	void lastAnimationAfterGoalHitEnded(int moves);
+    void animationEnded();
 };
 
 #endif // BOARDVIEW_H

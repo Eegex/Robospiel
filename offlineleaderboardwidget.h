@@ -10,16 +10,18 @@
 #include <QSpinBox>
 #include <QDateTime>
 #include "UserBiddingWidget.h"
+#include "LeaderBoardWidget.h"
 #include "UserCreationWidget.h"
 #include "user.h"
+#include "gamecontroll.h"
 
-enum strategy {points, bid};
 
-class OfflineLeaderBoardWidget : public QWidget
+
+class OfflineLeaderBoardWidget : public LeaderBoardWidget
 {
     Q_OBJECT
 public:
-    explicit OfflineLeaderBoardWidget(QWidget *parent = nullptr);
+	explicit OfflineLeaderBoardWidget();
     void addUser(User * newUser);
     QVector<UserBiddingWidget*> * getUsers();
     UserCreationWidget *getUserCreationWidget();
@@ -36,7 +38,12 @@ private:
     QVector<UserBiddingWidget*> users; //Several Users, Array of Widgets for individual users
     UserCreationWidget * userCreationWidget = new UserCreationWidget(nullptr);
 public slots:
-    void sortBy(unsigned int strategy);
+    void updateBidding(QUuid id, int bidding);
+	void updateName(QUuid id, QString name);
+	void updateColour(QUuid id, QColor colour);
+	void updateAllUsers();
+	void deactivateInput();
+	void activateInput();
     void updateLayout();
     //void newUser();
 

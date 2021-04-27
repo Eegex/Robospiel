@@ -5,7 +5,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 {
 	GameControll::initializeConnections();
 	glMain = new QGridLayout(this);
-	leaderboard = new LeaderBoardWidget(this);
+    userView = new UserView(this);
+	//GameControll::setLeaderboard(userView->getLeaderboard());
 	skipBtn = new QPushButton("Skip", this);
 	initializeView(GameControll::setBoard(new Board(16, 16, 5)), GameControll::getMapping());
 	//connect(view, &BoardView::lastAnimationAfterGoalHitEnded, game, &GameControll::calculateWinner);
@@ -22,7 +23,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	glMain->addWidget(dlGuide,0,0,1,2,Qt::AlignHCenter);
 	glMain->addWidget(view,1,0,4,1,Qt::AlignCenter);
 	glMain->addWidget(lcd,1,1,Qt::AlignCenter);
-	glMain->addWidget(leaderboard,3,1,2,1,Qt::AlignCenter);
+    glMain->addWidget(userView,3,1,2,1,Qt::AlignCenter);
 	connect(&GameControll::getInstance(),&GameControll::time,this,&MainWidget::updateTimer);
 	connect(&GameControll::getInstance(),&GameControll::updateGuide,this,&MainWidget::updateGuide);
 	connect(&GameControll::getInstance(), &GameControll::newBoard, this, [=](Board* newBoard)
@@ -32,7 +33,6 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	adjustSize();
 	glMain->addWidget(skipBtn,2,1,Qt::AlignCenter);
 	skipBtn->setEnabled(false);
-	GameControll::setLeaderboard(leaderboard);
 	connect(skipBtn, &QPushButton::released, &GameControll::getInstance(), &GameControll::endTimer);
 }
 
@@ -233,6 +233,13 @@ void MainWidget::initializeView(Board* b, QVector<KeyMapping*>* m)
 	view->setBoard(b);
 	view->setMapping(m);
 	connectView(view);
+    connect(view, &BoardView::animationEnded, &GameControll::getInstance(), [=]()->void{
+        if(GameControll::getActionWhenAnimationEnded())
+        {
+            (GameControll::getInstance().*GameControll::getActionWhenAnimationEnded())();
+            GameControll::setActionWhenAnimationEnded(nullptr);
+        }
+    });
 	connect(view,&BoardView::action,&GameControll::getInstance(),&GameControll::triggerAction);
 	connect(view,&BoardView::activePlayerChanged,&GameControll::getInstance(),[=](int playerNumber)->void
 	{

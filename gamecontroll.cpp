@@ -9,6 +9,7 @@
 
 using namespace std::chrono_literals;
 GameControll GameControll::instance;
+
 GameControll& GameControll::getInstance()
 {
 	return instance;
@@ -67,28 +68,13 @@ void GameControll::adaptFromJSON(QJsonObject json)
 
 	}
 	instance.users.clear();
-   // setLeaderboard(new LeaderBoardWidget());
 	QJsonArray jsonUsers = json.value("users").toArray();
 	for(int i=0; i<jsonUsers.size(); i++)
 	{
 		QJsonObject jsonUser = jsonUsers.at(i).toObject();
-		if(instance.leaderboard->getOnlineState()==online)
-		{
-			addOnlineUser(User::fromJSON(jsonUser));
-		}
-		else if(instance.leaderboard->getOnlineState()==offline)
-		{
-			qDebug()<<"Called function AdaptFromJson in GameControl with an offline state, attempting to add an offline user!";
-			UserData userData;
-			//some data present in the inline version is "missing" here,
-			//but it shouldn't be a problem, because it is created in addOfflineUser()
-			//and it doesn't have to be present yet, because it isn't shared via internet
-			userData.name = jsonUser.value("name").toString();
-			userData.colour = QColor(jsonUser.value("color").toString());
-			instance.addOfflineUser(&userData);
-		}
+        User* user = User::fromJSON(jsonUser);
+        instance.leaderboard->addUser(user);
 	}
-	//TODO when merged with leaderboardbranch: update view
 }
 
 //forwards the message to all clients / triggers the action directly when you are offline
@@ -176,38 +162,13 @@ Board * GameControll::setBoard(Board* newBoard)
 // executes different actions, because they were send by the server / triggered directly when you are offline
 void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return was needed?
 {
-	qDebug() << "GameControll::exeQTAction(QJsonObject " << data << ")";
+	//qDebug() << "GameControll::exeQTAction(QJsonObject " << data << ")";
 	PlayerAction a = static_cast<PlayerAction>(data.take("action").toInt());
 	User* user;
 	UserData userData;
 	switch(a)
 	{
-//		case none:
-//			break;
-//		case movement:
-//			break;
-//		case bidding:
-//			break;
-//		case enterBidding:
-//			break;
-//		case clearBidding:
-//			break;
-//		case other:
-//			break;
-//		case giveUp:
-//			break;
-//		case freePlay:
-//			break;
-//		case PlayerAction::user:
-//			break;
-//		case changedUsername:
-//			break;
-//		case changedUserColor:
-//			break;
-//		case update:
-//			break;
-//		case boardUpdate:
-//			break;
+
 		case movePlayerEast:
 		case movePlayerNorth:
 		case movePlayerSouth:
@@ -222,14 +183,11 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 			board->switchPlayer(static_cast<Direction>(a-PlayerAction::playerSwitch));
 			break;
 		case playerSwitch:
-			board->changeActivePlayer(data.value("playerNumber").toInt());
+            board->changeActivePlayer(data.value("playerNumber").toInt(), data.value("isRevert").toBool());
+			break;
 		case sendBidding:
-			switchPhase(Phase::countdown);
-			if (leaderboard->getOnlineState()==state::online)
-			{
-				leaderboard->getUserOnlineWidget()->setBidding(QUuid(data.value("id").toString()),data.value("bidding").toInt());
-			}
-
+			switchPhase(Phase::countdown); 
+            getUserById(QUuid(data.value("userId").toString()))->setBidding(data.value("bidding").toInt());
 			break;
 		case revert:
 			board->revert();
@@ -238,20 +196,8 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 			board -> revertToBeginning();
 			break;
 		case newUser:
-			if(leaderboard->getOnlineState()==state::online)
-			{
-				//TODO not testet yet, is not in use
-				user = User::fromJSON(data);
-				addOnlineUser(user);
-				emit newOnlineUser(user);
-			}
-			else if(leaderboard->getOnlineState()==state::offline)
-			{
-				qDebug()<<"Called Function ExeQTAction with an offline state, attempting to add an offline user!";
-				userData.name = data.value("name").toString();
-				userData.colour = QColor(data.value("color").toString());
-				addOfflineUser(&userData);
-			}
+            user = User::fromJSON(data);
+            addUser(user);
 			break;
 		case completeUpdate:
 			adaptFromJSON(data);
@@ -260,7 +206,6 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 
 //
 //Don't write actual functionality here! It only sends the actions to the server. Functionality is in exeQTdata()!!!
-//TODO what is the meaning of the return value?
 //
 void GameControll::triggerAction(PlayerAction action, QUuid userID)
 {
@@ -277,7 +222,10 @@ void GameControll::triggerAction(PlayerAction action, QUuid userID)
 	{
 		if(action != PlayerAction::playerSwitch)
 		{
-			emit instance.actionTriggered(action);
+            QJsonObject json;
+            json.insert("isRevert", false);
+            qDebug()<<"playerSwitch is called in triggerAction with isRevert=False!";
+            emit instance.actionTriggeredWithData(action, json);
 			return;
 		}
 	}
@@ -401,104 +349,205 @@ void GameControll::sortUsers(unsigned int strategy, QVector<User*>* sortedUsers)
 //called after each movement of a player (and when reverting, ...)
 void GameControll::calculateGameStatus()
 {
-	qDebug()<<"Called Function CalculateGameStatus in "<<leaderboard->getOnlineState()<<" mode, the goal has"<<(board->goalHit?"been hit!":"!NOT! been hit!");
-	if(leaderboard->getOnlineState() == offline)
-	{
-		QUuid currentPlayer = getActiveUserID();
-		//Get Active User Index
-		unsigned int activeUserIndex = leaderboard->getOfflineLeaderBoardWidget()->getBiddingWidgetIndexByID(currentPlayer);
-		qDebug()<<"Current Moves are: "<< board->getMoves()<<", bidding is "<<leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->getBidding();
-		if(board->getMoves() >= leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->getBidding()) //Needs to be GEQ because otherwise the player could make an extra move as the "reached goal" signal is overriding the failure
-		{
-			if(board->goalHit) //Spieler hat gewonnen, die Runde ist zuende
-			{
-				qDebug() << "The Goal has been hit, calculating the winner now!";
-				const QString & username = leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->getName();
-				showGuide({tr("Goal has been hit by ")+username+"[]"});
-				calculateWinner(board->getMoves());
 
-			}
-			else
+	qDebug()<<"Current Moves are: "<< board->getMoves()<<", User Bidding is "<<getUserById(activeUserID)->getBidding();
+	/*if(board->getMoves() < getUserById(activeUserID)->getBidding())
+	{*/
+		if(board->goalHit) //Spieler hat gewonnen, die Runde ist zuende
+		{
+            actionWhenAnimationEnded = &GameControll::calculateWinner;
+            qDebug()<<"actionWhenAnimationEnded = calculateWinner";
+		}
+	//}
+    else
+	{
+		if(board->getMoves() >= getUserById(activeUserID)->getBidding()){
+			//TODO: Flag um anzuzeigen, dass der Spieler das Ziel erreicht hat?
+			qDebug()<<"User couldn't end the round in the specified bid of "<< getUserById(activeUserID)->getBidding()<<", the next user is being drawn";
+			if(getNextUser(activeUserID))//Not at last player yet, noch haben nicht alle versagt
 			{
-				//TODO: Flag um anzuzeigen, dass der Spieler das Ziel erreicht hat?
-				qDebug() << "User couldn't end the round in the specified bid of " << leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->getBidding()<<", the next user is being drawn";
-				if(leaderboard->getOfflineLeaderBoardWidget()->getNumOfUsers() > 1 && activeUserIndex < leaderboard->getNumOfUsers()-1)//Not at last player yet, noch haben nicht alle versagt
-				{
-					UserBiddingWidget* user = leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(++activeUserIndex); //Liste ist bereits sortiert (siehe oben), daher ist der nächste User in der Liste der User mit dem nächsthöheren Bidding
-					setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
-					getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
-					qDebug() << "Active User is now " << user->getName();
-					showGuide({tr("Present your solution, ") + user->getName() + "[]"});
-				}
-				else //Alles Versager
-				{
-					qDebug() << "No User could end the round in their specified bid.";
-					showGuide({tr("No one found the goal[]")});
-					sortUsers(points, &sortedUsers);
-					nextTarget();
-				}
+                actionWhenAnimationEnded = &GameControll::resetForNextUser;
+                qDebug()<<"actionWhenAnimationEnded = resetFornextuser";
+			}
+			else //Alles Versager
+			{
+				qDebug()<<"No User could end the round in their specified bid.";
+                actionWhenAnimationEnded = &GameControll::resetAndNextTarget;
+                qDebug()<<"actionWhenAnimationEnded = resetAndNextTarget";
 			}
 		}
 	}
 }
 
-//this method is only for offline-users
-//called by exeQTActionWithData when the action is newUser and it is offline
-void GameControll::addOfflineUser(struct UserData * newUser)
+void GameControll::resetAndNextTarget()
 {
-	qDebug() << "Called function adduser in GameControl";
-	if(leaderboard->getOnlineState() == offline){
-		qDebug() << "Running in Offline Mode, adding an Offline User!";
-		User *u = new User(newUser->name, newUser->colour, this);
-		users.append(u);
-		qDebug() << "New User Name: " << u->getName();
-		// adds new user in the frontend
-		leaderboard->getOfflineLeaderBoardWidget()->addUser(u);
-		connect(this, &GameControll::newRound, leaderboard->getOfflineLeaderBoardWidget()->getUsers()->last(), &UserBiddingWidget::resetBidding);
-		connect(this, &GameControll::biddingDone, leaderboard->getOfflineLeaderBoardWidget()->getUsers()->last(), &UserBiddingWidget::deactivateBtn);
-		connect(leaderboard->getOfflineLeaderBoardWidget()->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, &GameControll::changeBidding);
-		connect(leaderboard->getOfflineLeaderBoardWidget()->getUsers()->last(), &UserBiddingWidget::biddingReset, this, &GameControll::changeBidding);
-		connect(leaderboard->getOfflineLeaderBoardWidget()->getUsers()->last(), &UserBiddingWidget::biddingChanged, this, [&](const int, const QUuid id) //Connect the biddingChanged Signal to triggerAction with appropriate argument
-		{
-			triggerAction(PlayerAction::sendBidding, id);
-		});
-	}
+    getBoard()->revertToBeginning();
+    nextTarget();
 }
 
-//called by exeQTActionWithData when the action is newUser and it is online
-void GameControll::addOnlineUser(User* user)
+void GameControll::resetForNextUser()
 {
-	qDebug() << "addExistingUser";
-	bool b = false;
-	for(User * u: qAsConst(instance.users))
-	{
-		if(u->getId()==user->getId())
-		{
-			b = true;
-		}
-	}
-	if(b == false)
-	{
-		qDebug() << "add " << user->getId() << " into list";
-		instance.users.append(user);
-		instance.leaderboard->getUserOnlineWidget()->addUserToList(user);
-		instance.leaderboard->getUserOnlineWidget()->updateUserList();
-	}
-
+    qDebug()<<"Acquiring next User";
+    User* user = getNextUser(activeUserID); //Liste ist bereits sortiert (siehe oben), daher ist der nächste User in der Liste der User mit dem nächsthöheren Bidding
+    setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
+    getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
+    qDebug()<<"Active User is now "<<user->getName();
 }
 
-void GameControll::calculateWinner(int moves) //This function is being called when the first player has reached their goal
+int GameControll::getUserIndexById(QUuid id)
 {
-	QUuid currentPlayer = getActiveUserID();
-	if(leaderboard->getOnlineState() == offline){
-		qDebug()<<"The Goal has been hit, currently in GameControl -> calculateWinner Function with "<<moves<<" moves!";
-		unsigned int activeUserIndex = leaderboard->getOfflineLeaderBoardWidget()->getBiddingWidgetIndexByID(currentPlayer);
-		nextTarget(); //Generate a new target, this should reset the current LeaderBoardWidget
-		leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->incrementPoints(); //Increment the number of points of the player that's hit their goal
-		sortUsers(points, &sortedUsers);
-		qDebug()<<"User "<<leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->getName()<<" has successfully ended the round with "<<moves<<" moves, their current points are "<<leaderboard->getOfflineLeaderBoardWidget()->getUsers()->at(activeUserIndex)->getPoints();
-		board->resetMoves(); //This needs to be done because the actionTriggered will set it to 1 immediately after a goal is hit so the next player has 1 fewer move which would be bad
-	}
+    for(int i=0; i<users.size(); i++)
+    {
+        if(users.at(i)->getId()==id)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+//works ONLY if the users are sorted by bidding before the method call
+User* GameControll::getNextUser(QUuid lastUserId)
+{
+    for(int i=0; i<users.size(); i++)
+    {
+        if(users.at(i)->getId()==lastUserId)
+        {
+            if(i+1<users.size())
+            {
+                return users.at(i+1);
+            }
+            else
+            {
+                return nullptr;
+            }
+        }
+    }
+    return nullptr;
+}
+
+void GameControll::sortBy(strategy strategy)
+{
+    QVector<User*> sortedUsers;
+    unsigned long minTimeStamp = QDateTime::currentMSecsSinceEpoch();
+    bool isActive[users.size()];
+    for(int i = 0; i<users.size(); i++)
+    {
+        isActive[i] = 1; //Set all users to be active
+    }
+    if(strategy == bid)
+    {
+        //qDebug()<<"Called sortByBidding";
+        User * minUser;
+        int minIndex = 0;
+        int minBid;
+        for(int additionIndex = 0; additionIndex < users.size(); additionIndex++)
+        {
+            minBid = MAX_BID + 1;
+            for(User* user : users)
+            {
+                //qDebug()<<"SortByBidding: USER "<<user->getName()<<" with bidding "<<user->getBidding()<<"and timestamp: "<<user->getTimeStamp();
+                if(user->getBidding() <= minBid && isActive[users.indexOf(user)])//If User has a lower bid than the currently lowest bid
+                {
+                    if(user->getBidding() == minBid)
+                    {
+                        if(user->getTimeStamp() < minTimeStamp) //check the timestamp
+                        {
+                            //qDebug()<<"Bidding is the same, timestamp is earlier";
+                            minUser = user; //Set the Widget to add to the new list to the user
+                            minIndex = users.indexOf(user); //Set the index needed for deactivating the user to the current index
+                            minBid = user->getBidding(); //Set the newest lowest bid to the current user as there can be users after that one with lower bids
+                            minTimeStamp = user->getTimeStamp(); //Set User Timestamp to the current user value
+                        }
+                    }
+                    else
+                    {
+                        //qDebug()<<"Bidding of user "<<user->getName()<<" with bidding "<<user->getBidding()<<" is smaller than minimum bid of "<<minBid;
+                        minUser = user; //Set the Widget to add to the new list to the user
+                        minIndex = users.indexOf(user); //Set the index needed for deactivating the user to the current index
+                        minBid = user->getBidding(); //Set the newest lowest bid to the current user as there can be users after that one with lower bids
+                        minTimeStamp = user->getTimeStamp(); //Set User Timestamp to the current user value
+                    }
+                }
+            }
+            isActive[minIndex] = false; //Deactivate user
+            sortedUsers.append(minUser);
+        }
+        users = sortedUsers;
+    }
+    if(strategy == points)
+    {
+        //qDebug()<<"Called sortByPoints";
+        User * maxUser;
+        int maxIndex = 0;
+        int maxPts;
+        for(int additionIndex = 0; additionIndex < users.size(); additionIndex++)
+        {
+            maxPts = 0;
+            for(User * user : qAsConst(users))
+            {
+                //qDebug()<<"SortByPoints: USER "<<user->getName()<<" with points "<<user->getPoints()<<"and timestamp: "<<user->getTimeStamp();
+                if(user->getPoints() >= maxPts && isActive[users.indexOf(user)])//If User has more points than the current maximum
+                {
+                    //qDebug()<<"Points of user "<<user->getName()<<" with points "<<user->getPoints()<<" is larger than maximum amount of "<<maxPts;
+                    maxUser = user; //Set the Widget to add to the new list to the user
+                    maxIndex = users.indexOf(user); //Set the index needed for deactivating the user to the current index
+                    maxPts = user->getPoints(); //Set the newest largest number of points to the current user as there can be users after that one with larger number of points
+                    minTimeStamp = user->getTimeStamp(); //Set the User Time stamp to the current user value
+                }
+            }
+            isActive[maxIndex] = false; //Deactivate user
+            sortedUsers.append(maxUser);
+        }
+        users = sortedUsers;
+        for(int i = 0; i<users.size(); i++)
+        {
+            //qDebug()<<"SortedUsers: User "<<i<<": "<<users[i]->getName()<<" with points: "<<users[i]->getPoints()<<" and timestamp "<<users[i]->getTimeStamp();
+            //isActive[i] = true;
+        }
+    }
+    leaderboard->updateAllUsers();
+}
+
+//called by exeQTActionWithData when the action is newUser
+void GameControll::addUser(User* user)
+{
+    bool b = false;
+    for(User * u: qAsConst(instance.users))
+    {
+        if(u->getId()==user->getId())
+        {
+            b = true;
+        }
+    }
+    if(b == false)
+    {
+        leaderboard->addUser(user);
+        users.append(user); //TODO sort
+    }
+}
+
+void GameControll::calculateWinner() //This function is being called when the first player has reached their goal
+{
+    QUuid activeUserId = getActiveUserID();
+    User* activeUser = getUserById(activeUserId);
+    nextTarget(); //Generate a new target, this should reset the current LeaderBoardWidget
+    activeUser->incrementPoints();
+	const QString username = activeUser->getName();
+    qDebug()<<"User "<<username<<" has successfully ended the round with "<<board->getMoves()<<" moves, their current points are "<<activeUser->getPoints();
+	showGuide({ tr("Goal has been hit by ") + username + "[]" });
+}
+
+User* GameControll::getUserById(QUuid id)
+{
+    for(User* u: users)
+    {
+        if(u->getId()==id)
+        {
+            return u;
+        }
+    }
+    return nullptr;
 }
 
 void GameControll::changeBidding(int bidding, QUuid id)
@@ -521,18 +570,14 @@ void GameControll::changeOnlyBidding(int bidding) //TODO explain! What happens h
 	triggerActionWithData(PlayerAction::sendBidding, users.at(0)->toJSON());
 }
 
-// current user of the system is initialzed
-void GameControll::initializeUser()
+// current user of the system is initialzed (only when server or client starts)
+User* GameControll::initializeUser()
 {
-	qDebug()<<"initializeUser: ";
-	User *u = new User(instance.leaderboard->getUsername(), instance.leaderboard->getUsercolor());
-	qDebug()<<"username: "<<instance.leaderboard->getUsername()<<" and usercolor: "<< instance.leaderboard->getUsercolor();
-	instance.users.append(u);
-	instance.leaderboard->getUserOnlineWidget()->addUserToList(u);
-	instance.leaderboard->getUserOnlineWidget()->updateName(u->getName());
-	instance.leaderboard->getUserOnlineWidget()->setUserID(u->getId());
-	instance.leaderboard->getUserOnlineWidget()->setTable();
-	triggerActionWithData(PlayerAction::newUser, u->toJSON());
+    User* u = new User(instance.getSettingsDialog()->getUsername(), instance.getSettingsDialog()->getUsercolor());
+    qDebug()<<"initializeUser with id: "<<u->getId();
+    //TODO
+    triggerActionsWithData(PlayerAction::newUser, u->toJSON());
+    return u;
 }
 
 void GameControll::setIdle()
@@ -544,35 +589,29 @@ void GameControll::setIdle()
 
 void GameControll::setLeaderboard(LeaderBoardWidget * value)
 {
-	instance.leaderboard = value;
-	connect(instance.leaderboard->getOfflineLeaderBoardWidget()->getUserCreationWidget(), &UserCreationWidget::userAdded, &GameControll::getInstance(), [=](UserData* userData)->void
-	{
-		qDebug()<<"In Connect-Function in GameControl!";
-		QJsonObject data = QJsonObject();
-		data.insert("name", userData->name);
-		data.insert("color", userData->colour.name());
-		triggerActionWithData(PlayerAction::newUser, data);
-	});
-	connect(&GameControll::getInstance(), &GameControll::biddingDone, &GameControll::getInstance(), [&]()
-	{
-		//instance.leaderboard->getOfflineLeaderBoardWidget()->sortBy(bid);
-		instance.sortUsers(bid, &instance.sortedUsers);
-		const QString & username = instance.leaderboard->getOfflineLeaderBoardWidget()->getUsers()->first()->getName();
-		showGuide({tr("Present your solution, ")+username+"[]",tr("Your turn, ")+username+"[]"});
-		qDebug()<<"ActiveUserID is"<<instance.getActiveUserID();
-		qDebug()<<"Attempting to switch to new Player, first ID is "<<instance.leaderboard->getOfflineLeaderBoardWidget()->getUsers()->first()->getId();
-		instance.setActiveUserID(instance.leaderboard->getOfflineLeaderBoardWidget()->getUsers()->first()->getId());
-		qDebug()<<"Bidding is done, Users are sorted, initial player is: "<<instance.leaderboard->getOfflineLeaderBoardWidget()->getUsers()->first()->getName()<<" with id "<< instance.getActiveUserID();
-	});
-	connect(instance.leaderboard->getUserOnlineWidget(), &UserOnlineWidget::userAdded, &GameControll::getInstance(), &GameControll::addOfflineUser); //????
-	connect(instance.leaderboard->getUserOnlineWidget(), &UserOnlineWidget::biddingChangedOnline,&GameControll::getInstance(),&GameControll::changeOnlyBidding);
-	connect(instance.settings, &SettingsDialog::usernameChanged, instance.leaderboard, &LeaderBoardWidget::setUsername);
-	connect(instance.settings, &SettingsDialog::usercolorChanged, instance.leaderboard, &LeaderBoardWidget::setUsercolor);
-	connect(instance.leaderboard, &LeaderBoardWidget::onlineUserAdded, &GameControll::getInstance(), [=](User* user)->void {
-				triggerActionWithData(PlayerAction::newUser, user->toJSON());
-	});
-	connect(instance.settings, &SettingsDialog::usernameChanged,instance.leaderboard->getUserOnlineWidget(),&UserOnlineWidget::updateName);
-	instance.leaderboard->getUserOnlineWidget()->updateName(instance.settings->getUsername());
+    //neu
+    instance.leaderboard = value;
+    connect(&GameControll::getInstance(), &GameControll::biddingDone, &GameControll::getInstance(), [=]()
+    {
+        instance.leaderboard->deactivateInput();
+        instance.sortBy(bid);
+        instance.setActiveUserID(instance.users.first()->getId());
+		const QString& username = instance.users.first()->getName();
+		showGuide({ tr("Present your solution, ") + username + "[]",tr("Your turn, ") + username + "[]" });
+
+    });
+    connect(instance.leaderboard, &LeaderBoardWidget::biddingAccepted, &GameControll::getInstance(), [=](QUuid userId, int bidding)
+    {
+        QJsonObject json;
+        json.insert("userId", userId.toString());
+        json.insert("bidding", bidding);
+        triggerActionsWithData(PlayerAction::sendBidding, json);
+    });
+
+    //alt
+    //TODO set username/color in localUser of onlineWidget
+//	connect(instance.settings, &SettingsDialog::usernameChanged, instance.leaderboard, &LeaderBoardWidget::setUsername);
+//	connect(instance.settings, &SettingsDialog::usercolorChanged, instance.leaderboard, &LeaderBoardWidget::setUsercolor);
 }
 
 User * GameControll::getMinBid()
@@ -582,7 +621,7 @@ User * GameControll::getMinBid()
 	{
 		if(u->getBidding() < 100)
 		{
-			if(u->getBidding() < minBid->getBidding() || (u->getBidding() == minBid->getBidding() && u->getTimeStamp() < minBid->getTimeStamp()))
+            if(u->getBidding() < minBid->getBidding() || (u->getBidding() == minBid->getBidding() && u->getTimeStamp() < minBid->getTimeStamp()))
 			{
 				minBid = u;
 			}
@@ -598,11 +637,19 @@ GameControll::Phase GameControll::getCurrentPhase()
 
 void GameControll::nextTarget()
 {
-	if(switchPhase(Phase::search))
-	{
-		emit newRound();
-		board->startNewRound();
-	}
+    qDebug()<<"next target!!";
+    if(switchPhase(Phase::search))
+    {
+        sortBy(points);
+        //reset all biddings
+        for(User* u: users)
+        {
+            u->hasBid = false;
+            u->setBidding(MAX_BID);
+        }
+        leaderboard->activateInput();
+        board->startNewRound();
+    }
 }
 
 bool GameControll::switchPhase(GameControll::Phase phase)
@@ -793,4 +840,19 @@ void GameControll::nextGuide()
 		emit updateGuide(gl.line);
 		guideTimer.start(gl.duration);
 	}
+}
+
+QVector<User*>* GameControll::getUsers()
+{
+	return &users;
+}
+
+GameControll::functionPointer GameControll::getActionWhenAnimationEnded()
+{
+    return instance.actionWhenAnimationEnded;
+}
+void GameControll::setActionWhenAnimationEnded(functionPointer function)
+{
+    instance.actionWhenAnimationEnded=function;
+    qDebug()<<"actionWhenAnimationEnded was set to"<<function;
 }
