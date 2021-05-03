@@ -18,8 +18,8 @@ class NetworkView : public QWidget
 public:
 	explicit NetworkView(QWidget *parent = nullptr);
 	~NetworkView();
-private:
     void toChoiceMenu();
+private:
 
 	bool allowClientAndServer=false;
 
@@ -49,8 +49,6 @@ signals:
 private slots:
 	void addServer();
 	void addClient();
-//	void sendToClients();
-//    void sendToServer();
 
 };
 
