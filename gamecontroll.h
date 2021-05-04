@@ -13,6 +13,9 @@
 #include "Direction.h"
 
 enum strategy {points, bid};
+/**
+ * @brief The GameControll class macht eigentlich alles
+ */
 class GameControll : public QObject
 {
 	Q_OBJECT
@@ -26,7 +29,7 @@ public:
 		const QString line;
 		int duration;
 	};
-    enum class Phase{idle, search, countdown, presentation, freeplay};
+	enum class Phase{idle, search, countdown, presentation, freeplay};
 
 	static GameControll& getInstance();
 
@@ -58,7 +61,7 @@ public:
 	static functionPointer getActionWhenAnimationEnded();
 	static void setActionWhenAnimationEnded(functionPointer function);
 	static void addDefaultUsers();
-    void triggerAction(PlayerAction action);
+	void triggerAction(PlayerAction action);
 
 public slots:
 	void calculateWinner();
@@ -83,7 +86,7 @@ private:
 	QUuid activeUserID;
 	QTimer countdown;
 	int timeLeft;
-    functionPointer actionWhenAnimationEnded = nullptr; //ATTENTION! When you store a new method in this variable, you have to add it in GameControll::toJSON() and GameControll::adaptFromJSON()!!!
+	functionPointer actionWhenAnimationEnded = nullptr; //ATTENTION! When you store a new method in this variable, you have to add it in GameControll::toJSON() and GameControll::adaptFromJSON()!!!
 	int searchTime=60;
 
 	explicit GameControll(QObject *parent = nullptr);
@@ -112,7 +115,6 @@ private slots:
 	void sendToServerWithData(PlayerAction a, QJsonObject info);
 	void calculateGameStatus();
 	void changeBidding(int bidding, QUuid id);
-	void changeOnlyBidding(int bidding);
 	void nextGuide();
 };
 

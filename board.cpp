@@ -271,7 +271,8 @@ QSize Board::getSize()
 }
 
 
-Tile* Board::getRandomTile(){
+Tile* Board::getRandomTile()
+{
 
 	return tiles.at(r->bounded(tiles.length())).at(r->bounded(tiles.at(0).length()));
 }
@@ -286,7 +287,7 @@ Tile* Board::getRandomUnoccupiedTile()
 		counter++;
 		initialTile = getRandomTile();
 		tileIsValid = true;
-		for(Tile* player : players)
+		for(Tile* player : qAsConst(players))
 		{
 			if(player == initialTile)
 			{
@@ -303,7 +304,7 @@ Tile* Board::getRandomUnoccupiedTile()
 				for(int j = 0; j<tiles.at(0).size(); j++){
 					initialTile = tiles.at(i).at(j);
 					tileIsValid = true;
-					for(Tile* player : players)
+					for(Tile* player : qAsConst(players))
 					{
 						if(player == initialTile)
 						{
@@ -742,6 +743,9 @@ void Board::changeActivePlayer(int playerNumber, bool isRevert)
 	emit boardChanged();
 }
 
+/**
+ * @brief Board::revert ist super
+ */
 void Board::revert()
 {
 	if(!history.isEmpty())
