@@ -8,11 +8,12 @@
 #include <QLabel>
 #include <QUuid>
 #include <QSpinBox>
-#include <QTableWidget>
+#include <QTableView>
 #include "Direction.h"
 #include "LeaderBoardWidget.h"
 #include "user.h"
 #include "gamecontroll.h"
+#include "tablemodel.h"
 
 class OnlineLeaderboardWidget : public LeaderBoardWidget
 {
@@ -22,7 +23,6 @@ public:
     void setOnlineWidget();
     void addUser(User *u);
     // void updateUserList(); -> warum?
-    void setTable();
     void setLocalUser(User *u);
     void initialize();
     void updateLayout();
@@ -31,10 +31,10 @@ private:
 	QPushButton * bidBtn = new QPushButton(this); //accept in biddingWidget
     QLabel * lname = new QLabel(this); //labelName in biddingWdiget
 	QSpinBox * biddingBox = new QSpinBox(this); //lSpinBox in biddingWidget
-	QTableWidget * listWidget = new QTableWidget(this);
+    QTableView * tableView = new QTableView(this);
     int userBidding = MAX_BID;
     User * localUser;
-	QVector<User*> users;
+    TableModel *model = new TableModel(this);
 
     User * findUser(QUuid id);
 public slots:

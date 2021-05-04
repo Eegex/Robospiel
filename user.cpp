@@ -65,23 +65,23 @@ void User::incrementPoints()
 	emit pointsChanged(id, points);
 }
 
-QString User::getName()
+QString User::getName() const
 {
 	return name;
 }
-QColor User::getColor()
+QColor User::getColor() const
 {
 	return color;
 }
-QUuid User::getId()
+QUuid User::getId() const
 {
 	return id;
 }
-int User::getBidding()
+int User::getBidding() const
 {
 	return bidding;
 }
-int User::getPoints()
+int User::getPoints() const
 {
 	return points;
 }
