@@ -5,28 +5,27 @@
 #include <QDataStream>
 #include "board.h"
 
-Board::Board()
-{
-
-}
-
-Board::Board(int width, int height, int playerNumber, QObject *parent) : QObject(parent)
+Board::Board(QObject *parent) : QObject(parent)
 {
 	r = new QRandomGenerator(QTime::currentTime().msecsSinceStartOfDay());
+}
+
+Board::Board(int width, int height, int playerNumber, QObject *parent) : Board(parent)
+{
 	if(playerNumber + 1 > width * height)
 	{
 		qDebug()<< "Board contructor was called with too many players!";
 	}
 	makeNewBoard(width, height, playerNumber);
-    startNewRound();
+	startNewRound();
 }
 
 void Board::makeNewBoard(int width, int height, int playerNumber)
 {
 	makeNewWalls(width, height);
 	makeNewPlayers(playerNumber);
-    makeNewGoal();
-    emit boardChanged();
+	makeNewGoal();
+	emit boardChanged();
 }
 
 void Board::makeNewPlayers(int playerNumber)
@@ -104,7 +103,7 @@ QString Board::toBinary()
 	s << static_cast<quint8>(tiles.at(0).size());
 	QVector<QPoint> eastWalls;
 	QVector<QPoint> southWalls;
-	for(QVector<Tile*> row : qAsConst(tiles))
+	for(const QVector<Tile*> &row : qAsConst(tiles))
 	{
 		for(Tile* tile : row)
 		{
@@ -247,7 +246,7 @@ void Board::startNewRound()
 {
 	resetMoves();
 	makeNewSeeker(true);
-    activePlayer = seeker;
+	activePlayer = seeker;
 	history.clear();
 	//goal only in corner?
 	makeNewGoal();
@@ -298,29 +297,29 @@ Tile* Board::getRandomUnoccupiedTile()
 		{
 			tileIsValid = false;
 		}
-        if(counter>100000)
+		if(counter>100000)
 		{
-            for(int i =0; i<tiles.size(); i++){
-                for(int j = 0; j<tiles.at(0).size(); j++){
-                    initialTile = tiles.at(i).at(j);
-                    tileIsValid = true;
-                    for(Tile* player : players)
-                    {
-                        if(player == initialTile)
-                        {
-                            tileIsValid = false;
-                        }
-                    }
-                    if(goal == initialTile)
-                    {
-                        tileIsValid = false;
-                    }
-                }
-                if(!tileIsValid){
-                    qDebug() << "Can't find any unoccupied tile";
-                    return nullptr;
-                }
-            }
+			for(int i =0; i<tiles.size(); i++){
+				for(int j = 0; j<tiles.at(0).size(); j++){
+					initialTile = tiles.at(i).at(j);
+					tileIsValid = true;
+					for(Tile* player : players)
+					{
+						if(player == initialTile)
+						{
+							tileIsValid = false;
+						}
+					}
+					if(goal == initialTile)
+					{
+						tileIsValid = false;
+					}
+				}
+				if(!tileIsValid){
+					qDebug() << "Can't find any unoccupied tile";
+					return nullptr;
+				}
+			}
 
 		}
 	}
@@ -567,9 +566,9 @@ void Board::placeGoalAwayFromSeeker()
 	{
 
 		goal = getRandomUnoccupiedTile();
-        if(goal==nullptr){
-            goal = getRandomUnoccupiedTile();
-        }
+		if(goal==nullptr){
+			goal = getRandomUnoccupiedTile();
+		}
 		if(!(goal->getPosition().rx() == players.at(seeker)->getPosition().rx()) &&
 				!(goal->getPosition().ry() == players.at(seeker)->getPosition().ry())    )
 		{

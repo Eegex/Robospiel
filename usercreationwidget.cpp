@@ -45,7 +45,8 @@ void UserCreationWidget::addUser()
 	});
 }
 
-void UserCreationWidget::resetFields(){
+void UserCreationWidget::resetFields()
+{
 	addColourBtn->setStyleSheet("background-color: 0xFFFFFF");
 	userNamePicker->setText("");
 }

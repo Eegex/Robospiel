@@ -88,7 +88,7 @@ private:
 	Direction getNextDirection(Direction direction, int numberOfClockwiseSteps);
 	bool placeOuterWallIfFits(Tile *, Direction direction);
 	void placeGoalInCorner();
-	Board();
+	Board(QObject * parent = nullptr);
 	bool isTileCorner(Tile *tile);
 	Tile *getRandomTile();
 };
