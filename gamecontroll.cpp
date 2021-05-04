@@ -633,7 +633,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	case Phase::idle:
 	{
 		currentPhase = phase;
-		showGuide({tr("boooring[]"),tr("i am not creative[2000]at all[2000]fuck you[]")});
+        showGuide({tr("boooring")+ "[]",tr("i am not creative")+ "[2000]" + tr("at all")+ "[2000]" + tr("fuck you") + "[]", tr("We are in idle now!")+ "[]", tr("Lets do some idling!")+ "[]", tr("Okay, so you aren't capable of dealing with a real mode, are you?")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Too dumb for a real game!")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Idle again? Are we ever going to PLAY?")+ "[2000]" +tr("We are in idle.")+ "[]"});
 		emit enableMenus(true);
 		emit enableTimerSkip(false);
 		return true;
@@ -643,7 +643,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 		if(currentPhase != Phase::countdown)
 		{
 			currentPhase = phase;
-			showGuide({tr("start bidding[]"),tr("let'se go[]")});
+            showGuide({tr("Start bidding")+ "[]",tr("Let's go! Bid!")+ "[]", tr("You can bid now!")+ "[]",  tr("Lets do some bidding!")+ "[]", tr("I bet you wont find anything! But you can try to...")+ "[2000]" +tr("Make your biddings!")+ "[]", tr("Make your biddings! Well if you find anything...")+ "[]"});
 			emit enableMenus(false);
 			emit enableTimerSkip(false);
 			return true;
@@ -656,7 +656,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 			if(currentPhase == Phase::search)
 			{
 				currentPhase = phase;
-				showGuide({tr("counting down[]")});
+                showGuide({tr("Counting down")+ "[]", tr("Stressed yet? The Timer is running!")+ "[]", tr("You will never find anything in a minute!")+ "[]" });
 				timeLeft = searchTime; //60
 				emit time(timeLeft);
 				countdown.start();
@@ -685,7 +685,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 		if(currentPhase == Phase::presentation)
 		{
 			currentPhase = phase;
-			showGuide({tr("time to show off")});
+            showGuide({tr("time to show off")+ "[]"});
 			emit enableMenus(false);
 			emit enableTimerSkip(false);
 			return true;

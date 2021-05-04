@@ -4,55 +4,141 @@
 <context>
     <name>GameControll</name>
     <message>
-        <location filename="gamecontroll.cpp" line="416"/>
         <source>Goal has been hit by </source>
-        <translation>Ziel wurde getroffen von </translation>
+        <translation type="vanished">Ziel wurde getroffen von </translation>
     </message>
     <message>
-        <location filename="gamecontroll.cpp" line="430"/>
-        <location filename="gamecontroll.cpp" line="560"/>
+        <location filename="gamecontroll.cpp" line="534"/>
         <source>Present your solution, </source>
-        <translation type="unfinished"></translation>
+        <translation>Zeige deinen Weg, </translation>
     </message>
     <message>
-        <location filename="gamecontroll.cpp" line="435"/>
-        <source>No one found the goal[]</source>
-        <translation type="unfinished"></translation>
+        <location filename="gamecontroll.cpp" line="472"/>
+        <source>Goal has been hit by %1</source>
+        <translation>Das Ziel wurde von %1 getroffen. </translation>
     </message>
     <message>
-        <location filename="gamecontroll.cpp" line="560"/>
+        <location filename="gamecontroll.cpp" line="534"/>
         <source>Your turn, </source>
-        <translation type="unfinished"></translation>
+        <translation>Dein Zug, </translation>
     </message>
     <message>
-        <location filename="gamecontroll.cpp" line="616"/>
-        <source>boooring[]</source>
-        <translation type="unfinished"></translation>
+        <location filename="gamecontroll.cpp" line="597"/>
+        <source>boooring</source>
+        <oldsource>boooring[]</oldsource>
+        <translation>Langweilig</translation>
     </message>
     <message>
-        <location filename="gamecontroll.cpp" line="616"/>
+        <location filename="gamecontroll.cpp" line="597"/>
+        <source>i am not creative</source>
+        <translation>Ich bin nicht kreativ</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="597"/>
+        <source>at all</source>
+        <translation>Überhaubt nicht</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="597"/>
+        <source>fuck you</source>
+        <translation>fickt euch</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="597"/>
+        <source>We are in idle now!</source>
+        <translation>Wir sind jetzt beim untätigen Modus.</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="597"/>
+        <source>Lets do some idling!</source>
+        <translation>Lass uns etwas Bummeliges machen!</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="597"/>
+        <source>Okay, so you aren&apos;t capable of dealing with a real mode, are you?</source>
+        <translation>Verstehe, du bist also nicht in der Lage mit einem echten Modus klar zu kommen?</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="597"/>
+        <source>We are in idle.</source>
+        <translation>Wir sind im Bummel-Modus!</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="597"/>
+        <source>Too dumb for a real game!</source>
+        <translation>Zu dumm fürs richtige Spielen...</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="597"/>
+        <source>Idle again? Are we ever going to PLAY?</source>
+        <translation>Schon wieder in Locker-Flockig? Spielen wir irgendwann nochmal? </translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="607"/>
+        <source>Start bidding</source>
+        <translation>Startet das Bieten</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="607"/>
+        <source>Lets do some bidding!</source>
+        <translation>Lasst uns mit dem Bieten anfangen!</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="607"/>
+        <source>I bet you wont find anything! But you can try to...</source>
+        <translation>Ich wette ihr fidet eh nichts. Aber wenn ihr meint...</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="607"/>
+        <source>Make your biddings!</source>
+        <translation>Fangt an zu bieten!</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="607"/>
+        <source>Make your biddings! Well if you find anything...</source>
+        <translation>Fangt an zu bieten, wenn ihr etwas findet... </translation>
+    </message>
+    <message>
+        <source>We are in idle</source>
+        <translation type="vanished">Wir sind in Locker-Flockig</translation>
+    </message>
+    <message>
+        <source>let&apos;s go</source>
+        <translation type="vanished">Los gehts!</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="607"/>
+        <source>You can bid now!</source>
+        <translation>Ihr könnt jetzt bieten!</translation>
+    </message>
+    <message>
         <source>i am not creative[2000]at all[2000]fuck you[]</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Ich bin nicht kreativ[2000] überhaubt nicht![2000] fick dich![]</translation>
     </message>
     <message>
-        <location filename="gamecontroll.cpp" line="626"/>
-        <source>start bidding[]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="gamecontroll.cpp" line="626"/>
         <source>let&apos;se go[]</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Los gehts![]</translation>
     </message>
     <message>
-        <location filename="gamecontroll.cpp" line="639"/>
-        <source>counting down[]</source>
-        <translation type="unfinished"></translation>
+        <location filename="gamecontroll.cpp" line="620"/>
+        <source>Counting down</source>
+        <oldsource>counting down</oldsource>
+        <translation>Der Zähler geht los!</translation>
     </message>
     <message>
-        <location filename="gamecontroll.cpp" line="668"/>
+        <location filename="gamecontroll.cpp" line="620"/>
+        <source>Stressed yet? The Timer is running!</source>
+        <translation>Na, schon gestresst? Die Zeit läuft jetzt ab!</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="620"/>
+        <source>You will never find anything in a minute!</source>
+        <translation>Du wirst eh nichts mehr in nur einer Minute entdecken! </translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="649"/>
         <source>time to show off</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeit anzugeben!</translation>
     </message>
 </context>
 <context>
@@ -190,42 +276,42 @@
     <message>
         <location filename="mainwidget.cpp" line="42"/>
         <source>Board</source>
-        <translation type="unfinished"></translation>
+        <translation>Spielbrett</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="50"/>
         <source>Idle</source>
-        <translation type="unfinished"></translation>
+        <translation>Locker-Flockig</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="75"/>
         <source>New</source>
-        <translation type="unfinished"></translation>
+        <translation>Neu</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="77"/>
         <source>Walls</source>
-        <translation type="unfinished"></translation>
+        <translation>Wände</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="78"/>
         <source>Seeker</source>
-        <translation type="unfinished"></translation>
+        <translation>Sucher</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="79"/>
         <source>Players</source>
-        <translation type="unfinished"></translation>
+        <translation>Spieler</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="80"/>
         <source>All</source>
-        <translation type="unfinished"></translation>
+        <translation>Alles</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="81"/>
         <source>Target</source>
-        <translation type="unfinished"></translation>
+        <translation>Ziel</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="91"/>
@@ -240,7 +326,7 @@
         <location filename="mainwidget.cpp" line="96"/>
         <location filename="mainwidget.cpp" line="114"/>
         <source>Next Target</source>
-        <translation type="unfinished"></translation>
+        <translation>Nächstes Ziel</translation>
     </message>
     <message>
         <location filename="mainwidget.cpp" line="99"/>
@@ -396,6 +482,34 @@
     </message>
 </context>
 <context>
+    <name>OnlineLeaderboardWidget</name>
+    <message>
+        <location filename="onlineleaderboardwidget.cpp" line="46"/>
+        <source>Names</source>
+        <translation>Namen</translation>
+    </message>
+    <message>
+        <location filename="onlineleaderboardwidget.cpp" line="46"/>
+        <source>Bidding</source>
+        <translation>Gebote</translation>
+    </message>
+    <message>
+        <location filename="onlineleaderboardwidget.cpp" line="46"/>
+        <source>Points</source>
+        <translation>Punkte</translation>
+    </message>
+    <message>
+        <location filename="onlineleaderboardwidget.cpp" line="49"/>
+        <location filename="onlineleaderboardwidget.cpp" line="57"/>
+        <location filename="onlineleaderboardwidget.cpp" line="62"/>
+        <location filename="onlineleaderboardwidget.cpp" line="190"/>
+        <location filename="onlineleaderboardwidget.cpp" line="198"/>
+        <location filename="onlineleaderboardwidget.cpp" line="203"/>
+        <source>%1</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
     <name>SettingsDialog</name>
     <message>
         <location filename="settingsdialog.h" line="51"/>
@@ -430,17 +544,17 @@
     <message>
         <location filename="settingsdialog.cpp" line="14"/>
         <source>Player color start</source>
-        <translation type="unfinished"></translation>
+        <translation>Anfangsfarbe der Spieler</translation>
     </message>
     <message>
         <location filename="settingsdialog.cpp" line="15"/>
         <source>Player color end</source>
-        <translation type="unfinished"></translation>
+        <translation>Endfarbe der Spieler</translation>
     </message>
     <message>
         <location filename="settingsdialog.cpp" line="16"/>
         <source>Show top bidder on timer</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeige den höchsten Bieter im Timer</translation>
     </message>
     <message>
         <location filename="settingsdialog.cpp" line="24"/>
@@ -468,28 +582,11 @@
     </message>
 </context>
 <context>
-    <name>UserOnlineWidget</name>
+    <name>UserView</name>
     <message>
-        <location filename="useronlinewidget.cpp" line="44"/>
-        <source>Names</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="useronlinewidget.cpp" line="44"/>
-        <source>Bidding</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="useronlinewidget.cpp" line="44"/>
-        <source>Points</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="useronlinewidget.cpp" line="47"/>
-        <location filename="useronlinewidget.cpp" line="52"/>
-        <location filename="useronlinewidget.cpp" line="57"/>
-        <source>%1</source>
-        <translation type="unfinished"></translation>
+        <location filename="userview.h" line="21"/>
+        <source>Back</source>
+        <translation>Zurück </translation>
     </message>
 </context>
 </TS>

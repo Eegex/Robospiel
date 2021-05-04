@@ -15,8 +15,12 @@ UserBiddingWidget::UserBiddingWidget(User* u/*, QWidget *parent*/)// : QWidget(p
         if(id == user->getId())
 			updateBidding(bid);
 	});
+	connect(user, &User::biddingChanged, this, [&](QUuid, int){
+		updateLayout();
+	});
 	lSpinBox->setMinimum(MIN_BID);
 	lSpinBox->setSingleStep(1);
+	lSpinBox->setValue(user->getBidding());
     updateLayout();
 	qDebug()<<"In Creation of UserBiddingWidget, Name is: "<<labelName<<" points are "<<lSpinBox->value();
 }
