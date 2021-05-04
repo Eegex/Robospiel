@@ -90,11 +90,9 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 #ifdef __APPLE__
 	QMenu *menu1 = new QMenu(tr("Edit Board"),this);
 	aEditBoard = new QAction(tr("Edit Board"),this);
-	connect(aEditBoard,&QAction::triggered,this,&MainWidget::editBoard);
 	menu1->addAction(aEditBoard);
 	QMenu *menu2 = new QMenu(tr("Next Target"),this);
 	aNextTarget = new QAction(tr("Next Target"),this);
-	connect(aNextTarget,&QAction::triggered,&GameControll::getInstance(),&GameControll::nextTarget);
 	menu2->addAction(aNextTarget);
 	QMenu *menu3 = new QMenu(tr("Settings"),this);
 	aSettings = new QAction(tr("Settings"),this);
@@ -109,10 +107,9 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 #else
 	bar->addMenu(mNewStuff);
 	aEditBoard = new QAction(tr("Edit Board"),this);
-	connect(aEditBoard,&QAction::triggered,this,&MainWidget::editBoard);
+
 	bar->addAction(aEditBoard);
 	aNextTarget = new QAction(tr("Next Target"),this);
-	connect(aNextTarget,&QAction::triggered,&GameControll::getInstance(),&GameControll::nextTarget);
 	bar->addAction(aNextTarget);
 	aSettings = new QAction(tr("Settings"),this);
 	connect(aSettings,&QAction::triggered,&GameControll::getInstance(),&GameControll::showSettings);
@@ -120,7 +117,16 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	bar->addAction(aGoToIdle);
 
 #endif
-	connect(aGoToIdle, &QAction::triggered, &GameControll::getInstance(), &GameControll::setIdle);
+    connect(aEditBoard,&QAction::triggered,this,[=]()->void{
+        GameControll::getInstance().triggerAction(PlayerAction::editBoard);
+        editBoard();
+    });
+    connect(aNextTarget,&QAction::triggered,this, [=]()->void{
+        GameControll::getInstance().triggerAction(PlayerAction::nextTarget);
+    });
+    connect(aGoToIdle, &QAction::triggered, &GameControll::getInstance(), [=]()->void{
+        GameControll::getInstance().triggerAction(PlayerAction::setIdle);
+    });
 	connect(&GameControll::getInstance(), &GameControll::enableMenus, this, &MainWidget::enableMenus);
 	connect(&GameControll::getInstance(), &GameControll::enableTimerSkip, this, &MainWidget::enableTimerSkip);
 	connect(sbWidth, SIGNAL(valueChanged(int)), this, SLOT(updatePlayerMaximum(int)));
