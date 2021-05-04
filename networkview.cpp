@@ -30,13 +30,6 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 			toChoiceMenu();});
 	clientStatus = new QLabel(clientContainer);
 
-	//only for testing
-//    leMessageToServer = new QLineEdit(tr("Message to server"), clientContainer);
-//    QPushButton* btnSendToServer = new QPushButton(tr("Send Message to server"), clientContainer);
-//    connect(btnSendToServer, &QPushButton::clicked, this, &NetworkView::sendToServer);
-//    gridClient->addWidget(leMessageToServer);
-//    gridClient->addWidget(btnSendToServer);
-
 	gridClient->addWidget(leClientAddress);
 	gridClient->addWidget(leClientPort);
 	gridClient->addWidget(btnStartClient);
@@ -65,13 +58,6 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 	});
 	serverStatus = new QLabel(serverContainer);
 
-	//only for testing
-//    leMessageToClients = new QLineEdit(tr("Message to clients"), serverContainer);
-//    QPushButton* btnSendToClients = new QPushButton(tr("Send Message to all clients"), serverContainer);
-//    connect(btnSendToClients, &QPushButton::clicked, this, &NetworkView::sendToClients);
-//    gridServer->addWidget(leMessageToClients);
-//    gridServer->addWidget(btnSendToClients);
-
 	QNetworkAccessManager * ipSearcher = new QNetworkAccessManager(this);
 	connect(ipSearcher,&QNetworkAccessManager::finished,this,[=](QNetworkReply * reply)
 	{
@@ -88,7 +74,6 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 	gridServer->addWidget(serverStatus);
 
 	serverContainer->setLayout(gridServer);
-
 
 	btnClient = new QPushButton(tr("Join Server"));
 	btnServer = new QPushButton(tr("Start Server"));
@@ -124,9 +109,6 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 	connect(btnOffline, &QPushButton::clicked, this, [=]()->void{
 		emit leaderboardOffline();
 	});
-	//TODO place Server::getInstance().closeServer();
-	//TODO place Client::getInstance().closeClient();
-
 
 	//connect server signals
 	connect(&Server::getInstance(), &Server::serverNotStarted, this, [=]() -> void
@@ -178,6 +160,15 @@ NetworkView::~NetworkView()
 
 void NetworkView::toChoiceMenu()
 {
+    if(Server::getInstance().isActive())
+    {
+        Server::getInstance().closeServer();
+    }
+    if(Client::getInstance().isActive())
+    {
+        Client::getInstance().closeClient();
+    }
+
 	layout->removeWidget(serverContainer);
 	layout->removeWidget(clientContainer);
 	serverContainer->hide();
@@ -196,27 +187,10 @@ void NetworkView::addServer()
 	Server::getInstance().startServer(leServerAddress->text(), leServerPort->text().toInt());
 }
 
-//void NetworkView::sendToClients()
-//{
-//	int errorCount=Server::getInstance().sendMessageToClients(leMessageToClients->text());
-//	if(errorCount!=0)
-//	{
-//		serverStatus->setText(tr("Message was not sent to ")+QString::number(errorCount)+tr(" clients. ")+QTime::currentTime().toString());
-//	}
-//}
-
 void NetworkView::addClient()
 {
 	Client::getInstance().startClient(leClientAddress->text(), leClientPort->text().toInt());
 }
 
-//void NetworkView::sendToServer()
-//{
-//	bool okay = Client::getInstance().sendMessageToServer(leMessageToServer->text());
-//	if(!okay)
-//	{
-//		clientStatus->setText(tr("Message was not sent to the server. ")+QTime::currentTime().toString());
-//	}
-//}
 
 

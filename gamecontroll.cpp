@@ -36,6 +36,7 @@ void GameControll::initializeConnections()
 
 QJsonObject GameControll::toJSON() //TODO make sure the replaced Objects don't get lost
 {
+    //TODO add guideTimer, r, guideList?
 	QJsonObject json = QJsonObject();
 	json.insert("currentPhase", static_cast<int>(instance.currentPhase));
 	json.insert("board", instance.board->toBinary());
@@ -49,6 +50,21 @@ QJsonObject GameControll::toJSON() //TODO make sure the replaced Objects don't g
 		jsonUsers.append(user->toJSON());
 	}
 	json.insert("users", jsonUsers);
+
+    int actionWhenAnimationEndedAsInt=0;
+    if(instance.actionWhenAnimationEnded==&GameControll::calculateWinner)
+    {
+        actionWhenAnimationEndedAsInt=1;
+    }
+    if(instance.actionWhenAnimationEnded==&GameControll::resetForNextUser)
+    {
+        actionWhenAnimationEndedAsInt=2;
+    }
+    if(instance.actionWhenAnimationEnded==&GameControll::resetAndNextTarget)
+    {
+        actionWhenAnimationEndedAsInt=3;
+    }
+    json.insert("actionWhenAnimationEndedAsInt", actionWhenAnimationEndedAsInt);
 	return json;
 }
 
@@ -75,6 +91,22 @@ void GameControll::adaptFromJSON(QJsonObject json)
 		User* user = User::fromJSON(jsonUser);
 		instance.leaderboard->addUser(user);
 	}
+
+    switch(json.value("actionWhenAnimationEndedAsInt").toInt())
+    {
+        case 0:
+            instance.actionWhenAnimationEnded=nullptr;
+            break;
+        case 1:
+            instance.actionWhenAnimationEnded=&GameControll::calculateWinner;
+            break;
+        case 2:
+            instance.actionWhenAnimationEnded=&GameControll::resetForNextUser;
+            break;
+        case 3:
+            instance.actionWhenAnimationEnded=&GameControll::resetAndNextTarget;
+            break;
+    }
 }
 
 //forwards the message to all clients / triggers the action directly when you are offline
@@ -165,7 +197,6 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 	qDebug() << "GameControll::exeQTAction(QJsonObject " << data << ")";
 	PlayerAction a = static_cast<PlayerAction>(data.take("action").toInt());
 	User* user;
-	UserData userData;
 	switch(a)
 	{
 		case movePlayerEast:
@@ -200,15 +231,25 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 			break;
 		case completeUpdate:
 			adaptFromJSON(data);
+            break;
+    case editBoard:
+        //disableBoard();//TODO
+        break;
+    case PlayerAction::nextTarget:
+        nextTarget();
+        break;
+    case setIdle:
+        switchPhase(Phase::idle);
+        break;
 	}
 }
 
 //
 //Don't write actual functionality here! It only sends the actions to the server. Functionality is in exeQTdata()!!!
 //
-void GameControll::triggerAction(PlayerAction action, QUuid userID)
+void GameControll::triggerAction(PlayerAction action)
 {
-	qDebug()<<"Called function TriggerAction with parameters "<<action<<" and User ID "<<userID;
+    qDebug()<<"Called function TriggerAction with parameters "<<action;
 	if(action & PlayerAction::movement)
 	{
 		if(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay) //If online only let the active user move
@@ -245,6 +286,11 @@ void GameControll::triggerAction(PlayerAction action, QUuid userID)
 			return;
 		}
 	}
+    else if(action & PlayerAction::menuAction)
+    {
+        emit instance.actionTriggered(action);
+        return;
+    }
 	return;
 }
 
@@ -468,7 +514,7 @@ void GameControll::calculateWinner() //This function is being called when the fi
 	nextTarget(); //Generate a new target, this should reset the current LeaderBoardWidget
 	activeUser->incrementPoints();
 	const QString username = activeUser->getName();
-	qDebug()<<"User "<<username<<" has successfully ended the round with "<<board->getMoves()<<" moves, their current points are "<<activeUser->getPoints();
+    qDebug()<<"User "<<username<<" has successfully ended the round with "<<board->getMoves()<<" moves, their current points are "<<activeUser->getPoints()<<". \nI think the move counter is already reset for the next round at this point...";
 	showGuide({ tr("Goal has been hit by %1").arg(username) + "[]" });
 }
 
@@ -512,13 +558,6 @@ User * GameControll::initializeUser()
 	//TODO
 	triggerActionWithData(PlayerAction::newUser, u->toJSON());
 	return u;
-}
-
-void GameControll::setIdle()
-{
-
-	switchPhase(Phase::idle);
-
 }
 
 void GameControll::setLeaderboard(LeaderBoardWidget * value)

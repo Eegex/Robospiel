@@ -26,12 +26,11 @@ public:
 		const QString line;
 		int duration;
 	};
+    enum class Phase{idle, search, countdown, presentation, freeplay};
 
 	static GameControll& getInstance();
 
-	QVector<User *> sortedUsers;
 
-	enum class Phase{idle, search, countdown, presentation, freeplay};
 
 	static void load();
 	static bool showTopBidding();
@@ -59,7 +58,8 @@ public:
 	static functionPointer getActionWhenAnimationEnded();
 	static void setActionWhenAnimationEnded(functionPointer function);
 	static void addDefaultUsers();
-	void triggerAction(PlayerAction action, QUuid userID);
+    void triggerAction(PlayerAction action);
+
 public slots:
 	void calculateWinner();
 	void showSettings();
@@ -68,7 +68,6 @@ public slots:
 	void remakeBoard();
 	QUuid getActiveUserID();
 	void setActiveUserID(QUuid id);
-	void setIdle();
 
 private:
 	static GameControll instance;
@@ -84,7 +83,7 @@ private:
 	QUuid activeUserID;
 	QTimer countdown;
 	int timeLeft;
-	functionPointer actionWhenAnimationEnded = nullptr; //TODO include in json?
+    functionPointer actionWhenAnimationEnded = nullptr; //ATTENTION! When you store a new method in this variable, you have to add it in GameControll::toJSON() and GameControll::adaptFromJSON()!!!
 	int searchTime=60;
 
 	explicit GameControll(QObject *parent = nullptr);

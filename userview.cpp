@@ -3,39 +3,43 @@
 //Container for NetworkView and online/offline-LeaderboardWidget
 UserView::UserView(QWidget *parent) : QWidget(parent)
 {
-	network = new NetworkView();
-	connect(network, &NetworkView::leaderboardOnline, this, [=](){
-		leaderboard = new OnlineLeaderboardWidget();
-		GameControll::getInstance().setLeaderboard(leaderboard);
-		dynamic_cast<OnlineLeaderboardWidget*>(leaderboard)->setLocalUser(GameControll::getInstance().initializeUser());
-		dynamic_cast<OnlineLeaderboardWidget*>(leaderboard)->initialize();
-		network->hide();
-		layout->addWidget(leaderboard, 0, 0);
-		layout->addWidget(btnBack, 1, 0);
-	});
-	connect(network, &NetworkView::leaderboardOffline, this, [=](){
-		leaderboard = new OfflineLeaderBoardWidget();
-		//layout->removeWidget(network);
-		network->hide();
-		layout->addWidget(leaderboard, 0, 0);
-		layout->addWidget(btnBack,1,0);
-		GameControll::getInstance().setLeaderboard(leaderboard);
-		GameControll::addDefaultUsers();
-	});
-	connect(btnBack, &QPushButton::pressed, this, [=](){
-		// layout->removeWidget(leaderboard);
-		// layout->removeWidget(btnBack);
-		network->show(); //TODO: ausreichend?
-		leaderboard->hide();
-		btnBack->hide();
-		layout->addWidget(network, 0, 0);
-		GameControll::getInstance().setLeaderboard(leaderboard);
-	});
-	layout = new QGridLayout(this);
-	layout->addWidget(network, 0, 0);
+    network = new NetworkView();
+    connect(network, &NetworkView::leaderboardOnline, this, [=](){
+        leaderboard = new OnlineLeaderboardWidget();
+        GameControll::getInstance().setLeaderboard(leaderboard);
+        dynamic_cast<OnlineLeaderboardWidget*>(leaderboard)->setLocalUser(GameControll::getInstance().initializeUser());
+        dynamic_cast<OnlineLeaderboardWidget*>(leaderboard)->initialize();
+
+        network->hide();
+        btnBack->show();
+        layout->addWidget(leaderboard, 0, 0);
+    });
+    connect(network, &NetworkView::leaderboardOffline, this, [=](){
+        leaderboard = new OfflineLeaderBoardWidget();
+        GameControll::getInstance().setLeaderboard(leaderboard);
+        GameControll::addDefaultUsers();
+
+        network->hide();
+        layout->addWidget(leaderboard, 0, 0);
+        btnBack->show();
+    });
+    connect(btnBack, &QPushButton::pressed, this, [=](){
+        layout->removeWidget(leaderboard);
+        leaderboard->deleteLater();
+
+        network->toChoiceMenu();
+        network->show(); //TODO: ausreichend?
+        btnBack->hide();
+
+        //		GameControll::getInstance().setLeaderboard(leaderboard);
+    });
+    layout = new QGridLayout(this);
+    layout->addWidget(network, 0, 0);
+    layout->addWidget(btnBack, 1, 0);
+    btnBack->hide();
 }
 
 LeaderBoardWidget *UserView::getLeaderboard() const
 {
-	return leaderboard;
+    return leaderboard;
 }
