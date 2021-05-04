@@ -24,28 +24,116 @@
     </message>
     <message>
         <location filename="gamecontroll.cpp" line="597"/>
-        <source>boooring[]</source>
-        <translation>Langweilig[]</translation>
+        <source>boooring</source>
+        <oldsource>boooring[]</oldsource>
+        <translation>Langweilig</translation>
     </message>
     <message>
         <location filename="gamecontroll.cpp" line="597"/>
+        <source>i am not creative</source>
+        <translation>Ich bin nicht kreativ</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="597"/>
+        <source>at all</source>
+        <translation>Überhaubt nicht</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="597"/>
+        <source>fuck you</source>
+        <translation>fickt euch</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="597"/>
+        <source>We are in idle now!</source>
+        <translation>Wir sind jetzt beim untätigen Modus.</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="597"/>
+        <source>Lets do some idling!</source>
+        <translation>Lass uns etwas Bummeliges machen!</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="597"/>
+        <source>Okay, so you aren&apos;t capable of dealing with a real mode, are you?</source>
+        <translation>Verstehe, du bist also nicht in der Lage mit einem echten Modus klar zu kommen?</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="597"/>
+        <source>We are in idle.</source>
+        <translation>Wir sind im Bummel-Modus!</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="597"/>
+        <source>Too dumb for a real game!</source>
+        <translation>Zu dumm fürs richtige Spielen...</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="597"/>
+        <source>Idle again? Are we ever going to PLAY?</source>
+        <translation>Schon wieder in Locker-Flockig? Spielen wir irgendwann nochmal? </translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="607"/>
+        <source>Start bidding</source>
+        <translation>Startet das Bieten</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="607"/>
+        <source>Lets do some bidding!</source>
+        <translation>Lasst uns mit dem Bieten anfangen!</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="607"/>
+        <source>I bet you wont find anything! But you can try to...</source>
+        <translation>Ich wette ihr fidet eh nichts. Aber wenn ihr meint...</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="607"/>
+        <source>Make your biddings!</source>
+        <translation>Fangt an zu bieten!</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="607"/>
+        <source>Make your biddings! Well if you find anything...</source>
+        <translation>Fangt an zu bieten, wenn ihr etwas findet... </translation>
+    </message>
+    <message>
+        <source>We are in idle</source>
+        <translation type="vanished">Wir sind in Locker-Flockig</translation>
+    </message>
+    <message>
+        <source>let&apos;s go</source>
+        <translation type="vanished">Los gehts!</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="607"/>
+        <source>You can bid now!</source>
+        <translation>Ihr könnt jetzt bieten!</translation>
+    </message>
+    <message>
         <source>i am not creative[2000]at all[2000]fuck you[]</source>
-        <translation>Ich bin nicht kreativ[2000] überhaubt nicht![2000] fick dich![]</translation>
+        <translation type="vanished">Ich bin nicht kreativ[2000] überhaubt nicht![2000] fick dich![]</translation>
     </message>
     <message>
-        <location filename="gamecontroll.cpp" line="607"/>
-        <source>start bidding[]</source>
-        <translation>Startet das Bieten[]</translation>
-    </message>
-    <message>
-        <location filename="gamecontroll.cpp" line="607"/>
         <source>let&apos;se go[]</source>
-        <translation>Los gehts![]</translation>
+        <translation type="vanished">Los gehts![]</translation>
     </message>
     <message>
         <location filename="gamecontroll.cpp" line="620"/>
-        <source>counting down[]</source>
-        <translation>Der Zähler geht los![]</translation>
+        <source>Counting down</source>
+        <oldsource>counting down</oldsource>
+        <translation>Der Zähler geht los!</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="620"/>
+        <source>Stressed yet? The Timer is running!</source>
+        <translation>Na, schon gestresst? Die Zeit läuft jetzt ab!</translation>
+    </message>
+    <message>
+        <location filename="gamecontroll.cpp" line="620"/>
+        <source>You will never find anything in a minute!</source>
+        <translation>Du wirst eh nichts mehr in nur einer Minute entdecken! </translation>
     </message>
     <message>
         <location filename="gamecontroll.cpp" line="649"/>
