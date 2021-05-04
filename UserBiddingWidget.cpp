@@ -15,8 +15,12 @@ UserBiddingWidget::UserBiddingWidget(User* u/*, QWidget *parent*/)// : QWidget(p
         if(id == user->getId())
 			updateBidding(bid);
 	});
+	connect(user, &User::pointsChanged, this, [&](QUuid, int){
+		updateLayout();
+	});
 	lSpinBox->setMinimum(MIN_BID);
 	lSpinBox->setSingleStep(1);
+	lSpinBox->setValue(user->getBidding()); //Initially 99, MAX_BID
     updateLayout();
 	qDebug()<<"In Creation of UserBiddingWidget, Name is: "<<labelName<<" points are "<<lSpinBox->value();
 }
@@ -28,6 +32,7 @@ void UserBiddingWidget::deactivateBtn(){
 	}
 	qDebug()<<"Called Function Deactivate Button in UserBiddingWidget";
 	accept->setEnabled(false);
+	lSpinBox->setEnabled(false);
 }
 
 void UserBiddingWidget::activateBtn(){

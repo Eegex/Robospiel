@@ -95,7 +95,7 @@ void OnlineLeaderboardWidget::updateBidding(QUuid id, int bidding)
                 return;
             }
         }
-    }s
+	}
     // userBidding = bidding; notwendig?
     // emit biddingChangedOnline(userBidding);
 }

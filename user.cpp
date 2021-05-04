@@ -62,7 +62,7 @@ User* User::fromJSON(QJsonObject json)
 void User::incrementPoints()
 {
     points++;
-    emit pointsChanged(points);
+	emit pointsChanged(id, points);
 }
 
 QString User::getName()

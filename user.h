@@ -40,7 +40,7 @@ private:
 
 signals:
 	void biddingChanged(QUuid id, int bid);
-    void pointsChanged(int points);
+	void pointsChanged(QUuid id, int points);
 
 
 };
