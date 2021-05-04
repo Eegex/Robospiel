@@ -12,11 +12,11 @@ class User : public QObject
 	Q_OBJECT
 public:
     User(QString name, QColor color, QObject *parent=nullptr);
-	QString getName();
-	QColor getColor();
-	QUuid getId();
-	int getBidding();
-	int getPoints();
+	QString getName() const;
+    QColor getColor() const;
+	QUuid getId() const;
+	int getBidding() const;
+    int getPoints() const;
 	void setName(QString n);
 	void setColor(QColor c);
 	void setBidding(int b);

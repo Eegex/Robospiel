@@ -30,6 +30,7 @@ SOURCES += \
     playerwidget.cpp \
     server.cpp \
     settingsdialog.cpp \
+    tablemodel.cpp \
     tile.cpp \
     user.cpp \
     usercreationwidget.cpp \
@@ -60,6 +61,7 @@ HEADERS += \
     playerwidget.h \
     server.h \
     settingsdialog.h \
+    tablemodel.h \
     tile.h \
     boardview.h \
     direction.h \
