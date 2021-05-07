@@ -31,8 +31,12 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
 				switch (index.column()) {
 				case 0:
 					return user.at(index.row())->getName();
-				case 1:
-					return user.at(index.row())->getBidding();
+                case 1:
+                    if(user.at(index.row())->hasBid)
+                    {
+                        return user.at(index.row())->getBidding();
+                    }
+                    return "-";
 				case 2:
 					return user.at(index.row())->getPoints();
 				}
@@ -59,7 +63,8 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
 	{
 		QStringList header = {tr("Names"),tr("Bidding"),tr("Points")};
 		return header.at(section);
-	} else
+    }
+    else
 	{
 		return QVariant();
 	}
