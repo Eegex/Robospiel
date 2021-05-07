@@ -31,12 +31,12 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
 				switch (index.column()) {
 				case 0:
 					return user.at(index.row())->getName();
-                case 1:
-                    if(user.at(index.row())->hasBid)
-                    {
-                        return user.at(index.row())->getBidding();
-                    }
-                    return "-";
+				case 1:
+					if(user.at(index.row())->hasBid)
+					{
+						return user.at(index.row())->getBidding();
+					}
+					return "-";
 				case 2:
 					return user.at(index.row())->getPoints();
 				}
@@ -63,8 +63,8 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
 	{
 		QStringList header = {tr("Names"),tr("Bidding"),tr("Points")};
 		return header.at(section);
-    }
-    else
+	}
+	else
 	{
 		return QVariant();
 	}
@@ -88,7 +88,7 @@ void TableModel::sort(int column, Qt::SortOrder order)
 	}
 	case 1:
 	{
-		std::sort(user.begin(),user.end(),[&](const User * a, const User *b){ return n?(a->getBidding() > b->getBidding()):(a->getBidding() < b->getBidding()); });
+		std::sort(user.begin(),user.end(),[&](const User * a, const User *b){ return n?(a->getBidding() > b->getBidding()) || (a->getBidding() == b->getBidding() && a->getTimeStamp() > b->getTimeStamp()):(a->getBidding() < b->getBidding()) || (a->getBidding() == b->getBidding() && a->getTimeStamp() < b->getTimeStamp()); });
 		break;
 	}
 	case 2:
