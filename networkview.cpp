@@ -12,11 +12,11 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 {
 	QValidator *intValidator = new QIntValidator(this);
 
-	layout = new QGridLayout(this);
+    layout = new QVBoxLayout(this);
 
 	//Client gui
 	clientContainer = new QWidget(this);
-	gridClient=new QGridLayout(clientContainer);
+    gridClient=new QVBoxLayout(clientContainer);
 	leClientAddress = new QLineEdit(clientContainer);
 	leClientAddress->setPlaceholderText(tr("Server Address"));
 	leClientPort = new QLineEdit(clientContainer);
@@ -41,7 +41,7 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 
 	//Server gui
 	serverContainer = new QWidget(this);
-	gridServer=new QGridLayout(serverContainer);
+    gridServer=new QVBoxLayout(serverContainer);
 	leServerAddress = new QLineEdit(serverContainer);
 	leServerAddress->setPlaceholderText(tr("Server Address"));
 	leServerPort = new QLineEdit(serverContainer);
@@ -160,14 +160,8 @@ NetworkView::~NetworkView()
 
 void NetworkView::toChoiceMenu()
 {
-    if(Server::getInstance().isActive())
-    {
-        Server::getInstance().closeServer();
-    }
-    if(Client::getInstance().isActive())
-    {
-        Client::getInstance().closeClient();
-    }
+    Server::getInstance().closeServer();
+    Client::getInstance().closeClient();
 
 	layout->removeWidget(serverContainer);
 	layout->removeWidget(clientContainer);

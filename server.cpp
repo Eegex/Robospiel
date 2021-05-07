@@ -83,13 +83,14 @@ void Server::addClient()
 	});
 	connect(connection, &ConnectionToClient::receivedMessage, this, &Server::forwardMessageToClients);
 
+
 	//send board and users to new client
 	QJsonObject state = GameControll::toJSON();
 	state.insert("action", PlayerAction::completeUpdate);
 	QJsonDocument document(state);
 	connection->sendMessage(QString::fromUtf8(document.toJson()));
 
-	emit clientsChanged(connections.length());
+    emit clientsChanged(connections.length());
 }
 
 

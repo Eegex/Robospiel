@@ -29,14 +29,14 @@ private:
     QPushButton* btnOffline;
 
 	QWidget* serverContainer;
-	QGridLayout* gridServer;
+    QVBoxLayout* gridServer;
 	QLineEdit* leServerAddress;
 	QLineEdit* leServerPort;
     QLabel* serverStatus;
 	QLineEdit* leMessageToClients;
 
 	QWidget* clientContainer;
-	QGridLayout* gridClient;
+    QVBoxLayout* gridClient;
 	QLineEdit* leClientAddress;
 	QLineEdit* leClientPort;
 	QLabel* clientStatus;

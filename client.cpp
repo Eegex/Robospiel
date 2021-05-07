@@ -29,7 +29,7 @@ void Client::startClient(QString serverAddress, int serverPort)
 	connect(tcpSocket, &QAbstractSocket::connected, this, [=]()-> void{emit clientStarted();});
 	connect(tcpSocket, &QAbstractSocket::disconnected, this, [=]()->void{emit clientClosed();});
 	connect(tcpSocket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, [=](QAbstractSocket::SocketError socketError) -> void {emit errorInClient(socketError);});
-	//connect(tcpSocket, QAbstractSocket::errorOccurred, this, [=](QAbstractSocket::SocketError socketError) -> void {emit errorInClient(socketError);});
+    //connect(tcpSocket, QAbstractSocket::errorOccurred, this, [=](QAbstractSocket::SocketError socketError) -> void {emit errorInClient(socketError);}); TODO war das wichtig?
 
 	tcpSocket->connectToHost(serverAddress, serverPort);
 }
