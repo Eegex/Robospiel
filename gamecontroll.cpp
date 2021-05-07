@@ -46,6 +46,7 @@ QJsonObject GameControll::toJSON() //TODO make sure the replaced Objects don't g
 	json.insert("searchTime", instance.searchTime);
 	json.insert("remainingTimerTime", instance.countdown.remainingTime());
 	json.insert("timeLeft", instance.timeLeft);
+    json.insert("skipCounter", instance.skipCounter);
 	QJsonArray jsonUsers;
 	for(User * user : qAsConst(instance.users))
 	{
@@ -78,6 +79,7 @@ void GameControll::adaptFromJSON(QJsonObject json)
 	instance.searchTime = json.value("searchTime").toInt();
 	instance.timeLeft = json.value("timeLeft").toInt();
 	instance.countdown.stop();
+    instance.skipCounter=json.value("skipCounter").toInt();
 	if(json.value("remainingTimerTime").toInt()!=-1)
 	{
 		QTimer::singleShot(json.value("remainingTimerTime").toInt(), &instance, [=]()->void{
@@ -204,7 +206,7 @@ Board * GameControll::setBoard(Board* newBoard)
  * @brief GameControll::exeQTAction executes different actions, because they were send by the server / triggered directly when you are offline
  * @param data
  */
-void GameControll::exeQTAction(QJsonObject data) //NOTE maybe the bool return was needed?
+void GameControll::exeQTAction(QJsonObject data)
 {
 	qDebug() << "GameControll::exeQTAction(QJsonObject " << data << ")";
 	PlayerAction a = static_cast<PlayerAction>(data.take("action").toInt());
@@ -257,7 +259,12 @@ void GameControll::exeQTAction(QJsonObject data) //NOTE maybe the bool return wa
 		updateRandomGenerator(data.value("Seed").toInt());
 		break;
 	case skipTimer:
-		endTimer();
+        skipCounter++;
+        emit updateSkip(skipCounter, users.length());
+        if(skipCounter==users.length())
+        {
+            endTimer();
+        }
 		break;
 	}
 }
@@ -272,7 +279,7 @@ void GameControll::triggerAction(PlayerAction action)
 	qDebug()<<"Called function TriggerAction with parameters "<<action;
 	if(instance.localUserIsActiveUser() && action & PlayerAction::movement)
 	{
-		if(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay) //If online only let the active user move
+        if((instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay)) //If online only let the active user move
 		{
 			emit instance.actionTriggered(action);
 			return;
@@ -416,7 +423,7 @@ void GameControll::resetForNextUser()
 	qDebug()<<"Acquiring next User";
 	User* user = getNextUser(activeUserID); //Liste ist bereits sortiert (siehe oben), daher ist der nächste User in der Liste der User mit dem nächsthöheren Bidding
 	Q_ASSERT_X(user,"GameControll::resetForNextUser","User is nullptr");
-	showGuide({ tr("Present your solution, ") + user->getName() + "[]",tr("Your turn, ") + user->getName() + "[]" });
+    showGuide({ tr("Present your solution, ") + user->getName() + "[]",tr("Your turn, ") + user->getName() + "[]" });
 	setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
 	getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
 	qDebug()<<"Active User is now "<<user->getName();
@@ -440,7 +447,7 @@ int GameControll::getUserIndexById(QUuid id)
  * @return
  * @warning works ONLY if the users are sorted by bidding before the method call
  */
-User* GameControll::getNextUser(QUuid lastUserId)
+User* GameControll::getNextUser(QUuid lastUserId) //TODO fix leaving clients
 {
 	for(int i=0; i<users.size(); i++)
 	{
@@ -452,12 +459,10 @@ User* GameControll::getNextUser(QUuid lastUserId)
 			}
 			else
 			{
-				Q_ASSERT_X(false,"GameControll::getNextUser","lastUserId was last User in list");
 				return nullptr;
 			}
 		}
 	}
-	Q_ASSERT_X(false,"GameControll::getNextUser","User not found");
 	return nullptr;
 }
 

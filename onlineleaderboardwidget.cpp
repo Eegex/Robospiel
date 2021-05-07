@@ -20,6 +20,7 @@ void OnlineLeaderboardWidget::initialize()
 	tableView->setSortingEnabled(true);
 	connect(bidBtn,&QPushButton::clicked, this, &OnlineLeaderboardWidget::btnPressed);
 	//connect(this, &OnlineLeaderboardWidget::updateLayout, tableView, &QTableWidget::clearContents);
+    connect(biddingBox,&QSpinBox::editingFinished, this,  &OnlineLeaderboardWidget::btnPressed);
 }
 
 User * OnlineLeaderboardWidget::getLocalUser() const
