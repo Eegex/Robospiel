@@ -110,7 +110,7 @@ void TableModel::addUser(User *newUser)
 
 User * TableModel::findUser(QUuid id)
 {
-	for(User * u:user)
+	for(User * u:qAsConst(user))
 	{
 		if(u->getId() == id)
 		{
