@@ -222,7 +222,7 @@ void GameControll::exeQTAction(QJsonObject data) //NOTE maybe the bool return wa
 	case switchPlayerNorth:
 	case switchPlayerSouth:
 	case switchPlayerWest:
-		board->switchPlayer(static_cast<Direction>(a-PlayerAction::playerSwitch));
+		board->switchPlayer(static_cast<Direction>(a - PlayerAction::playerSwitch));
 		break;
 	case playerSwitch:
 		board->changeActivePlayer(data.value("playerNumber").toInt(), data.value("isRevert").toBool());
@@ -252,6 +252,9 @@ void GameControll::exeQTAction(QJsonObject data) //NOTE maybe the bool return wa
 		break;
 	case setIdle:
 		switchPhase(Phase::idle);
+		break;
+	case syncRandomGenerators:
+		updateRandomGenerator(data.value("Seed").toInt());
 		break;
 	}
 }
@@ -390,6 +393,19 @@ bool GameControll::localUserIsActiveUser()
 		return activeUserID == static_cast<OnlineLeaderboardWidget*>(leaderboard)->getLocalUser()->getId();
 	}
 	return true;
+}
+
+void GameControll::updateRandomGenerator(int seed)
+{
+	if(instance.r)
+	{
+		delete instance.r;
+	}
+	instance.r = new QRandomGenerator(seed);
+	if(instance.board)
+	{
+		instance.board->updateRandomGenerator(seed + 1);
+	}
 }
 
 void GameControll::resetForNextUser()
@@ -657,7 +673,7 @@ void GameControll::nextTarget()
 	{
 		sortBy(points);
 		//reset all biddings
-		for(User* u: users)
+		for(User* u: qAsConst(users))
 		{
 			u->hasBid = false;
 			u->setBidding(MAX_BID);

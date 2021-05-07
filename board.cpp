@@ -506,11 +506,13 @@ void Board::placeGoalInCorner()
 	{
 		placeGoalAwayFromSeeker();
 		noCorner = !isTileCorner(goal);
-		count ++;
-		if(count > 1000){
+		count++;
+		if(count > 1000)
+		{
 			//find a corner
 			Tile*  tile;
-			while(noCorner){
+			while(noCorner)
+			{
 				tile = getRandomTile();
 				noCorner = !isTileCorner(tile);
 			}
@@ -518,7 +520,8 @@ void Board::placeGoalInCorner()
 			goal = tile;
 			//move the player that's in that corner
 			int playerNum = tile->getPlayer();
-			if (playerNum != -1){
+			if (playerNum != -1)
+			{
 				setPlayerOnTile(playerNum, getRandomUnoccupiedTile());
 				//emit boardChanged();
 				emit playerMoved(playerNum, -1);
@@ -562,13 +565,13 @@ void Board::placeGoalAwayFromSeeker()
 	bool inRowOrColWithSeeker = true;
 	while(inRowOrColWithSeeker)
 	{
-
 		goal = getRandomUnoccupiedTile();
-		if(goal==nullptr){
+		if(goal==nullptr)
+		{
 			goal = getRandomUnoccupiedTile();
 		}
 		if(!(goal->getPosition().rx() == players.at(seeker)->getPosition().rx()) &&
-				!(goal->getPosition().ry() == players.at(seeker)->getPosition().ry())    )
+		   !(goal->getPosition().ry() == players.at(seeker)->getPosition().ry()))
 		{
 			inRowOrColWithSeeker = false;
 		}
@@ -842,7 +845,7 @@ int Board::switchPlayer(Direction d)
 	float minFit = largestPossibleFittingScore;
 	Tile * min = nullptr;
 
-	for(Tile * t:players)
+	for(Tile * t:qAsConst(players))
 	{
 		if(t->getPlayer() != activePlayer)
 		{
@@ -930,7 +933,14 @@ void Board::resetMoves()
 	qDebug()<<"Moves:"<<moves;
 }
 
-
+void Board::updateRandomGenerator(int seed)
+{
+	if(r)
+	{
+		delete r;
+	}
+	r = new QRandomGenerator(seed);
+}
 
 
 
