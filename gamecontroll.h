@@ -61,7 +61,7 @@ public:
 	static functionPointer getActionWhenAnimationEnded();
 	static void setActionWhenAnimationEnded(functionPointer function);
 	static void addDefaultUsers();
-	void triggerAction(PlayerAction action);
+	static void triggerAction(PlayerAction action);
 
 public slots:
 	void calculateWinner();

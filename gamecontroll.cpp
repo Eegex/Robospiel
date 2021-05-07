@@ -256,6 +256,9 @@ void GameControll::exeQTAction(QJsonObject data) //NOTE maybe the bool return wa
 	case syncRandomGenerators:
 		updateRandomGenerator(data.value("Seed").toInt());
 		break;
+	case skipTimer:
+		endTimer();
+		break;
 	}
 }
 
@@ -267,7 +270,7 @@ void GameControll::exeQTAction(QJsonObject data) //NOTE maybe the bool return wa
 void GameControll::triggerAction(PlayerAction action)
 {
 	qDebug()<<"Called function TriggerAction with parameters "<<action;
-	if(localUserIsActiveUser() && action & PlayerAction::movement)
+	if(instance.localUserIsActiveUser() && action & PlayerAction::movement)
 	{
 		if(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay) //If online only let the active user move
 		{
@@ -275,7 +278,7 @@ void GameControll::triggerAction(PlayerAction action)
 			return;
 		}
 	}
-	else if(localUserIsActiveUser() && action & PlayerAction::playerSwitch && (instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay))
+	else if(instance.localUserIsActiveUser() && action & PlayerAction::playerSwitch && (instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay))
 	{
 		if(action != PlayerAction::playerSwitch)
 		{
@@ -441,9 +444,9 @@ User* GameControll::getNextUser(QUuid lastUserId)
 {
 	for(int i=0; i<users.size(); i++)
 	{
-		if(users.at(i)->getId()==lastUserId)
+		if(users.at(i)->getId() == lastUserId)
 		{
-			if(i+1<users.size())
+			if(i+1<users.size() && users.at(i+1)->hasBid)
 			{
 				return users.at(i+1);
 			}
@@ -798,7 +801,11 @@ void GameControll::updateTimer()
 	emit time(timeLeft);
 }
 
-void GameControll::endTimer(){
+/**
+ * @brief GameControll::endTimer skips timer
+ */
+void GameControll::endTimer()
+{
 	if(instance.currentPhase == Phase::countdown)
 	{
 		emit instance.time(0);
@@ -809,7 +816,6 @@ void GameControll::endTimer(){
 	{
 		qDebug() << "tried to end timer that wasn't running";
 	}
-
 }
 
 SettingsDialog * GameControll::getSettingsDialog()

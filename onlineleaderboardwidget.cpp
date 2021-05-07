@@ -7,7 +7,8 @@ OnlineLeaderboardWidget::OnlineLeaderboardWidget()
 
 }
 
-void OnlineLeaderboardWidget::initialize() {
+void OnlineLeaderboardWidget::initialize()
+{
 	bidBtn->hide();
 	lname->hide();
 	biddingBox->hide();
@@ -137,6 +138,14 @@ void OnlineLeaderboardWidget::addUser(User *u)
 {
 	qDebug() << "OnlineLeaderboardWidget::addUser(User *" << u->getName() << u->getId() << ")";
 	model->addUser(u);
+	connect(u,&User::biddingChanged,this,[&](QUuid id, int bid)
+	{
+		model->update();
+		if(id == localUser->getId())
+		{
+			biddingBox->setMaximum(std::min(bid,99));
+		}
+	});
 }
 
 void OnlineLeaderboardWidget::deactivateInput()

@@ -5,7 +5,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 {
 	GameControll::initializeConnections();
 	glMain = new QGridLayout(this);
-    userView = new UserView(this);
+	userView = new UserView(this);
 	//GameControll::setLeaderboard(userView->getLeaderboard());
 	skipBtn = new QPushButton("Skip", this);
 	initializeView(GameControll::setBoard(new Board(16, 16, 5)), GameControll::getMapping());
@@ -23,7 +23,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	glMain->addWidget(dlGuide,0,0,1,2,Qt::AlignHCenter);
 	glMain->addWidget(view,1,0,4,1,Qt::AlignCenter);
 	glMain->addWidget(lcd,1,1,Qt::AlignCenter);
-    glMain->addWidget(userView,3,1,2,1,Qt::AlignCenter);
+	glMain->addWidget(userView,3,1,2,1,Qt::AlignCenter);
 	connect(&GameControll::getInstance(),&GameControll::time,this,&MainWidget::updateTimer);
 	connect(&GameControll::getInstance(),&GameControll::updateGuide,this,&MainWidget::updateGuide);
 	connect(&GameControll::getInstance(), &GameControll::newBoard, this, [=](Board* newBoard)
@@ -33,7 +33,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	adjustSize();
 	glMain->addWidget(skipBtn,2,1,Qt::AlignCenter);
 	skipBtn->setEnabled(false);
-	connect(skipBtn, &QPushButton::released, &GameControll::getInstance(), &GameControll::endTimer);
+	connect(skipBtn, &QPushButton::released, this, [&](){GameControll::triggerAction(PlayerAction::skipTimer);});
 }
 
 void MainWidget::setMenuBar(QMenuBar * bar)
@@ -117,16 +117,16 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	bar->addAction(aGoToIdle);
 
 #endif
-    connect(aEditBoard,&QAction::triggered,this,[=]()->void{
-        GameControll::getInstance().triggerAction(PlayerAction::editBoard);
-        editBoard();
-    });
-    connect(aNextTarget,&QAction::triggered,this, [=]()->void{
-        GameControll::getInstance().triggerAction(PlayerAction::nextTarget);
-    });
-    connect(aGoToIdle, &QAction::triggered, &GameControll::getInstance(), [=]()->void{
-        GameControll::getInstance().triggerAction(PlayerAction::setIdle);
-    });
+	connect(aEditBoard,&QAction::triggered,this,[=]()->void{
+		GameControll::getInstance().triggerAction(PlayerAction::editBoard);
+		editBoard();
+	});
+	connect(aNextTarget,&QAction::triggered,this, [=]()->void{
+		GameControll::getInstance().triggerAction(PlayerAction::nextTarget);
+	});
+	connect(aGoToIdle, &QAction::triggered, &GameControll::getInstance(), [=]()->void{
+		GameControll::getInstance().triggerAction(PlayerAction::setIdle);
+	});
 	connect(&GameControll::getInstance(), &GameControll::enableMenus, this, &MainWidget::enableMenus);
 	connect(&GameControll::getInstance(), &GameControll::enableTimerSkip, this, &MainWidget::enableTimerSkip);
 	connect(sbWidth, SIGNAL(valueChanged(int)), this, SLOT(updatePlayerMaximum(int)));
@@ -239,13 +239,13 @@ void MainWidget::initializeView(Board* b, QVector<KeyMapping*>* m)
 	view->setBoard(b);
 	view->setMapping(m);
 	connectView(view);
-    connect(view, &BoardView::animationEnded, &GameControll::getInstance(), [=]()->void{
-        if(GameControll::getActionWhenAnimationEnded())
-        {
-            (GameControll::getInstance().*GameControll::getActionWhenAnimationEnded())();
-            GameControll::setActionWhenAnimationEnded(nullptr);
-        }
-    });
+	connect(view, &BoardView::animationEnded, &GameControll::getInstance(), [=]()->void{
+		if(GameControll::getActionWhenAnimationEnded())
+		{
+			(GameControll::getInstance().*GameControll::getActionWhenAnimationEnded())();
+			GameControll::setActionWhenAnimationEnded(nullptr);
+		}
+	});
 	connect(view,&BoardView::action,&GameControll::getInstance(),&GameControll::triggerAction);
 	connect(view,&BoardView::activePlayerChanged,&GameControll::getInstance(),[=](int playerNumber)->void
 	{
