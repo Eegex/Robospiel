@@ -1,5 +1,4 @@
 #include "gamecontroll.h"
-
 #include "server.h"
 #include "client.h"
 #include "user.h"
@@ -26,8 +25,10 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 	r = new QRandomGenerator(QTime::currentTime().msecsSinceStartOfDay());
 }
 
-//This relies on Server and Client singletons.
-//Initialization of static variables can happen in random order, so this has to wait, until all static variables are present.
+/**
+ * @brief GameControll::initializeConnections relies on Server and Client singletons.
+ * Initialization of static variables can happen in random order, so this has to wait, until all static variables are present.
+ */
 void GameControll::initializeConnections()
 {
 	connect(&Server::getInstance(), &Server::actionReceived, &GameControll::getInstance(), &GameControll::exeQTAction);
@@ -36,7 +37,7 @@ void GameControll::initializeConnections()
 
 QJsonObject GameControll::toJSON() //TODO make sure the replaced Objects don't get lost
 {
-    //TODO add guideTimer, r, guideList?
+	//TODO add guideTimer, r, guideList?
 	QJsonObject json = QJsonObject();
 	json.insert("currentPhase", static_cast<int>(instance.currentPhase));
 	json.insert("board", instance.board->toBinary());
@@ -51,20 +52,20 @@ QJsonObject GameControll::toJSON() //TODO make sure the replaced Objects don't g
 	}
 	json.insert("users", jsonUsers);
 
-    int actionWhenAnimationEndedAsInt=0;
-    if(instance.actionWhenAnimationEnded==&GameControll::calculateWinner)
-    {
-        actionWhenAnimationEndedAsInt=1;
-    }
-    if(instance.actionWhenAnimationEnded==&GameControll::resetForNextUser)
-    {
-        actionWhenAnimationEndedAsInt=2;
-    }
-    if(instance.actionWhenAnimationEnded==&GameControll::resetAndNextTarget)
-    {
-        actionWhenAnimationEndedAsInt=3;
-    }
-    json.insert("actionWhenAnimationEndedAsInt", actionWhenAnimationEndedAsInt);
+	int actionWhenAnimationEndedAsInt=0;
+	if(instance.actionWhenAnimationEnded==&GameControll::calculateWinner)
+	{
+		actionWhenAnimationEndedAsInt=1;
+	}
+	if(instance.actionWhenAnimationEnded==&GameControll::resetForNextUser)
+	{
+		actionWhenAnimationEndedAsInt=2;
+	}
+	if(instance.actionWhenAnimationEnded==&GameControll::resetAndNextTarget)
+	{
+		actionWhenAnimationEndedAsInt=3;
+	}
+	json.insert("actionWhenAnimationEndedAsInt", actionWhenAnimationEndedAsInt);
 	return json;
 }
 
@@ -81,35 +82,39 @@ void GameControll::adaptFromJSON(QJsonObject json)
 		QTimer::singleShot(json.value("remainingTimerTime").toInt(), &instance, [=]()->void{
 			instance.countdown.start();
 		});
-
 	}
 	instance.users.clear();
 	QJsonArray jsonUsers = json.value("users").toArray();
 	for(int i=0; i<jsonUsers.size(); i++)
 	{
 		QJsonObject jsonUser = jsonUsers.at(i).toObject();
-		User* user = User::fromJSON(jsonUser);
+		User * user = User::fromJSON(jsonUser);
+		instance.users.append(user);
 		instance.leaderboard->addUser(user);
 	}
 
-    switch(json.value("actionWhenAnimationEndedAsInt").toInt())
-    {
-        case 0:
-            instance.actionWhenAnimationEnded=nullptr;
-            break;
-        case 1:
-            instance.actionWhenAnimationEnded=&GameControll::calculateWinner;
-            break;
-        case 2:
-            instance.actionWhenAnimationEnded=&GameControll::resetForNextUser;
-            break;
-        case 3:
-            instance.actionWhenAnimationEnded=&GameControll::resetAndNextTarget;
-            break;
-    }
+	switch(json.value("actionWhenAnimationEndedAsInt").toInt())
+	{
+		case 0:
+			instance.actionWhenAnimationEnded=nullptr;
+			break;
+		case 1:
+			instance.actionWhenAnimationEnded=&GameControll::calculateWinner;
+			break;
+		case 2:
+			instance.actionWhenAnimationEnded=&GameControll::resetForNextUser;
+			break;
+		case 3:
+			instance.actionWhenAnimationEnded=&GameControll::resetAndNextTarget;
+			break;
+	}
 }
 
-//forwards the message to all clients / triggers the action directly when you are offline
+/**
+ * @brief GameControll::sendToServerWithData forwards the message to all clients / triggers the action directly when you are offline
+ * @param a Playeraction
+ * @param info JSON Object
+ */
 void GameControll::sendToServerWithData(PlayerAction a, QJsonObject info)
 {
 	qDebug()<<"Send to server with data"<<a<<info;
@@ -131,7 +136,10 @@ void GameControll::sendToServerWithData(PlayerAction a, QJsonObject info)
 	}
 }
 
-//forwards the message to all clients / triggers the action directly when you are offline
+/**
+ * @brief GameControll::sendToServer forwards the message to all clients / triggers the action directly when you are offline
+ * @param a Playeraction to forward to clients
+ */
 void GameControll::sendToServer(PlayerAction a)
 {
 	qDebug()<<"Send to server"<<a;
@@ -191,7 +199,10 @@ Board * GameControll::setBoard(Board* newBoard)
 	return instance.board;
 }
 
-// executes different actions, because they were send by the server / triggered directly when you are offline
+/**
+ * @brief GameControll::exeQTAction executes different actions, because they were send by the server / triggered directly when you are offline
+ * @param data
+ */
 void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return was needed?
 {
 	qDebug() << "GameControll::exeQTAction(QJsonObject " << data << ")";
@@ -231,25 +242,27 @@ void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return wa
 			break;
 		case completeUpdate:
 			adaptFromJSON(data);
-            break;
-    case editBoard:
-        //disableBoard();//TODO
-        break;
-    case PlayerAction::nextTarget:
-        nextTarget();
-        break;
-    case setIdle:
-        switchPhase(Phase::idle);
-        break;
+			break;
+	case editBoard:
+		//disableBoard();//TODO
+		break;
+	case PlayerAction::nextTarget:
+		nextTarget();
+		break;
+	case setIdle:
+		switchPhase(Phase::idle);
+		break;
 	}
 }
 
-//
-//Don't write actual functionality here! It only sends the actions to the server. Functionality is in exeQTdata()!!!
-//
+/**
+ * @brief GameControll::triggerAction
+ * @param action
+ * @warning Don't write actual functionality here! It only sends the actions to the server. Functionality is in exeQTdata()!!!
+ */
 void GameControll::triggerAction(PlayerAction action)
 {
-    qDebug()<<"Called function TriggerAction with parameters "<<action;
+	qDebug()<<"Called function TriggerAction with parameters "<<action;
 	if(action & PlayerAction::movement)
 	{
 		if(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay) //If online only let the active user move
@@ -286,11 +299,11 @@ void GameControll::triggerAction(PlayerAction action)
 			return;
 		}
 	}
-    else if(action & PlayerAction::menuAction)
-    {
-        emit instance.actionTriggered(action);
-        return;
-    }
+	else if(action & PlayerAction::menuAction)
+	{
+		emit instance.actionTriggered(action);
+		return;
+	}
 	return;
 }
 
@@ -326,7 +339,9 @@ void GameControll::triggerActionWithData(PlayerAction action, QJsonObject data)
 	//}
 }
 
-//called after each movement of a player (and when reverting, ...)
+/**
+ * @brief GameControll::calculateGameStatus called after each movement of a player (and when reverting, ...)
+ */
 void GameControll::calculateGameStatus()
 {
 
@@ -369,6 +384,7 @@ void GameControll::resetForNextUser()
 {
 	qDebug()<<"Acquiring next User";
 	User* user = getNextUser(activeUserID); //Liste ist bereits sortiert (siehe oben), daher ist der nächste User in der Liste der User mit dem nächsthöheren Bidding
+	Q_ASSERT_X(user,"GameControll::resetForNextUser","User is nullptr");
 	setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
 	getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
 	qDebug()<<"Active User is now "<<user->getName();
@@ -386,7 +402,12 @@ int GameControll::getUserIndexById(QUuid id)
 	return -1;
 }
 
-//works ONLY if the users are sorted by bidding before the method call
+/**
+ * @brief GameControll::getNextUser
+ * @param lastUserId
+ * @return
+ * @warning works ONLY if the users are sorted by bidding before the method call
+ */
 User* GameControll::getNextUser(QUuid lastUserId)
 {
 	for(int i=0; i<users.size(); i++)
@@ -399,10 +420,12 @@ User* GameControll::getNextUser(QUuid lastUserId)
 			}
 			else
 			{
+				Q_ASSERT_X(false,"GameControll::getNextUser","lastUserId was last User in list");
 				return nullptr;
 			}
 		}
 	}
+	Q_ASSERT_X(false,"GameControll::getNextUser","User not found");
 	return nullptr;
 }
 
@@ -489,9 +512,13 @@ void GameControll::sortBy(strategy strategy)
 	leaderboard->updateAllUsers();
 }
 
-//called by exeQTActionWithData when the action is newUser
+/**
+ * @brief GameControll::addUser called by exeQTActionWithData when the action is newUser
+ * @param user
+ */
 void GameControll::addUser(User* user)
 {
+	qDebug() << "GameControll::addUser(User* " << user->getId() << ")";
 	bool b = false;
 	for(User * u: qAsConst(instance.users))
 	{
@@ -507,14 +534,17 @@ void GameControll::addUser(User* user)
 	}
 }
 
-void GameControll::calculateWinner() //This function is being called when the first player has reached their goal
+/**
+ * @brief GameControll::calculateWinner This function is being called when the first player has reached their goal
+ */
+void GameControll::calculateWinner()
 {
 	QUuid activeUserId = getActiveUserID();
 	User* activeUser = getUserById(activeUserId);
 	nextTarget(); //Generate a new target, this should reset the current LeaderBoardWidget
 	activeUser->incrementPoints();
 	const QString username = activeUser->getName();
-    qDebug()<<"User "<<username<<" has successfully ended the round with "<<board->getMoves()<<" moves, their current points are "<<activeUser->getPoints()<<". \nI think the move counter is already reset for the next round at this point...";
+	qDebug()<<"User "<<username<<" has successfully ended the round with "<<board->getMoves()<<" moves, their current points are "<<activeUser->getPoints()<<". \nI think the move counter is already reset for the next round at this point...";
 	showGuide({ tr("Goal has been hit by %1").arg(username) + "[]" });
 }
 
@@ -527,6 +557,7 @@ User* GameControll::getUserById(QUuid id)
 			return u;
 		}
 	}
+	Q_ASSERT_X(false,"GameControll::getUserById","User not found");
 	return nullptr;
 }
 
@@ -541,16 +572,13 @@ void GameControll::changeBidding(int bidding, QUuid id)
 			break;
 		}
 	}
+	Q_ASSERT_X(false,"GameControll::changeBidding","User not found");
 }
 
-void GameControll::changeOnlyBidding(int bidding) //TODO explain! What happens here? In contrast to changeBidding?
-{
-	qDebug()<<"changeOnly Bidding to"<<bidding;
-	users.at(0)->setBidding(bidding);
-	triggerActionWithData(PlayerAction::sendBidding, users.at(0)->toJSON());
-}
-
-// current user of the system is initialzed (only when server or client starts)
+/**
+ * @brief GameControll::initializeUser current user of the system is initialzed (only when server or client starts)
+ * @return
+ */
 User * GameControll::initializeUser()
 {
 	User* u = new User(instance.getSettingsDialog()->getUsername(), instance.getSettingsDialog()->getUsercolor());
@@ -633,7 +661,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	case Phase::idle:
 	{
 		currentPhase = phase;
-        showGuide({tr("boooring")+ "[]",tr("i am not creative")+ "[2000]" + tr("at all")+ "[2000]" + tr("fuck you") + "[]", tr("We are in idle now!")+ "[]", tr("Lets do some idling!")+ "[]", tr("Okay, so you aren't capable of dealing with a real mode, are you?")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Too dumb for a real game!")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Idle again? Are we ever going to PLAY?")+ "[2000]" +tr("We are in idle.")+ "[]"});
+		showGuide({tr("boooring")+ "[]",tr("i am not creative")+ "[2000]" + tr("at all")+ "[2000]" + tr("fuck you") + "[]", tr("We are in idle now!")+ "[]", tr("Lets do some idling!")+ "[]", tr("Okay, so you aren't capable of dealing with a real mode, are you?")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Too dumb for a real game!")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Idle again? Are we ever going to PLAY?")+ "[2000]" +tr("We are in idle.")+ "[]"});
 		emit enableMenus(true);
 		emit enableTimerSkip(false);
 		return true;
@@ -643,7 +671,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 		if(currentPhase != Phase::countdown)
 		{
 			currentPhase = phase;
-            showGuide({tr("Start bidding")+ "[]",tr("Let's go! Bid!")+ "[]", tr("You can bid now!")+ "[]",  tr("Lets do some bidding!")+ "[]", tr("I bet you wont find anything! But you can try to...")+ "[2000]" +tr("Make your biddings!")+ "[]", tr("Make your biddings! Well if you find anything...")+ "[]"});
+			showGuide({tr("Start bidding")+ "[]",tr("Let's go! Bid!")+ "[]", tr("You can bid now!")+ "[]",  tr("Lets do some bidding!")+ "[]", tr("I bet you wont find anything! But you can try to...")+ "[2000]" +tr("Make your biddings!")+ "[]", tr("Make your biddings! Well if you find anything...")+ "[]"});
 			emit enableMenus(false);
 			emit enableTimerSkip(false);
 			return true;
@@ -656,7 +684,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 			if(currentPhase == Phase::search)
 			{
 				currentPhase = phase;
-                showGuide({tr("Counting down")+ "[]", tr("Stressed yet? The Timer is running!")+ "[]", tr("You will never find anything in a minute!")+ "[]" });
+				showGuide({tr("Counting down")+ "[]", tr("Stressed yet? The Timer is running!")+ "[]", tr("You will never find anything in a minute!")+ "[]" });
 				timeLeft = searchTime; //60
 				emit time(timeLeft);
 				countdown.start();
@@ -685,7 +713,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 		if(currentPhase == Phase::presentation)
 		{
 			currentPhase = phase;
-            showGuide({tr("time to show off")+ "[]"});
+			showGuide({tr("time to show off")+ "[]"});
 			emit enableMenus(false);
 			emit enableTimerSkip(false);
 			return true;
@@ -768,7 +796,6 @@ bool GameControll::showTopBidding()
 	return instance.settings->getShowTopBidding();
 }
 
-
 void GameControll::addDefaultUsers()
 {
 	QJsonObject anna = QJsonObject();
@@ -837,6 +864,7 @@ GameControll::functionPointer GameControll::getActionWhenAnimationEnded()
 {
 	return instance.actionWhenAnimationEnded;
 }
+
 void GameControll::setActionWhenAnimationEnded(functionPointer function)
 {
 	instance.actionWhenAnimationEnded=function;
