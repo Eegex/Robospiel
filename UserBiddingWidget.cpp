@@ -73,7 +73,6 @@ void UserBiddingWidget::updateColour(QColor colour){
 
 void UserBiddingWidget::btnPressed()
 {
-	user->hasBid = true;
     emit biddingChanged(lSpinBox->value(), QDateTime::currentMSecsSinceEpoch(), user->getId());
 	qDebug()<<"Player "<<user->getName()<<" changed their bidding to: "<<lSpinBox->value();
 }

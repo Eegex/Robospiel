@@ -41,6 +41,7 @@ QJsonObject User::toJSON()
     json.insert("id", getId().toString());
     json.insert("bidding", getBidding());
     json.insert("points", getPoints());
+    json.insert("hasBid", hasBid);
 
     QString timeStampString = QString("%1").arg(getTimeStamp());
     json.insert("lastBiddingTime", timeStampString);
@@ -56,6 +57,7 @@ User* User::fromJSON(QJsonObject json)
     user->setBidding(json.value("bidding").toInt());
     user->points = json.value("points").toInt();
     user->timeStamp = json.value("lastBiddingTime").toString().toULong();
+    user->hasBid = json.value("hasBid").toBool();
     return user;
 }
 

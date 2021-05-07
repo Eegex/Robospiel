@@ -57,7 +57,6 @@ void OnlineLeaderboardWidget::btnPressed()
 	bidBtn->setText(tr("Bid: ")+QString::number(userBidding));
 	biddingBox->setFocus();
 	biddingBox->selectAll();
-	localUser->hasBid = true;
 	qDebug() << "Player changed their bidding to: " << userBidding;
 	emit biddingAccepted(localUser->getId(), userBidding);
 }
