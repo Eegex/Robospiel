@@ -720,15 +720,13 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	}
 	case Phase::countdown:
 	{
+		if(currentPhase == Phase::search)
 		{
-			if(currentPhase == Phase::search)
-			{
-				currentPhase = phase;
-				showGuide({tr("Counting down")+ "[]", tr("Stressed yet? The Timer is running!")+ "[]", tr("You will never find anything in a minute!")+ "[]" });
-				timeLeft = searchTime; //60
-				emit time(timeLeft);
-				countdown.start();
-			}
+			currentPhase = phase;
+			showGuide({tr("Counting down")+ "[]", tr("Stressed yet? The Timer is running!")+ "[]", tr("You will never find anything in a minute!")+ "[]" });
+			timeLeft = searchTime; //60
+			emit time(timeLeft);
+			countdown.start();
 			emit enableMenus(false);
 			emit enableTimerSkip(true);
 			return true;

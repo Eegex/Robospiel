@@ -25,16 +25,16 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	glMain->addWidget(lcd,1,1,Qt::AlignCenter);
 	glMain->addWidget(userView,3,1,2,1,Qt::AlignCenter);
 	connect(&GameControll::getInstance(),&GameControll::time,this,&MainWidget::updateTimer);
-    connect(&GameControll::getInstance(),&GameControll::updateSkip,this,[&](int current, int all){
-        if(current==0)
-        {
-            skipBtn->setText(tr("Skip"));
-        }
-        else
-        {
-            skipBtn->setText(tr("Skip (")+QString::number(current)+"/"+QString::number(all)+")");
-        }
-    });
+	connect(&GameControll::getInstance(),&GameControll::updateSkip,this,[&](int current, int all){
+		if(current==0)
+		{
+			skipBtn->setText(tr("Skip"));
+		}
+		else
+		{
+			skipBtn->setText(tr("Skip (")+QString::number(current)+"/"+QString::number(all)+")");
+		}
+	});
 	connect(&GameControll::getInstance(),&GameControll::updateGuide,this,&MainWidget::updateGuide);
 	connect(&GameControll::getInstance(), &GameControll::newBoard, this, [=](Board* newBoard)
 	{
@@ -42,10 +42,12 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	});
 	adjustSize();
 	glMain->addWidget(skipBtn,2,1,Qt::AlignCenter);
-	skipBtn->setEnabled(false);
-    connect(skipBtn, &QPushButton::released, this, [&](){
-        skipBtn->setDisabled(true);
-        GameControll::triggerAction(PlayerAction::skipTimer);});
+	skipBtn->setDisabled(true);
+	connect(skipBtn, &QPushButton::released, this, [&]()
+	{
+		skipBtn->setDisabled(true);
+		GameControll::triggerAction(PlayerAction::skipTimer);
+	});
 }
 
 void MainWidget::setMenuBar(QMenuBar * bar)
