@@ -32,7 +32,7 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
 				case 0:
 					return user.at(index.row())->getName();
 				case 1:
-					if(user.at(index.row())->getBidding() != 99) //TODO: warum geht hasBid nicht???
+					if(user.at(index.row())->hasBid)
 					{
 						return user.at(index.row())->getBidding();
 					}

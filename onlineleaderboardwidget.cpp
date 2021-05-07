@@ -18,6 +18,7 @@ void OnlineLeaderboardWidget::initialize()
 
 	tableView->setModel(model);
 	tableView->setSortingEnabled(true);
+	biddingBox->setSpecialValueText(tr("No Bid"));
 	connect(bidBtn,&QPushButton::clicked, this, &OnlineLeaderboardWidget::btnPressed);
 	connect(biddingBox,&QSpinBox::editingFinished, this,  &OnlineLeaderboardWidget::btnPressed);
 	//connect(this, &OnlineLeaderboardWidget::updateLayout, tableView, &QTableWidget::clearContents);
@@ -56,7 +57,7 @@ void OnlineLeaderboardWidget::btnPressed()
 	bidBtn->setText(tr("Bid: ")+QString::number(userBidding));
 	biddingBox->setFocus();
 	biddingBox->selectAll();
-	biddingBox->setSpecialValueText(tr("No Bid"));
+	localUser->hasBid = true;
 	qDebug() << "Player changed their bidding to: " << userBidding;
 	emit biddingAccepted(localUser->getId(), userBidding);
 }
