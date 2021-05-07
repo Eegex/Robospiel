@@ -686,6 +686,8 @@ void GameControll::nextTarget()
 			u->hasBid = false;
 			u->setBidding(MAX_BID);
 		}
+        skipCounter=0;
+        emit updateSkip(skipCounter, users.length());
 		leaderboard->activateInput();
 		board->startNewRound();
 	}

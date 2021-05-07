@@ -26,7 +26,14 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	glMain->addWidget(userView,3,1,2,1,Qt::AlignCenter);
 	connect(&GameControll::getInstance(),&GameControll::time,this,&MainWidget::updateTimer);
     connect(&GameControll::getInstance(),&GameControll::updateSkip,this,[&](int current, int all){
-        skipBtn->setText(QString::number(current)+"/"+QString::number(all));
+        if(current==0)
+        {
+            skipBtn->setText(tr("Skip"));
+        }
+        else
+        {
+            skipBtn->setText(tr("Skip (")+QString::number(current)+"/"+QString::number(all)+")");
+        }
     });
 	connect(&GameControll::getInstance(),&GameControll::updateGuide,this,&MainWidget::updateGuide);
 	connect(&GameControll::getInstance(), &GameControll::newBoard, this, [=](Board* newBoard)
