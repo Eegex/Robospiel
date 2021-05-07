@@ -203,7 +203,7 @@ Board * GameControll::setBoard(Board* newBoard)
  * @brief GameControll::exeQTAction executes different actions, because they were send by the server / triggered directly when you are offline
  * @param data
  */
-void GameControll::exeQTAction(QJsonObject data) //TODO maybe the bool return was needed?
+void GameControll::exeQTAction(QJsonObject data) //NOTE maybe the bool return was needed?
 {
 	qDebug() << "GameControll::exeQTAction(QJsonObject " << data << ")";
 	PlayerAction a = static_cast<PlayerAction>(data.take("action").toInt());
@@ -309,7 +309,9 @@ void GameControll::triggerAction(PlayerAction action)
 
 void GameControll::triggerActionWithData(PlayerAction action, QJsonObject data)
 {
-	if(action == PlayerAction::playerSwitch && !(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay)){ //make sure you can only click players in the right phases
+	qDebug() << "GameControll::triggerActionWithData(PlayerAction " << action << ", QJsonObject " << data << ")";
+	if(action == PlayerAction::playerSwitch && !(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay)) //make sure you can only click players in the right phases
+	{
 		return;
 	}
 	if(action == PlayerAction::sendBidding && !(instance.currentPhase == Phase::search || instance.currentPhase == Phase::countdown))
@@ -518,7 +520,7 @@ void GameControll::sortBy(strategy strategy)
  */
 void GameControll::addUser(User* user)
 {
-	qDebug() << "GameControll::addUser(User* " << user->getId() << ")";
+	qDebug() << "GameControll::addUser(User* " << user->getId() << ")" << "(" + user->getName() +")";
 	bool b = false;
 	for(User * u: qAsConst(instance.users))
 	{
@@ -603,6 +605,7 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
 	});
 	connect(instance.leaderboard, &LeaderBoardWidget::biddingAccepted, &GameControll::getInstance(), [=](QUuid userId, int bidding)
 	{
+		qDebug() << "hello there";
 		QJsonObject json;
 		json.insert("userId", userId.toString());
 		json.insert("bidding", bidding);

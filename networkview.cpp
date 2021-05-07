@@ -61,7 +61,7 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 	QNetworkAccessManager * ipSearcher = new QNetworkAccessManager(this);
 	connect(ipSearcher,&QNetworkAccessManager::finished,this,[=](QNetworkReply * reply)
 	{
-		leServerAddress->setText(reply->readAll());
+		leServerAddress->setText("acqcke5skvirioi1.myfritz.net"/*reply->readAll()*/);
 		reply->deleteLater();
 		ipSearcher->deleteLater();
 	});

@@ -270,7 +270,6 @@ QSize Board::getSize()
 	return QSize(tiles.first().size(),tiles.size());
 }
 
-
 Tile* Board::getRandomTile()
 {
 
@@ -433,7 +432,6 @@ EXAMPLE: |_  this innerwall would be a south wall. _| this innerwall would be an
 A innerwall will only be placed if there is no wall that would connect to it (this includes walls that belong to the sides of the board).
 The method will return false if the wall couldn't be placed on the given Tile.
   **/
-
 bool Board::placeInnerWallifFits(Tile* tile, Direction direction)
 {
 
@@ -531,7 +529,6 @@ void Board::placeGoalInCorner()
 	return;
 }
 
-
 bool Board::isTileCorner(Tile* tile){
 
 	int numberOfWalls = 0;
@@ -599,10 +596,12 @@ QColor Board::getBackground() const
 {
 	return background;
 }
+
 QColor Board::getPlayerColorLow() const
 {
 	return playerLow;
 }
+
 QColor Board::getPlayerColorHigh() const
 {
 	return playerHigh;
@@ -796,11 +795,14 @@ void Board::updateColors(QColor b, QColor w, QColor g, QColor p1, QColor p2)
 	emit boardChanged();
 }
 
-// This method is called with a direction that indicates the way the gamer wants to switch the player.
-// We compute the angle each player has from the activePlayer (up would be 360/0 degrees, then it goes clockwise)
-// As well as the distance each playe has from the active one
-// From these two values a Fittingscore is computed and the player with the SMALLEST one is chosen as the next active player
-
+/**
+ * @brief Board::switchPlayer This method is called with a direction that indicates the way the gamer wants to switch the player.
+ * @param d search Direction
+ * @return id of next active Player
+ * We compute the angle each player has from the activePlayer (up would be 360/0 degrees, then it goes clockwise)
+ * As well as the distance each playe has from the active one
+ *  From these two values a Fittingscore is computed and the player with the SMALLEST one is chosen as the next active player
+ */
 int Board::switchPlayer(Direction d)
 {
 	qDebug() << "Board::switchPlayer(Direction d)" << printDirection(d);
