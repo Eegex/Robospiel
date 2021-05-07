@@ -45,9 +45,9 @@ public slots:
 	void updateAllUsers(); //TODO
 	void activateInput();
 signals:
-	 void biddingChangedOnline(int userBidding); // before
+	void biddingChangedOnline(int userBidding); // before
 	void userAdded(User* u); //TODO
-	void biddingAccepted(QUuid userId, int bidding); // before: biddingChangedOnline
+//	void biddingAccepted(QUuid userId, int bidding); // before: biddingChangedOnline
 };
 
 #endif // ONLINELEADERBOARDWIDGET_H

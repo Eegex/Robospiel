@@ -70,6 +70,7 @@ void OnlineLeaderboardWidget::updateBidding(QUuid id, int bidding)
 	}*/
 	 userBidding = bidding; // notwendig?
 	 emit biddingChangedOnline(userBidding);
+	 tableView->update();
 }
 
 void OnlineLeaderboardWidget::updateName(QUuid id, QString newName)
@@ -95,6 +96,7 @@ void OnlineLeaderboardWidget::updateName(QUuid id, QString newName)
 		lname->setText(newName);
 	}
 	lay->update();*/
+	tableView->update();
 }
 
 void OnlineLeaderboardWidget::updateColour(QUuid id, QColor color)
@@ -123,6 +125,7 @@ void OnlineLeaderboardWidget::updateColour(QUuid id, QColor color)
 		lname->setStyleSheet("color: "+color.name());
 	}
 	lay->update();*/
+	tableView->update();
 }
 
 void OnlineLeaderboardWidget::addUser(User *u)
@@ -151,5 +154,4 @@ void OnlineLeaderboardWidget::updateAllUsers()
 {
 	qDebug()<<"Called Function UpdateAllUsers in OnlineLeaderBoardWidget\n";
 	model->setUser(*GameControll::getInstance().getUsers());
-
 }
