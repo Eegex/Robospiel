@@ -5,6 +5,10 @@ TableModel::TableModel(QObject *parent):QAbstractTableModel(parent)
 
 }
 
+void TableModel::update()
+{
+	emit dataChanged(index(0,0),index(rowCount(QModelIndex()),columnCount(QModelIndex())));
+}
 
 int TableModel::rowCount(const QModelIndex &parent) const
 {

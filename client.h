@@ -11,31 +11,31 @@
 
 class Client : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    static Client& getInstance();
-    static void deleteInstance();
+	static Client& getInstance();
+	static void deleteInstance();
 
-    void startClient(QString serverAddress, int serverPort);
-    bool sendMessageToServer(QJsonObject data);
-    void closeClient();
-    bool isActive();
+	void startClient(QString serverAddress, int serverPort);
+	bool sendMessageToServer(QJsonObject data);
+	void closeClient();
+	static bool isActive();
 private:
-    Client(QObject *parent = nullptr);
-    ~Client();
-    static Client instance;
-    static QTcpSocket* tcpSocket;
-    static QDataStream streamFromServer;
+	Client(QObject *parent = nullptr);
+	~Client();
+	static Client instance;
+	static QTcpSocket* tcpSocket;
+	static QDataStream streamFromServer;
 
 signals:
-    void errorInClient(QAbstractSocket::SocketError socketError);
-    void clientIsStarting();
-    void clientStarted();
-    void clientClosed();
-    void actionReceived(QJsonObject data);
+	void errorInClient(QAbstractSocket::SocketError socketError);
+	void clientIsStarting();
+	void clientStarted();
+	void clientClosed();
+	void actionReceived(QJsonObject data);
 
 private slots:
-    void processMessageFromServer();
+	void processMessageFromServer();
 };
 
 #endif // CLIENT_H

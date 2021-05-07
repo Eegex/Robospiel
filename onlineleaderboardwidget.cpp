@@ -21,6 +21,11 @@ void OnlineLeaderboardWidget::initialize() {
 	//connect(this, &OnlineLeaderboardWidget::updateLayout, tableView, &QTableWidget::clearContents);
 }
 
+User * OnlineLeaderboardWidget::getLocalUser() const
+{
+	return localUser;
+}
+
 void OnlineLeaderboardWidget::setOnlineWidget()
 {
 	biddingBox->setMinimum(1);
@@ -68,15 +73,15 @@ void OnlineLeaderboardWidget::updateBidding(QUuid id, int bidding)
 			}
 		}
 	}*/
-	 userBidding = bidding; // notwendig?
-	 emit biddingChangedOnline(userBidding);
-	 tableView->update();
+	userBidding = bidding; // notwendig?
+	emit biddingChangedOnline(userBidding);
+	model->update();
 }
 
 void OnlineLeaderboardWidget::updateName(QUuid id, QString newName)
 {
 	qDebug() << "OnlineLeaderboardWidget::updateName(QUuid " << id << ", QString " << newName << ")";
-/*	User * tmpUser = findUser(id);
+	/*	User * tmpUser = findUser(id);
 	QString name = "";
 	if (tmpUser != nullptr)
 	{
@@ -96,13 +101,13 @@ void OnlineLeaderboardWidget::updateName(QUuid id, QString newName)
 		lname->setText(newName);
 	}
 	lay->update();*/
-	tableView->update();
+	model->update();
 }
 
 void OnlineLeaderboardWidget::updateColour(QUuid id, QColor color)
 {
 	qDebug() << "OnlineLeaderboardWidget::updateColour(QUuid " << id << ", QColor " << color << ")";
-/*	qDebug()<<"useronlinewidget updateColor to "<<color.name();
+	/*	qDebug()<<"useronlinewidget updateColor to "<<color.name();
 	User * tmpUser = findUser(id);
 	QString name = "";
 	if (tmpUser != nullptr)
@@ -125,7 +130,7 @@ void OnlineLeaderboardWidget::updateColour(QUuid id, QColor color)
 		lname->setStyleSheet("color: "+color.name());
 	}
 	lay->update();*/
-	tableView->update();
+	model->update();
 }
 
 void OnlineLeaderboardWidget::addUser(User *u)

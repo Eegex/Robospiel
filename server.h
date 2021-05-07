@@ -10,30 +10,30 @@
 
 class Server : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    static Server& getInstance();
-    static void deleteInstance();
+	static Server& getInstance();
+	static void deleteInstance();
 
-    void startServer(QString address, int port);
-    int sendMessageToClients(QJsonObject additionalData);
-    void closeServer();
-    bool isActive();
+	void startServer(QString address, int port);
+	int sendMessageToClients(QJsonObject additionalData);
+	void closeServer();
+	static bool isActive();
 private:
-    Server(QObject *parent = nullptr);
-    static Server instance;
-    static QTcpServer* server;
-    static QVector<ConnectionToClient*> connections;
+	Server(QObject *parent = nullptr);
+	static Server instance;
+	static QTcpServer* server;
+	static QVector<ConnectionToClient*> connections;
 signals:
-    void serverNotStarted();
-    void serverStarted(QHostAddress address, int port);
-    void clientsChanged(int clientCount);
-    void serverClosed();
-    void actionReceived(QJsonObject data);
+	void serverNotStarted();
+	void serverStarted(QHostAddress address, int port);
+	void clientsChanged(int clientCount);
+	void serverClosed();
+	void actionReceived(QJsonObject data);
 
 private slots:
-    void addClient();
-    int forwardMessageToClients(QString message);
+	void addClient();
+	int forwardMessageToClients(QString message);
 };
 
 #endif // SERVER_H

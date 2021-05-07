@@ -96,6 +96,7 @@ private:
 	int getUserIndexById(QUuid id);
 	void resetForNextUser();
 	void resetAndNextTarget();
+	bool localUserIsActiveUser();
 signals:
 	void actionTriggeredWithData(PlayerAction action, QJsonObject additionalData);
 	void actionTriggered(PlayerAction action);

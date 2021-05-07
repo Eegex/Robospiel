@@ -25,6 +25,8 @@ public:
 	// void updateUserList(); -> warum?
 	void setLocalUser(User *u);
 	void initialize();
+	User * getLocalUser() const;
+
 private:
 	QGridLayout * lay = new QGridLayout(this);
 	QPushButton * bidBtn = new QPushButton(this); //accept in biddingWidget

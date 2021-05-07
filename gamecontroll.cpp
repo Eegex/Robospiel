@@ -2,6 +2,7 @@
 #include "server.h"
 #include "client.h"
 #include "user.h"
+#include "onlineleaderboardwidget.h"
 #include <QJsonObject>
 #include <QUuid>
 #include <QUuid>
@@ -95,18 +96,18 @@ void GameControll::adaptFromJSON(QJsonObject json)
 
 	switch(json.value("actionWhenAnimationEndedAsInt").toInt())
 	{
-		case 0:
-			instance.actionWhenAnimationEnded=nullptr;
-			break;
-		case 1:
-			instance.actionWhenAnimationEnded=&GameControll::calculateWinner;
-			break;
-		case 2:
-			instance.actionWhenAnimationEnded=&GameControll::resetForNextUser;
-			break;
-		case 3:
-			instance.actionWhenAnimationEnded=&GameControll::resetAndNextTarget;
-			break;
+	case 0:
+		instance.actionWhenAnimationEnded=nullptr;
+		break;
+	case 1:
+		instance.actionWhenAnimationEnded=&GameControll::calculateWinner;
+		break;
+	case 2:
+		instance.actionWhenAnimationEnded=&GameControll::resetForNextUser;
+		break;
+	case 3:
+		instance.actionWhenAnimationEnded=&GameControll::resetAndNextTarget;
+		break;
 	}
 }
 
@@ -210,39 +211,39 @@ void GameControll::exeQTAction(QJsonObject data) //NOTE maybe the bool return wa
 	User* user;
 	switch(a)
 	{
-		case movePlayerEast:
-		case movePlayerNorth:
-		case movePlayerSouth:
-		case movePlayerWest:
-			//we subtract movement from action to get a direction (clever enum numbers)
-			board->moveActivePlayer(static_cast<Direction>(a - PlayerAction::movement));
-			break;
-		case switchPlayerEast:
-		case switchPlayerNorth:
-		case switchPlayerSouth:
-		case switchPlayerWest:
-			board->switchPlayer(static_cast<Direction>(a-PlayerAction::playerSwitch));
-			break;
-		case playerSwitch:
-			board->changeActivePlayer(data.value("playerNumber").toInt(), data.value("isRevert").toBool());
-			break;
-		case sendBidding:
-			switchPhase(Phase::countdown);
-			getUserById(QUuid(data.value("userId").toString()))->setBidding(data.value("bidding").toInt());
-			break;
-		case revert:
-			board->revert();
-			break;
-		case revertToBeginning:
-			board -> revertToBeginning();
-			break;
-		case newUser:
-			user = User::fromJSON(data);
-			addUser(user);
-			break;
-		case completeUpdate:
-			adaptFromJSON(data);
-			break;
+	case movePlayerEast:
+	case movePlayerNorth:
+	case movePlayerSouth:
+	case movePlayerWest:
+		//we subtract movement from action to get a direction (clever enum numbers)
+		board->moveActivePlayer(static_cast<Direction>(a - PlayerAction::movement));
+		break;
+	case switchPlayerEast:
+	case switchPlayerNorth:
+	case switchPlayerSouth:
+	case switchPlayerWest:
+		board->switchPlayer(static_cast<Direction>(a-PlayerAction::playerSwitch));
+		break;
+	case playerSwitch:
+		board->changeActivePlayer(data.value("playerNumber").toInt(), data.value("isRevert").toBool());
+		break;
+	case sendBidding:
+		switchPhase(Phase::countdown);
+		getUserById(QUuid(data.value("userId").toString()))->setBidding(data.value("bidding").toInt());
+		break;
+	case revert:
+		board->revert();
+		break;
+	case revertToBeginning:
+		board -> revertToBeginning();
+		break;
+	case newUser:
+		user = User::fromJSON(data);
+		addUser(user);
+		break;
+	case completeUpdate:
+		adaptFromJSON(data);
+		break;
 	case editBoard:
 		//disableBoard();//TODO
 		break;
@@ -263,7 +264,7 @@ void GameControll::exeQTAction(QJsonObject data) //NOTE maybe the bool return wa
 void GameControll::triggerAction(PlayerAction action)
 {
 	qDebug()<<"Called function TriggerAction with parameters "<<action;
-	if(action & PlayerAction::movement)
+	if(localUserIsActiveUser() && action & PlayerAction::movement)
 	{
 		if(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay) //If online only let the active user move
 		{
@@ -271,7 +272,7 @@ void GameControll::triggerAction(PlayerAction action)
 			return;
 		}
 	}
-		else if(action & PlayerAction::playerSwitch && (instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay))
+	else if(localUserIsActiveUser() && action & PlayerAction::playerSwitch && (instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay))
 	{
 		if(action != PlayerAction::playerSwitch)
 		{
@@ -350,11 +351,11 @@ void GameControll::calculateGameStatus()
 	qDebug()<<"Current Moves are: "<< board->getMoves()<<", User Bidding is "<<getUserById(activeUserID)->getBidding();
 	/*if(board->getMoves() < getUserById(activeUserID)->getBidding())
 	{*/
-		if(board->goalHit) //Spieler hat gewonnen, die Runde ist zuende
-		{
-			actionWhenAnimationEnded = &GameControll::calculateWinner;
-			qDebug()<<"actionWhenAnimationEnded = calculateWinner";
-		}
+	if(board->goalHit) //Spieler hat gewonnen, die Runde ist zuende
+	{
+		actionWhenAnimationEnded = &GameControll::calculateWinner;
+		qDebug()<<"actionWhenAnimationEnded = calculateWinner";
+	}
 	//}
 	else
 	{
@@ -382,11 +383,21 @@ void GameControll::resetAndNextTarget()
 	nextTarget();
 }
 
+bool GameControll::localUserIsActiveUser()
+{
+	if(Server::isActive() || Client::isActive())
+	{
+		return activeUserID == static_cast<OnlineLeaderboardWidget*>(leaderboard)->getLocalUser()->getId();
+	}
+	return true;
+}
+
 void GameControll::resetForNextUser()
 {
 	qDebug()<<"Acquiring next User";
 	User* user = getNextUser(activeUserID); //Liste ist bereits sortiert (siehe oben), daher ist der nächste User in der Liste der User mit dem nächsthöheren Bidding
 	Q_ASSERT_X(user,"GameControll::resetForNextUser","User is nullptr");
+	showGuide({ tr("Present your solution, ") + user->getName() + "[]",tr("Your turn, ") + user->getName() + "[]" });
 	setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
 	getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
 	qDebug()<<"Active User is now "<<user->getName();
@@ -614,8 +625,8 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
 
 	//alt
 	//TODO set username/color in localUser of onlineWidget
-//	connect(instance.settings, &SettingsDialog::usernameChanged, instance.leaderboard, &LeaderBoardWidget::setUsername);
-//	connect(instance.settings, &SettingsDialog::usercolorChanged, instance.leaderboard, &LeaderBoardWidget::setUsercolor);
+	//	connect(instance.settings, &SettingsDialog::usernameChanged, instance.leaderboard, &LeaderBoardWidget::setUsername);
+	//	connect(instance.settings, &SettingsDialog::usercolorChanged, instance.leaderboard, &LeaderBoardWidget::setUsercolor);
 }
 
 User * GameControll::getMinBid()
