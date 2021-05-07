@@ -518,7 +518,7 @@ void GameControll::sortBy(strategy strategy)
  */
 void GameControll::addUser(User* user)
 {
-	qDebug() << "GameControll::addUser(User* " << user->getId() << ")";
+	qDebug() << "GameControll::addUser(User* " << user->getId() << ")" << "(" + user->getName() +")";
 	bool b = false;
 	for(User * u: qAsConst(instance.users))
 	{

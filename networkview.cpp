@@ -43,6 +43,7 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 	serverContainer = new QWidget(this);
 	gridServer=new QGridLayout(serverContainer);
 	leServerAddress = new QLineEdit(serverContainer);
+	leServerAddress->setObjectName("Nervensäge");
 	leServerAddress->setPlaceholderText(tr("Server Address"));
 	leServerPort = new QLineEdit(serverContainer);
 	leServerPort->setPlaceholderText(tr("Server Port"));
@@ -160,14 +161,14 @@ NetworkView::~NetworkView()
 
 void NetworkView::toChoiceMenu()
 {
-    if(Server::getInstance().isActive())
-    {
-        Server::getInstance().closeServer();
-    }
-    if(Client::getInstance().isActive())
-    {
-        Client::getInstance().closeClient();
-    }
+	if(Server::getInstance().isActive())
+	{
+		Server::getInstance().closeServer();
+	}
+	if(Client::getInstance().isActive())
+	{
+		Client::getInstance().closeClient();
+	}
 
 	layout->removeWidget(serverContainer);
 	layout->removeWidget(clientContainer);
