@@ -19,8 +19,8 @@ void OnlineLeaderboardWidget::initialize()
 	tableView->setModel(model);
 	tableView->setSortingEnabled(true);
 	connect(bidBtn,&QPushButton::clicked, this, &OnlineLeaderboardWidget::btnPressed);
+	connect(biddingBox,&QSpinBox::editingFinished, this,  &OnlineLeaderboardWidget::btnPressed);
 	//connect(this, &OnlineLeaderboardWidget::updateLayout, tableView, &QTableWidget::clearContents);
-    connect(biddingBox,&QSpinBox::editingFinished, this,  &OnlineLeaderboardWidget::btnPressed);
 }
 
 User * OnlineLeaderboardWidget::getLocalUser() const
@@ -53,7 +53,10 @@ void OnlineLeaderboardWidget::setLocalUser(User *u)
 void OnlineLeaderboardWidget::btnPressed()
 {
 	biddingBox->setMaximum(userBidding = biddingBox->value());
-	bidBtn->setText("Bid: "+QString::number(userBidding));
+	bidBtn->setText(tr("Bid: ")+QString::number(userBidding));
+	biddingBox->setFocus();
+	biddingBox->selectAll();
+	biddingBox->setSpecialValueText(tr("No Bid"));
 	qDebug() << "Player changed their bidding to: " << userBidding;
 	emit biddingAccepted(localUser->getId(), userBidding);
 }
@@ -145,6 +148,11 @@ void OnlineLeaderboardWidget::addUser(User *u)
 		if(id == localUser->getId())
 		{
 			biddingBox->setMaximum(std::min(bid,99));
+			if(!localUser->hasBid)
+			{
+				bidBtn->setText(BID_BTN_TEXT);
+				biddingBox->setValue(1);
+			}
 		}
 	});
 }

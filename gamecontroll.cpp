@@ -46,7 +46,7 @@ QJsonObject GameControll::toJSON() //TODO make sure the replaced Objects don't g
 	json.insert("searchTime", instance.searchTime);
 	json.insert("remainingTimerTime", instance.countdown.remainingTime());
 	json.insert("timeLeft", instance.timeLeft);
-    json.insert("skipCounter", instance.skipCounter);
+	json.insert("skipCounter", instance.skipCounter);
 	QJsonArray jsonUsers;
 	for(User * user : qAsConst(instance.users))
 	{
@@ -79,7 +79,7 @@ void GameControll::adaptFromJSON(QJsonObject json)
 	instance.searchTime = json.value("searchTime").toInt();
 	instance.timeLeft = json.value("timeLeft").toInt();
 	instance.countdown.stop();
-    instance.skipCounter=json.value("skipCounter").toInt();
+	instance.skipCounter=json.value("skipCounter").toInt();
 	if(json.value("remainingTimerTime").toInt()!=-1)
 	{
 		QTimer::singleShot(json.value("remainingTimerTime").toInt(), &instance, [=]()->void{
@@ -259,12 +259,12 @@ void GameControll::exeQTAction(QJsonObject data)
 		updateRandomGenerator(data.value("Seed").toInt());
 		break;
 	case skipTimer:
-        skipCounter++;
-        emit updateSkip(skipCounter, users.length());
-        if(skipCounter==users.length())
-        {
-            endTimer();
-        }
+		skipCounter++;
+		emit updateSkip(skipCounter, users.length());
+		if(skipCounter==users.length())
+		{
+			endTimer();
+		}
 		break;
 	}
 }
@@ -279,15 +279,15 @@ void GameControll::triggerAction(PlayerAction action)
 	qDebug()<<"Called function TriggerAction with parameters "<<action;
 	if(instance.localUserIsActiveUser() && action & PlayerAction::movement)
 	{
-        if((instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay)) //If online only let the active user move
+		if((instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay)) //If online only let the active user move
 		{
 			emit instance.actionTriggered(action);
 			return;
 		}
 	}
-	else if(instance.localUserIsActiveUser() && action & PlayerAction::playerSwitch && (instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay))
+	else if(action & PlayerAction::playerSwitch && (instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay))
 	{
-		if(action != PlayerAction::playerSwitch)
+		if(instance.localUserIsActiveUser() && action != PlayerAction::playerSwitch)
 		{
 			QJsonObject json;
 			json.insert("isRevert", false);
@@ -423,7 +423,7 @@ void GameControll::resetForNextUser()
 	qDebug()<<"Acquiring next User";
 	User* user = getNextUser(activeUserID); //Liste ist bereits sortiert (siehe oben), daher ist der nächste User in der Liste der User mit dem nächsthöheren Bidding
 	Q_ASSERT_X(user,"GameControll::resetForNextUser","User is nullptr");
-    showGuide({ tr("Present your solution, ") + user->getName() + "[]",tr("Your turn, ") + user->getName() + "[]" });
+	showGuide({ tr("Present your solution, ") + user->getName() + "[]",tr("Your turn, ") + user->getName() + "[]" });
 	setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
 	getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
 	qDebug()<<"Active User is now "<<user->getName();
@@ -686,8 +686,8 @@ void GameControll::nextTarget()
 			u->hasBid = false;
 			u->setBidding(MAX_BID);
 		}
-        skipCounter=0;
-        emit updateSkip(skipCounter, users.length());
+		skipCounter=0;
+		emit updateSkip(skipCounter, users.length());
 		leaderboard->activateInput();
 		board->startNewRound();
 	}
