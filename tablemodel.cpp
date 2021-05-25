@@ -12,7 +12,7 @@ void TableModel::update()
 
 int TableModel::rowCount(const QModelIndex &parent) const
 {
-	return user.size();
+	return user->size();
 }
 
 int TableModel::columnCount(const QModelIndex &parent) const
@@ -28,26 +28,27 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
 		{
 			if(role == Qt::DisplayRole)
 			{
-				switch (index.column()) {
+				switch (index.column())
+				{
 				case 0:
-					return user.at(index.row())->getName();
+					return user->at(index.row())->getName();
 				case 1:
-					if(user.at(index.row())->hasBid)
+					if(user->at(index.row())->getHasBid())
 					{
-						return user.at(index.row())->getBidding();
+						return user->at(index.row())->getBidding();
 					}
 					return "-";
 				case 2:
-					return user.at(index.row())->getPoints();
-				}
-			} else if (role == Qt::ForegroundRole)
-			{
-				if (index.column() == 0)
-				{
-					return user.at(index.row())->getColor();
+					return user->at(index.row())->getPoints();
 				}
 			}
-
+			else if (role == Qt::ForegroundRole)
+			{
+				if(index.column() == 0)
+				{
+					return user->at(index.row())->getColor();
+				}
+			}
 		}
 	}
 	return QVariant();
@@ -83,17 +84,17 @@ void TableModel::sort(int column, Qt::SortOrder order)
 	{
 	case 0:
 	{
-		std::sort(user.begin(),user.end(),[&](const User * a, const User * b){ return n?(a->getName() > b->getName()):(a->getName() < b->getName()); });
+		std::sort(user->begin(),user->end(),[&](const User * a, const User * b){ return n?(a->getName() > b->getName()):(a->getName() < b->getName()); });
 		break;
 	}
 	case 1:
 	{
-		std::sort(user.begin(),user.end(),[&](const User * a, const User *b){ return n?(a->getBidding() > b->getBidding()) || (a->getBidding() == b->getBidding() && a->getTimeStamp() > b->getTimeStamp()):(a->getBidding() < b->getBidding()) || (a->getBidding() == b->getBidding() && a->getTimeStamp() < b->getTimeStamp()); });
+		std::sort(user->begin(),user->end(),[&](const User * a, const User *b){ return n?a < b:b < a; });
 		break;
 	}
 	case 2:
 	{
-		std::sort(user.begin(),user.end(),[&](const User * a, const User * b){ return n?(a->getPoints() > b->getPoints()):(a->getPoints() < b->getPoints()); });
+		std::sort(user->begin(),user->end(),[&](const User * a, const User * b){ return n?(a->getPoints() > b->getPoints()):(a->getPoints() < b->getPoints()); });
 		break;
 	}
 	default:
@@ -104,13 +105,13 @@ void TableModel::sort(int column, Qt::SortOrder order)
 
 void TableModel::addUser(User *newUser)
 {
-	user.append(newUser);
+	user->append(newUser);
 	emit layoutChanged();
 }
 
 User * TableModel::findUser(QUuid id)
 {
-	for(User * u:qAsConst(user))
+	for(User * u:*qAsConst(user))
 	{
 		if(u->getId() == id)
 		{
@@ -121,7 +122,7 @@ User * TableModel::findUser(QUuid id)
 	return nullptr;
 }
 
-void TableModel::setUser(QVector<User *> newUsers)
+void TableModel::setUser(QVector<User *> * newUsers)
 {
 	user = newUsers;
 	emit layoutChanged();

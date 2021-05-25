@@ -33,9 +33,9 @@ private:
 	QLabel * lname = new QLabel(this); //labelName in biddingWdiget
 	QSpinBox * biddingBox = new QSpinBox(this); //lSpinBox in biddingWidget
 	QTableView * tableView = new QTableView(this);
-	int userBidding = MAX_BID;
-	User * localUser;
-	TableModel *model = new TableModel(this);
+	int userBidding = User::maxBid;
+	User * localUser = nullptr;
+	TableModel * model = new TableModel(this);
 public slots:
 	void btnPressed();
 	// void setBidding(QUuid id, int bidding); // before

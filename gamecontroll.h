@@ -98,7 +98,7 @@ private:
 	void resetAndNextTarget();
 	bool localUserIsActiveUser();
 	static void updateRandomGenerator(int seed);
-    int skipCounter=0;
+	int skipCounter=0;
 signals:
 	void actionTriggeredWithData(PlayerAction action, QJsonObject additionalData);
 	void actionTriggered(PlayerAction action);
@@ -111,7 +111,7 @@ signals:
 	void enableMenus(bool boolean);
 	void enableTimerSkip(bool boolean);
 	void newBoard(Board* b);
-    void updateSkip(int current, int all);
+	void updateSkip(int current, int all);
 private slots:
 	void updateTimer();
 	bool switchPhase(GameControll::Phase phase);

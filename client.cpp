@@ -29,13 +29,14 @@ void Client::startClient(QString serverAddress, int serverPort)
 	connect(tcpSocket, &QAbstractSocket::connected, this, [=]()-> void{emit clientStarted();});
 	connect(tcpSocket, &QAbstractSocket::disconnected, this, [=]()->void{emit clientClosed();});
 	connect(tcpSocket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, [=](QAbstractSocket::SocketError socketError) -> void {emit errorInClient(socketError);});
-    //connect(tcpSocket, QAbstractSocket::errorOccurred, this, [=](QAbstractSocket::SocketError socketError) -> void {emit errorInClient(socketError);}); TODO war das wichtig?
+	//connect(tcpSocket, QAbstractSocket::errorOccurred, this, [=](QAbstractSocket::SocketError socketError) -> void {emit errorInClient(socketError);}); TODO war das wichtig?
 
 	tcpSocket->connectToHost(serverAddress, serverPort);
 }
 
 bool Client::sendMessageToServer(QJsonObject data)
 {
+	qDebug() << "Client::sendMessageToServer(QJsonObject " << data << ")";
 	//prepare the message
 	QJsonDocument document(data);
 	QString message = QString::fromUtf8(document.toJson());
@@ -54,20 +55,22 @@ bool Client::sendMessageToServer(QJsonObject data)
 
 void Client::processMessageFromServer()
 {
-    QString message;
-    streamFromServer.startTransaction();
-    streamFromServer >> message;
+	qDebug() << "Client::processMessageFromServer()";
+	QString message;
+	streamFromServer.startTransaction();
+	streamFromServer >> message;
 
-    if (!streamFromServer.commitTransaction())
-    {
-        return;
-    }
+	if (!streamFromServer.commitTransaction())
+	{
+		return;
+	}
 
-    QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
-    emit actionReceived(data);
+	QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
+	qDebug() << data;
+	emit actionReceived(data);
 
-    //process the next message, which might have be blocked by the current one, which was to long to be transmitted at once
-    processMessageFromServer();
+	//process the next message, which might have be blocked by the current one, which was to long to be transmitted at once
+	processMessageFromServer();
 }
 
 void Client::closeClient()

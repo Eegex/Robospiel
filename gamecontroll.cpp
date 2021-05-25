@@ -1,11 +1,10 @@
+#include <QJsonObject>
+#include <QUuid>
 #include "gamecontroll.h"
 #include "server.h"
 #include "client.h"
 #include "user.h"
 #include "onlineleaderboardwidget.h"
-#include <QJsonObject>
-#include <QUuid>
-#include <QUuid>
 
 using namespace std::chrono_literals;
 GameControll GameControll::instance;
@@ -231,9 +230,8 @@ void GameControll::exeQTAction(QJsonObject data)
 		break;
 	case sendBidding:
 		switchPhase(Phase::countdown);
-        user = getUserById(QUuid(data.value("userId").toString()));
-        user->setBidding(data.value("bidding").toInt());
-        user->hasBid = true;
+		user = getUserById(QUuid(data.value("userId").toString()));
+		user->setBidding(data.value("bidding").toInt());
 		break;
 	case revert:
 		board->revert();
@@ -455,7 +453,7 @@ User* GameControll::getNextUser(QUuid lastUserId) //TODO fix leaving clients
 	{
 		if(users.at(i)->getId() == lastUserId)
 		{
-			if(i+1<users.size() && users.at(i+1)->hasBid)
+			if(i+1<users.size() && users.at(i+1)->getHasBid())
 			{
 				return users.at(i+1);
 			}
@@ -485,7 +483,7 @@ void GameControll::sortBy(strategy strategy)
 		int minBid;
 		for(int additionIndex = 0; additionIndex < users.size(); additionIndex++)
 		{
-			minBid = MAX_BID + 1;
+			minBid = User::maxBid + 1;
 			for(User* user : users)
 			{
 				//qDebug()<<"SortByBidding: USER "<<user->getName()<<" with bidding "<<user->getBidding()<<"and timestamp: "<<user->getTimeStamp();
@@ -558,19 +556,24 @@ void GameControll::sortBy(strategy strategy)
 void GameControll::addUser(User* user)
 {
 	qDebug() << "GameControll::addUser(User* " << user->getId() << ")" << "(" + user->getName() +")";
-	bool b = false;
-	for(User * u: qAsConst(instance.users))
+	if(Client::isActive() || Server::isActive())
 	{
-		if(u->getId()==user->getId())
+		OnlineLeaderboardWidget * ol = static_cast<OnlineLeaderboardWidget*>(instance.leaderboard);
+		if(ol->getLocalUser()->getId() == user->getId())
 		{
-			b = true;
+			return;
 		}
 	}
-	if(b == false)
+	for(User * u: qAsConst(instance.users))
 	{
-		leaderboard->addUser(user);
-		users.append(user); //TODO sort
+		if(u->getId() == user->getId())
+		{
+			delete user;
+			return;
+		}
 	}
+	instance.leaderboard->addUser(user);
+	instance.users.append(user);
 }
 
 /**
@@ -627,6 +630,10 @@ User * GameControll::initializeUser()
 	return u;
 }
 
+/**
+ * @brief GameControll::setLeaderboard
+ * @param value
+ */
 void GameControll::setLeaderboard(LeaderBoardWidget * value)
 {
 	//neu
@@ -649,8 +656,8 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
 		triggerActionWithData(PlayerAction::sendBidding, json);
 	});
 
-	//alt
-	//TODO set username/color in localUser of onlineWidget
+	//	alt
+	//	TODO set username/color in localUser of onlineWidget
 	//	connect(instance.settings, &SettingsDialog::usernameChanged, instance.leaderboard, &LeaderBoardWidget::setUsername);
 	//	connect(instance.settings, &SettingsDialog::usercolorChanged, instance.leaderboard, &LeaderBoardWidget::setUsercolor);
 }
@@ -662,7 +669,7 @@ User * GameControll::getMinBid()
 	{
 		if(u->getBidding() < 100)
 		{
-			if(u->getBidding() < minBid->getBidding() || (u->getBidding() == minBid->getBidding() && u->getTimeStamp() < minBid->getTimeStamp()))
+			if(u < minBid)
 			{
 				minBid = u;
 			}
@@ -685,10 +692,9 @@ void GameControll::nextTarget()
 		//reset all biddings
 		for(User* u: qAsConst(users))
 		{
-			u->hasBid = false;
-			u->setBidding(MAX_BID);
+			u->setBidding(User::maxBid);
 		}
-		skipCounter=0;
+		skipCounter = 0;
 		emit updateSkip(skipCounter, users.length());
 		leaderboard->activateInput();
 		board->startNewRound();
