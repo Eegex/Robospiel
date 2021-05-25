@@ -13,7 +13,7 @@ enum PlayerAction{none = 0x0, movement = 0x10, movePlayerNorth = 17,movePlayerEa
 				  user = 0x100, newUser = 0x101, changedUsername = 0x102, changedUserColor = 260,
 				  update = 0x200, completeUpdate = 0x201, boardUpdate = 0x202,
 				  menuAction = 0x400, editBoard=0x401, nextTarget=0x402, setIdle=0x403,
-				  intern=0x1000, syncRandomGenerators=0x1001
+                  intern=0x1000, syncRandomGenerators=0x1001, registerClient=0x1002
 				 };
 //the Intern subspace should be the end of this enum
 #endif // DIRECTION_H

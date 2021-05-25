@@ -261,12 +261,20 @@ void GameControll::exeQTAction(QJsonObject data)
 		updateRandomGenerator(data.value("Seed").toInt());
 		break;
 	case skipTimer:
-		skipCounter++;
-		emit updateSkip(skipCounter, users.length());
-		if(skipCounter==users.length())
-		{
-			endTimer();
-		}
+        if(Server::isActive()||Client::isActive())
+        {
+            skipCounter++;
+            emit updateSkip(skipCounter, users.length());
+            if(skipCounter==users.length())
+            {
+                endTimer();
+            }
+        }
+        else
+        {
+            endTimer();
+        }
+
 		break;
 	}
 }

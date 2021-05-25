@@ -10,9 +10,14 @@ ConnectionToClient::ConnectionToClient(QObject *parent, QTcpSocket *tcpSocket): 
 
 }
 
+void ConnectionToClient::setUser(User *value)
+{
+    user = value;
+}
+
 void ConnectionToClient::receiveMessage()
 {
-	streamFromClient.startTransaction();
+    streamFromClient.startTransaction();
 
 	QString message;
 	streamFromClient >> message;

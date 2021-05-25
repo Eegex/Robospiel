@@ -5,6 +5,7 @@
 
 #include <QDataStream>
 #include <QObject>
+#include "user.h"
 
 class ConnectionToClient: public QObject
 {
@@ -12,9 +13,12 @@ class ConnectionToClient: public QObject
 public:
 	bool sendMessage(QString message);
 	ConnectionToClient(QObject *parent, QTcpSocket *tcpSocket);
+    void setUser(User *value);
+
 private:
-	QTcpSocket* tcpSocket;
+    QTcpSocket* tcpSocket;
 	QDataStream streamFromClient;
+    User* user;
 
 signals:
 	void receivedMessage(QString message);

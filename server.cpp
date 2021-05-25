@@ -81,8 +81,17 @@ void Server::addClient()
 		delete toDelete;
 		toDelete = nullptr;
 		emit clientsChanged(connections.length());
+//        emit clientDeconnected();
 	});
-	connect(connection, &ConnectionToClient::receivedMessage, this, &Server::forwardMessageToClients);
+    connect(connection, &ConnectionToClient::receivedMessage, this, [&](QString message){
+        QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
+        PlayerAction action = static_cast<PlayerAction>(data.value("action").toInt());
+        if(action==PlayerAction::registerClient)
+        {
+                connection->setUser(User::fromJSON(data));
+        }
+        Server::forwardMessageToClients(message);
+    });
 
 	//send board and users to new client
 	QJsonObject state = GameControll::toJSON();
