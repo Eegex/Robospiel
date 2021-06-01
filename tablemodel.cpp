@@ -10,25 +10,29 @@ void TableModel::update()
 	emit dataChanged(index(0,0),index(rowCount(QModelIndex()),columnCount(QModelIndex())));
 }
 
-int TableModel::rowCount(const QModelIndex &parent) const
+int TableModel::rowCount(const QModelIndex &/*parent*/) const
 {
-	return user->size();
+	if(user)
+	{
+		return user->size();
+	}
+	return 0;
 }
 
-int TableModel::columnCount(const QModelIndex &parent) const
+int TableModel::columnCount(const QModelIndex &/*parent*/) const
 {
 	return 3;
 }
 
 QVariant TableModel::data(const QModelIndex &index, int role) const
 {
-	if (index.isValid())
+	if(index.isValid())
 	{
-		if (index.row() < rowCount(QModelIndex()) && index.column() < columnCount(QModelIndex()))
+		if(index.row() < rowCount(QModelIndex()) && index.column() < columnCount(QModelIndex()))
 		{
 			if(role == Qt::DisplayRole)
 			{
-				switch (index.column())
+				switch(index.column())
 				{
 				case 0:
 					return user->at(index.row())->getName();
@@ -42,7 +46,7 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
 					return user->at(index.row())->getPoints();
 				}
 			}
-			else if (role == Qt::ForegroundRole)
+			else if(role == Qt::ForegroundRole)
 			{
 				if(index.column() == 0)
 				{
@@ -78,6 +82,10 @@ Qt::ItemFlags TableModel::flags(const QModelIndex &index) const
 
 void TableModel::sort(int column, Qt::SortOrder order)
 {
+	if(!user)
+	{
+		return;
+	}
 	emit layoutAboutToBeChanged();
 	bool n = order == Qt::SortOrder::AscendingOrder;
 	switch(column)
@@ -103,8 +111,12 @@ void TableModel::sort(int column, Qt::SortOrder order)
 	emit layoutChanged();
 }
 
-void TableModel::addUser(User *newUser)
+void TableModel::addUser(User * newUser)
 {
+	if(!user)
+	{
+		return;
+	}
 	user->append(newUser);
 	emit layoutChanged();
 }

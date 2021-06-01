@@ -17,6 +17,11 @@ User::User(QString name, QColor color, QObject *parent) : QObject(parent), name(
 	}
 }
 
+User::~User()
+{
+	qDebug() << "User " << name << " (id:" << id << ") destroyed";
+}
+
 //User::User(QString name, QColor color, QUuid uuid, QObject *parent) : QObject(parent), name(name), color(color), id(uuid)
 //{
 //	if(name=="")
