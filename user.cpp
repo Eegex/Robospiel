@@ -3,6 +3,7 @@
 #include <QColor>
 #include <QUuid>
 #include <QJsonObject>
+#include <QDebug>
 
 int User::userCount = 1;
 

@@ -1,4 +1,5 @@
 #include "tablemodel.h"
+#include "gamecontroll.h"
 
 TableModel::TableModel(QObject *parent):QAbstractTableModel(parent)
 {
@@ -12,10 +13,7 @@ void TableModel::update()
 
 int TableModel::rowCount(const QModelIndex &/*parent*/) const
 {
-	if(user)
-	{
-		return user->size();
-	}
+    GameControll::getUsers()->size();
 	return 0;
 }
 
@@ -35,22 +33,22 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
 				switch(index.column())
 				{
 				case 0:
-					return user->at(index.row())->getName();
+                    return GameControll::getUsers()->at(index.row())->getName();
 				case 1:
-					if(user->at(index.row())->getHasBid())
+                    if(GameControll::getUsers()->at(index.row())->getHasBid())
 					{
-						return user->at(index.row())->getBidding();
+                        return GameControll::getUsers()->at(index.row())->getBidding();
 					}
 					return "-";
 				case 2:
-					return user->at(index.row())->getPoints();
+                    return GameControll::getUsers()->at(index.row())->getPoints();
 				}
 			}
 			else if(role == Qt::ForegroundRole)
 			{
 				if(index.column() == 0)
 				{
-					return user->at(index.row())->getColor();
+                    return GameControll::getUsers()->at(index.row())->getColor();
 				}
 			}
 		}
@@ -82,27 +80,23 @@ Qt::ItemFlags TableModel::flags(const QModelIndex &index) const
 
 void TableModel::sort(int column, Qt::SortOrder order)
 {
-	if(!user)
-	{
-		return;
-	}
 	emit layoutAboutToBeChanged();
 	bool n = order == Qt::SortOrder::AscendingOrder;
 	switch(column)
 	{
 	case 0:
 	{
-		std::sort(user->begin(),user->end(),[&](const User * a, const User * b){ return n?(a->getName() > b->getName()):(a->getName() < b->getName()); });
+        std::sort(GameControll::getUsers()->begin(),GameControll::getUsers()->end(),[&](const User * a, const User * b){ return n?(a->getName() > b->getName()):(a->getName() < b->getName()); });
 		break;
 	}
 	case 1:
 	{
-		std::sort(user->begin(),user->end(),[&](const User * a, const User *b){ return n?a < b:b < a; });
+        std::sort(GameControll::getUsers()->begin(),GameControll::getUsers()->end(),[&](const User * a, const User *b){ return n?a < b:b < a; });
 		break;
 	}
 	case 2:
 	{
-		std::sort(user->begin(),user->end(),[&](const User * a, const User * b){ return n?(a->getPoints() > b->getPoints()):(a->getPoints() < b->getPoints()); });
+        std::sort(GameControll::getUsers()->begin(),GameControll::getUsers()->end(),[&](const User * a, const User * b){ return n?(a->getPoints() > b->getPoints()):(a->getPoints() < b->getPoints()); });
 		break;
 	}
 	default:
@@ -113,30 +107,20 @@ void TableModel::sort(int column, Qt::SortOrder order)
 
 void TableModel::addUser(User * newUser)
 {
-	if(!user)
-	{
-		return;
-	}
-	user->append(newUser);
+    GameControll::getUsers()->append(newUser);
 	emit layoutChanged();
 }
 
 User * TableModel::findUser(QUuid id)
 {
-	for(User * u:*qAsConst(user))
+    for(User * u: *GameControll::getUsers())
 	{
 		if(u->getId() == id)
 		{
 			return u;
 		}
 	}
-	Q_ASSERT_X(false,"TableModel::findUser(QUuid id)","User not found");
+    Q_ASSERT_X(false,"TableModel::findUser(QUuid id)","User not found");
 	return nullptr;
-}
-
-void TableModel::setUser(QVector<User *> * newUsers)
-{
-	user = newUsers;
-	emit layoutChanged();
 }
 

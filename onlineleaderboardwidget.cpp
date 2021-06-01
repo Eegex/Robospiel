@@ -178,6 +178,5 @@ void OnlineLeaderboardWidget::activateInput()
 
 void OnlineLeaderboardWidget::updateAllUsers()
 {
-	qDebug()<<"Called Function UpdateAllUsers in OnlineLeaderBoardWidget\n";
-	model->setUser(GameControll::getInstance().getUsers());
+    //not needed, because tablemodel handels this
 }

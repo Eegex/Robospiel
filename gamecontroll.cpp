@@ -580,8 +580,8 @@ void GameControll::addUser(User* user)
 			return;
 		}
 	}
-	instance.leaderboard->addUser(user);
 	instance.users.append(user);
+    instance.leaderboard->addUser(user);
 }
 
 /**
@@ -914,7 +914,7 @@ void GameControll::nextGuide()
 
 QVector<User*>* GameControll::getUsers()
 {
-	return &users;
+    return &instance.users;
 }
 
 GameControll::functionPointer GameControll::getActionWhenAnimationEnded()
