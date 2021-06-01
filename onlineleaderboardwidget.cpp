@@ -177,5 +177,5 @@ void OnlineLeaderboardWidget::activateInput()
 
 void OnlineLeaderboardWidget::updateAllUsers()
 {
-    //not needed, because tablemodel handels this
+	model->updateUsers();
 }

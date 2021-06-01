@@ -582,7 +582,7 @@ void GameControll::addUser(User* user)
 	}
 	instance.users.append(user);
 	instance.leaderboard->addUser(user);
-	leaderboard->updateAllUsers();
+	instance.leaderboard->updateAllUsers();
 }
 
 /**

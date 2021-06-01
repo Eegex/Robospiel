@@ -32,11 +32,11 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
 				switch(index.column())
 				{
 				case 0:
-                    return GameControll::getUsers()->at(index.row())->getName();
+					return GameControll::getUsers()->at(index.row())->getName();
 				case 1:
 					if(GameControll::getUsers()->at(index.row())->getHasBid())
 					{
-                        return GameControll::getUsers()->at(index.row())->getBidding();
+						return GameControll::getUsers()->at(index.row())->getBidding();
 					}
 					return "-";
 				case 2:
@@ -47,7 +47,7 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
 			{
 				if(index.column() == 0)
 				{
-                    return GameControll::getUsers()->at(index.row())->getColor();
+					return GameControll::getUsers()->at(index.row())->getColor();
 				}
 			}
 		}
@@ -77,21 +77,20 @@ Qt::ItemFlags TableModel::flags(const QModelIndex &index) const
 	return Qt::ItemIsSelectable|Qt::ItemIsEnabled;
 }
 
-void TableModel::addUser(User * newUser)
+void TableModel::updateUsers()
 {
-	GameControll::getUsers()->append(newUser);
 	emit layoutChanged();
 }
 
 User * TableModel::findUser(QUuid id)
 {
-    for(User * u: *GameControll::getUsers())
+	for(User * u: *GameControll::getUsers())
 	{
 		if(u->getId() == id)
 		{
 			return u;
 		}
 	}
-    Q_ASSERT_X(false,"TableModel::findUser(QUuid id)","User not found");
+	Q_ASSERT_X(false,"TableModel::findUser(QUuid id)","User not found");
 	return nullptr;
 }
