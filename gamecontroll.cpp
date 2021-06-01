@@ -675,7 +675,7 @@ User * GameControll::getMinBid()
 	User * minBid = instance.users.first();
 	for(User * u:qAsConst(instance.users))
 	{
-		if(u->getBidding() < 100)
+		if(u->getBidding() < 100) //BUG: 100?
 		{
 			if(u < minBid)
 			{
