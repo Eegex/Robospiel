@@ -13,6 +13,7 @@ class User : public QObject
 public:
 	static const int maxBid;
 	User(QString name, QColor color, QObject *parent=nullptr);
+	~User();
 	QString getName() const;
 	QColor getColor() const;
 	QUuid getId() const;

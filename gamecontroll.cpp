@@ -567,7 +567,7 @@ void GameControll::addUser(User* user)
 	if(Client::isActive() || Server::isActive())
 	{
 		OnlineLeaderboardWidget * ol = static_cast<OnlineLeaderboardWidget*>(instance.leaderboard);
-		if(ol->getLocalUser()->getId() == user->getId())
+		if(ol->getLocalUser() && ol->getLocalUser()->getId() == user->getId())
 		{
 			return;
 		}
@@ -631,7 +631,7 @@ void GameControll::changeBidding(int bidding, QUuid id)
  */
 User * GameControll::initializeUser()
 {
-	User* u = new User(instance.getSettingsDialog()->getUsername(), instance.getSettingsDialog()->getUsercolor());
+	User * u = new User(instance.getSettingsDialog()->getUsername(), instance.getSettingsDialog()->getUsercolor());
 	qDebug()<<"initializeUser with id: "<<u->getId();
 	//TODO
 	triggerActionWithData(PlayerAction::newUser, u->toJSON());

@@ -12,14 +12,14 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 {
 	QValidator *intValidator = new QIntValidator(this);
 
-    layout = new QVBoxLayout(this);
+	layout = new QVBoxLayout(this);
 
 	//Client gui
 	clientContainer = new QWidget(this);
-    gridClient=new QVBoxLayout(clientContainer);
-	leClientAddress = new QLineEdit(clientContainer);
+	gridClient=new QVBoxLayout(clientContainer);
+	leClientAddress = new QLineEdit("acqcke5skvirioi1.myfritz.net",clientContainer);
 	leClientAddress->setPlaceholderText(tr("Server Address"));
-	leClientPort = new QLineEdit(clientContainer);
+	leClientPort = new QLineEdit("8050",clientContainer);
 	leClientPort->setPlaceholderText(tr("Server Port"));
 	leClientPort->setValidator(intValidator);
 
@@ -41,7 +41,7 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 
 	//Server gui
 	serverContainer = new QWidget(this);
-    gridServer=new QVBoxLayout(serverContainer);
+	gridServer=new QVBoxLayout(serverContainer);
 	leServerAddress = new QLineEdit(serverContainer);
 	leServerAddress->setPlaceholderText(tr("Server Address"));
 	leServerPort = new QLineEdit(serverContainer);
@@ -62,6 +62,7 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 	connect(ipSearcher,&QNetworkAccessManager::finished,this,[=](QNetworkReply * reply)
 	{
 		leServerAddress->setText("acqcke5skvirioi1.myfritz.net"/*reply->readAll()*/);
+		leServerPort->setText("8050");
 		reply->deleteLater();
 		ipSearcher->deleteLater();
 	});
@@ -160,8 +161,8 @@ NetworkView::~NetworkView()
 
 void NetworkView::toChoiceMenu()
 {
-    Server::getInstance().closeServer();
-    Client::getInstance().closeClient();
+	Server::getInstance().closeServer();
+	Client::getInstance().closeClient();
 
 	layout->removeWidget(serverContainer);
 	layout->removeWidget(clientContainer);

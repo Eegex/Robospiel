@@ -23,7 +23,7 @@ public:
 	void addUser(User* newUser);
 	User * findUser(QUuid id);
 private:
-	QVector<User*> * user;
+	QVector<User*> * user = nullptr;
 };
 
 #endif // TABLEMODEL_H
