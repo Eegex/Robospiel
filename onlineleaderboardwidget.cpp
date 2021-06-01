@@ -46,8 +46,12 @@ void OnlineLeaderboardWidget::setOnlineWidget()
 	lay->update();
 }
 
-void OnlineLeaderboardWidget::setLocalUser(User *u)
+void OnlineLeaderboardWidget::setLocalUser(User * u)
 {
+	if(localUser)
+	{
+		delete localUser;
+	}
 	localUser = u;
 }
 
@@ -141,14 +145,13 @@ void OnlineLeaderboardWidget::updateColour(QUuid id, QColor color)
 void OnlineLeaderboardWidget::addUser(User *u)
 {
 	qDebug() << "OnlineLeaderboardWidget::addUser(User *" << u->getName() << u->getId() << ")";
-	model->addUser(u);
 	connect(u,&User::biddingChanged,this,[&](QUuid id, int bid)
 	{
 		model->update();
 		if(id == localUser->getId())
 		{
-			biddingBox->setMaximum(std::min(bid,99));
-			if(!localUser->hasBid)
+			biddingBox->setMaximum(std::min(bid,User::maxBid));
+			if(!localUser->getHasBid())
 			{
 				bidBtn->setText(BID_BTN_TEXT);
 				biddingBox->setValue(1);
@@ -176,5 +179,5 @@ void OnlineLeaderboardWidget::activateInput()
 void OnlineLeaderboardWidget::updateAllUsers()
 {
 	qDebug()<<"Called Function UpdateAllUsers in OnlineLeaderBoardWidget\n";
-	model->setUser(*GameControll::getInstance().getUsers());
+	model->setUser(GameControll::getInstance().getUsers());
 }

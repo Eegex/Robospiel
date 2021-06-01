@@ -15,6 +15,7 @@ Server& Server::getInstance()
 {
 	return instance;
 }
+
 void Server::deleteInstance()
 {
 	delete server;

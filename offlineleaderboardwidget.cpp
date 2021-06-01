@@ -42,7 +42,7 @@ void OfflineLeaderBoardWidget::updateLayout(){
 void OfflineLeaderBoardWidget::addUser(User * newUser)
 {
 	qDebug()<<"LeaderBoardWidget: AddUser: Add user with name: "<<newUser->getName()<<"and id"<<newUser->getId().toString()<<"and colour "<<(newUser->getColor().isValid()?newUser->getColor().name():"0x000000");
-    UserBiddingWidget * newWidget = new UserBiddingWidget(newUser); //Create new BiddingWidget to display
+	UserBiddingWidget * newWidget = new UserBiddingWidget(newUser); //Create new BiddingWidget to display
 	users.append(newWidget); //Append widget to list of users
 	lay->addWidget(users.at(numOfUsers));
 	connect(newWidget, &UserBiddingWidget::biddingReset, this,[&]()
@@ -69,7 +69,7 @@ void OfflineLeaderBoardWidget::updateBidding(QUuid id, int bidding)
 		{
 			ubw->updateBidding(bidding);
 		}
-    }
+	}
 }
 
 void OfflineLeaderBoardWidget::updateName(QUuid id, QString name)
@@ -116,15 +116,21 @@ void OfflineLeaderBoardWidget::updateAllUsers()
 		updateColour(ubw->getUser()->getId(), ubw->getUser()->getColor());
 	}
 	QVector<UserBiddingWidget*> temp;
-	for(User* u : *GameControll::getInstance().getUsers()){
-		for(UserBiddingWidget* ubw : users){
+	for(User* u : *GameControll::getInstance().getUsers())
+	{
+		for(UserBiddingWidget* ubw : users)
+		{
 			if(u->getId() == ubw->getId())
+			{
 				temp.append(ubw);
+			}
 		}
 	}
 	qDebug()<<"Sorted Users!\n";
 	for(unsigned int i = 0; i<numOfUsers; i++)
+	{
 		qDebug()<<"Position: "<<i<<" "<<users[i]->getUser()->getName();
+	}
 	users = temp;
 	updateLayout();
 }

@@ -19,36 +19,36 @@
 
 class OfflineLeaderBoardWidget : public LeaderBoardWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
 	explicit OfflineLeaderBoardWidget();
-    void addUser(User * newUser);
-    QVector<UserBiddingWidget*> * getUsers();
-    UserCreationWidget *getUserCreationWidget();
-    unsigned int getBiddingWidgetIndexByID(QUuid id);
-    unsigned int getNumOfUsers();
-    //void setUsername(QString name);
-    //void setUsercolor(QColor color);
-    QString getUsername();
-    QColor getUsercolor();
+	void addUser(User * newUser);
+	QVector<UserBiddingWidget*> * getUsers();
+	UserCreationWidget *getUserCreationWidget();
+	unsigned int getBiddingWidgetIndexByID(QUuid id);
+	unsigned int getNumOfUsers();
+	//void setUsername(QString name);
+	//void setUsercolor(QColor color);
+	QString getUsername();
+	QColor getUsercolor();
 private:
-    QGridLayout * lay = new QGridLayout(this);
-    unsigned int numOfUsers = 0;
-    unsigned int currentUser = 0;
-    QVector<UserBiddingWidget*> users; //Several Users, Array of Widgets for individual users
-    UserCreationWidget * userCreationWidget = new UserCreationWidget(nullptr);
+	QGridLayout * lay = new QGridLayout(this);
+	unsigned int numOfUsers = 0;
+	unsigned int currentUser = 0;
+	QVector<UserBiddingWidget*> users; //Several Users, Array of Widgets for individual users
+	UserCreationWidget * userCreationWidget = new UserCreationWidget(nullptr);
 public slots:
-    void updateBidding(QUuid id, int bidding);
+	void updateBidding(QUuid id, int bidding);
 	void updateName(QUuid id, QString name);
 	void updateColour(QUuid id, QColor colour);
 	void updateAllUsers();
 	void deactivateInput();
 	void activateInput();
-    void updateLayout();
-    //void newUser();
+	void updateLayout();
+	//void newUser();
 
 signals:
-    void userAdded(struct Userdata * newUser);
+	void userAdded(struct Userdata * newUser);
 
 };
 

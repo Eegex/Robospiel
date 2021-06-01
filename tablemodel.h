@@ -19,11 +19,11 @@ public:
 	QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 	Qt::ItemFlags flags(const QModelIndex &index) const;
 	void sort(int column, Qt::SortOrder order);
-	void setUser(QVector<User*> newUsers);
+	void setUser(QVector<User *> * newUsers);
 	void addUser(User* newUser);
 	User * findUser(QUuid id);
 private:
-	QVector<User*> user;
+	QVector<User*> * user;
 };
 
 #endif // TABLEMODEL_H
