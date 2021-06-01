@@ -564,14 +564,14 @@ void GameControll::sortBy(strategy strategy)
 void GameControll::addUser(User* user)
 {
 	qDebug() << "GameControll::addUser(User* " << user->getId() << ")" << "(" + user->getName() +")";
-	if(Client::isActive() || Server::isActive())
-	{
-		OnlineLeaderboardWidget * ol = static_cast<OnlineLeaderboardWidget*>(instance.leaderboard);
-		if(ol->getLocalUser() && ol->getLocalUser()->getId() == user->getId())
-		{
-			return;
-		}
-	}
+//	if(Client::isActive() || Server::isActive())
+//	{
+//		OnlineLeaderboardWidget * ol = static_cast<OnlineLeaderboardWidget*>(instance.leaderboard);
+//		if(ol->getLocalUser() && ol->getLocalUser()->getId() == user->getId())
+//		{
+//			return;
+//		}
+//	}
 	for(User * u: qAsConst(instance.users))
 	{
 		if(u->getId() == user->getId())
@@ -634,7 +634,6 @@ User * GameControll::initializeUser()
 {
 	User * u = new User(instance.getSettingsDialog()->getUsername(), instance.getSettingsDialog()->getUsercolor());
 	qDebug()<<"initializeUser with id: "<<u->getId();
-	//TODO
 	triggerActionWithData(PlayerAction::newUser, u->toJSON());
 	return u;
 }

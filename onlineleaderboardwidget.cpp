@@ -157,6 +157,7 @@ void OnlineLeaderboardWidget::addUser(User *u)
 			}
 		}
 	});
+	model->updateUsers();
 }
 
 void OnlineLeaderboardWidget::deactivateInput()
