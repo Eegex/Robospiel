@@ -1,6 +1,5 @@
 #include "userview.h"
 
-//Container for NetworkView and online/offline-LeaderboardWidget
 UserView::UserView(QWidget *parent) : QWidget(parent)
 {
 	network = new NetworkView();

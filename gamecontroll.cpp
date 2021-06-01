@@ -259,19 +259,19 @@ void GameControll::exeQTAction(QJsonObject data)
 		updateRandomGenerator(data.value("Seed").toInt());
 		break;
 	case skipTimer:
-        if(Server::isActive()||Client::isActive())
-        {
-            skipCounter++;
-            emit updateSkip(skipCounter, users.length());
-            if(skipCounter==users.length())
-            {
-                endTimer();
-            }
-        }
-        else
-        {
-            endTimer();
-        }
+		if(Server::isActive()||Client::isActive())
+		{
+			skipCounter++;
+			emit updateSkip(skipCounter, users.length());
+			if(skipCounter==users.length())
+			{
+				endTimer();
+			}
+		}
+		else
+		{
+			endTimer();
+		}
 
 		break;
 	}
@@ -478,8 +478,8 @@ void GameControll::sortBy(strategy strategy)
 {
 	QVector<User*> sortedUsers;
 	unsigned long minTimeStamp = QDateTime::currentMSecsSinceEpoch();
-	bool isActive[users.size()];
-	for(int i = 0; i<users.size(); i++)
+	bool isActive[instance.users.size()];
+	for(int i = 0; i<instance.users.size(); i++)
 	{
 		isActive[i] = 1; //Set all users to be active
 	}
@@ -489,13 +489,13 @@ void GameControll::sortBy(strategy strategy)
 		User * minUser;
 		int minIndex = 0;
 		int minBid;
-		for(int additionIndex = 0; additionIndex < users.size(); additionIndex++)
+		for(int additionIndex = 0; additionIndex < instance.users.size(); additionIndex++)
 		{
 			minBid = User::maxBid + 1;
-			for(User* user : users)
+			for(User* user : qAsConst(instance.users))
 			{
 				//qDebug()<<"SortByBidding: USER "<<user->getName()<<" with bidding "<<user->getBidding()<<"and timestamp: "<<user->getTimeStamp();
-				if(user->getBidding() <= minBid && isActive[users.indexOf(user)])//If User has a lower bid than the currently lowest bid
+				if(user->getBidding() <= minBid && isActive[instance.users.indexOf(user)])//If User has a lower bid than the currently lowest bid
 				{
 					if(user->getBidding() == minBid)
 					{
@@ -503,7 +503,7 @@ void GameControll::sortBy(strategy strategy)
 						{
 							//qDebug()<<"Bidding is the same, timestamp is earlier";
 							minUser = user; //Set the Widget to add to the new list to the user
-							minIndex = users.indexOf(user); //Set the index needed for deactivating the user to the current index
+							minIndex = instance.users.indexOf(user); //Set the index needed for deactivating the user to the current index
 							minBid = user->getBidding(); //Set the newest lowest bid to the current user as there can be users after that one with lower bids
 							minTimeStamp = user->getTimeStamp(); //Set User Timestamp to the current user value
 						}
@@ -512,7 +512,7 @@ void GameControll::sortBy(strategy strategy)
 					{
 						//qDebug()<<"Bidding of user "<<user->getName()<<" with bidding "<<user->getBidding()<<" is smaller than minimum bid of "<<minBid;
 						minUser = user; //Set the Widget to add to the new list to the user
-						minIndex = users.indexOf(user); //Set the index needed for deactivating the user to the current index
+						minIndex = instance.users.indexOf(user); //Set the index needed for deactivating the user to the current index
 						minBid = user->getBidding(); //Set the newest lowest bid to the current user as there can be users after that one with lower bids
 						minTimeStamp = user->getTimeStamp(); //Set User Timestamp to the current user value
 					}
@@ -521,7 +521,7 @@ void GameControll::sortBy(strategy strategy)
 			isActive[minIndex] = false; //Deactivate user
 			sortedUsers.append(minUser);
 		}
-		users = sortedUsers;
+		instance.users = sortedUsers;
 	}
 	if(strategy == points)
 	{
@@ -529,17 +529,17 @@ void GameControll::sortBy(strategy strategy)
 		User * maxUser;
 		int maxIndex = 0;
 		int maxPts;
-		for(int additionIndex = 0; additionIndex < users.size(); additionIndex++)
+		for(int additionIndex = 0; additionIndex < instance.users.size(); additionIndex++)
 		{
 			maxPts = 0;
-			for(User * user : qAsConst(users))
+			for(User * user : qAsConst(instance.users))
 			{
 				//qDebug()<<"SortByPoints: USER "<<user->getName()<<" with points "<<user->getPoints()<<"and timestamp: "<<user->getTimeStamp();
-				if(user->getPoints() >= maxPts && isActive[users.indexOf(user)])//If User has more points than the current maximum
+				if(user->getPoints() >= maxPts && isActive[instance.users.indexOf(user)])//If User has more points than the current maximum
 				{
 					//qDebug()<<"Points of user "<<user->getName()<<" with points "<<user->getPoints()<<" is larger than maximum amount of "<<maxPts;
 					maxUser = user; //Set the Widget to add to the new list to the user
-					maxIndex = users.indexOf(user); //Set the index needed for deactivating the user to the current index
+					maxIndex = instance.users.indexOf(user); //Set the index needed for deactivating the user to the current index
 					maxPts = user->getPoints(); //Set the newest largest number of points to the current user as there can be users after that one with larger number of points
 					minTimeStamp = user->getTimeStamp(); //Set the User Time stamp to the current user value
 				}
@@ -547,14 +547,14 @@ void GameControll::sortBy(strategy strategy)
 			isActive[maxIndex] = false; //Deactivate user
 			sortedUsers.append(maxUser);
 		}
-		users = sortedUsers;
-		for(int i = 0; i<users.size(); i++)
+		instance.users = sortedUsers;
+		for(int i = 0; i<instance.users.size(); i++)
 		{
 			//qDebug()<<"SortedUsers: User "<<i<<": "<<users[i]->getName()<<" with points: "<<users[i]->getPoints()<<" and timestamp "<<users[i]->getTimeStamp();
 			//isActive[i] = true;
 		}
 	}
-	leaderboard->updateAllUsers();
+	instance.leaderboard->updateAllUsers();
 }
 
 /**
@@ -581,7 +581,8 @@ void GameControll::addUser(User* user)
 		}
 	}
 	instance.users.append(user);
-    instance.leaderboard->addUser(user);
+	instance.leaderboard->addUser(user);
+	leaderboard->updateAllUsers();
 }
 
 /**
@@ -914,7 +915,7 @@ void GameControll::nextGuide()
 
 QVector<User*>* GameControll::getUsers()
 {
-    return &instance.users;
+	return &instance.users;
 }
 
 GameControll::functionPointer GameControll::getActionWhenAnimationEnded()

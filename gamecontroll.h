@@ -56,7 +56,7 @@ public:
     static QVector<User*>* getUsers();
 	void addUser(User *user);
 
-	void sortBy(strategy strategy);
+	static void sortBy(strategy strategy);
 
 	static functionPointer getActionWhenAnimationEnded();
 	static void setActionWhenAnimationEnded(functionPointer function);

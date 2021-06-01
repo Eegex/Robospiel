@@ -17,7 +17,6 @@ void OnlineLeaderboardWidget::initialize()
 	setLayout(lay);
 
 	tableView->setModel(model);
-	tableView->setSortingEnabled(true);
 	biddingBox->setSpecialValueText(tr("No Bid"));
 	connect(bidBtn,&QPushButton::clicked, this, &OnlineLeaderboardWidget::btnPressed);
 	connect(biddingBox,&QSpinBox::editingFinished, this,  &OnlineLeaderboardWidget::btnPressed);

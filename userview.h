@@ -7,18 +7,21 @@
 #include <QWidget>
 #include "networkview.h"
 
+/**
+ * @brief The UserView class is a Container for NetworkView and online/offline-LeaderboardWidget
+ */
 class UserView : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    explicit UserView(QWidget *parent = nullptr);
-    LeaderBoardWidget *getLeaderboard() const;
+	explicit UserView(QWidget *parent = nullptr);
+	LeaderBoardWidget *getLeaderboard() const;
 
 private:
-    LeaderBoardWidget* leaderboard;
-    NetworkView* network;
-    QGridLayout* layout;
-    QPushButton* btnBack = new QPushButton(tr("Back"));
+	LeaderBoardWidget* leaderboard;
+	NetworkView* network;
+	QGridLayout* layout;
+	QPushButton* btnBack = new QPushButton(tr("Back"));
 
 signals:
 
