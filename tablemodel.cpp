@@ -6,6 +6,9 @@ TableModel::TableModel(QObject *parent):QAbstractTableModel(parent)
 
 }
 
+/**
+ * @brief TableModel::update forces every View to update its data but not to display new elements
+ */
 void TableModel::update()
 {
 	emit dataChanged(index(0,0),index(rowCount(QModelIndex()),columnCount(QModelIndex())));
@@ -77,6 +80,9 @@ Qt::ItemFlags TableModel::flags(const QModelIndex &index) const
 	return Qt::ItemIsSelectable|Qt::ItemIsEnabled;
 }
 
+/**
+ * @brief TableModel::updateUsers forces every View to update its data and to display new elements
+ */
 void TableModel::updateUsers()
 {
 	emit layoutChanged();

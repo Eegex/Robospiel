@@ -426,6 +426,9 @@ void GameControll::updateRandomGenerator(int seed)
 	}
 }
 
+/**
+ * @brief GameControll::resetForNextUser reset after failed try and loads next user
+ */
 void GameControll::resetForNextUser()
 {
 	qDebug()<<"Acquiring next User";
@@ -599,6 +602,11 @@ void GameControll::calculateWinner()
 	showGuide({ tr("Goal has been hit by %1").arg(username) + "[]" });
 }
 
+/**
+ * @brief GameControll::getUserById get pointer to User from UserId returns nullptr if user not found
+ * @param id
+ * @return
+ */
 User* GameControll::getUserById(QUuid id)
 {
 	for(User* u: qAsConst(users))
