@@ -377,7 +377,7 @@
     <message>
         <location filename="networkview.cpp" line="26"/>
         <source>Start Client</source>
-        <translation>Starte Client</translation>
+	<translation>Gib ihm Fett</translation>
     </message>
     <message>
         <source>Stop Client</source>

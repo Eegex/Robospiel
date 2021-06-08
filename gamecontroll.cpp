@@ -834,10 +834,10 @@ void GameControll::setActiveUserID(QUuid id)
 
 void GameControll::updateTimer()
 {
-	if(--timeLeft <= 0)
+	/*if(--timeLeft <= 0)
 	{
 		endTimer();
-	}
+	}*/
 	emit time(timeLeft);
 }
 
