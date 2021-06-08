@@ -1,6 +1,6 @@
 #include "networkdebugger.h"
 
-NetworkDebugger::NetworkDebugger(NetworkModel * model, QWidget *parent) : QWidget(parent)
+NetworkDebugger::NetworkDebugger(NetworkModel * model) : QWidget()
 {
 	lay->addWidget(view);
 	view->setModel(model);

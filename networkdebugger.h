@@ -10,7 +10,7 @@ class NetworkDebugger : public QWidget
 {
 	Q_OBJECT
 public:
-	NetworkDebugger(NetworkModel * model, QWidget * parent);
+	NetworkDebugger(NetworkModel * model);
 
 private:
 	QTableView * view = new QTableView(this);

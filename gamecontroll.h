@@ -75,8 +75,8 @@ public slots:
 	void setActiveUserID(QUuid id);
 
 private:
-	NetworkModel * nwModel = new NetworkModel;
-	NetworkDebugger * debugger = new NetworkDebugger(nwModel,nullptr);
+	NetworkModel * nwModel = nullptr;
+	NetworkDebugger * debugger = nullptr;
 	static GameControll instance;
 	QTimer guideTimer;
 	QRandomGenerator * r = nullptr;
@@ -91,7 +91,7 @@ private:
 	QTimer countdown;
 	int timeLeft;
 	functionPointer actionWhenAnimationEnded = nullptr; //ATTENTION! When you store a new method in this variable, you have to add it in GameControll::toJSON() and GameControll::adaptFromJSON()!!!
-	int searchTime=60;
+	int searchTime = 60;
 
 	explicit GameControll(QObject *parent = nullptr);
 	void sendToServer(PlayerAction a);

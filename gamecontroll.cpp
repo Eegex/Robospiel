@@ -23,7 +23,6 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 	connect(this, &GameControll::actionTriggered, this, &GameControll::sendToServer);
 	connect(&guideTimer,&QTimer::timeout,this,&GameControll::nextGuide);
 	r = new QRandomGenerator(QTime::currentTime().msecsSinceStartOfDay());
-	debugger->show();
 }
 
 /**
@@ -34,6 +33,9 @@ void GameControll::initializeConnections()
 {
 	connect(&Server::getInstance(), &Server::actionReceived, &GameControll::getInstance(), &GameControll::exeQTAction);
 	connect(&Client::getInstance(), &Client::actionReceived, &GameControll::getInstance(), &GameControll::exeQTAction);
+	instance.nwModel = new NetworkModel;
+	instance.debugger = new NetworkDebugger(instance.nwModel);
+	instance.debugger->show();
 }
 
 QJsonObject GameControll::toJSON() //TODO make sure the replaced Objects don't get lost
