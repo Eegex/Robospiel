@@ -10,6 +10,13 @@ Board::Board(QObject *parent) : QObject(parent)
 	r = new QRandomGenerator(QTime::currentTime().msecsSinceStartOfDay());
 }
 
+/** constructs a new game board
+ * @brief Board::Board
+ * @param width - how many tiles are there in the width direction
+ * @param height - how many tiles there are in the height direction
+ * @param playerNumber - number of players
+ * @param parent
+ */
 Board::Board(int width, int height, int playerNumber, QObject *parent) : Board(parent)
 {
 	if(playerNumber + 1 > width * height)
@@ -20,6 +27,13 @@ Board::Board(int width, int height, int playerNumber, QObject *parent) : Board(p
 	startNewRound();
 }
 
+/**
+ * @brief Board::makeNewBoard - constructs a new game board with new Walls, players and a goal
+ * @param width
+ * @param height
+ * @param playerNumber
+ */
+
 void Board::makeNewBoard(int width, int height, int playerNumber)
 {
 	makeNewWalls(width, height);
@@ -27,7 +41,11 @@ void Board::makeNewBoard(int width, int height, int playerNumber)
 	makeNewGoal();
 	emit boardChanged();
 }
-
+/**
+ * @brief Board::makeNewPlayers
+ * deletes all players and places them new random tiles. Also emits the
+ * @param playerNumber
+ */
 void Board::makeNewPlayers(int playerNumber)
 {
 	players.clear();
@@ -40,13 +58,17 @@ void Board::makeNewPlayers(int playerNumber)
 	}
 }
 
+/**
+ * @brief Board::makeNewSeeker - changes the player that is the seeker to a new one
+ * @param random - do you want the new player to a surprise? Else the seekers will switch in a certain order (depending on their id)
+ */
 void Board::makeNewSeeker(bool random)
 {
-	if(players.length()<2)
+    if(players.length()<2) //just one player? This will stay the seeker!
 	{
 		return;
 	}
-	if(random)
+    if(random) //random new seeker
 	{
 		int originalSeeker = seeker;
 		while(seeker == originalSeeker)
@@ -54,7 +76,7 @@ void Board::makeNewSeeker(bool random)
 			seeker = r->bounded(players.size());
 		}
 	}
-	else
+    else //the player with the next id will be the seeker
 	{
 		seeker = (seeker+1)%players.length();
 	}
@@ -62,6 +84,11 @@ void Board::makeNewSeeker(bool random)
 	emit boardChanged();
 
 }
+
+
+/**
+ * @brief Board::makeNewGoal - places a new goal
+ */
 
 void Board::makeNewGoal()
 {
@@ -498,16 +525,21 @@ bool Board::placeInnerWallifFits(Tile* tile, Direction direction)
 	return false;
 }
 
+
+/**
+ * @brief Board::placeGoalInCorner - places a goal into a spot that has two walls that are in a right angle to each other
+ */
+
 void Board::placeGoalInCorner()
 {
 	bool noCorner = true;
 	int count = 0;
-	while(noCorner)
+    while(noCorner) //try to just find a new corner spot for the goal
 	{
 		placeGoalAwayFromSeeker();
 		noCorner = !isTileCorner(goal);
 		count++;
-		if(count > 1000)
+        if(count > 1000) // when this didn't work after 1000 tries
 		{
 			//find a corner
 			Tile*  tile;
@@ -518,7 +550,7 @@ void Board::placeGoalInCorner()
 			}
 			//put the goal there
 			goal = tile;
-			//move the player that's in that corner
+            //move the player that's in that corner to a random tile
 			int playerNum = tile->getPlayer();
 			if (playerNum != -1)
 			{
@@ -531,6 +563,12 @@ void Board::placeGoalInCorner()
 	emit goalMoved();
 	return;
 }
+
+/**
+ * @brief Board::isTileCorner - checks if a tile has two walls that are in a right angle to each other
+ * @param tile
+ * @return
+ */
 
 bool Board::isTileCorner(Tile* tile){
 
@@ -609,6 +647,13 @@ QColor Board::getPlayerColorHigh() const
 {
 	return playerHigh;
 }
+
+/**
+ * @brief Board::getNextDirection
+ * @param direction
+ * @param numberOfClockwiseSteps
+ * @return
+ */
 
 Direction Board::getNextDirection(Direction direction, int numberOfClockwiseSteps)
 {
