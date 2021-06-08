@@ -45,12 +45,12 @@ void Server::startServer(QString address, int port)
 	}
 	if (!server->listen(QHostAddress(address),port))
 	{
-        emit instance.serverNotStarted();
+		emit instance.serverNotStarted();
 		return;
 	}
 
 	connect(server, &QTcpServer::newConnection, &instance, &Server::addClient);
-    emit instance.serverStarted(server->serverAddress(), server->serverPort());
+	emit instance.serverStarted(server->serverAddress(), server->serverPort());
 }
 
 /**
@@ -64,6 +64,8 @@ int Server::sendMessageToClients(QJsonObject additionalData)
 	//prepare the message
 	QJsonDocument document(additionalData);
 	QString message = QString::fromUtf8(document.toJson());
+	additionalData.insert("Client","Server");
+	GameControll::addTransmission(additionalData);
 	return forwardMessageToClients(message);
 }
 
@@ -82,7 +84,7 @@ int Server::forwardMessageToClients(QString message)
 	}
 
 	QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
-    emit instance.actionReceived(data);
+	emit instance.actionReceived(data);
 	return errorCount;
 }
 
@@ -109,15 +111,25 @@ void Server::addClient()
 		emit clientsChanged(connections.length());
 //        emit clientDeconnected(); TODO
 	});
-    connect(connection, &ConnectionToClient::receivedMessage, this, [&](QString message){
-        QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
-        PlayerAction action = static_cast<PlayerAction>(data.value("action").toInt());
-        if(action==PlayerAction::registerClient)
-        {
-                connection->setUser(User::fromJSON(data));
-        }
-        Server::forwardMessageToClients(message);
-    });
+	connect(connection, &ConnectionToClient::receivedMessage, this, [&](QString message){
+		QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
+		PlayerAction action = static_cast<PlayerAction>(data.value("action").toInt());
+		if(action == PlayerAction::registerClient)
+		{
+				connection->setUser(User::fromJSON(data));
+		}
+		User * u = connection->getUser();
+		if(u)
+		{
+			data.insert("Client","S: " + u->getName());
+		}
+		else
+		{
+			data.insert("Client","-");
+		}
+		GameControll::addTransmission(data);
+		Server::forwardMessageToClients(message);
+	});
 
 	//send board and users to new client
 	QJsonObject state = GameControll::toJSON();
@@ -142,7 +154,7 @@ void Server::closeServer()
 		delete toDelete;
 		toDelete = nullptr;
 	}
-    emit instance.serverClosed();
+	emit instance.serverClosed();
 }
 
 bool Server::isActive()

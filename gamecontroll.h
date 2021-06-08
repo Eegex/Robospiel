@@ -11,6 +11,7 @@
 #include "keymapping.h"
 #include "board.h"
 #include "Direction.h"
+#include "networkdebugger.h"
 
 enum strategy {points, bid};
 /**
@@ -51,7 +52,7 @@ public:
 	static void addOnlineUser(User *user);
 	static User * initializeUser();
 	static void showGuide(const QStringList & texts);
-
+	static QString getLocalUser();
 	static void initializeConnections();
 	static QVector<User*>* getUsers();
 	static void addUser(User *user);
@@ -62,6 +63,7 @@ public:
 	static void setActionWhenAnimationEnded(functionPointer function);
 	static void addDefaultUsers();
 	static void triggerAction(PlayerAction action);
+	static void addTransmission(QJsonObject transmission);
 
 public slots:
 	void calculateWinner();
@@ -73,6 +75,8 @@ public slots:
 	void setActiveUserID(QUuid id);
 
 private:
+	NetworkModel * nwModel = new NetworkModel;
+	NetworkDebugger * debugger = new NetworkDebugger(nwModel,nullptr);
 	static GameControll instance;
 	QTimer guideTimer;
 	QRandomGenerator * r = nullptr;

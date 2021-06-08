@@ -15,6 +15,11 @@ void ConnectionToClient::setUser(User *value)
     user = value;
 }
 
+User * ConnectionToClient::getUser() const
+{
+    return user;
+}
+
 void ConnectionToClient::receiveMessage()
 {
     streamFromClient.startTransaction();

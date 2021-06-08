@@ -13,12 +13,14 @@ class ConnectionToClient: public QObject
 public:
 	bool sendMessage(QString message);
 	ConnectionToClient(QObject *parent, QTcpSocket *tcpSocket);
-    void setUser(User *value);
+	void setUser(User *value);
+
+	User * getUser() const;
 
 private:
-    QTcpSocket* tcpSocket;
+	QTcpSocket* tcpSocket;
 	QDataStream streamFromClient;
-    User* user;
+	User* user;
 
 signals:
 	void receivedMessage(QString message);

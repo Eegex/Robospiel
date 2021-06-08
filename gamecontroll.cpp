@@ -23,6 +23,7 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 	connect(this, &GameControll::actionTriggered, this, &GameControll::sendToServer);
 	connect(&guideTimer,&QTimer::timeout,this,&GameControll::nextGuide);
 	r = new QRandomGenerator(QTime::currentTime().msecsSinceStartOfDay());
+	debugger->show();
 }
 
 /**
@@ -329,6 +330,11 @@ void GameControll::triggerAction(PlayerAction action)
 	return;
 }
 
+void GameControll::addTransmission(QJsonObject transmission)
+{
+	instance.nwModel->addTransmission(transmission);
+}
+
 void GameControll::triggerActionWithData(PlayerAction action, QJsonObject data)
 {
 	qDebug() << "GameControll::triggerActionWithData(PlayerAction " << action << ", QJsonObject " << data << ")";
@@ -342,25 +348,6 @@ void GameControll::triggerActionWithData(PlayerAction action, QJsonObject data)
 	}
 
 	emit instance.actionTriggeredWithData(action, data);
-	// Annalenas version:
-	//if(action==PlayerAction::newUser)
-	//{
-	//	QJsonObject data = QJsonObject();
-	//	data.insert("username", user->getName());
-	//	data.insert("usercolor", user->getColor().name());
-	//	data.insert("id", user->getId().toString());
-	//	emit actionTriggeredWithData(action, data);
-	//} else if (action == PlayerAction::sendBidding)
-	//{
-	//    qDebug()<<"Currently in GameControl: triggerActionWithData -> bidding, current Phase is "<<static_cast<int>(currentPhase);
-	//    if(currentPhase == Phase::search || currentPhase == Phase::countdown)
-	//    {
-	//        QJsonObject data = QJsonObject();
-	//        data.insert("bidding", user->getBidding());
-	//        data.insert("id", user->getId().toString());
-	//        emit actionTriggeredWithData(action, data);
-	//    }
-	//}
 }
 
 /**
@@ -669,8 +656,10 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
 	{
 		instance.leaderboard->deactivateInput();
 		instance.sortBy(bid);
-		instance.setActiveUserID(instance.users.first()->getId());
-		const QString& username = instance.users.first()->getName();
+		User * user = instance.users.first();
+		Q_ASSERT_X(user,"GameControll::setLeaderboard","User is nullptr");
+		instance.setActiveUserID(user->getId());
+		const QString& username = user->getName();
 		showGuide({ tr("Present your solution, ") + username + "[]",tr("Your turn, ") + username + "[]" });
 
 	});
@@ -836,7 +825,7 @@ void GameControll::updateTimer()
 {
 	if(--timeLeft <= 0)
 	{
-		endTimer();
+//		endTimer();
 	}
 	emit time(timeLeft);
 }
@@ -919,6 +908,15 @@ void GameControll::showGuide(const QStringList & texts)
 		instance.guideList.append({list.at(i),duration});
 	}
 	instance.nextGuide();
+}
+
+QString GameControll::getLocalUser()
+{
+	if(Server::isActive() || Client::isActive())
+	{
+		return static_cast<OnlineLeaderboardWidget*>(instance.leaderboard)->getLocalUser()->getName();
+	}
+	return "Blöd";
 }
 
 void GameControll::nextGuide()
