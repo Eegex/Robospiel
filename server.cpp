@@ -16,12 +16,20 @@ Server& Server::getInstance()
 	return instance;
 }
 
+/**
+ * @brief Server::deleteInstance Consider using Server::closeServer(), the sigleton shouldn't be deleted while the program is running.
+ */
 void Server::deleteInstance()
 {
 	delete server;
 	server = nullptr;
 }
 
+/**
+ * @brief Server::startServer emits either serverNotStarted or serverStarted
+ * @param address
+ * @param port
+ */
 void Server::startServer(QString address, int port)
 {
 	if(server->isListening())
@@ -37,14 +45,20 @@ void Server::startServer(QString address, int port)
 	}
 	if (!server->listen(QHostAddress(address),port))
 	{
-		emit serverNotStarted();
+        emit instance.serverNotStarted();
 		return;
 	}
 
 	connect(server, &QTcpServer::newConnection, &instance, &Server::addClient);
-	emit serverStarted(server->serverAddress(), server->serverPort());
+    emit instance.serverStarted(server->serverAddress(), server->serverPort());
 }
 
+/**
+ * @brief Server::sendMessageToClients sends the additionalData to all connected clients
+ * (and triggers local interpretation of additionalData as well)
+ * @param additionalData
+ * @return the number of clients where an error occured and the data may not have been sent correctly
+ */
 int Server::sendMessageToClients(QJsonObject additionalData)
 {
 	//prepare the message
@@ -53,6 +67,12 @@ int Server::sendMessageToClients(QJsonObject additionalData)
 	return forwardMessageToClients(message);
 }
 
+/**
+ * @brief Server::forwardMessageToClients sends the message to all connected clients
+ * (and triggers local interpretation of additionalData as well)
+ * @param message
+ * @return the number of clients where an error occured and the data may not have been sent correctly
+ */
 int Server::forwardMessageToClients(QString message)
 {
 	int errorCount = 0;
@@ -62,10 +82,15 @@ int Server::forwardMessageToClients(QString message)
 	}
 
 	QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
-	emit actionReceived(data);
+    emit instance.actionReceived(data);
 	return errorCount;
 }
 
+/**
+ * @brief Server::addClient Accepts a client that tries to connect to the server, setup of mesage distribution to all other clients,
+ * sends current state of the game to the new client and syncronizes the random generators.
+ * Emits clientsChanged.
+ */
 void Server::addClient()
 {
 	qDebug()<<"Added new Client to Server";
@@ -82,7 +107,7 @@ void Server::addClient()
 		delete toDelete;
 		toDelete = nullptr;
 		emit clientsChanged(connections.length());
-//        emit clientDeconnected();
+//        emit clientDeconnected(); TODO
 	});
     connect(connection, &ConnectionToClient::receivedMessage, this, [&](QString message){
         QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
@@ -117,7 +142,7 @@ void Server::closeServer()
 		delete toDelete;
 		toDelete = nullptr;
 	}
-	emit serverClosed();
+    emit instance.serverClosed();
 }
 
 bool Server::isActive()

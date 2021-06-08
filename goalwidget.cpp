@@ -13,7 +13,7 @@ void GoalWidget::paintEvent(QPaintEvent *event)
 	double height = bounds.height()*fractionOfTile;
 
 
-    QColor color = getPlayerColor(board->seeker);
+    QColor color = PlayerWidget::getPlayerColor(board, board->seeker);
 
 
 	QPainter painter;

@@ -7,7 +7,7 @@
 #include <QPen>
 #include <QDebug>
 #include <QPaintEvent>
-#include "pawnwidget.h"
+#include "playerwidget.h"
 
 class GoalWidget : public PawnWidget
 {

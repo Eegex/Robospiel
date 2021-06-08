@@ -15,12 +15,13 @@ public:
 	static Server& getInstance();
 	static void deleteInstance();
 
-	void startServer(QString address, int port);
-	int sendMessageToClients(QJsonObject additionalData);
-	void closeServer();
+    static void startServer(QString address, int port);
+    static int sendMessageToClients(QJsonObject additionalData);
+    static void closeServer();
 	static bool isActive();
 private:
 	Server(QObject *parent = nullptr);
+    static int forwardMessageToClients(QString message);
 	static Server instance;
 	static QTcpServer* server;
 	static QVector<ConnectionToClient*> connections;
@@ -33,7 +34,7 @@ signals:
 
 private slots:
 	void addClient();
-	int forwardMessageToClients(QString message);
+
 };
 
 #endif // SERVER_H

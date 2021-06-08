@@ -30,6 +30,7 @@ public:
     QVector<QPoint> getTargets();
     bool getInAnimation();
     void setPlayer(int value);
+    static QColor getPlayerColor(Board* board, int playerIndex);
 private:
     int playerNumber;
     bool debugMode = true;
@@ -41,7 +42,7 @@ private:
 
     double length(QPoint vector);
     double timeFactor(QPoint delta, double factorX, double factorY);
-    QColor getPlayerCl();
+    QColor getPlayerColor();
 protected:
 	void mousePressEvent(QMouseEvent *event);
 	void paintEvent(QPaintEvent *event);

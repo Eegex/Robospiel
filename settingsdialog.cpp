@@ -85,14 +85,18 @@ bool SettingsDialog::getShowTopBidding() const
 	return settings.value(topBidding).toBool();
 }
 
+/**
+ * @brief SettingsDialog::load loads a settings-File from at QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)).
+ * If none exists, standard values are set.
+ */
 void SettingsDialog::load()
 {
-	QDir saveOrdner(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation));
-	if(!saveOrdner.exists())
+    QDir saveDir(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation));
+    if(!saveDir.exists())
 	{
-		saveOrdner.mkpath(saveOrdner.path());
+        saveDir.mkpath(saveDir.path());
 	}
-	QFile savefile(saveOrdner.filePath("settings.json"));
+    QFile savefile(saveDir.filePath("settings.json"));
 	if(savefile.open(QIODevice::ReadOnly))
 	{
 		settings = QJsonDocument::fromJson(savefile.readAll()).object();
@@ -175,6 +179,9 @@ void SettingsDialog::load()
 
 }
 
+/**
+ * @brief SettingsDialog::save Applies the settings and saves them to a file (at QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)).
+ */
 void SettingsDialog::save()
 {
 	QJsonObject mappings;

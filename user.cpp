@@ -9,6 +9,12 @@ int User::userCount = 1;
 
 const int User::maxBid = INT32_MAX;
 
+/**
+ * @brief User::User Creates a new User with new Uuid
+ * @param name when the name is "", a default name is generated
+ * @param color
+ * @param parent
+ */
 User::User(QString name, QColor color, QObject *parent) : QObject(parent), name(name), color(color)
 {
 	User::id = QUuid::createUuid();
