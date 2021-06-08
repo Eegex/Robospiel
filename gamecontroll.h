@@ -11,6 +11,7 @@
 #include "keymapping.h"
 #include "board.h"
 #include "Direction.h"
+#include "networkdebugger.h"
 
 enum strategy {points, bid};
 /**
@@ -51,7 +52,7 @@ public:
 	static void addOnlineUser(User *user);
 	static User * initializeUser();
 	static void showGuide(const QStringList & texts);
-
+	static QString getLocalUser();
 	static void initializeConnections();
 	static QVector<User*>* getUsers();
 	static void addUser(User *user);
@@ -62,6 +63,7 @@ public:
 	static void setActionWhenAnimationEnded(functionPointer function);
 	static void addDefaultUsers();
 	static void triggerAction(PlayerAction action);
+	static void addTransmission(QJsonObject transmission);
 
 public slots:
 	void calculateWinner();
@@ -73,6 +75,8 @@ public slots:
 	void setActiveUserID(QUuid id);
 
 private:
+	NetworkModel * nwModel = nullptr;
+	NetworkDebugger * debugger = nullptr;
 	static GameControll instance;
 	QTimer guideTimer;
 	QRandomGenerator * r = nullptr;
@@ -87,7 +91,7 @@ private:
 	QTimer countdown;
 	int timeLeft;
 	functionPointer actionWhenAnimationEnded = nullptr; //ATTENTION! When you store a new method in this variable, you have to add it in GameControll::toJSON() and GameControll::adaptFromJSON()!!!
-	int searchTime=60;
+	int searchTime = 60;
 
 	explicit GameControll(QObject *parent = nullptr);
 	void sendToServer(PlayerAction a);

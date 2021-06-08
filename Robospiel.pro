@@ -23,6 +23,8 @@ SOURCES += \
     main.cpp \
     mainwidget.cpp \
     mainwindow.cpp \
+    networkdebugger.cpp \
+    networkmodel.cpp \
     onlineleaderboardwidget.cpp \
     offlineleaderboardwidget.cpp \
     pawnwidget.cpp \
@@ -54,6 +56,8 @@ HEADERS += \
     keymappingview.h \
     mainwidget.h \
     mainwindow.h \
+    networkdebugger.h \
+    networkmodel.h \
     networkview.h \
     onlineleaderboardwidget.h \
     offlineleaderboardwidget.h \

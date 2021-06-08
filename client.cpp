@@ -1,5 +1,5 @@
 #include "client.h"
-
+#include "gamecontroll.h"
 #include <QJsonDocument>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -44,7 +44,8 @@ bool Client::sendMessageToServer(QJsonObject data)
 	QByteArray block;
 	QDataStream out(&block, QIODevice::WriteOnly);
 	out << message;
-
+	data.insert("Client",GameControll::getLocalUser());
+	GameControll::addTransmission(data);
 	if(tcpSocket->isOpen())
 	{
 		return (tcpSocket->write(block)!=-1);
@@ -67,6 +68,7 @@ void Client::processMessageFromServer()
 
 	QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
 	qDebug() << data;
+
 	emit actionReceived(data);
 
 	//process the next message, which might have be blocked by the current one, which was to long to be transmitted at once
