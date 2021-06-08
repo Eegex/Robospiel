@@ -47,8 +47,10 @@ NetworkModel::NetworkModel()
 
 void NetworkModel::addTransmission(QJsonObject & transmission)
 {
+	emit layoutAboutToBeChanged();
 	transmission.insert("Timestamp",QTime::currentTime().toString("hh:MM:ss.zzz"));
 	list << transmission;
+	emit layoutChanged();
 }
 
 int NetworkModel::rowCount(const QModelIndex & /*parent*/) const

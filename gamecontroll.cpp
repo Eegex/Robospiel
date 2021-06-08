@@ -916,7 +916,11 @@ QString GameControll::getLocalUser()
 {
 	if(Server::isActive() || Client::isActive())
 	{
-		return static_cast<OnlineLeaderboardWidget*>(instance.leaderboard)->getLocalUser()->getName();
+		User * u = static_cast<OnlineLeaderboardWidget*>(instance.leaderboard)->getLocalUser();
+		if(u)
+		{
+			return u->getName();
+		}
 	}
 	return "Blöd";
 }
