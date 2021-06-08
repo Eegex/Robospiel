@@ -54,7 +54,7 @@ public:
 
 	static void initializeConnections();
     static QVector<User*>* getUsers();
-	void addUser(User *user);
+    static void addUser(User *user);
 
 	static void sortBy(strategy strategy);
 

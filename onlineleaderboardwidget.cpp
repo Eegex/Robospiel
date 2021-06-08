@@ -143,10 +143,11 @@ void OnlineLeaderboardWidget::updateColour(QUuid id, QColor color)
 
 void OnlineLeaderboardWidget::addUser(User *u)
 {
+    model->updateUsers();
 	qDebug() << "OnlineLeaderboardWidget::addUser(User *" << u->getName() << u->getId() << ")";
 	connect(u,&User::biddingChanged,this,[&](QUuid id, int bid)
 	{
-		model->update();
+        model->update();
 		if(id == localUser->getId())
 		{
 			biddingBox->setMaximum(std::min(bid,User::maxBid));
@@ -177,5 +178,5 @@ void OnlineLeaderboardWidget::activateInput()
 
 void OnlineLeaderboardWidget::updateAllUsers()
 {
-    //not needed, because tablemodel handels this
+    model->updateUsers();
 }

@@ -77,9 +77,8 @@ Qt::ItemFlags TableModel::flags(const QModelIndex &index) const
 	return Qt::ItemIsSelectable|Qt::ItemIsEnabled;
 }
 
-void TableModel::addUser(User * newUser)
+void TableModel::updateUsers()
 {
-	GameControll::getUsers()->append(newUser);
 	emit layoutChanged();
 }
 
