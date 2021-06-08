@@ -426,6 +426,9 @@ void GameControll::updateRandomGenerator(int seed)
 	}
 }
 
+/**
+ * @brief GameControll::resetForNextUser reset after failed try and loads next user
+ */
 void GameControll::resetForNextUser()
 {
 	qDebug()<<"Acquiring next User";
@@ -582,7 +585,7 @@ void GameControll::addUser(User* user)
 	}
 	instance.users.append(user);
 	instance.leaderboard->addUser(user);
-    instance.leaderboard->updateAllUsers();
+	instance.leaderboard->updateAllUsers();
 }
 
 /**
@@ -599,6 +602,11 @@ void GameControll::calculateWinner()
 	showGuide({ tr("Goal has been hit by %1").arg(username) + "[]" });
 }
 
+/**
+ * @brief GameControll::getUserById get pointer to User from UserId returns nullptr if user not found
+ * @param id
+ * @return
+ */
 User* GameControll::getUserById(QUuid id)
 {
 	for(User* u: qAsConst(users))
@@ -633,8 +641,8 @@ void GameControll::changeBidding(int bidding, QUuid id)
 User * GameControll::initializeUser()
 {
 	User * u = new User(instance.getSettingsDialog()->getUsername(), instance.getSettingsDialog()->getUsercolor());
-    qDebug()<<"initializeUser with id: "<<u->getId();
-    triggerActionWithData(PlayerAction::newUser, u->toJSON());
+	qDebug()<<"initializeUser with id: "<<u->getId();
+	triggerActionWithData(PlayerAction::newUser, u->toJSON());
 	return u;
 }
 
@@ -675,7 +683,7 @@ User * GameControll::getMinBid()
 	User * minBid = instance.users.first();
 	for(User * u:qAsConst(instance.users))
 	{
-		if(u->getBidding() < 100)
+		if(u->getBidding() < 100) //BUG: 100?
 		{
 			if(u < minBid)
 			{

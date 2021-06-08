@@ -53,8 +53,8 @@ public:
 	static void showGuide(const QStringList & texts);
 
 	static void initializeConnections();
-    static QVector<User*>* getUsers();
-    static void addUser(User *user);
+	static QVector<User*>* getUsers();
+	static void addUser(User *user);
 
 	static void sortBy(strategy strategy);
 
