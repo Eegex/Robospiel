@@ -30,6 +30,10 @@ UserCreationWidget::UserCreationWidget(QWidget *parent) : QWidget(parent)
 	setLayout(lay);
 }
 
+/**
+ * @brief UserCreationWidget::addUser
+ * This Function adds a new user to the backend and calls TriggerActionWithData
+ */
 void UserCreationWidget::addUser()
 {
 	qDebug()<<"Addition Request of user with name "<<userNamePicker->text()<<"and colour "<<userColourPicker->selectedColor().name();
