@@ -29,7 +29,7 @@ void PlayerWidget::paintEvent(QPaintEvent *event)
 	double width = bounds.width()*fractionOfTile;
 	double height = bounds.height()*fractionOfTile;
 
-	QColor color = getPlayerCl();
+    QColor color = getPlayerColor();
 	QPainter painter;
 
 	QPen pen;
@@ -55,7 +55,7 @@ void PlayerWidget::paintEvent(QPaintEvent *event)
 		if(debugMode)
 		{
 			QColor debugColor = *new QColor(0,0,0);
-			if(getPlayerCl().value()<200){
+            if(getPlayerColor().value()<200){
 				debugColor = *new QColor(255,255,255);
 			}
 			pen.setColor(debugColor);
@@ -67,16 +67,57 @@ void PlayerWidget::paintEvent(QPaintEvent *event)
 	event->accept();
 }
 
+/**
+ * @brief PlayerWidget::getPlayerColor
+ * @return computes a color for the player based on color settings of the board.
+ */
+QColor PlayerWidget::getPlayerColor()
+{
+    return getPlayerColor(board, playerNumber); //this is just a guess, I hope that playerNumber is really the index
+}
 
+/**
+ * @brief PlayerWidget::getPlayerColor
+ * @param playerIndex
+ * @return computes a color for the playerIndex-th player based on color settings of the board.
+ */
+QColor PlayerWidget::getPlayerColor(Board* board, int playerIndex) //maybe not the perfect place for this method... but playerWidgets and goalwidgets need it and it's right there...
+{
 
-QColor PlayerWidget::getPlayerCl(){
+    int playerNum = board->players.length();
+    QColor color;
 
-	return getPlayerColor(playerNumber);
-
+//    if(ownPlayerColors)
+//    {
+//        QColor colorLow = board->getPlayerColorLow();
+//        QColor colorHigh = board->getPlayerColorHigh();
+//        playerNum --; //we want the endColor to be displayed!
+//        double hueStep = (colorLow.hue() - colorHigh.hue())/playerNum;
+//        double satStep = (colorLow.saturation() - colorHigh.saturation())/playerNum;
+//        double brightStep = (colorLow.value() - colorHigh.value())/playerNum;
+//        color.setHsv(colorLow.hue() - playerIndex*hueStep,colorLow.saturation() - playerIndex*satStep, colorLow.value() - playerIndex*brightStep);
+//        //if(playerIndex ==0)
+//        //{
+//        //	qDebug() << "Origin" << colorLow << colorHigh;
+//        //	qDebug() << "Farbelow" << colorLow.hue() << colorLow.saturation() << colorLow.value();
+//        //	qDebug() << "Farbehigh" << colorHigh.hue() << colorHigh.saturation() << colorHigh.value();
+//        //}
+//        //qDebug() << "Farbe: " << playerIndex << color.hue() << color.saturation() << color.value();
+//        //qDebug() << "Steps: " << hueStep << satStep << brightStep;
+//    }
+//    else
+//    {
+        double stepSize = 359/playerNum;
+        color.setHsv(playerIndex*stepSize,200,200);
+//    }
+    return color;
 }
 
 
-
+/**
+ * @param vector
+ * @return length of the vector
+ */
 double PlayerWidget::length(QPoint vector)
 {
 	return sqrt(pow(vector.x(), 2) + pow(vector.y(), 2));

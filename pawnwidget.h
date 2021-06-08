@@ -14,8 +14,6 @@ public:
 	explicit PawnWidget(QSize size, Board* board, QWidget *parent = nullptr);
 	void move(QPoint point);
 	void setEditable(bool value = true);
-
-	QColor getPlayerColor(int playerIndex);
 protected:
 	Board* board;
 	bool editable = false;

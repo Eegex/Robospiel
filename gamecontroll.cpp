@@ -365,6 +365,8 @@ void GameControll::triggerActionWithData(PlayerAction action, QJsonObject data)
 
 /**
  * @brief GameControll::calculateGameStatus called after each movement of a player (and when reverting, ...)
+ * This function calculates whether the game has ended, either with the player hitting the goal or the player running out of moves.
+ * In the latter case, the next player is being drawn
  */
 void GameControll::calculateGameStatus()
 {
@@ -477,6 +479,15 @@ User* GameControll::getNextUser(QUuid lastUserId) //TODO fix leaving clients
 	return nullptr;
 }
 
+/**
+ * @brief GameControll::sortBy
+ * @param strategy
+ * This function sorts the users in the backend by a predefined Strategy:
+ * BID: The users are being sorted in ascending order based on the bid they've sent
+ * POINTS: The users are being sorted in descending order based on the number of points
+ * It's important to note that the users are also being sorted according to the time they've sent their move, if two players bid the same thing, the player that has bid first will come on first
+ * so it's a FIFO-Scheme.
+ */
 void GameControll::sortBy(strategy strategy)
 {
 	QVector<User*> sortedUsers;
@@ -635,7 +646,7 @@ void GameControll::changeBidding(int bidding, QUuid id)
 }
 
 /**
- * @brief GameControll::initializeUser current user of the system is initialzed (only when server or client starts)
+ * @brief GameControll::initializeUser current user of the system is initialised (only when server or client starts)
  * @return
  */
 User * GameControll::initializeUser()
