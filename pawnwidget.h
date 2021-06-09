@@ -15,7 +15,7 @@ public:
 	void move(QPoint point);
 	void setEditable(bool value = true);
 protected:
-	Board* board;
+	Board* board = nullptr;
 	bool editable = false;
 	bool dragging = false;
 	QPoint offset;
@@ -23,7 +23,7 @@ protected:
 	virtual void mouseReleaseEvent(QMouseEvent * event);
 	virtual void mouseMoveEvent(QMouseEvent * event);
 
-    bool ownPlayerColors = false;
+	bool ownPlayerColors = false;
 
 
 signals:

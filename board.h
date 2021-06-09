@@ -26,7 +26,7 @@ public:
 	QSize getSize();
 	QString printDirection(Direction direction);
 	QVector<Tile*> players;
-	Tile * goal;
+	Tile * goal = nullptr;
 	int seeker = 0;
 	int activePlayer = 0;
 	bool goalHit = 0;

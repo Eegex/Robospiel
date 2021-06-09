@@ -18,33 +18,33 @@ class NetworkView : public QWidget
 public:
 	explicit NetworkView(QWidget *parent = nullptr);
 	~NetworkView();
-    void toChoiceMenu();
+	void toChoiceMenu();
 private:
 
 	bool allowClientAndServer=false;
 
-    QLayout* layout;
-    QPushButton* btnClient;
-    QPushButton* btnServer;
-    QPushButton* btnOffline;
+	QLayout* layout = nullptr;
+	QPushButton* btnClient = nullptr;
+	QPushButton* btnServer = nullptr;
+	QPushButton* btnOffline = nullptr;
 
-	QWidget* serverContainer;
-    QVBoxLayout* gridServer;
-	QLineEdit* leServerAddress;
-	QLineEdit* leServerPort;
-    QLabel* serverStatus;
-	QLineEdit* leMessageToClients;
+	QWidget* serverContainer = nullptr;
+	QVBoxLayout* gridServer = nullptr;
+	QLineEdit* leServerAddress = nullptr;
+	QLineEdit* leServerPort = nullptr;
+	QLabel* serverStatus = nullptr;
+	QLineEdit* leMessageToClients = nullptr;
 
-	QWidget* clientContainer;
-    QVBoxLayout* gridClient;
-	QLineEdit* leClientAddress;
-	QLineEdit* leClientPort;
-	QLabel* clientStatus;
-	QLineEdit* leMessageToServer;
+	QWidget* clientContainer = nullptr;
+	QVBoxLayout* gridClient = nullptr;
+	QLineEdit* leClientAddress = nullptr;
+	QLineEdit* leClientPort = nullptr;
+	QLabel* clientStatus = nullptr;
+	QLineEdit* leMessageToServer = nullptr;
 
 signals:
-    void leaderboardOnline();
-    void leaderboardOffline();
+	void leaderboardOnline();
+	void leaderboardOffline();
 
 private slots:
 	void addServer();

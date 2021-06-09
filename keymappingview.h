@@ -37,8 +37,8 @@ private:
 										PlayerAction::revert,
 										PlayerAction::revertToBeginning};
 	QVector<KeyMapping*> allMappings;
-	QGridLayout * grid;
-	QVBoxLayout * lay;
+	QGridLayout * grid = nullptr;
+	QVBoxLayout * lay = nullptr;
 	QVector<QLabel*> mappingLabels;
 	QVector<QVector<QLabel*>*> keyLabels;
 	QVector<QHBoxLayout*> hBoxRows;

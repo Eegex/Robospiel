@@ -129,6 +129,12 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	connect(aSettings,&QAction::triggered,&GameControll::getInstance(),&GameControll::showSettings);
 	bar->addAction(aSettings);
 	bar->addAction(aGoToIdle);
+	aDebugger = new QAction(tr("Debug"),this);
+	bar->addAction(aDebugger);
+	connect(aDebugger,&QAction::triggered,&GameControll::getInstance(),&GameControll::startNetworkDebugger);
+	connect(aDebugger,&QAction::triggered,this,[&](){
+		aDebugger->setText("Clear Log");
+	});
 
 #endif
 	connect(aEditBoard,&QAction::triggered,this,[=]()->void{

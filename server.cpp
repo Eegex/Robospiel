@@ -64,8 +64,6 @@ int Server::sendMessageToClients(QJsonObject additionalData)
 	//prepare the message
 	QJsonDocument document(additionalData);
 	QString message = QString::fromUtf8(document.toJson());
-	additionalData.insert("Client","Server");
-	GameControll::addTransmission(additionalData);
 	return forwardMessageToClients(message);
 }
 
@@ -82,8 +80,9 @@ int Server::forwardMessageToClients(QString message)
 	{
 		errorCount += client->sendMessage(message) ? 0:1;
 	}
-
 	QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
+	data.insert("Client","Server");
+	GameControll::addTransmission(data);
 	emit instance.actionReceived(data);
 	return errorCount;
 }
@@ -109,16 +108,18 @@ void Server::addClient()
 		delete toDelete;
 		toDelete = nullptr;
 		emit clientsChanged(connections.length());
-//        emit clientDeconnected(); TODO
+		//emit clientDisconnected(); TODO
 	});
-	connect(connection, &ConnectionToClient::receivedMessage, this, [&](QString message){
+	connect(connection, &ConnectionToClient::receivedMessage, this, [this](QString message){
+		ConnectionToClient * senderConnection = dynamic_cast<ConnectionToClient*>(sender()); //get connection over sender instead of capturing it to prevent stupid behavior
+		Q_ASSERT_X(senderConnection,"Server::addClient() receivedMessage-lambda","senderConnection is nullptr");
 		QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
 		PlayerAction action = static_cast<PlayerAction>(data.value("action").toInt());
 		if(action == PlayerAction::registerClient)
 		{
-				connection->setUser(User::fromJSON(data));
+			senderConnection->setUser(User::fromJSON(data));
 		}
-		User * u = connection->getUser();
+		User * u = senderConnection->getUser();
 		if(u)
 		{
 			data.insert("Client","S: " + u->getName());

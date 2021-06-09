@@ -69,6 +69,8 @@ void Client::processMessageFromServer()
 	QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
 	qDebug() << data;
 
+	data.insert("Client","Server");
+	GameControll::addTransmission(data);
 	emit actionReceived(data);
 
 	//process the next message, which might have be blocked by the current one, which was to long to be transmitted at once

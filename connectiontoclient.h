@@ -18,9 +18,9 @@ public:
 	User * getUser() const;
 
 private:
-	QTcpSocket* tcpSocket;
+	QTcpSocket * tcpSocket = nullptr;
 	QDataStream streamFromClient;
-	User* user;
+	User * user = nullptr;
 
 signals:
 	void receivedMessage(QString message);

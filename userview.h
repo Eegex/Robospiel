@@ -18,9 +18,9 @@ public:
 	LeaderBoardWidget *getLeaderboard() const;
 
 private:
-	LeaderBoardWidget* leaderboard;
-	NetworkView* network;
-	QGridLayout* layout;
+	LeaderBoardWidget* leaderboard = nullptr;
+	NetworkView* network = nullptr;
+	QGridLayout* layout = nullptr;
 	QPushButton* btnBack = new QPushButton(tr("Back"));
 
 signals:

@@ -41,7 +41,7 @@ private:
 	BoardView * view = nullptr;
 	BoardEditor * edit = nullptr;
 	NetworkView * networkView = nullptr;
-    UserView * userView = nullptr;
+	UserView * userView = nullptr;
 	QLCDNumber * lcd = nullptr;
 	QPushButton * skipBtn = nullptr;
 	QMenuBar * menuBar = nullptr;
@@ -49,6 +49,7 @@ private:
 	QAction * aEditBoard = nullptr;
 	QAction * aNextTarget = nullptr;
 	QAction * aSettings = nullptr;
+	QAction * aDebugger = nullptr;
 	QMenu * mNewGame = nullptr;
 	QMenu *mNewStuff = nullptr;
 	QWidgetAction * waHeight = nullptr;

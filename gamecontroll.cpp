@@ -33,9 +33,21 @@ void GameControll::initializeConnections()
 {
 	connect(&Server::getInstance(), &Server::actionReceived, &GameControll::getInstance(), &GameControll::exeQTAction);
 	connect(&Client::getInstance(), &Client::actionReceived, &GameControll::getInstance(), &GameControll::exeQTAction);
-	instance.nwModel = new NetworkModel;
-	instance.debugger = new NetworkDebugger(instance.nwModel);
-	instance.debugger->show();
+}
+
+void GameControll::startNetworkDebugger()
+{
+	if(!instance.nwModel)
+	{
+		instance.nwModel = new NetworkModel;
+		instance.nwModel->setUsers(&instance.users);
+		instance.debugger = new NetworkDebugger(instance.nwModel);
+		instance.debugger->show();
+	}
+	else
+	{
+		instance.nwModel->clear();
+	}
 }
 
 QJsonObject GameControll::toJSON() //TODO make sure the replaced Objects don't get lost
@@ -212,7 +224,7 @@ void GameControll::exeQTAction(QJsonObject data)
 {
 	qDebug() << "GameControll::exeQTAction(QJsonObject " << data << ")";
 	PlayerAction a = static_cast<PlayerAction>(data.take("action").toInt());
-	User* user;
+	User * user = nullptr;
 	switch(a)
 	{
 	case movePlayerEast:
@@ -334,7 +346,10 @@ void GameControll::triggerAction(PlayerAction action)
 
 void GameControll::addTransmission(QJsonObject transmission)
 {
-	instance.nwModel->addTransmission(transmission);
+	if(instance.nwModel)
+	{
+		instance.nwModel->addTransmission(transmission);
+	}
 }
 
 void GameControll::triggerActionWithData(PlayerAction action, QJsonObject data)
@@ -489,7 +504,7 @@ void GameControll::sortBy(strategy strategy)
 	if(strategy == bid)
 	{
 		//qDebug()<<"Called sortByBidding";
-		User * minUser;
+		User * minUser = nullptr;
 		int minIndex = 0;
 		int minBid;
 		for(int additionIndex = 0; additionIndex < instance.users.size(); additionIndex++)
@@ -529,7 +544,7 @@ void GameControll::sortBy(strategy strategy)
 	if(strategy == points)
 	{
 		//qDebug()<<"Called sortByPoints";
-		User * maxUser;
+		User * maxUser = nullptr;
 		int maxIndex = 0;
 		int maxPts;
 		for(int additionIndex = 0; additionIndex < instance.users.size(); additionIndex++)

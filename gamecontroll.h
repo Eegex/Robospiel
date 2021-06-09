@@ -66,6 +66,7 @@ public:
 	static void addTransmission(QJsonObject transmission);
 
 public slots:
+	static void startNetworkDebugger();
 	void calculateWinner();
 	void showSettings();
 	void setMapping(QVector<KeyMapping *> mapping);

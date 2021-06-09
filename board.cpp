@@ -64,11 +64,11 @@ void Board::makeNewPlayers(int playerNumber)
  */
 void Board::makeNewSeeker(bool random)
 {
-    if(players.length()<2) //just one player? This will stay the seeker!
+	if(players.length()<2) //just one player? This will stay the seeker!
 	{
 		return;
 	}
-    if(random) //random new seeker
+	if(random) //random new seeker
 	{
 		int originalSeeker = seeker;
 		while(seeker == originalSeeker)
@@ -76,7 +76,7 @@ void Board::makeNewSeeker(bool random)
 			seeker = r->bounded(players.size());
 		}
 	}
-    else //the player with the next id will be the seeker
+	else //the player with the next id will be the seeker
 	{
 		seeker = (seeker+1)%players.length();
 	}
@@ -306,7 +306,7 @@ Tile* Board::getRandomTile()
 Tile* Board::getRandomUnoccupiedTile()
 {
 	bool tileIsValid = false;
-	Tile* initialTile;
+	Tile* initialTile = nullptr;
 	int counter = 0;
 	while(!tileIsValid)
 	{
@@ -534,12 +534,12 @@ void Board::placeGoalInCorner()
 {
 	bool noCorner = true;
 	int count = 0;
-    while(noCorner) //try to just find a new corner spot for the goal
+	while(noCorner) //try to just find a new corner spot for the goal
 	{
 		placeGoalAwayFromSeeker();
 		noCorner = !isTileCorner(goal);
 		count++;
-        if(count > 1000) // when this didn't work after 1000 tries
+		if(count > 1000) // when this didn't work after 1000 tries
 		{
 			//find a corner
 			Tile*  tile;
@@ -550,7 +550,7 @@ void Board::placeGoalInCorner()
 			}
 			//put the goal there
 			goal = tile;
-            //move the player that's in that corner to a random tile
+			//move the player that's in that corner to a random tile
 			int playerNum = tile->getPlayer();
 			if (playerNum != -1)
 			{

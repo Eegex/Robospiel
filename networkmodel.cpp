@@ -1,6 +1,7 @@
 #include "networkmodel.h"
 #include "Direction.h"
 #include <QJsonDocument>
+#include <QTime>
 
 
 QMap<int,QString> NetworkModel::playerActionStrings;
@@ -42,14 +43,21 @@ NetworkModel::NetworkModel()
 	playerActionStrings.insert(0x1000,"intern");
 	playerActionStrings.insert(0x1001,"syncRandomGenerators");
 	playerActionStrings.insert(0x1002,"registerClient");
-	columns << "Zeitpunkt" << "Client" << "PlayerAction" << "Daten";
+	columns << "Zeitpunkt" << "Sender" << "Nutzer" << "PlayerAction" << "Daten";
 }
 
 void NetworkModel::addTransmission(QJsonObject & transmission)
 {
 	emit layoutAboutToBeChanged();
-	transmission.insert("Timestamp",QTime::currentTime().toString("hh:MM:ss.zzz"));
+	transmission.insert("Timestamp",QTime::currentTime().toString("hh:mm:ss.zzz"));
 	list << transmission;
+	emit layoutChanged();
+}
+
+void NetworkModel::clear()
+{
+	emit layoutAboutToBeChanged();
+	list.clear();
 	emit layoutChanged();
 }
 
@@ -69,44 +77,93 @@ QVariant NetworkModel::data(const QModelIndex &index, int role) const
 	{
 		if(index.row() < rowCount(QModelIndex()) && index.column() < columnCount(QModelIndex()))
 		{
+			const QJsonObject & object = list.at(index.row());
 			if(role == Qt::DisplayRole)
 			{
 				switch(index.column())
 				{
 				case 0:
-					return list.at(index.row()).value("Timestamp");
+					return object.value("Timestamp");
 				case 1:
-					return list.at(index.row()).value("Client");
+					return object.value("Client");
 				case 2:
-					return playerActionStrings.value(list.at(index.row()).value("action").toInt());
+				{
+					QUuid id;
+					if(!object.value("userId").isUndefined())
+					{
+						id = object.value("userId").toString();
+					}
+					else if(!object.value("activeUserID").isUndefined())
+					{
+						id = object.value("activeUserID").toString();
+					}
+					else if(!object.value("id").isUndefined())
+					{
+						id = object.value("id").toString();
+					}
+					if(id.isNull())
+					{
+						return "Unbekannt";
+					}
+					for(User * u:*users)
+					{
+						if(u && u->getId() == id)
+						{
+							return u->getName();
+						}
+					}
+					return id;
+				}
 				case 3:
-					return list.at(index.row());
+					return playerActionStrings.value(object.value("action").toInt());
+				case 4:
+					QJsonDocument doc(object);
+					return doc.toJson(QJsonDocument::Compact);
 				}
 			}
 			else if(role == Qt::ForegroundRole)
 			{
 				return QVariant();
-				if(index.column() == 0)
-				{
-					if(list.at(index.row()).value("Client").toString("Server") == "Server")
-					{
-						return QColor(255,125,0);
-					}
-					else
-					{
-						return QColor(74,127,44);
-					}
-				}
 			}
 			else if(role == Qt::BackgroundRole)
 			{
+				if(index.column() == 2)
+				{
+					QUuid id;
+					if(!object.value("userId").isUndefined())
+					{
+						id = object.value("userId").toString();
+					}
+					else if(!object.value("activeUserID").isUndefined())
+					{
+						id = object.value("activeUserID").toString();
+					}
+					else if(!object.value("id").isUndefined())
+					{
+						id = object.value("id").toString();
+					}
+					if(!id.isNull())
+					{
+						for(User * u:*users)
+						{
+							if(u && u->getId() == id)
+							{
+								return u->getColor();
+							}
+						}
+					}
+				}
+				else if(!object.value("bidding").isUndefined() && index.column() == 3)
+				{
+					return QColor(0,180,255,80);
+				}
 				if(list.at(index.row()).value("Client").toString("Server") == "Server")
 				{
-					return QColor(255,125,0);
+					return QColor(255,125,0,80);
 				}
 				else
 				{
-					return QColor(74,127,44);
+					return QColor(74,127,44,80);
 				}
 			}
 		}
@@ -131,4 +188,9 @@ QVariant NetworkModel::headerData(int section, Qt::Orientation orientation, int 
 		}
 	}
 	return QVariant();
+}
+
+void NetworkModel::setUsers(QVector<User *> * value)
+{
+	users = value;
 }

@@ -12,21 +12,21 @@
 
 class KeyInput : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 
-    void keyReleaseEvent(QKeyEvent *event);
-    QLineEdit* input;
-    static QMetaEnum metaEnum;
+	void keyReleaseEvent(QKeyEvent *event);
+	QLineEdit * input = nullptr;
+	static QMetaEnum metaEnum;
 public:
-    explicit KeyInput(QWidget *parent = nullptr);
-    static int inputWidth;
+	explicit KeyInput(QWidget *parent = nullptr);
+	static int inputWidth;
 
-    Qt::Key getKey();
-    bool hasKey();
-    void reset();
-    static Qt::Key stringToKey(QString string);
-    static QString keyToString(Qt::Key key);
+	Qt::Key getKey();
+	bool hasKey();
+	void reset();
+	static Qt::Key stringToKey(QString string);
+	static QString keyToString(Qt::Key key);
 signals:
 
 };
