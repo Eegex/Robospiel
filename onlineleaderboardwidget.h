@@ -7,7 +7,7 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QUuid>
-#include <QSpinBox>
+#include "spinbox.h"
 #include <QTableView>
 #include "Direction.h"
 #include "LeaderBoardWidget.h"
@@ -31,7 +31,7 @@ private:
 	QGridLayout * lay = new QGridLayout(this);
 	QPushButton * bidBtn = new QPushButton(this); //accept in biddingWidget
 	QLabel * lname = new QLabel(this); //labelName in biddingWdiget
-	QSpinBox * biddingBox = new QSpinBox(this); //lSpinBox in biddingWidget
+    SpinBox * biddingBox = new SpinBox(this); //lSpinBox in biddingWidget
 	QTableView * tableView = new QTableView(this);
 	int userBidding = User::maxBid;
 	User * localUser = nullptr;

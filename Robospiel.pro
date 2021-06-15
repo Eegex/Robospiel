@@ -32,6 +32,7 @@ SOURCES += \
     playerwidget.cpp \
     server.cpp \
     settingsdialog.cpp \
+    spinbox.cpp \
     tablemodel.cpp \
     tile.cpp \
     user.cpp \
@@ -65,6 +66,7 @@ HEADERS += \
     playerwidget.h \
     server.h \
     settingsdialog.h \
+    spinbox.h \
     tablemodel.h \
     tile.h \
     boardview.h \
