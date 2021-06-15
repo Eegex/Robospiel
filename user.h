@@ -38,7 +38,7 @@ private:
 	QUuid id;
 	int bidding = maxBid;
 	int points = 0;
-	unsigned long timeStamp;
+	unsigned long timeStamp = 0;
 	bool hasBid = false;
 	static int userCount;
 

@@ -509,17 +509,19 @@ void GameControll::sortBy(strategy strategy)
 		int minBid;
 		for(int additionIndex = 0; additionIndex < instance.users.size(); additionIndex++)
 		{
-			minBid = User::maxBid + 1;
+			//qDebug()<<"AdditionIndex: "<<additionIndex;
+			minBid = User::maxBid;
 			for(User* user : qAsConst(instance.users))
 			{
 				//qDebug()<<"SortByBidding: USER "<<user->getName()<<" with bidding "<<user->getBidding()<<"and timestamp: "<<user->getTimeStamp();
 				if(user->getBidding() <= minBid && isActive[instance.users.indexOf(user)])//If User has a lower bid than the currently lowest bid
 				{
+					//qDebug()<<"User: "<<user->getName()<<" has lower bid than the current Minimum";
 					if(user->getBidding() == minBid)
 					{
-						if(user->getTimeStamp() < minTimeStamp) //check the timestamp
+						if(user->getTimeStamp() <= minTimeStamp) //check the timestamp
 						{
-							//qDebug()<<"Bidding is the same, timestamp is earlier";
+							//qDebug()<<"Bidding is the same, timestamp is earlier, user is "<<user->getName();
 							minUser = user; //Set the Widget to add to the new list to the user
 							minIndex = instance.users.indexOf(user); //Set the index needed for deactivating the user to the current index
 							minBid = user->getBidding(); //Set the newest lowest bid to the current user as there can be users after that one with lower bids
@@ -535,11 +537,17 @@ void GameControll::sortBy(strategy strategy)
 						minTimeStamp = user->getTimeStamp(); //Set User Timestamp to the current user value
 					}
 				}
+				//qDebug()<<("\n");
 			}
 			isActive[minIndex] = false; //Deactivate user
 			sortedUsers.append(minUser);
 		}
 		instance.users = sortedUsers;
+		/*for(int i = 0; i<instance.users.size(); i++)
+		{
+			qDebug()<<"SortedUsers: User "<<i<<": "<<instance.users[i]->getName()<<" with points: "<<instance.users[i]->getPoints()<<" and timestamp "<<instance.users[i]->getTimeStamp();
+			//isActive[i] = true;
+		}*/
 	}
 	if(strategy == points)
 	{
@@ -568,7 +576,7 @@ void GameControll::sortBy(strategy strategy)
 		instance.users = sortedUsers;
 		for(int i = 0; i<instance.users.size(); i++)
 		{
-			//qDebug()<<"SortedUsers: User "<<i<<": "<<users[i]->getName()<<" with points: "<<users[i]->getPoints()<<" and timestamp "<<users[i]->getTimeStamp();
+			qDebug()<<"SortedUsers: User "<<i<<": "<<instance.users[i]->getName()<<" with points: "<<instance.users[i]->getPoints()<<" and timestamp "<<instance.users[i]->getTimeStamp();
 			//isActive[i] = true;
 		}
 	}
@@ -842,7 +850,7 @@ void GameControll::updateTimer()
 {
 	if(--timeLeft <= 0)
 	{
-//		endTimer();
+		endTimer();
 	}
 	emit time(timeLeft);
 }
