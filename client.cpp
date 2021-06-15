@@ -5,6 +5,8 @@
 #include <QJsonObject>
 #include <QJsonObject>
 
+//comment for helenas git
+
 Client Client::instance;
 QDataStream Client::streamFromServer;
 QTcpSocket* Client::tcpSocket = new QTcpSocket();
