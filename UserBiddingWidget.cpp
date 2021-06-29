@@ -88,8 +88,12 @@ void UserBiddingWidget::updateColour(QColor colour){
 
 void UserBiddingWidget::btnPressed()
 {
-	emit biddingChanged(lSpinBox->value(), QDateTime::currentMSecsSinceEpoch(), user->getId());
-	qDebug()<<"Player "<<user->getName()<<" changed their bidding to: "<<lSpinBox->value();
+	if(lSpinBox->value() > MIN_BID){
+		emit biddingChanged(lSpinBox->value(), QDateTime::currentMSecsSinceEpoch(), user->getId());
+		qDebug()<<"Player "<<user->getName()<<" changed their bidding to: "<<lSpinBox->value();
+	}else{
+		qDebug()<<"Someone has tried to bid No Bid";
+	}
 }
 
 User* UserBiddingWidget::getUser()

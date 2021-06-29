@@ -40,6 +40,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	{
 		initializeView(newBoard, GameControll::getMapping());
 	});
+	connect(&GameControll::getInstance(),&GameControll::focusBoard,this,&MainWidget::focusBoard);
 	adjustSize();
 	glMain->addWidget(skipBtn,2,1,Qt::AlignCenter);
 	skipBtn->setDisabled(true);
@@ -198,6 +199,14 @@ void MainWidget::enableMenus(bool boolean)
 	aEditBoard->setEnabled(boolean);
 }
 
+void MainWidget::focusBoard()
+{
+	if(view)
+	{
+		view->setFocus();
+	}
+}
+
 void MainWidget::enableTimerSkip(bool boolean)
 {
 	skipBtn->setEnabled(boolean);
@@ -258,6 +267,7 @@ void MainWidget::initializeView(Board* b, QVector<KeyMapping*>* m)
 	view = new BoardView(this);
 	view->setBoard(b);
 	view->setMapping(m);
+	view->setFocusPolicy(Qt::NoFocus);
 	connectView(view);
 	connect(view, &BoardView::animationEnded, &GameControll::getInstance(), [=]()->void{
 		if(GameControll::getActionWhenAnimationEnded())
