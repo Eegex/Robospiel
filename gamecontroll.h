@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QTime>
 #include <QDebug>
+#include <QMediaPlayer>
 #include "LeaderBoardWidget.h"
 #include "user.h"
 #include "settingsdialog.h"
