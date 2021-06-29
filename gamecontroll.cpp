@@ -1018,5 +1018,5 @@ void GameControll::setActionWhenAnimationEnded(functionPointer function)
 }
 
 void GameControll::disableAnnoyingSounds(){
-	player->stop();
+	instance.player->stop();
 }
