@@ -759,6 +759,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	{
 		if(currentPhase != Phase::countdown)
 		{
+			instance.leaderboard->setBiddingFocus();
 			currentPhase = phase;
 			showGuide({tr("Start bidding")+ "[]",tr("Let's go! Bid!")+ "[]", tr("You can bid now!")+ "[]",  tr("Lets do some bidding!")+ "[]", tr("I bet you wont find anything! But you can try to...")+ "[2000]" +tr("Make your biddings!")+ "[]", tr("Make your biddings! Well if you find anything...")+ "[]"});
 			emit enableMenus(false);
@@ -771,6 +772,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	{
 		if(currentPhase == Phase::search)
 		{
+			instance.leaderboard->setBiddingFocus();
 			currentPhase = phase;
 			showGuide({tr("Counting down")+ "[]", tr("Stressed yet? The Timer is running!")+ "[]", tr("You will never find anything in a minute!")+ "[]" });
 			timeLeft = searchTime; //60
@@ -791,6 +793,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 			currentPhase = phase;
 			emit enableMenus(false);
 			emit enableTimerSkip(false);
+			emit focusBoard();
 			return true;
 		}
 		break;
@@ -803,6 +806,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 			showGuide({tr("time to show off")+ "[]"});
 			emit enableMenus(false);
 			emit enableTimerSkip(false);
+			emit focusBoard();
 			return true;
 		}
 		break;

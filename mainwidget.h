@@ -35,6 +35,8 @@ private slots:
 	void createBoard();
 	void updateGuide(const QString & txt);
 	void enableMenus(bool boolean);
+	void focusBoard();
+
 private:
 	QLabel * dlGuide = new QLabel(this);
 	QGridLayout * glMain = nullptr;

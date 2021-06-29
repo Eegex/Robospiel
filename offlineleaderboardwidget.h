@@ -45,6 +45,7 @@ public slots:
 	void deactivateInput();
 	void activateInput();
 	void updateLayout();
+	void setBiddingFocus();
 	//void newUser();
 
 signals:

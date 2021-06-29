@@ -50,6 +50,11 @@ void OfflineLeaderBoardWidget::updateLayout(){
 	lay->update();
 }
 
+void OfflineLeaderBoardWidget::setBiddingFocus()
+{
+	// not implemented
+}
+
 /**
  * @brief OfflineLeaderBoardWidget::addUser
  * @param newUser

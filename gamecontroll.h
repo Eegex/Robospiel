@@ -117,6 +117,8 @@ signals:
 	void enableTimerSkip(bool boolean);
 	void newBoard(Board* b);
 	void updateSkip(int current, int all);
+	void focusBoard();
+
 private slots:
 	void updateTimer();
 	bool switchPhase(GameControll::Phase phase);

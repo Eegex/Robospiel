@@ -19,7 +19,7 @@ void OnlineLeaderboardWidget::initialize()
 	tableView->setModel(model);
 	biddingBox->setSpecialValueText(tr("No Bid"));
 	connect(bidBtn,&QPushButton::clicked, this, &OnlineLeaderboardWidget::btnPressed);
-    connect(biddingBox,&SpinBox::returnPressed, this,  &OnlineLeaderboardWidget::btnPressed);
+	connect(biddingBox,&SpinBox::returnPressed, this,  &OnlineLeaderboardWidget::btnPressed);
 	//connect(this, &OnlineLeaderboardWidget::updateLayout, tableView, &QTableWidget::clearContents);
 }
 
@@ -66,7 +66,7 @@ void OnlineLeaderboardWidget::btnPressed()
 
 void OnlineLeaderboardWidget::updateBidding(QUuid id, int bidding)
 {
-	qDebug() << "OnlineLeaderboardWidget::updateBidding(QUuid " << id << ", int " << bidding << ")";
+	//qDebug() << "OnlineLeaderboardWidget::updateBidding(QUuid " << id << ", int " << bidding << ")";
 	/*User * tmpUser = model->findUser(id);
 	QString name = "";
 	if (tmpUser != nullptr)
@@ -84,11 +84,12 @@ void OnlineLeaderboardWidget::updateBidding(QUuid id, int bidding)
 	userBidding = bidding; // notwendig?
 	emit biddingChangedOnline(userBidding);
 	model->update();
+	setBiddingFocus();
 }
 
 void OnlineLeaderboardWidget::updateName(QUuid id, QString newName)
 {
-	qDebug() << "OnlineLeaderboardWidget::updateName(QUuid " << id << ", QString " << newName << ")";
+	//qDebug() << "OnlineLeaderboardWidget::updateName(QUuid " << id << ", QString " << newName << ")";
 	/*	User * tmpUser = findUser(id);
 	QString name = "";
 	if (tmpUser != nullptr)
@@ -114,7 +115,7 @@ void OnlineLeaderboardWidget::updateName(QUuid id, QString newName)
 
 void OnlineLeaderboardWidget::updateColour(QUuid id, QColor color)
 {
-	qDebug() << "OnlineLeaderboardWidget::updateColour(QUuid " << id << ", QColor " << color << ")";
+	//qDebug() << "OnlineLeaderboardWidget::updateColour(QUuid " << id << ", QColor " << color << ")";
 	/*	qDebug()<<"useronlinewidget updateColor to "<<color.name();
 	User * tmpUser = findUser(id);
 	QString name = "";
@@ -143,7 +144,7 @@ void OnlineLeaderboardWidget::updateColour(QUuid id, QColor color)
 
 void OnlineLeaderboardWidget::addUser(User *u)
 {
-	qDebug() << "OnlineLeaderboardWidget::addUser(User *" << u->getName() << u->getId() << ")";
+	//qDebug() << "OnlineLeaderboardWidget::addUser(User *" << u->getName() << u->getId() << ")";
 	connect(u,&User::biddingChanged,this,[&](QUuid id, int bid)
 	{
 		model->update();
@@ -174,6 +175,12 @@ void OnlineLeaderboardWidget::activateInput()
 {
 	bidBtn->setEnabled(true);
 	biddingBox->setEnabled(true);
+}
+
+void OnlineLeaderboardWidget::setBiddingFocus()
+{
+	biddingBox->setFocus();
+	QTimer::singleShot(15,biddingBox,&SpinBox::selectAll);
 }
 
 void OnlineLeaderboardWidget::updateAllUsers()

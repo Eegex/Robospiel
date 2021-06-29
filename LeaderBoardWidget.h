@@ -27,6 +27,7 @@ public slots:
 	virtual void deactivateInput() = 0;
 	virtual void activateInput() = 0;
 	virtual void updateAllUsers() = 0; //Change List to reflect current game status
+	virtual void setBiddingFocus() = 0;
 
 signals:
 	void userAdded(User* u);
