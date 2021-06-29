@@ -65,7 +65,7 @@ public:
 	static void addDefaultUsers();
 	static void triggerAction(PlayerAction action);
 	static void addTransmission(QJsonObject transmission);
-
+	static void disableAnnoyingSounds();
 	static User *getLocalUser();
 public slots:
 	static void startNetworkDebugger();
@@ -76,7 +76,7 @@ public slots:
 	void remakeBoard();
 	QUuid getActiveUserID();
 	void setActiveUserID(QUuid id);
-	void disableAnnoyingSounds();
+
 
 private:
 	NetworkModel * nwModel = nullptr;
