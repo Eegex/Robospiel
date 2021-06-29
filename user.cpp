@@ -151,5 +151,16 @@ unsigned long User::getTimeStamp() const
 
 bool User::operator<(const User & u) const
 {
-	return getBidding() < u.getBidding() || (getBidding() == u.getBidding() && getTimeStamp() < u.getTimeStamp());
+	qDebug() << "User::operator<(const User & u) const";
+	return this < &u;
+}
+
+bool User::operator<(const User * u) const
+{
+	qDebug() << "User::operator<(const User * u) const";
+	if(hasBid && u->hasBid)
+	{
+		return (getBidding() == u->getBidding() && getTimeStamp() < u->getTimeStamp()) || getBidding() < u->getBidding();
+	}
+	return hasBid || !u->hasBid;
 }

@@ -23,6 +23,7 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 	connect(this, &GameControll::actionTriggered, this, &GameControll::sendToServer);
 	connect(&guideTimer,&QTimer::timeout,this,&GameControll::nextGuide);
 	r = new QRandomGenerator(QTime::currentTime().msecsSinceStartOfDay());
+	player = new QMediaPlayer;
 }
 
 /**
@@ -277,7 +278,6 @@ void GameControll::exeQTAction(QJsonObject data)
 	case skipTimer:
 		if(Server::isActive()||Client::isActive())
 		{
-			QMediaPlayer * player = new QMediaPlayer;
 			QString path = QDir::currentPath();
 			qDebug()<<path;
 			player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/rick.mp3"));
@@ -288,6 +288,7 @@ void GameControll::exeQTAction(QJsonObject data)
 			if(skipCounter==users.length())
 			{
 				endTimer();
+				player->stop();
 			}
 		}
 		else
@@ -387,7 +388,7 @@ void GameControll::addTransmission(QJsonObject transmission)
 void GameControll::triggerActionWithData(PlayerAction action, QJsonObject data)
 {
 	qDebug() << "GameControll::triggerActionWithData(PlayerAction " << action << ", QJsonObject " << data << ")";
-    if(action == PlayerAction::playerSwitch && !((instance.currentPhase == Phase::presentation&&instance.localUserIsActiveUser()) || instance.currentPhase == Phase::freeplay)) //make sure you can only click players in the right phases
+	if(action == PlayerAction::playerSwitch && !((instance.currentPhase == Phase::presentation&&instance.localUserIsActiveUser()) || instance.currentPhase == Phase::freeplay)) //make sure you can only click players in the right phases
 	{
 		return;
 	}
@@ -697,7 +698,7 @@ User * GameControll::initializeUser()
 {
 	User * u = new User(instance.getSettingsDialog()->getUsername(), instance.getSettingsDialog()->getUsercolor());
 	qDebug()<<"initializeUser with id: "<<u->getId();
-    triggerActionWithData(PlayerAction::registerClient, u->toJSON());
+	triggerActionWithData(PlayerAction::registerClient, u->toJSON());
 	triggerActionWithData(PlayerAction::newUser, u->toJSON());
 	return u;
 }
@@ -731,14 +732,14 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
 	});
 }
 
-User * GameControll::getMinBid()
+const User * GameControll::getMinBid()
 {
-	User * minBid = instance.users.first();
-	for(User * u:qAsConst(instance.users))
+	const User * minBid = instance.users.first();
+	for(const User * u:qAsConst(instance.users))
 	{
 		if(u->getBidding() < 100) //BUG: 100?
 		{
-			if(u < minBid)
+			if(*u < minBid)
 			{
 				minBid = u;
 			}
@@ -977,17 +978,17 @@ QString GameControll::getLocalUserName()
 			return u->getName();
 		}
 	}
-    return "Client";
+	return "Client";
 }
 
 User* GameControll::getLocalUser()
 {
-    if(Server::isActive() || Client::isActive())
-    {
-        return static_cast<OnlineLeaderboardWidget*>(instance.leaderboard)->getLocalUser();
-    }
-    Q_ASSERT_X(false, "GameControll::getLocalUser", "no local user in gamecontroll");
-    return nullptr;
+	if(Server::isActive() || Client::isActive())
+	{
+		return static_cast<OnlineLeaderboardWidget*>(instance.leaderboard)->getLocalUser();
+	}
+	Q_ASSERT_X(false, "GameControll::getLocalUser", "no local user in gamecontroll");
+	return nullptr;
 }
 
 void GameControll::nextGuide()
@@ -1014,4 +1015,8 @@ void GameControll::setActionWhenAnimationEnded(functionPointer function)
 {
 	instance.actionWhenAnimationEnded=function;
 	qDebug()<<"actionWhenAnimationEnded was set to"<<function;
+}
+
+void GameControll::disableAnnoyingSounds(){
+	player->stop();
 }

@@ -56,7 +56,7 @@ void OnlineLeaderboardWidget::setLocalUser(User * u)
 
 void OnlineLeaderboardWidget::btnPressed()
 {
-	if(bidding > 1){
+	if(biddingBox->value() > 1){
 		biddingBox->setMaximum(userBidding = biddingBox->value());
 		bidBtn->setText(tr("Bid: ")+QString::number(userBidding));
 		biddingBox->setFocus();
