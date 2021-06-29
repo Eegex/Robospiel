@@ -23,6 +23,7 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 	connect(this, &GameControll::actionTriggered, this, &GameControll::sendToServer);
 	connect(&guideTimer,&QTimer::timeout,this,&GameControll::nextGuide);
 	r = new QRandomGenerator(QTime::currentTime().msecsSinceStartOfDay());
+	player = new QMediaPlayer;
 }
 
 /**
@@ -276,7 +277,6 @@ void GameControll::exeQTAction(QJsonObject data)
 	case skipTimer:
 		if(Server::isActive()||Client::isActive())
 		{
-			QMediaPlayer * player = new QMediaPlayer;
 			QString path = QDir::currentPath();
 			qDebug()<<path;
 			player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/rick.mp3"));
@@ -989,4 +989,8 @@ void GameControll::setActionWhenAnimationEnded(functionPointer function)
 {
 	instance.actionWhenAnimationEnded=function;
 	qDebug()<<"actionWhenAnimationEnded was set to"<<function;
+}
+
+void GameControll::disableAnnoyingSounds(){
+	player->stop();
 }

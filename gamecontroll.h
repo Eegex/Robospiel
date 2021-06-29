@@ -76,6 +76,7 @@ public slots:
 	void remakeBoard();
 	QUuid getActiveUserID();
 	void setActiveUserID(QUuid id);
+	void disableAnnoyingSounds();
 
 private:
 	NetworkModel * nwModel = nullptr;
@@ -95,6 +96,7 @@ private:
 	int timeLeft;
 	functionPointer actionWhenAnimationEnded = nullptr; //ATTENTION! When you store a new method in this variable, you have to add it in GameControll::toJSON() and GameControll::adaptFromJSON()!!!
 	int searchTime = 60;
+	QMediaPlayer * player;
 
 	explicit GameControll(QObject *parent = nullptr);
 	void sendToServer(PlayerAction a);

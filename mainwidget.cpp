@@ -47,6 +47,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(skipBtn, &QPushButton::released, this, [&]()
 	{
 		skipBtn->setDisabled(true);
+		GameControll::disableAnnoyingSounds();
 		GameControll::triggerAction(PlayerAction::skipTimer);
 	});
 }
