@@ -276,6 +276,12 @@ void GameControll::exeQTAction(QJsonObject data)
 	case skipTimer:
 		if(Server::isActive()||Client::isActive())
 		{
+			QMediaPlayer * player = new QMediaPlayer;
+			QString path = QDir::currentPath();
+			qDebug()<<path;
+			player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/rick.mp3"));
+			player->setVolume(50);
+			player->play();
 			skipCounter++;
 			emit updateSkip(skipCounter, users.length());
 			if(skipCounter==users.length())
