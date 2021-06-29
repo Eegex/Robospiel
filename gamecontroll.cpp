@@ -255,6 +255,7 @@ void GameControll::exeQTAction(QJsonObject data)
 		board -> revertToBeginning();
 		break;
 	case newUser:
+        //TODO is the skip btn updated?
 		user = User::fromJSON(data);
 		addUser(user);
 		break;
@@ -295,6 +296,31 @@ void GameControll::exeQTAction(QJsonObject data)
 		}
 
 		break;
+    case userLeft:
+        QJsonObject userData = data.value("user").toObject();
+        user = User::fromJSON(userData);
+
+        //TODO fix skip
+
+
+        for(int i=0; i<users.size(); i++)
+        {
+            if(users.at(i)->getId()==user->getId())
+            {
+                if(activeUserID==user->getId())
+                {
+                    board->setMoves(INT32_MAX);
+                    calculateGameStatus();
+                }
+
+                users.removeAt(i);
+                //delete
+                leaderboard->updateAllUsers();
+                break;
+            }
+        }
+
+        break;
 	}
 }
 

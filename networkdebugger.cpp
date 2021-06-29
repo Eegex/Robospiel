@@ -12,4 +12,8 @@ NetworkDebugger::NetworkDebugger(NetworkModel * model) : QWidget()
 	resize(800,400);
 	move(0,0);
 	update();
+
+    connect(model, &NetworkModel::layoutChanged, this, [&](){
+        view->scrollToBottom();
+    });
 }

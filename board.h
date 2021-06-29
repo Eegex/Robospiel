@@ -53,7 +53,8 @@ public:
 	void updateColors(QColor b, QColor w, QColor g, QColor p1, QColor p2);
 	QString toBinary();
 	static Board * fromBinary(const QString base64);
-	void updateRandomGenerator(int seed);
+    void updateRandomGenerator(int seed);
+    void setMoves(int moves);
 public slots:
 	void startNewRound();
 	int switchPlayer(Direction d);

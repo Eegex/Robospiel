@@ -623,6 +623,11 @@ int Board::getMoves() const
 	return moves;
 }
 
+void Board::setMoves(int moves)
+{
+    this->moves = moves;
+}
+
 QColor Board::getGrid() const
 {
 	return grid;

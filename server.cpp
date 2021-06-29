@@ -104,11 +104,17 @@ void Server::addClient()
 	connections.append(connection);
 
 	connect(connection, &ConnectionToClient::deleteConnection, this, [=](ConnectionToClient* toDelete)->void{
+        User* u = toDelete->getUser();
 		connections.remove(connections.indexOf(toDelete));
 		delete toDelete;
 		toDelete = nullptr;
 		emit clientsChanged(connections.length());
-		//emit clientDisconnected(); TODO
+
+
+        QJsonObject data;
+        data.insert("action", PlayerAction::userLeft);
+        data.insert("user", u->toJSON());
+        sendMessageToClients(data);
 	});
 	connect(connection, &ConnectionToClient::receivedMessage, this, [this](QString message){
 		ConnectionToClient * senderConnection = dynamic_cast<ConnectionToClient*>(sender()); //get connection over sender instead of capturing it to prevent stupid behavior

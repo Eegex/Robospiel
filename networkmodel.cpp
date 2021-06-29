@@ -33,6 +33,7 @@ NetworkModel::NetworkModel()
 	playerActionStrings.insert(0x101,"newUser");
 	playerActionStrings.insert(0x102,"changedUsername");
 	playerActionStrings.insert(0x104,"changedUserColor");
+    playerActionStrings.insert(0x108,"userLeft");
 	playerActionStrings.insert(0x200,"update");
 	playerActionStrings.insert(0x201,"completeUpdate");
 	playerActionStrings.insert(0x202,"boardUpdate");
