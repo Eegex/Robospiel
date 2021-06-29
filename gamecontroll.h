@@ -44,7 +44,7 @@ public:
 	static Board * setBoard(Board *newBoard);
 	static Board * getBoard();
 	static QVector<KeyMapping*> * getMapping();
-	static User * getMinBid();
+	static const User * getMinBid();
 	static Phase getCurrentPhase();
 	static SettingsDialog * getSettingsDialog();
 	static QJsonObject toJSON();
@@ -53,7 +53,7 @@ public:
 	static void addOnlineUser(User *user);
 	static User * initializeUser();
 	static void showGuide(const QStringList & texts);
-    static QString getLocalUserName();
+	static QString getLocalUserName();
 	static void initializeConnections();
 	static QVector<User*>* getUsers();
 	static void addUser(User *user);
@@ -66,7 +66,7 @@ public:
 	static void triggerAction(PlayerAction action);
 	static void addTransmission(QJsonObject transmission);
 
-    static User *getLocalUser();
+	static User *getLocalUser();
 public slots:
 	static void startNetworkDebugger();
 	void calculateWinner();

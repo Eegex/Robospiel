@@ -28,6 +28,7 @@ public:
 	static User* fromJSON(QJsonObject json);
 	void incrementPoints();
 	void setTimeStamp(unsigned long value);
+	bool operator <(const User * u) const;
 	bool operator <(const User & u) const;
 	bool getHasBid() const;
 
