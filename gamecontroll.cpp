@@ -290,6 +290,9 @@ void GameControll::exeQTAction(QJsonObject data)
 				endTimer();
 				player->stop();
 			}
+			if(instance.getLocalUser()->getHasBid()){
+				player->stop();
+			}
 		}
 		else
 		{
