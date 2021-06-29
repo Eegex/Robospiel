@@ -237,7 +237,7 @@ void MainWidget::editBoard()
 void MainWidget::updateTimer(int remaining)
 {
 	QColor f(QColor::fromHsv(remaining*2,255,180));
-	User * top = GameControll::getMinBid();
+	const User * top = GameControll::getMinBid();
 	if(top && GameControll::showTopBidding())
 	{
 		f = top->getColor();
