@@ -20,7 +20,7 @@ public:
 	QVector<KeyMapping *> getMapping();
 
 private:
-	PlayerAction mappableActions[14] = {PlayerAction::movePlayerNorth,
+	PlayerAction mappableActions[11] = { PlayerAction::movePlayerNorth,
 										PlayerAction::movePlayerWest,
 										PlayerAction::movePlayerSouth,
 										PlayerAction::movePlayerEast,
@@ -30,9 +30,6 @@ private:
 										PlayerAction::switchPlayerSouth,
 										PlayerAction::switchPlayerEast,
 
-										PlayerAction::enterBidding,
-										PlayerAction::sendBidding,
-										PlayerAction::clearBidding,
 										PlayerAction::giveUp,
 										PlayerAction::revert,
 										PlayerAction::revertToBeginning};

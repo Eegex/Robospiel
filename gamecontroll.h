@@ -107,7 +107,7 @@ private:
 	void resetAndNextTarget();
 	bool localUserIsActiveUser();
 	static void updateRandomGenerator(int seed);
-	int skipCounter=0;
+	int skipCounter = 0;
 signals:
 	void actionTriggeredWithData(PlayerAction action, QJsonObject additionalData);
 	void actionTriggered(PlayerAction action);

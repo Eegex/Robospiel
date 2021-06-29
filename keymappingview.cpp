@@ -41,15 +41,6 @@ KeyMappingView::KeyMappingView(QVector<KeyMapping*> mappings, QWidget *parent) :
 			case PlayerAction::switchPlayerWest:
 				name->setText(tr("select player to the left of the current"));
 				break;
-			case PlayerAction::enterBidding:
-				name->setText(tr("enter bidding (focus the input field)"));
-				break;
-			case PlayerAction::sendBidding:
-				name->setText(tr("send bidding"));
-				break;
-			case PlayerAction::clearBidding:
-				name->setText(tr("delete bidding"));
-				break;
 			case PlayerAction::giveUp:
 				name->setText(tr("give up"));
 				break;

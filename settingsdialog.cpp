@@ -91,12 +91,12 @@ bool SettingsDialog::getShowTopBidding() const
  */
 void SettingsDialog::load()
 {
-    QDir saveDir(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation));
-    if(!saveDir.exists())
+	QDir saveDir(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation));
+	if(!saveDir.exists())
 	{
-        saveDir.mkpath(saveDir.path());
+		saveDir.mkpath(saveDir.path());
 	}
-    QFile savefile(saveDir.filePath("settings.json"));
+	QFile savefile(saveDir.filePath("settings.json"));
 	if(savefile.open(QIODevice::ReadOnly))
 	{
 		settings = QJsonDocument::fromJson(savefile.readAll()).object();
@@ -127,9 +127,6 @@ void SettingsDialog::load()
 		mapping.append(new KeyMapping(PlayerAction::revert,Qt::Key::Key_R));
 		mapping.append(new KeyMapping(PlayerAction::revertToBeginning,Qt::Key::Key_B));
 		mapping.append(new KeyMapping(PlayerAction::giveUp,Qt::Key::Key_Q));
-		mapping.append(new KeyMapping(PlayerAction::enterBidding,Qt::Key::Key_Space));
-		mapping.append(new KeyMapping(PlayerAction::clearBidding,Qt::Key::Key_Backspace));
-		mapping.append(new KeyMapping(PlayerAction::sendBidding,Qt::Key::Key_Return));
 	}
 	if(!settings.contains(username))
 	{
