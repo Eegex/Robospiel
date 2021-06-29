@@ -355,7 +355,7 @@ void GameControll::addTransmission(QJsonObject transmission)
 void GameControll::triggerActionWithData(PlayerAction action, QJsonObject data)
 {
 	qDebug() << "GameControll::triggerActionWithData(PlayerAction " << action << ", QJsonObject " << data << ")";
-	if(action == PlayerAction::playerSwitch && !(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay)) //make sure you can only click players in the right phases
+    if(action == PlayerAction::playerSwitch && !((instance.currentPhase == Phase::presentation&&instance.localUserIsActiveUser()) || instance.currentPhase == Phase::freeplay)) //make sure you can only click players in the right phases
 	{
 		return;
 	}
@@ -665,6 +665,7 @@ User * GameControll::initializeUser()
 {
 	User * u = new User(instance.getSettingsDialog()->getUsername(), instance.getSettingsDialog()->getUsercolor());
 	qDebug()<<"initializeUser with id: "<<u->getId();
+    triggerActionWithData(PlayerAction::registerClient, u->toJSON());
 	triggerActionWithData(PlayerAction::newUser, u->toJSON());
 	return u;
 }
@@ -696,11 +697,6 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
 		json.insert("bidding", bidding);
 		triggerActionWithData(PlayerAction::sendBidding, json);
 	});
-
-	//	alt
-	//	TODO set username/color in localUser of onlineWidget
-	//	connect(instance.settings, &SettingsDialog::usernameChanged, instance.leaderboard, &LeaderBoardWidget::setUsername);
-	//	connect(instance.settings, &SettingsDialog::usercolorChanged, instance.leaderboard, &LeaderBoardWidget::setUsercolor);
 }
 
 User * GameControll::getMinBid()
@@ -935,7 +931,7 @@ void GameControll::showGuide(const QStringList & texts)
 	instance.nextGuide();
 }
 
-QString GameControll::getLocalUser()
+QString GameControll::getLocalUserName()
 {
 	if(Server::isActive() || Client::isActive())
 	{
@@ -945,7 +941,17 @@ QString GameControll::getLocalUser()
 			return u->getName();
 		}
 	}
-	return "Blöd";
+    return "Client";
+}
+
+User* GameControll::getLocalUser()
+{
+    if(Server::isActive() || Client::isActive())
+    {
+        return static_cast<OnlineLeaderboardWidget*>(instance.leaderboard)->getLocalUser();
+    }
+    Q_ASSERT_X(false, "GameControll::getLocalUser", "no local user in gamecontroll");
+    return nullptr;
 }
 
 void GameControll::nextGuide()

@@ -114,22 +114,30 @@ void Server::addClient()
 		ConnectionToClient * senderConnection = dynamic_cast<ConnectionToClient*>(sender()); //get connection over sender instead of capturing it to prevent stupid behavior
 		Q_ASSERT_X(senderConnection,"Server::addClient() receivedMessage-lambda","senderConnection is nullptr");
 		QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
+        //network debugging
+        User * u = senderConnection->getUser();
+        if(u)
+        {
+            data.insert("Client","S: " + u->getName());
+        }
+        else
+        {
+            data.insert("Client","-");
+        }
+        GameControll::addTransmission(data);
+
+
 		PlayerAction action = static_cast<PlayerAction>(data.value("action").toInt());
 		if(action == PlayerAction::registerClient)
 		{
-			senderConnection->setUser(User::fromJSON(data));
-		}
-		User * u = senderConnection->getUser();
-		if(u)
-		{
-			data.insert("Client","S: " + u->getName());
-		}
-		else
-		{
-			data.insert("Client","-");
-		}
-		GameControll::addTransmission(data);
-		Server::forwardMessageToClients(message);
+            senderConnection->setUser(User::fromJSON(data));
+        }
+        else
+        {
+            Server::forwardMessageToClients(message);
+        }
+
+
 	});
 
 	//send board and users to new client

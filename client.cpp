@@ -28,7 +28,9 @@ void Client::startClient(QString serverAddress, int serverPort)
 	tcpSocket->close();
 	streamFromServer.setDevice(tcpSocket);
 	connect(tcpSocket, &QIODevice::readyRead, this, &Client::processMessageFromServer);
-	connect(tcpSocket, &QAbstractSocket::connected, this, [=]()-> void{emit clientStarted();});
+    connect(tcpSocket, &QAbstractSocket::connected, this, [=]()-> void{
+        emit clientStarted();
+    });
 	connect(tcpSocket, &QAbstractSocket::disconnected, this, [=]()->void{emit clientClosed();});
 	connect(tcpSocket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, [=](QAbstractSocket::SocketError socketError) -> void {emit errorInClient(socketError);});
 	//connect(tcpSocket, QAbstractSocket::errorOccurred, this, [=](QAbstractSocket::SocketError socketError) -> void {emit errorInClient(socketError);}); TODO war das wichtig?
@@ -46,7 +48,7 @@ bool Client::sendMessageToServer(QJsonObject data)
 	QByteArray block;
 	QDataStream out(&block, QIODevice::WriteOnly);
 	out << message;
-	data.insert("Client",GameControll::getLocalUser());
+    data.insert("Client",GameControll::getLocalUserName());
 	GameControll::addTransmission(data);
 	if(tcpSocket->isOpen())
 	{
