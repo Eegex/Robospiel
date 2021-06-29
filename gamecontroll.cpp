@@ -357,12 +357,13 @@ void GameControll::triggerAction(PlayerAction action)
 	}
 	else if(action & PlayerAction::bidding) //TODO submit biddingValue
 	{
-		qDebug()<<"Currently in GameControl: triggerAction -> bidding, current Phase is "<<static_cast<int>(instance.currentPhase);
-		if(instance.currentPhase == Phase::search || instance.currentPhase == Phase::countdown)
-		{
-			emit instance.actionTriggered(action);
-			return;
-		}
+        Q_ASSERT_X(false, "GameControll::triggerAction", "use triggerActionWithData to send biddings!");
+//		qDebug()<<"Currently in GameControl: triggerAction -> bidding, current Phase is "<<static_cast<int>(instance.currentPhase);
+//		if(instance.currentPhase == Phase::search || instance.currentPhase == Phase::countdown)
+//		{
+//			emit instance.actionTriggered(action);
+//			return;
+//		}
 	}
 	else if(action & PlayerAction::other)
 	{
