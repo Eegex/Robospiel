@@ -109,6 +109,7 @@ void Server::addClient()
 		delete toDelete;
 		toDelete = nullptr;
 		emit clientsChanged(connections.length());
+        //TODO reset local data in clients and server
 
 
         QJsonObject data;

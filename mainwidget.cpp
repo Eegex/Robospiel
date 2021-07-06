@@ -268,7 +268,7 @@ void MainWidget::initializeView(Board* b, QVector<KeyMapping*>* m)
 	view = new BoardView(this);
 	view->setBoard(b);
 	view->setMapping(m);
-	view->setFocusPolicy(Qt::NoFocus);
+    view->setFocusPolicy(Qt::ClickFocus);
 	connectView(view);
 	connect(view, &BoardView::animationEnded, &GameControll::getInstance(), [=]()->void{
 		if(GameControll::getActionWhenAnimationEnded())

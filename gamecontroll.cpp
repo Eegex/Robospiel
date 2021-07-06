@@ -183,7 +183,7 @@ void GameControll::sendToServer(PlayerAction a)
 void GameControll::load()
 {
 	instance.settings = new SettingsDialog(instance.mapping);
-	instance.settings->load();
+    instance.settings->load();
 	connect(instance.settings, &SettingsDialog::colorsChanged, &GameControll::getInstance(),[&]()
 	{
 		instance.board->updateColors(instance.settings->getBackground(), instance.settings->getWallcolor(), instance.settings->getGridcolor(), instance.settings->getPlayerColorLow(), instance.settings->getPlayerColorHigh());
@@ -313,12 +313,17 @@ void GameControll::exeQTAction(QJsonObject data)
             {
                 if(activeUserID==user->getId())
                 {
-                    board->setMoves(INT32_MAX);
-                    calculateGameStatus();
+                    if(getNextUser(activeUserID))//Not at last player yet, noch haben nicht alle versagt
+                    {
+                        resetForNextUser();
+                    }
+                    else //Alles Versager
+                    {
+                        resetAndNextTarget();
+                    }
                 }
 
-                users.removeAt(i);
-                //delete
+                delete users.takeAt(i);
                 leaderboard->updateAllUsers();
                 break;
             }

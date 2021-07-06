@@ -99,7 +99,7 @@ void SettingsDialog::load()
 	QFile savefile(saveDir.filePath("settings.json"));
 	if(savefile.open(QIODevice::ReadOnly))
 	{
-		settings = QJsonDocument::fromJson(savefile.readAll()).object();
+        settings = QJsonDocument::fromJson(savefile.readAll()).object();
 		savefile.close();
 	}
 	QVector<KeyMapping*> mapping;
