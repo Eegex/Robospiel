@@ -106,6 +106,7 @@ private:
 	void resetForNextUser();
 	void resetAndNextTarget();
 	bool localUserIsActiveUser();
+    bool hasSkipped = 0;
 	static void updateRandomGenerator(int seed);
 	int skipCounter = 0;
 signals:

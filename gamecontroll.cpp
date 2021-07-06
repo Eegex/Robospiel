@@ -282,7 +282,10 @@ void GameControll::exeQTAction(QJsonObject data)
 			qDebug()<<path;
 			player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/rick.mp3"));
 			player->setVolume(50);
-			player->play();
+            if(!instance.hasSkipped)
+                player->play();
+            else
+                player->stop();
 			skipCounter++;
 			emit updateSkip(skipCounter, users.length());
 			if(skipCounter==users.length())
@@ -787,6 +790,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 		showGuide({tr("boooring")+ "[]",tr("i am not creative")+ "[2000]" + tr("at all")+ "[2000]" + tr("fuck you") + "[]", tr("We are in idle now!")+ "[]", tr("Lets do some idling!")+ "[]", tr("Okay, so you aren't capable of dealing with a real mode, are you?")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Too dumb for a real game!")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Idle again? Are we ever going to PLAY?")+ "[2000]" +tr("We are in idle.")+ "[]"});
 		emit enableMenus(true);
 		emit enableTimerSkip(false);
+        instance.hasSkipped = 0;
 		return true;
 	}
 	case Phase::search:
@@ -798,6 +802,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 			showGuide({tr("Start bidding")+ "[]",tr("Let's go! Bid!")+ "[]", tr("You can bid now!")+ "[]",  tr("Lets do some bidding!")+ "[]", tr("I bet you wont find anything! But you can try to...")+ "[2000]" +tr("Make your biddings!")+ "[]", tr("Make your biddings! Well if you find anything...")+ "[]"});
 			emit enableMenus(false);
 			emit enableTimerSkip(false);
+            instance.hasSkipped = 0;
 			return true;
 		}
 		break;
@@ -814,6 +819,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 			countdown.start();
 			emit enableMenus(false);
 			emit enableTimerSkip(true);
+            instance.hasSkipped = 0;
 			return true;
 		}
 		break;
@@ -827,6 +833,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 			currentPhase = phase;
 			emit enableMenus(false);
 			emit enableTimerSkip(false);
+            instance.hasSkipped = 0;
 			emit focusBoard();
 			return true;
 		}
@@ -840,6 +847,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 			showGuide({tr("time to show off")+ "[]"});
 			emit enableMenus(false);
 			emit enableTimerSkip(false);
+            instance.hasSkipped = 0;
 			emit focusBoard();
 			return true;
 		}
@@ -1024,4 +1032,5 @@ void GameControll::setActionWhenAnimationEnded(functionPointer function)
 
 void GameControll::disableAnnoyingSounds(){
 	instance.player->stop();
+    instance.hasSkipped = 1;
 }
