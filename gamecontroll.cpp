@@ -183,7 +183,7 @@ void GameControll::sendToServer(PlayerAction a)
 void GameControll::load()
 {
 	instance.settings = new SettingsDialog(instance.mapping);
-    instance.settings->load();
+	instance.settings->load();
 	connect(instance.settings, &SettingsDialog::colorsChanged, &GameControll::getInstance(),[&]()
 	{
 		instance.board->updateColors(instance.settings->getBackground(), instance.settings->getWallcolor(), instance.settings->getGridcolor(), instance.settings->getPlayerColorLow(), instance.settings->getPlayerColorHigh());
@@ -256,7 +256,7 @@ void GameControll::exeQTAction(QJsonObject data)
 		board -> revertToBeginning();
 		break;
 	case newUser:
-        //TODO is the skip btn updated?
+		//TODO is the skip btn updated?
 		user = User::fromJSON(data);
 		addUser(user);
 		break;
@@ -300,36 +300,31 @@ void GameControll::exeQTAction(QJsonObject data)
 		}
 
 		break;
-    case userLeft:
-        QJsonObject userData = data.value("user").toObject();
-        user = User::fromJSON(userData);
+	case userLeft:
+		QJsonObject userData = data.value("user").toObject();
+		user = User::fromJSON(userData);
 
-        //TODO fix skip
+		//TODO fix skip
 
 
-        for(int i=0; i<users.size(); i++)
-        {
-            if(users.at(i)->getId()==user->getId())
-            {
-                if(activeUserID==user->getId())
-                {
-                    if(getNextUser(activeUserID))//Not at last player yet, noch haben nicht alle versagt
-                    {
-                        resetForNextUser();
-                    }
-                    else //Alles Versager
-                    {
-                        resetAndNextTarget();
-                    }
-                }
+		for(int i=0; i<users.size(); i++)
+		{
+			if(users.at(i)->getId()==user->getId())
+			{
+				if(activeUserID==user->getId())
+				{
+					board->setMoves(INT32_MAX);
+					calculateGameStatus();
+				}
 
-                delete users.takeAt(i);
-                leaderboard->updateAllUsers();
-                break;
-            }
-        }
+				users.removeAt(i);
+				//delete
+				leaderboard->updateAllUsers();
+				break;
+			}
+		}
 
-        break;
+		break;
 	}
 }
 
@@ -362,7 +357,7 @@ void GameControll::triggerAction(PlayerAction action)
 	}
 	else if(action & PlayerAction::bidding) //TODO submit biddingValue
 	{
-        Q_ASSERT_X(false, "GameControll::triggerAction", "use triggerActionWithData to send biddings!");
+		Q_ASSERT_X(false, "GameControll::triggerAction", "use triggerActionWithData to send biddings!");
 //		qDebug()<<"Currently in GameControl: triggerAction -> bidding, current Phase is "<<static_cast<int>(instance.currentPhase);
 //		if(instance.currentPhase == Phase::search || instance.currentPhase == Phase::countdown)
 //		{
@@ -372,7 +367,7 @@ void GameControll::triggerAction(PlayerAction action)
 	}
 	else if(action & PlayerAction::other)
 	{
-		if(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay)
+		if(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay || action == PlayerAction::skipTimer)
 		{
 			emit instance.actionTriggered(action);
 			return;
@@ -428,7 +423,8 @@ void GameControll::calculateGameStatus()
 	//}
 	else
 	{
-		if(board->getMoves() >= getUserById(activeUserID)->getBidding()){
+		if(board->getMoves() >= getUserById(activeUserID)->getBidding())
+		{
 			//TODO: Flag um anzuzeigen, dass der Spieler das Ziel erreicht hat?
 			qDebug()<<"User couldn't end the round in the specified bid of "<< getUserById(activeUserID)->getBidding()<<", the next user is being drawn";
 			if(getNextUser(activeUserID))//Not at last player yet, noch haben nicht alle versagt

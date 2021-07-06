@@ -25,7 +25,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	glMain->addWidget(lcd,1,1,Qt::AlignCenter);
 	glMain->addWidget(userView,3,1,2,1,Qt::AlignCenter);
 	connect(&GameControll::getInstance(),&GameControll::time,this,&MainWidget::updateTimer);
-	connect(&GameControll::getInstance(),&GameControll::updateSkip,this,[&](int current, int all){
+	connect(&GameControll::getInstance(),&GameControll::updateSkip,this,[&](int current, int all)
+	{
 		if(current==0)
 		{
 			skipBtn->setText(tr("Skip"));
@@ -268,7 +269,7 @@ void MainWidget::initializeView(Board* b, QVector<KeyMapping*>* m)
 	view = new BoardView(this);
 	view->setBoard(b);
 	view->setMapping(m);
-    view->setFocusPolicy(Qt::ClickFocus);
+	view->setFocusPolicy(Qt::ClickFocus);
 	connectView(view);
 	connect(view, &BoardView::animationEnded, &GameControll::getInstance(), [=]()->void{
 		if(GameControll::getActionWhenAnimationEnded())
