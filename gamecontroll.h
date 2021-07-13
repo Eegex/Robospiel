@@ -106,7 +106,7 @@ private:
 	void resetForNextUser();
 	void resetAndNextTarget();
 	bool localUserIsActiveUser();
-    bool hasSkipped = 0;
+	bool hasSkipped = 0;
 	static void updateRandomGenerator(int seed);
 	int skipCounter = 0;
 signals:
@@ -123,6 +123,7 @@ signals:
 	void newBoard(Board* b);
 	void updateSkip(int current, int all);
 	void focusBoard();
+	void updateMoves(int moves);
 
 private slots:
 	void updateTimer();

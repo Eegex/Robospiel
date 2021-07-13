@@ -97,7 +97,8 @@ void GameControll::adaptFromJSON(QJsonObject json)
 	instance.skipCounter=json.value("skipCounter").toInt();
 	if(json.value("remainingTimerTime").toInt()!=-1)
 	{
-		QTimer::singleShot(json.value("remainingTimerTime").toInt(), &instance, [=]()->void{
+		QTimer::singleShot(json.value("remainingTimerTime").toInt(), &instance, [=]()
+		{
 			instance.countdown.start();
 		});
 	}
@@ -213,6 +214,10 @@ Board * GameControll::setBoard(Board* newBoard)
 		instance.board->updateColors(instance.settings->getBackground(), instance.settings->getWallcolor(), instance.settings->getGridcolor(), instance.settings->getPlayerColorLow(), instance.settings->getPlayerColorHigh());
 	}
 	connect(instance.board, &Board::playerMoved, &GameControll::getInstance(), &GameControll::calculateGameStatus);
+	connect(instance.board, &Board::playerMoved, &GameControll::getInstance(), [&](int, int)
+	{
+		emit instance.updateMoves(instance.board->getMoves());
+	});
 	emit instance.newBoard(instance.board);
 	return instance.board;
 }
@@ -447,6 +452,7 @@ void GameControll::calculateGameStatus()
 void GameControll::resetAndNextTarget()
 {
 	getBoard()->revertToBeginning();
+	emit updateMoves(0);
 	nextTarget();
 }
 
@@ -483,6 +489,7 @@ void GameControll::resetForNextUser()
 	showGuide({ tr("Present your solution, ") + user->getName() + "[]",tr("Your turn, ") + user->getName() + "[]" });
 	setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
 	getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
+	emit updateMoves(0);
 	qDebug()<<"Active User is now "<<user->getName();
 }
 
@@ -771,6 +778,7 @@ void GameControll::nextTarget()
 			u->setBidding(User::maxBid);
 		}
 		skipCounter = 0;
+		emit updateMoves(0);
 		emit updateSkip(skipCounter, users.length());
 		leaderboard->activateInput();
 		board->startNewRound();

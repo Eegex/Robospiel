@@ -23,21 +23,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	glMain->addWidget(dlGuide,0,0,1,2,Qt::AlignHCenter);
 	glMain->addWidget(view,1,0,4,1,Qt::AlignCenter);
 	glMain->addWidget(lcd,1,1,Qt::AlignCenter);
-	glMain->addWidget(userView,3,1,2,1,Qt::AlignCenter);
-	connect(&GameControll::getInstance(),&GameControll::time,this,&MainWidget::updateTimer);
-	connect(&GameControll::getInstance(),&GameControll::updateSkip,this,[&](int current, int all)
-	{
-		if(current==0)
-		{
-			skipBtn->setText(tr("Skip"));
-		}
-		else
-		{
-			skipBtn->setText(tr("Skip (")+QString::number(current)+"/"+QString::number(all)+")");
-		}
-	});
 	connect(&GameControll::getInstance(),&GameControll::updateGuide,this,&MainWidget::updateGuide);
-	connect(&GameControll::getInstance(), &GameControll::newBoard, this, [=](Board* newBoard)
+	connect(&GameControll::getInstance(), &GameControll::newBoard, this, [=](Board * newBoard)
 	{
 		initializeView(newBoard, GameControll::getMapping());
 	});
@@ -50,6 +37,31 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 		skipBtn->setDisabled(true);
 		GameControll::disableAnnoyingSounds();
 		GameControll::triggerAction(PlayerAction::skipTimer);
+	});
+	glMain->addWidget(dlSteps,3,1,Qt::AlignCenter);
+	connect(&GameControll::getInstance(),&GameControll::updateMoves,this,[&](int steps)
+	{
+		if(steps)
+		{
+			dlSteps->setText(tr("Steps used: ") + QString::number(steps));
+		}
+		else
+		{
+			dlSteps->clear();
+		}
+	});
+	glMain->addWidget(userView,4,1,2,1,Qt::AlignCenter);
+	connect(&GameControll::getInstance(),&GameControll::time,this,&MainWidget::updateTimer);
+	connect(&GameControll::getInstance(),&GameControll::updateSkip,this,[&](int current, int all)
+	{
+		if(current == 0)
+		{
+			skipBtn->setText(tr("Skip"));
+		}
+		else
+		{
+			skipBtn->setText(tr("Skip (")+QString::number(current)+"/"+QString::number(all)+")");
+		}
 	});
 }
 
@@ -180,12 +192,12 @@ void MainWidget::createBoard()
 	if(view)
 	{
 		view->setBoard(GameControll::setBoard(new Board(sbWidth->value(),sbHeight->value(),sbPlayer->value())));
-		glMain->addWidget(view,1,0,4,1,Qt::AlignCenter); //alignment or size dies without this line ¯\_(ツ)_/¯
+		glMain->addWidget(view,1,0,5,1,Qt::AlignCenter); //alignment or size dies without this line ¯\_(ツ)_/¯
 	}
 	else
 	{
 		edit->setBoard(GameControll::setBoard(new Board(sbWidth->value(),sbHeight->value(),sbPlayer->value())));
-		glMain->addWidget(edit,1,0,4,1,Qt::AlignCenter); //same here...
+		glMain->addWidget(edit,1,0,5,1,Qt::AlignCenter); //same here...
 	}
 }
 
@@ -237,7 +249,7 @@ void MainWidget::editBoard()
 
 void MainWidget::updateTimer(int remaining)
 {
-	QColor f(QColor::fromHsv(remaining*2,255,180));
+	QColor f(QColor::fromHsv(remaining * 2,255,180));
 	const User * top = GameControll::getMinBid();
 	if(top && GameControll::showTopBidding())
 	{

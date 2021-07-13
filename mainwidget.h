@@ -39,6 +39,7 @@ private slots:
 
 private:
 	QLabel * dlGuide = new QLabel(this);
+	QLabel * dlSteps = new QLabel(this);
 	QGridLayout * glMain = nullptr;
 	BoardView * view = nullptr;
 	BoardEditor * edit = nullptr;
@@ -53,7 +54,7 @@ private:
 	QAction * aSettings = nullptr;
 	QAction * aDebugger = nullptr;
 	QMenu * mNewGame = nullptr;
-	QMenu *mNewStuff = nullptr;
+	QMenu * mNewStuff = nullptr;
 	QWidgetAction * waHeight = nullptr;
 	QSpinBox * sbHeight = nullptr;
 	QWidgetAction * waWidth = nullptr;
