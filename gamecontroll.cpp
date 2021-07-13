@@ -268,9 +268,9 @@ void GameControll::exeQTAction(QJsonObject data)
 		board->changeActivePlayer(data.value("playerNumber").toInt(), data.value("isRevert").toBool());
 		break;
 	case sendBidding:
-		switchPhase(Phase::countdown);
 		user = getUserById(QUuid(data.value("userId").toString()));
 		user->setBidding(data.value("bidding").toInt());
+        switchPhase(Phase::countdown);
 		break;
 	case revert:
 		board->revert();
@@ -302,18 +302,17 @@ void GameControll::exeQTAction(QJsonObject data)
 			qDebug()<<path;
 			player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/rick.mp3"));
 			player->setVolume(50);
-            if(!instance.hasSkipped)
-                player->play();
-            else
-                player->stop();
 			skipCounter++;
 			emit updateSkip(skipCounter, users.length());
+            if(skipCounter==users.length()-1)
+            {
+                if(!instance.hasSkipped)
+                    player->play();
+
+            }
 			if(skipCounter==users.length())
 			{
 				endTimer();
-				player->stop();
-			}
-			if(instance.getLocalUser()->getHasBid()){
 				player->stop();
 			}
 		}
