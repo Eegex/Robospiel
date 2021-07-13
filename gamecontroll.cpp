@@ -245,9 +245,9 @@ void GameControll::exeQTAction(QJsonObject data)
 		board->changeActivePlayer(data.value("playerNumber").toInt(), data.value("isRevert").toBool());
 		break;
 	case sendBidding:
-		switchPhase(Phase::countdown);
 		user = getUserById(QUuid(data.value("userId").toString()));
 		user->setBidding(data.value("bidding").toInt());
+        switchPhase(Phase::countdown);
 		break;
 	case revert:
 		board->revert();
