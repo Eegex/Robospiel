@@ -27,11 +27,9 @@ SettingsDialog::SettingsDialog(QVector<KeyMapping*> mapping, QDialog * parent) :
 	lay->addWidget(pbSave);
 	connect(leUsername,&QLineEdit::editingFinished,this,[&](){
 		settings.insert(username,leUsername->text());
-		emit usernameChanged(getUsername());
 	});
 	connect(pbUserColor,&QPushButton::clicked,this,[&](){
 		settings.insert(usercolor,QColorDialog::getColor(getUsercolor()).name()); pbUserColor->setStyleSheet("background-color:" + settings.value(usercolor).toString());
-		emit usercolorChanged(getUsercolor());
 	});
 	connect(pbBackgroundColor,&QPushButton::clicked,this,[&](){ settings.insert(background,QColorDialog::getColor(getBackground()).name()); pbBackgroundColor->setStyleSheet("background-color:" + settings.value(background).toString()); });
 	connect(pbWallColor,&QPushButton::clicked,this,[&](){ settings.insert(wallcolor,QColorDialog::getColor(getWallcolor()).name()); pbWallColor->setStyleSheet("background-color:" + settings.value(wallcolor).toString()); });
@@ -208,6 +206,8 @@ void SettingsDialog::save()
 	}
 	emit colorsChanged();
 	emit newMapping(keyMappings->getMapping());
+    emit usernameChanged(settings.value(username).toString());
+    emit usercolorChanged(QColor(settings.value(usercolor).toString()));
 	if(isVisible())
 	{
 		close();
