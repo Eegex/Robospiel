@@ -189,6 +189,26 @@ void GameControll::load()
 		instance.board->updateColors(instance.settings->getBackground(), instance.settings->getWallcolor(), instance.settings->getGridcolor(), instance.settings->getPlayerColorLow(), instance.settings->getPlayerColorHigh());
 	});
 	connect(instance.settings, &SettingsDialog::newMapping, &GameControll::getInstance(),[&](QVector<KeyMapping*> mapping){ instance.mapping = mapping; });
+    connect(instance.settings, &SettingsDialog::usercolorChanged, &instance, [=](QColor color){
+        if(Server::isActive() || Client::isActive())
+        {
+            QJsonObject data;
+            data.insert("id", getLocalUser()->getId().toString());
+            data.insert("color", color.name());
+            triggerActionWithData(PlayerAction::changedUserColor, data);
+        }
+
+    });
+    connect(instance.settings, &SettingsDialog::usernameChanged, &instance, [=](QString name){
+        if(Server::isActive() || Client::isActive())
+        {
+            QJsonObject data;
+            data.insert("id", getLocalUser()->getId().toString());
+            data.insert("name", name);
+            triggerActionWithData(PlayerAction::changedUsername, data);
+        }
+    });
+
 	if(instance.board)
 	{
 		instance.board->updateColors(instance.settings->getBackground(), instance.settings->getWallcolor(), instance.settings->getGridcolor(), instance.settings->getPlayerColorLow(), instance.settings->getPlayerColorHigh());
@@ -228,6 +248,9 @@ void GameControll::exeQTAction(QJsonObject data)
 	User * user = nullptr;
 	switch(a)
 	{
+
+
+
 	case movePlayerEast:
 	case movePlayerNorth:
 	case movePlayerSouth:
@@ -266,9 +289,6 @@ void GameControll::exeQTAction(QJsonObject data)
 	case editBoard:
 		//disableBoard();//TODO
 		break;
-	case PlayerAction::nextTarget:
-		nextTarget();
-		break;
 	case setIdle:
 		switchPhase(Phase::idle);
 		break;
@@ -303,7 +323,12 @@ void GameControll::exeQTAction(QJsonObject data)
 		}
 
 		break;
+
+    case PlayerAction::nextTarget:
+        nextTarget();
+        break;
 	case userLeft:
+    {
 		QJsonObject userData = data.value("user").toObject();
 		user = User::fromJSON(userData);
 
@@ -328,6 +353,19 @@ void GameControll::exeQTAction(QJsonObject data)
 		}
 
 		break;
+    }
+
+
+
+    case changedUserColor:
+        getUserById(QUuid(data.value("id").toString()))->setColor(QColor(data.value("color").toString()));
+        leaderboard->updateColour(QUuid(data.value("id").toString()), QColor(data.value("color").toString()));
+        break;
+    case changedUsername:
+        getUserById(QUuid(data.value("id").toString()))->setName(data.value("name").toString());
+        leaderboard->updateName(QUuid(data.value("id").toString()), data.value("name").toString());
+        break;
+
 	}
 }
 
@@ -405,6 +443,7 @@ void GameControll::triggerActionWithData(PlayerAction action, QJsonObject data)
 	}
 
 	emit instance.actionTriggeredWithData(action, data);
+
 }
 
 /**
