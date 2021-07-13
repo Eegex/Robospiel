@@ -56,15 +56,17 @@ void OnlineLeaderboardWidget::setLocalUser(User * u)
 
 void OnlineLeaderboardWidget::btnPressed()
 {
-	if(biddingBox->value() > 1){
+	if(biddingBox->value() > 1)
+	{
 		biddingBox->setMaximum(userBidding = biddingBox->value());
-		bidBtn->setText(tr("Bid: ")+QString::number(userBidding));
+		bidBtn->setText(tr("Bid: ") + QString::number(userBidding));
 		biddingBox->setFocus();
 		biddingBox->selectAll();
 		qDebug() << "Player changed their bidding to: " << userBidding;
 		emit biddingAccepted(localUser->getId(), userBidding);
 	}
-	else{
+	else
+	{
 		qDebug()<<"Someone has tried to bid No Bid";
 	}
 }
@@ -180,6 +182,7 @@ void OnlineLeaderboardWidget::activateInput()
 {
 	bidBtn->setEnabled(true);
 	biddingBox->setEnabled(true);
+	setBiddingFocus();
 }
 
 void OnlineLeaderboardWidget::setBiddingFocus()

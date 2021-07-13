@@ -66,10 +66,12 @@ QColor SettingsDialog::getGridcolor() const
 {
 	return QColor(settings.value(gridcolor).toString());
 }
+
 QColor SettingsDialog::getPlayerColorLow() const
 {
 	return QColor(settings.value(playercolorlow).toString());
 }
+
 QColor SettingsDialog::getPlayerColorHigh() const
 {
 	return QColor(settings.value(playercolorhigh).toString());
@@ -99,7 +101,7 @@ void SettingsDialog::load()
 	QFile savefile(saveDir.filePath("settings.json"));
 	if(savefile.open(QIODevice::ReadOnly))
 	{
-        settings = QJsonDocument::fromJson(savefile.readAll()).object();
+		settings = QJsonDocument::fromJson(savefile.readAll()).object();
 		savefile.close();
 	}
 	QVector<KeyMapping*> mapping;
