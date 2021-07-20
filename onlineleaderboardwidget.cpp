@@ -163,6 +163,10 @@ void OnlineLeaderboardWidget::addUser(User *u)
 				bidBtn->setText(BID_BTN_TEXT);
 				biddingBox->setValue(1);
 			}
+			else
+			{
+				setBiddingFocus();
+			}
 		}
 	});
 	model->updateUsers();

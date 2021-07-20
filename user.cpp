@@ -157,7 +157,7 @@ bool User::operator<(const User & u) const
 
 bool User::operator<(const User * u) const
 {
-	qDebug() << "User::operator<(const User * u) const";
+	//qDebug() << "User::operator<(const User * u) const";
 	if(hasBid && u->hasBid)
 	{
 		return (getBidding() == u->getBidding() && getTimeStamp() < u->getTimeStamp()) || getBidding() < u->getBidding();
