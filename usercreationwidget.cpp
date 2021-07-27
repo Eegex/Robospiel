@@ -45,7 +45,7 @@ void UserCreationWidget::addUser()
 	GameControll::triggerActionWithData(PlayerAction::newUser, user->toJSON());
 	connect(userColourPicker, &QColorDialog::colorSelected, this, [&](const QColor &colour)
 	{
-	   addColourBtn->setStyleSheet("background-color: "+colour.name());
+	   addColourBtn->setStyleSheet("background-color: " + colour.name());
 	});
 }
 

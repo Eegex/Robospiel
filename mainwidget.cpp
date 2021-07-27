@@ -50,7 +50,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 			dlSteps->clear();
 		}
 	});
-	glMain->addWidget(userView,4,1,2,1,Qt::AlignCenter);
+	glMain->addWidget(userView,4,1,Qt::AlignCenter);
 	connect(&GameControll::getInstance(),&GameControll::time,this,&MainWidget::updateTimer);
 	connect(&GameControll::getInstance(),&GameControll::updateSkip,this,[&](int current, int all)
 	{
