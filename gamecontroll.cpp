@@ -469,7 +469,7 @@ void GameControll::calculateGameStatus()
 		{
 			//TODO: Flag um anzuzeigen, dass der Spieler das Ziel erreicht hat?
 			qDebug()<<"User couldn't end the round in the specified bid of "<< getUserById(activeUserID)->getBidding()<<", the next user is being drawn";
-            board->revert();
+            GameControll::triggerAction(revert);
 		}
 	}
 }
@@ -478,16 +478,28 @@ void GameControll::handleUserGivingUp(){
     User* nextUser = getNextUser(activeUserID);
     if(nextUser)//Not at last player yet, noch haben nicht alle versagt
     {
-        actionWhenAnimationEnded = &GameControll::resetForNextUser;
+        GameControll::resetForNextUser();
 
         qDebug()<<"actionWhenAnimationEnded = resetFornextuser";
     }
     else //Alles Versager
     {
         qDebug()<<"No User could end the round in their specified bid.";
-        actionWhenAnimationEnded = &GameControll::resetAndNextTarget;
+        GameControll::resetAndNextTarget();
         qDebug()<<"actionWhenAnimationEnded = resetAndNextTarget";
     }
+//    if(nextUser)//Not at last player yet, noch haben nicht alle versagt
+//    {
+//        actionWhenAnimationEnded = &GameControll::resetForNextUser;
+
+//        qDebug()<<"actionWhenAnimationEnded = resetFornextuser";
+//    }
+//    else //Alles Versager
+//    {
+//        qDebug()<<"No User could end the round in their specified bid.";
+//        actionWhenAnimationEnded = &GameControll::resetAndNextTarget;
+//        qDebug()<<"actionWhenAnimationEnded = resetAndNextTarget";
+//    }
 }
 
 void GameControll::resetAndNextTarget()
@@ -882,6 +894,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 			emit enableMenus(false);
 			instance.hasSkipped = 0;
 			emit focusBoard();
+//            enableActionBtn(localUserIsActiveUser());
 			return true;
 		}
 		break;

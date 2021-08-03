@@ -69,7 +69,7 @@ void MainWidget::handleActionButtonRelease()
     case GameControll::Phase::presentation: {
 
         GameControll::triggerAction(PlayerAction::giveUp);
-        emit view->animationEnded();
+//        emit view->animationEnded();
         break;
     }
     }
