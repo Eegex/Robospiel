@@ -7,7 +7,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
     glMain = new QGridLayout(this);
     userView = new UserView(this);
     //GameControll::setLeaderboard(userView->getLeaderboard());
-    actionBtn = new QPushButton("Next", this);
+    actionBtn = new QPushButton("Start", this);
     initializeView(GameControll::setBoard(new Board(16, 16, 5)), GameControll::getMapping());
     //connect(view, &BoardView::lastAnimationAfterGoalHitEnded, game, &GameControll::calculateWinner);
     networkView = new NetworkView;

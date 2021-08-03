@@ -469,7 +469,7 @@ void GameControll::calculateGameStatus()
 		{
 			//TODO: Flag um anzuzeigen, dass der Spieler das Ziel erreicht hat?
 			qDebug()<<"User couldn't end the round in the specified bid of "<< getUserById(activeUserID)->getBidding()<<", the next user is being drawn";
-            GameControll::triggerAction(revert);
+            GameControll::triggerAction(revert); //TODO: This always reverts to the third to last position, not to the second to last
 		}
 	}
 }
@@ -894,7 +894,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 			emit enableMenus(false);
 			instance.hasSkipped = 0;
 			emit focusBoard();
-//            enableActionBtn(localUserIsActiveUser());
+            enableActionBtn(localUserIsActiveUser()); // TODO: does this make sense here?
 			return true;
 		}
 		break;
