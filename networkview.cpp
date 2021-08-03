@@ -16,7 +16,8 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 
 	//Client gui
 	clientContainer = new QWidget(this);
-	gridClient=new QVBoxLayout(clientContainer);
+	clientContainer->setObjectName("ClientContainer");
+	gridClient = new QVBoxLayout(clientContainer);
 	leClientAddress = new QLineEdit("acqcke5skvirioi1.myfritz.net",clientContainer);
 	leClientAddress->setPlaceholderText(tr("Server Address"));
 	leClientPort = new QLineEdit("8050",clientContainer);
@@ -41,6 +42,7 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 
 	//Server gui
 	serverContainer = new QWidget(this);
+	serverContainer->setObjectName("ServerContainer");
 	gridServer=new QVBoxLayout(serverContainer);
 	leServerAddress = new QLineEdit(serverContainer);
 	leServerAddress->setPlaceholderText(tr("Server Address"));
@@ -77,8 +79,11 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 	serverContainer->setLayout(gridServer);
 
 	btnClient = new QPushButton(tr("Join Server"));
+	btnClient->setObjectName("btnClient");
 	btnServer = new QPushButton(tr("Start Server"));
+	btnServer->setObjectName("btnServer");
 	btnOffline = new QPushButton(tr("Play offline"));
+	btnOffline->setObjectName("btnOffline");
 	layout->addWidget(btnClient);
 	layout->addWidget(btnServer);
 	layout->addWidget(btnOffline);
@@ -95,6 +100,7 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 
 		layout->addWidget(clientContainer);
 		clientContainer->show();
+		clientContainer->raise();
 	});
 	connect(btnServer, &QPushButton::clicked, this, [=]()->void{
 		layout->removeWidget(btnClient);
@@ -106,6 +112,7 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 
 		layout->addWidget(serverContainer);
 		serverContainer->show();
+		serverContainer->raise();
 	});
 	connect(btnOffline, &QPushButton::clicked, this, [=]()->void{
 		emit leaderboardOffline();

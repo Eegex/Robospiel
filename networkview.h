@@ -11,6 +11,7 @@
 #include <QRadioButton>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <QMouseEvent>
 
 class NetworkView : public QWidget
 {

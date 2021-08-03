@@ -364,9 +364,9 @@ void GameControll::exeQTAction(QJsonObject data)
 		getUserById(QUuid(data.value("id").toString()))->setName(data.value("name").toString());
 		leaderboard->updateName(QUuid(data.value("id").toString()), data.value("name").toString());
 		break;
-    case giveUp:
-        GameControll::getInstance().handleUserGivingUp();
-        break;
+	case giveUp:
+		GameControll::getInstance().handleUserGivingUp();
+		break;
 
 	}
 }
@@ -541,7 +541,7 @@ void GameControll::resetForNextUser()
 	Q_ASSERT_X(user,"GameControll::resetForNextUser","User is nullptr");
 	showGuide({ tr("Present your solution, ") + user->getName() + "[]",tr("Your turn, ") + user->getName() + "[]" });
 	setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
-    enableActionBtn(localUserIsActiveUser());
+	enableActionBtn(localUserIsActiveUser());
 	getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
 	emit updateMoves(0);
 	qDebug()<<"Active User is now "<<user->getName();
@@ -845,7 +845,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	{
 	case Phase::idle:
 	{
-        emit updateActionButtonText(tr("Start"));
+		emit updateActionButtonText(tr("Start"));
 		currentPhase = phase;
 		showGuide({tr("boooring")+ "[]",tr("i am not creative")+ "[2000]" + tr("at all")+ "[2000]" + tr("fuck you") + "[]", tr("We are in idle now!")+ "[]", tr("Lets do some idling!")+ "[]", tr("Okay, so you aren't capable of dealing with a real mode, are you?")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Too dumb for a real game!")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Idle again? Are we ever going to PLAY?")+ "[2000]" +tr("We are in idle.")+ "[]"});
 		emit enableMenus(true);
@@ -856,7 +856,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	{
 		if(currentPhase != Phase::countdown)
 		{
-            emit updateActionButtonText(tr("Next"));
+			emit updateActionButtonText(tr("Next"));
 			instance.leaderboard->setBiddingFocus();
 			currentPhase = phase;
 			showGuide({tr("Start bidding")+ "[]",tr("Let's go! Bid!")+ "[]", tr("You can bid now!")+ "[]",  tr("Lets do some bidding!")+ "[]", tr("I bet you wont find anything! But you can try to...")+ "[2000]" +tr("Make your biddings!")+ "[]", tr("Make your biddings! Well if you find anything...")+ "[]"});
@@ -870,7 +870,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	{
 		if(currentPhase == Phase::search)
 		{
-            emit updateActionButtonText(tr("Skip"));
+			emit updateActionButtonText(tr("Skip"));
 			instance.leaderboard->setBiddingFocus();
 			currentPhase = phase;
 			showGuide({tr("Counting down")+ "[]", tr("Stressed yet? The Timer is running!")+ "[]", tr("You will never find anything in a minute!")+ "[]" });
@@ -887,7 +887,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	{
 		if(currentPhase == Phase::countdown)
 		{
-            emit updateActionButtonText(tr("Give Up"));
+			emit updateActionButtonText(tr("Give Up"));
 			//Set Player to player with minimum bid, aka first player after being sorted
 			emit biddingDone();
 			currentPhase = phase;
@@ -903,7 +903,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	{
 		if(currentPhase == Phase::presentation)
 		{
-            emit updateActionButtonText(tr("Next"));
+			emit updateActionButtonText(tr("Next"));
 			currentPhase = phase;
 			showGuide({tr("time to show off")+ "[]"});
 			emit enableMenus(false);
