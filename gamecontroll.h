@@ -67,6 +67,9 @@ public:
 	static void addTransmission(QJsonObject transmission);
 	static void disableAnnoyingSounds();
 	static User *getLocalUser();
+    void resetAndNextTarget();
+    void resetForNextUser();
+    void handleUserGivingUp();
 public slots:
 	static void startNetworkDebugger();
 	void calculateWinner();
@@ -103,8 +106,8 @@ private:
 	User *getUserById(QUuid id);
 	User *getNextUser(QUuid lastUserId);
 	int getUserIndexById(QUuid id);
-	void resetForNextUser();
-	void resetAndNextTarget();
+
+
 	bool localUserIsActiveUser();
 	bool hasSkipped = 0;
 	static void updateRandomGenerator(int seed);
@@ -119,9 +122,10 @@ signals:
 	void newOnlineUser(User* user);
 	void updateGuide(const QString & txt);
 	void enableMenus(bool boolean);
-	void enableTimerSkip(bool boolean);
+    void enableActionBtn(bool boolean);
 	void newBoard(Board* b);
 	void updateSkip(int current, int all);
+    void updateActionButtonText(const QString &text);
 	void focusBoard();
 	void updateMoves(int moves);
 

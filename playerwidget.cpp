@@ -32,6 +32,8 @@ void PlayerWidget::paintEvent(QPaintEvent *event)
     QColor color = getPlayerColor();
 	QPainter painter;
 
+
+
 	QPen pen;
 	pen.setColor(color);
 

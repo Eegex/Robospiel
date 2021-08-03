@@ -253,9 +253,6 @@ void GameControll::exeQTAction(QJsonObject data)
 	User * user = nullptr;
 	switch(a)
 	{
-
-
-
 	case movePlayerEast:
 	case movePlayerNorth:
 	case movePlayerSouth:
@@ -359,9 +356,6 @@ void GameControll::exeQTAction(QJsonObject data)
 
 		break;
 	}
-
-
-
 	case changedUserColor:
 		getUserById(QUuid(data.value("id").toString()))->setColor(QColor(data.value("color").toString()));
 		leaderboard->updateColour(QUuid(data.value("id").toString()), QColor(data.value("color").toString()));
@@ -370,6 +364,9 @@ void GameControll::exeQTAction(QJsonObject data)
 		getUserById(QUuid(data.value("id").toString()))->setName(data.value("name").toString());
 		leaderboard->updateName(QUuid(data.value("id").toString()), data.value("name").toString());
 		break;
+    case giveUp:
+        GameControll::getInstance().handleUserGivingUp();
+        break;
 
 	}
 }
@@ -472,19 +469,25 @@ void GameControll::calculateGameStatus()
 		{
 			//TODO: Flag um anzuzeigen, dass der Spieler das Ziel erreicht hat?
 			qDebug()<<"User couldn't end the round in the specified bid of "<< getUserById(activeUserID)->getBidding()<<", the next user is being drawn";
-			if(getNextUser(activeUserID))//Not at last player yet, noch haben nicht alle versagt
-			{
-				actionWhenAnimationEnded = &GameControll::resetForNextUser;
-				qDebug()<<"actionWhenAnimationEnded = resetFornextuser";
-			}
-			else //Alles Versager
-			{
-				qDebug()<<"No User could end the round in their specified bid.";
-				actionWhenAnimationEnded = &GameControll::resetAndNextTarget;
-				qDebug()<<"actionWhenAnimationEnded = resetAndNextTarget";
-			}
+            board->revert();
 		}
 	}
+}
+
+void GameControll::handleUserGivingUp(){
+    User* nextUser = getNextUser(activeUserID);
+    if(nextUser)//Not at last player yet, noch haben nicht alle versagt
+    {
+        actionWhenAnimationEnded = &GameControll::resetForNextUser;
+
+        qDebug()<<"actionWhenAnimationEnded = resetFornextuser";
+    }
+    else //Alles Versager
+    {
+        qDebug()<<"No User could end the round in their specified bid.";
+        actionWhenAnimationEnded = &GameControll::resetAndNextTarget;
+        qDebug()<<"actionWhenAnimationEnded = resetAndNextTarget";
+    }
 }
 
 void GameControll::resetAndNextTarget()
@@ -526,6 +529,7 @@ void GameControll::resetForNextUser()
 	Q_ASSERT_X(user,"GameControll::resetForNextUser","User is nullptr");
 	showGuide({ tr("Present your solution, ") + user->getName() + "[]",tr("Your turn, ") + user->getName() + "[]" });
 	setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
+    enableActionBtn(localUserIsActiveUser());
 	getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
 	emit updateMoves(0);
 	qDebug()<<"Active User is now "<<user->getName();
@@ -817,7 +821,6 @@ void GameControll::nextTarget()
 		}
 		skipCounter = 0;
 		emit updateMoves(0);
-		emit updateSkip(skipCounter, users.length());
 		leaderboard->activateInput();
 		board->startNewRound();
 	}
@@ -830,10 +833,10 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	{
 	case Phase::idle:
 	{
+        emit updateActionButtonText(tr("Start"));
 		currentPhase = phase;
 		showGuide({tr("boooring")+ "[]",tr("i am not creative")+ "[2000]" + tr("at all")+ "[2000]" + tr("fuck you") + "[]", tr("We are in idle now!")+ "[]", tr("Lets do some idling!")+ "[]", tr("Okay, so you aren't capable of dealing with a real mode, are you?")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Too dumb for a real game!")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Idle again? Are we ever going to PLAY?")+ "[2000]" +tr("We are in idle.")+ "[]"});
 		emit enableMenus(true);
-		emit enableTimerSkip(false);
 		instance.hasSkipped = 0;
 		return true;
 	}
@@ -841,11 +844,11 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	{
 		if(currentPhase != Phase::countdown)
 		{
+            emit updateActionButtonText(tr("Next"));
 			instance.leaderboard->setBiddingFocus();
 			currentPhase = phase;
 			showGuide({tr("Start bidding")+ "[]",tr("Let's go! Bid!")+ "[]", tr("You can bid now!")+ "[]",  tr("Lets do some bidding!")+ "[]", tr("I bet you wont find anything! But you can try to...")+ "[2000]" +tr("Make your biddings!")+ "[]", tr("Make your biddings! Well if you find anything...")+ "[]"});
 			emit enableMenus(false);
-			emit enableTimerSkip(false);
 			instance.hasSkipped = 0;
 			return true;
 		}
@@ -855,6 +858,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	{
 		if(currentPhase == Phase::search)
 		{
+            emit updateActionButtonText(tr("Skip"));
 			instance.leaderboard->setBiddingFocus();
 			currentPhase = phase;
 			showGuide({tr("Counting down")+ "[]", tr("Stressed yet? The Timer is running!")+ "[]", tr("You will never find anything in a minute!")+ "[]" });
@@ -862,7 +866,6 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 			emit time(timeLeft);
 			countdown.start();
 			emit enableMenus(false);
-			emit enableTimerSkip(true);
 			instance.hasSkipped = 0;
 			return true;
 		}
@@ -872,11 +875,11 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	{
 		if(currentPhase == Phase::countdown)
 		{
+            emit updateActionButtonText(tr("Give Up"));
 			//Set Player to player with minimum bid, aka first player after being sorted
 			emit biddingDone();
 			currentPhase = phase;
 			emit enableMenus(false);
-			emit enableTimerSkip(false);
 			instance.hasSkipped = 0;
 			emit focusBoard();
 			return true;
@@ -887,10 +890,10 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	{
 		if(currentPhase == Phase::presentation)
 		{
+            emit updateActionButtonText(tr("Next"));
 			currentPhase = phase;
 			showGuide({tr("time to show off")+ "[]"});
 			emit enableMenus(false);
-			emit enableTimerSkip(false);
 			instance.hasSkipped = 0;
 			emit focusBoard();
 			return true;

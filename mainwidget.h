@@ -27,7 +27,10 @@ class MainWidget : public QWidget
 public:
 	explicit MainWidget(QWidget *parent = nullptr);
 	void setMenuBar(QMenuBar * bar);
-	void enableTimerSkip(bool boolean);
+    void enableActionBtn(bool boolean);
+    void setSkipButtonText(int current, int all);
+    void setActionButtonText(const QString &text);
+    void handleActionButtonRelease();
 private slots:
 	void updateTimer(int remaining);
 	void editBoard();
@@ -46,7 +49,7 @@ private:
 	NetworkView * networkView = nullptr;
 	UserView * userView = nullptr;
 	QLCDNumber * lcd = nullptr;
-	QPushButton * skipBtn = nullptr;
+    QPushButton * actionBtn = nullptr;
 	QMenuBar * menuBar = nullptr;
 	QAction * aNetworking = nullptr;
 	QAction * aEditBoard = nullptr;
