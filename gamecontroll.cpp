@@ -474,7 +474,7 @@ void GameControll::calculateGameStatus()
 		{
 			//TODO: Flag um anzuzeigen, dass der Spieler das Ziel erreicht hat?
 			qDebug()<<"User couldn't end the round in the specified bid of "<< getUserById(activeUserID)->getBidding()<<", the next user is being drawn";
-            GameControll::triggerAction(revert); //TODO: This always reverts to the third to last position, not to the second to last
+            GameControll::triggerAction(revert);
             User * user = instance.users.first();
             const QString& username = user->getName();
             showGuide({tr("You are out of steps, looser!")+ "[]", tr("Getting frutrated? Maybe pay attention next time you bit!")+ "[]", tr("Buhuuu! All your steps are up, ") + username + "!" + "[]", tr("No steps, no luck, I guess, your stuck!")+ "[]", tr("Somebody doesn't know how to count!")+ "[]"});
