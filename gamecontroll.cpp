@@ -11,6 +11,7 @@ GameControll GameControll::instance;
 
 GameControll& GameControll::getInstance()
 {
+
 	return instance;
 }
 
@@ -22,7 +23,7 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 	connect(this, &GameControll::actionTriggeredWithData, this, &GameControll::sendToServerWithData);
 	connect(this, &GameControll::actionTriggered, this, &GameControll::sendToServer);
 	connect(&guideTimer,&QTimer::timeout,this,&GameControll::nextGuide);
-	r = new QRandomGenerator(QTime::currentTime().msecsSinceStartOfDay());
+    r = new QRandomGenerator(QTime::currentTime().msecsSinceStartOfDay());
 	player = new QMediaPlayer;
 }
 
@@ -150,7 +151,7 @@ void GameControll::sendToServerWithData(PlayerAction a, QJsonObject info)
 		Client::getInstance().sendMessageToServer(info);
 	}
 	else
-	{
+    {
 		//you are offline
 		exeQTAction(info);
 	}
@@ -210,6 +211,9 @@ void GameControll::load()
 			triggerActionWithData(PlayerAction::changedUsername, data);
 		}
 	});
+    //TODO: I want Gamecontroll to tell the mainwindow they can enable the action button as soon as the leaderboard is set!
+    //connect(instance.leaderboard, &OnlineLeaderboardWidget::leaderBoardSet, &instance, &GameControll::enableActionBtn);
+
 
 	if(instance.board)
 	{
@@ -801,7 +805,11 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
 		json.insert("bidding", bidding);
 		triggerActionWithData(PlayerAction::sendBidding, json);
 	});
+
+
 }
+
+
 
 const User * GameControll::getMinBid()
 {

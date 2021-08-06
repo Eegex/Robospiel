@@ -8,7 +8,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	userView = new UserView(this);
 	//GameControll::setLeaderboard(userView->getLeaderboard());
     actionBtn = new QPushButton(tr("Start"), this);
-    actionBtn->setEnabled(true);
+    actionBtn->setEnabled(true); //TODO should only be enabled as soon as we have the leaderboard and we can actually start the game
 	initializeView(GameControll::setBoard(new Board(16, 16, 5)), GameControll::getMapping());
 	//connect(view, &BoardView::lastAnimationAfterGoalHitEnded, game, &GameControll::calculateWinner);
 	networkView = new NetworkView;

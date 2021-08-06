@@ -43,6 +43,7 @@ void OnlineLeaderboardWidget::setOnlineWidget()
 	biddingBox->show();
 	bidBtn->show();
 	lay->update();
+    emit leaderBoardSet(true);
 }
 
 void OnlineLeaderboardWidget::setLocalUser(User * u)
