@@ -7,7 +7,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	glMain = new QGridLayout(this);
 	userView = new UserView(this);
 	//GameControll::setLeaderboard(userView->getLeaderboard());
-	actionBtn = new QPushButton("Next", this);
+    actionBtn = new QPushButton(tr("Start"), this);
+    actionBtn->setEnabled(true);
 	initializeView(GameControll::setBoard(new Board(16, 16, 5)), GameControll::getMapping());
 	//connect(view, &BoardView::lastAnimationAfterGoalHitEnded, game, &GameControll::calculateWinner);
 	networkView = new NetworkView;
@@ -84,7 +85,7 @@ void MainWidget::setSkipButtonText(int current, int all)
 	}
 	else
 	{
-		actionBtn->setText(tr("Skip (")+QString::number(current)+"/"+QString::number(all)+")");
+        actionBtn->setText(tr("Skip")+ "(" +QString::number(current)+"/"+QString::number(all)+")");
 
 	}
 }

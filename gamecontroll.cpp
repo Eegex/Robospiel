@@ -142,6 +142,7 @@ void GameControll::sendToServerWithData(PlayerAction a, QJsonObject info)
 	{
 		//you are the server
 		Server::getInstance().sendMessageToClients(info);
+
 	}
 	else if (Client::getInstance().isActive())
 	{
@@ -233,11 +234,11 @@ Board * GameControll::setBoard(Board* newBoard)
 	{
 		instance.board->updateColors(instance.settings->getBackground(), instance.settings->getWallcolor(), instance.settings->getGridcolor(), instance.settings->getPlayerColorLow(), instance.settings->getPlayerColorHigh());
 	}
-	connect(instance.board, &Board::playerMoved, &GameControll::getInstance(), &GameControll::calculateGameStatus);
-	connect(instance.board, &Board::playerMoved, &GameControll::getInstance(), [&](int, int)
+    connect(instance.board, &Board::playerMoved, &GameControll::getInstance(), [&](int, int) // Please note that this connect has to come BEFORE the one that is below, otherwise we will have problem with reverting to the thrid to last positions once the steps are all used up :(!
 	{
 		emit instance.updateMoves(instance.board->getMoves());
 	});
+    connect(instance.board, &Board::playerMoved, &GameControll::getInstance(), &GameControll::calculateGameStatus); // Please note that this connect has to come AFTER the one that is above!
 	emit instance.newBoard(instance.board);
 	return instance.board;
 }
@@ -470,7 +471,10 @@ void GameControll::calculateGameStatus()
 			//TODO: Flag um anzuzeigen, dass der Spieler das Ziel erreicht hat?
 			qDebug()<<"User couldn't end the round in the specified bid of "<< getUserById(activeUserID)->getBidding()<<", the next user is being drawn";
             GameControll::triggerAction(revert); //TODO: This always reverts to the third to last position, not to the second to last
-		}
+            User * user = instance.users.first();
+            const QString& username = user->getName();
+            showGuide({tr("You are out of steps, looser!")+ "[]", tr("Getting frutrated? Maybe pay attention next time you bit!")+ "[]", tr("Buhuuu! All your steps are up, ") + username + "!" + "[]", tr("No steps, no luck, I guess, your stuck!")+ "[]", tr("Somebody doesn't know how to count!")+ "[]"});
+        }
 	}
 }
 
