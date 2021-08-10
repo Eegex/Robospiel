@@ -211,8 +211,6 @@ void GameControll::load()
 			triggerActionWithData(PlayerAction::changedUsername, data);
 		}
 	});
-    //TODO: I want Gamecontroll to tell the mainwindow they can enable the action button as soon as the leaderboard is set!
-    //connect(instance.leaderboard, &OnlineLeaderboardWidget::leaderBoardSet, &instance, &GameControll::enableActionBtn);
 
 
 	if(instance.board)

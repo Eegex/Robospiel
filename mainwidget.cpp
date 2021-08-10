@@ -5,11 +5,12 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 {
 	GameControll::initializeConnections();
 	glMain = new QGridLayout(this);
-	userView = new UserView(this);
 	//GameControll::setLeaderboard(userView->getLeaderboard());
     actionBtn = new QPushButton(tr("Start"), this);
-    actionBtn->setEnabled(true); //TODO should only be enabled as soon as we have the leaderboard and we can actually start the game
-	initializeView(GameControll::setBoard(new Board(16, 16, 5)), GameControll::getMapping());
+    actionBtn->setEnabled(false); // should only be enabled as soon as we have the leaderboard and we can actually start the game
+    userView = new UserView(actionBtn, this);
+
+    initializeView(GameControll::setBoard(new Board(16, 16, 5)), GameControll::getMapping());
 	//connect(view, &BoardView::lastAnimationAfterGoalHitEnded, game, &GameControll::calculateWinner);
 	networkView = new NetworkView;
 	lcd = new QLCDNumber(this);
@@ -252,7 +253,7 @@ void MainWidget::focusBoard()
 		view->setFocus();
 	}
 }
-//NOTE: Is no longer used, maybe we can delete it some day
+
 void MainWidget::enableActionBtn(bool boolean)
 {
 	actionBtn->setEnabled(boolean);

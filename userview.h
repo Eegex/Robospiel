@@ -14,7 +14,7 @@ class UserView : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit UserView(QWidget *parent = nullptr);
+    explicit UserView(QPushButton *actionBtn, QWidget *parent = nullptr);
 	LeaderBoardWidget *getLeaderboard() const;
 
 private:
