@@ -926,9 +926,9 @@ bool GameControll::switchPhase(GameControll::Phase phase)
             // Save the state that the game had right when the point was scored.
             board->saveCurrentPositionOfPlayers();
 
+            currentPhase = phase;
             letUserPlayFree(activeUserID);
             emit updateActionButtonText(tr("Next"));
-            currentPhase = phase;
             showGuide({tr("Freeplay")+ "[2000]"+ tr("time to show off")+ "[]"});
             emit enableMenus(false);
             instance.hasSkipped = 0;
