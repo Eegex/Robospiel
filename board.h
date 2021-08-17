@@ -22,11 +22,11 @@ class Board : public QObject
 	Q_OBJECT
 public:
 	Board(int width, int height, int playerNumber, QObject *parent = nullptr);
-	Tile *getTile(int x, int y);
+	Tile *getTile(const QPoint p);
 	QSize getSize();
 	QString printDirection(Direction direction);
-    QVector<Tile*> players;
-    QVector<Tile*> playersAfterGoalHit;
+	QVector<Tile*> players;
+	QVector<QPoint> playersAfterGoalHit;
 	Tile * goal = nullptr;
 	int seeker = 0;
 	int activePlayer = 0;
@@ -54,11 +54,12 @@ public:
 	void updateColors(QColor b, QColor w, QColor g, QColor p1, QColor p2);
 	QString toBinary();
 	static Board * fromBinary(const QString base64);
-    void updateRandomGenerator(int seed);
-    void setMoves(int moves);
-    void saveCurrentPositionOfPlayers();
-    void deleteSavedState();
-    void setSavedStateToCurrent();
+	void updateRandomGenerator(int seed);
+	void setMoves(int moves);
+	void saveCurrentPositionOfPlayers();
+	void deleteSavedState();
+	void setSavedStateToCurrent();
+	Tile * getTile(int x, int y);
 public slots:
 	void startNewRound();
 	int switchPlayer(Direction d);
@@ -66,7 +67,7 @@ signals:
 	void boardChanged();
 	void paintPlayers();
 	void playerMoved(int playerNumber, int goalHit); //-1 when goal was not reached, number of moves otherwise
-    void playerBeam(int playerNumber);
+	void playerBeam(int playerNumber);
 	void goalMoved();
 protected:
 	void placeGoalAwayFromSeeker();

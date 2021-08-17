@@ -15,11 +15,19 @@ Tile::Tile(QPoint position, Tile* north, Tile* west, QObject *parent) :  QObject
 {
 }
 
+Tile::Tile(const Tile & tile) : QObject(tile.parent())
+{
+	position = tile.position;
+	eastWall = tile.eastWall;
+	southWall = tile.southWall;
+	playerOnThisTile = tile.playerOnThisTile;
+}
+
 Tile::Tile(){}
 
 Tile *Tile::copyTile(Tile* tile){
 
-    return new Tile(tile->position, tile->northTile, tile->westTile, tile->parent());
+	return new Tile(tile->position, tile->northTile, tile->westTile, tile->parent());
 }
 
 QJsonObject Tile::toJSON()

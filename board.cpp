@@ -24,7 +24,7 @@ Board::Board(int width, int height, int playerNumber, QObject *parent) : Board(p
 		qDebug()<< "Board contructor was called with too many players!";
 	}
 	makeNewBoard(width, height, playerNumber);
-    //saveCurrentPositionOfPlayers();
+	//saveCurrentPositionOfPlayers();
 	startNewRound();
 }
 
@@ -42,6 +42,7 @@ void Board::makeNewBoard(int width, int height, int playerNumber)
 	makeNewGoal();
 	emit boardChanged();
 }
+
 /**
  * @brief Board::makeNewPlayers
  * deletes all players and places them new random tiles. Also emits the
@@ -85,7 +86,6 @@ void Board::makeNewSeeker(bool random)
 	emit boardChanged();
 
 }
-
 
 /**
  * @brief Board::makeNewGoal - places a new goal
@@ -263,6 +263,11 @@ Board * Board::fromBinary(const QString base64)
 	return newBoard;
 }
 
+/**
+ * @brief Board::setPlayerOnTile yes, actually removes player from former tile
+ * @param player
+ * @param tile
+ */
 void Board::setPlayerOnTile(int player, Tile* tile)
 {
 	players[player]->setPlayer(-1);
@@ -283,14 +288,18 @@ void Board::startNewRound()
 	emit boardChanged();
 }
 
-Tile* Board::getTile(int x, int y)
+Tile* Board::getTile(const QPoint p)
 {
-
-	if(x < getSize().width() && y < getSize().height() && x>= 0 && y>= 0)
+	if(p.x() < getSize().width() && p.y() < getSize().height() && p.x()>= 0 && p.y()>= 0)
 	{
-		return tiles.at(y).at(x);
+		return tiles.at(p.y()).at(p.x());
 	}
 	return nullptr;
+}
+
+Tile* Board::getTile(int x, int y)
+{
+	return getTile({x,y});
 }
 
 QSize Board::getSize()
@@ -526,11 +535,9 @@ bool Board::placeInnerWallifFits(Tile* tile, Direction direction)
 	return false;
 }
 
-
 /**
  * @brief Board::placeGoalInCorner - places a goal into a spot that has two walls that are in a right angle to each other
  */
-
 void Board::placeGoalInCorner()
 {
 	bool noCorner = true;
@@ -570,7 +577,6 @@ void Board::placeGoalInCorner()
  * @param tile
  * @return
  */
-
 bool Board::isTileCorner(Tile* tile){
 
 	int numberOfWalls = 0;
@@ -626,7 +632,7 @@ int Board::getMoves() const
 
 void Board::setMoves(int moves)
 {
-    this->moves = moves;
+	this->moves = moves;
 }
 
 QColor Board::getGrid() const
@@ -660,7 +666,6 @@ QColor Board::getPlayerColorHigh() const
  * @param numberOfClockwiseSteps
  * @return
  */
-
 Direction Board::getNextDirection(Direction direction, int numberOfClockwiseSteps)
 {
 	if(numberOfClockwiseSteps ==0)
@@ -804,7 +809,7 @@ void Board::revert()
 	if(!history.isEmpty())
 	{
 		HistoryElement h = history.takeLast();
-        if(h.action & PlayerAction::movement)//binary number magic
+		if(h.action & PlayerAction::movement)//binary number magic
 		{
 			int direction = h.action-PlayerAction::movement;
 			direction = direction > static_cast<int>(Direction::east) ? direction>>2 : direction<<2; //invert direction
@@ -830,27 +835,29 @@ void Board::revertToBeginning()
 	}
 }
 
-void Board::saveCurrentPositionOfPlayers(){
-    playersAfterGoalHit.clear();
-    for(Tile* p:players){
-        playersAfterGoalHit.append(p->copyTile(p));
-    }
+void Board::saveCurrentPositionOfPlayers()
+{
+	playersAfterGoalHit.resize(players.size());
+	for(int i = 0; i < players.size();i++)
+	{
+		playersAfterGoalHit[i] = players.at(i)->getPosition();
+	}
 }
 
-void Board::setSavedStateToCurrent(){
-    if(playersAfterGoalHit.length() >0){
-        players.clear();
-        for(Tile* p:playersAfterGoalHit){
-            players.append(p->copyTile(p));
-            emit playerBeam(players.length()-1);
-        }
-        deleteSavedState();
-    }
-    emit boardChanged(); //no idea if that is necessary...
-}
-
-void Board::deleteSavedState(){
-    playersAfterGoalHit.clear();
+void Board::setSavedStateToCurrent()
+{
+	if(playersAfterGoalHit.length() >0)
+	{
+		int i = 0;
+		for(QPoint p:qAsConst(playersAfterGoalHit))
+		{
+			setPlayerOnTile(i,getTile(p));
+			emit playerBeam(players.length()-1);
+			i++;
+		}
+		playersAfterGoalHit.clear();
+	}
+	emit boardChanged(); //no idea if that is necessary...
 }
 
 int Board::addPlayer(Tile * t)
@@ -1015,6 +1022,3 @@ void Board::updateRandomGenerator(int seed)
 	}
 	r = new QRandomGenerator(seed);
 }
-
-
-

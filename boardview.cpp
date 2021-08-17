@@ -27,10 +27,10 @@ void BoardView::setBoard(Board * b)
 	{
 		playerWidgets.at(playerNumber)->moveAnimated(tileToDesktopCoordinates(board->players.at(playerNumber)), board->players.at(playerNumber)->getPosition(), std::max(width(), height())*1.2);
 	});
-    connect(board,&Board::playerBeam,this, [&](int playerNumber)
-    {
-        playerWidgets.at(playerNumber)->moveAnimated(tileToDesktopCoordinates(board->players.at(playerNumber)), board->players.at(playerNumber)->getPosition(), std::max(width(), height())*1.2);
-    });
+	connect(board,&Board::playerBeam,this, [&](int playerNumber)
+	{
+		playerWidgets.at(playerNumber)->moveAnimated(tileToDesktopCoordinates(board->players.at(playerNumber)), board->players.at(playerNumber)->getPosition(), std::max(width(), height())*1.2);
+	});
 	connect(board,&Board::paintPlayers,this, [&]()
 	{
 		for (int i =0;i<playerWidgets.length() ;i++ )
@@ -61,27 +61,27 @@ QSize BoardView::sizeHint() const
 
 void BoardView::makeNewAll()
 {
-	board -> makeNewBoard(board->getSize().width(), board->getSize().height(), board->players.length());
+	board->makeNewBoard(board->getSize().width(), board->getSize().height(), board->players.length());
 }
 
 void BoardView::makeNewPlayers()
 {
-	board -> makeNewPlayers(board->players.length());
+	board->makeNewPlayers(board->players.length());
 }
 
 void BoardView::makeNewSeeker()
 {
-	board -> makeNewSeeker(false);
+	board->makeNewSeeker(false);
 }
 
 void BoardView::makeNewWalls()
 {
-	board -> makeNewWalls(board->getSize().width(), board->getSize().height());
+	board->makeNewWalls(board->getSize().width(), board->getSize().height());
 }
 
 void BoardView::makeNewTarget()
 {
-	board -> makeNewGoal();
+	board->makeNewGoal();
 }
 
 Tile * BoardView::coordsToTile(QPoint p)

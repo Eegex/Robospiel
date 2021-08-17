@@ -16,7 +16,7 @@
     <message>
         <location filename="gamecontroll.cpp" line="734"/>
         <source>Goal has been hit by %1</source>
-        <translation>Das Ziel wurde von %1 getroffen. </translation>
+        <translation>Das Ziel wurde von %1 getroffen.</translation>
     </message>
     <message>
         <location filename="gamecontroll.cpp" line="548"/>
@@ -47,7 +47,7 @@
     <message>
         <location filename="gamecontroll.cpp" line="478"/>
         <source>Somebody doesn&apos;t know how to count!</source>
-        <translation>Da weiß wohl jemand nicht wie man zählt! </translation>
+        <translation>Da weiß wohl jemand nicht wie man zählt!</translation>
     </message>
     <message>
         <location filename="gamecontroll.cpp" line="860"/>
@@ -78,7 +78,7 @@
     <message>
         <location filename="gamecontroll.cpp" line="862"/>
         <source>We are in idle now!</source>
-        <translation>Wir sind jetzt beim untätigen Modus.</translation>
+        <translation>Wir sind jetzt beim untätigen Modus!</translation>
     </message>
     <message>
         <location filename="gamecontroll.cpp" line="862"/>
@@ -93,7 +93,7 @@
     <message>
         <location filename="gamecontroll.cpp" line="862"/>
         <source>We are in idle.</source>
-        <translation>Wir sind im Bummel-Modus!</translation>
+        <translation>Wir sind im Bummel-Modus.</translation>
     </message>
     <message>
         <location filename="gamecontroll.cpp" line="862"/>
@@ -103,7 +103,7 @@
     <message>
         <location filename="gamecontroll.cpp" line="862"/>
         <source>Idle again? Are we ever going to PLAY?</source>
-        <translation>Schon wieder in Locker-Flockig? Spielen wir irgendwann nochmal? </translation>
+        <translation>Schon wieder in Locker-Flockig? Spielen wir irgendwann nochmal?</translation>
     </message>
     <message>
         <location filename="gamecontroll.cpp" line="871"/>
@@ -134,7 +134,7 @@
     <message>
         <location filename="gamecontroll.cpp" line="874"/>
         <source>Make your biddings! Well if you find anything...</source>
-        <translation>Fangt an zu bieten, wenn ihr etwas findet... </translation>
+        <translation>Fangt an zu bieten, wenn ihr etwas findet...</translation>
     </message>
     <message>
         <location filename="gamecontroll.cpp" line="874"/>
@@ -181,7 +181,7 @@
     <message>
         <location filename="gamecontroll.cpp" line="888"/>
         <source>You will never find anything in a minute!</source>
-        <translation>Du wirst eh nichts mehr in nur einer Minute entdecken! </translation>
+        <translation>Du wirst eh nichts mehr in nur einer Minute entdecken!</translation>
     </message>
     <message>
         <location filename="gamecontroll.cpp" line="902"/>
@@ -575,7 +575,7 @@
         <location filename="onlineleaderboardwidget.cpp" line="63"/>
         <source>Bid</source>
         <oldsource>Bid: </oldsource>
-        <translation>Gebot </translation>
+        <translation>Gebot</translation>
     </message>
 </context>
 <context>
@@ -673,7 +673,7 @@
     <message>
         <location filename="userview.h" line="24"/>
         <source>Back</source>
-        <translation>Zurück </translation>
+        <translation>Zurück</translation>
     </message>
 </context>
 </TS>

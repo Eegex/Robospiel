@@ -9,8 +9,8 @@ class Tile : public QObject
 {
 	Q_OBJECT
 public:
-    Tile(QPoint position, Tile *north, Tile *west, QObject *parent);
-
+	Tile(QPoint position, Tile *north, Tile *west, QObject *parent);
+	Tile(const Tile & tile);
 	QPoint getPosition() const;
 	void setPosition(const QPoint &value);
 
@@ -18,22 +18,19 @@ public:
 	bool getWall(Direction direction);
 	int getPlayer() const;
 	void setPlayer(int value);
-    Tile* northTile = nullptr;
-    Tile* westTile = nullptr;
-    Tile* copyTile(Tile* tile);
+	Tile * northTile = nullptr;
+	Tile * westTile = nullptr;
+	Tile * copyTile(Tile* tile);
 
-
-
-
-    void setInnerWall(Direction direction, bool set);
-    static Tile *fromJSON(QJsonObject json);
-    QJsonObject toJSON();
+	void setInnerWall(Direction direction, bool set);
+	static Tile * fromJSON(QJsonObject json);
+	QJsonObject toJSON();
 private:
 	QPoint position;
 	bool eastWall=false;
 	bool southWall=false;
 	int playerOnThisTile;
-    Tile();
+	Tile();
 
 
 signals:
