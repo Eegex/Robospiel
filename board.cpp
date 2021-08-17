@@ -852,7 +852,7 @@ void Board::setSavedStateToCurrent()
 		for(QPoint p:qAsConst(playersAfterGoalHit))
 		{
 			setPlayerOnTile(i,getTile(p));
-			emit playerBeam(players.length()-1);
+            emit playerBeam(i);
 			i++;
 		}
 		playersAfterGoalHit.clear();
