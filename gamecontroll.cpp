@@ -806,6 +806,8 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
         json.insert("bidding", bidding);
         triggerActionWithData(PlayerAction::sendBidding, json);
     });
+    //TODO: I fucking hate connects! They come from hell and never work...
+    //connect(instance.leaderboard, &LeaderBoardWidget::userWasClicked(), &GameControll::getInstance(), letUserPlayFree());
 
 
 }
@@ -924,7 +926,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
             // Save the state that the game had right when the point was scored.
             board->saveCurrentPositionOfPlayers();
 
-            letUserPlayFree(getUserById(activeUserID));
+            letUserPlayFree(activeUserID);
             emit updateActionButtonText(tr("Next"));
             currentPhase = phase;
             showGuide({tr("Freeplay")+ "[2000]"+ tr("time to show off")+ "[]"});
@@ -955,15 +957,32 @@ QVector<KeyMapping*> * GameControll::getMapping()
     return &instance.mapping;
 }
 
-void GameControll::letUserPlayFree(User *user){
-    // set user as active user.
-    setActiveUserID(user->getId());
-    //TODO:
-    // make all other usernames into buttons, allowing the active user to click them
-    // reset the board to the state in the last search phase
-    board->revertToBeginning();
-    // Set the steps counter to 0
-    emit updateMoves(0);
+
+void GameControll::decideIfUserCanPlayFree(QUuid userId){
+    //TODO: connect this function to this userIds name being clicked in leaderboardwidget
+    //check if it was clicked by the active user (Maybe this needs to be done in the widget)
+
+    //check that this user is not the active user
+    if(activeUserID != userId){
+        //check that we are in the right phase
+        if(currentPhase==Phase::freeplay){
+            letUserPlayFree(userId);
+        }
+    }
+
+
+
+}
+
+void GameControll::letUserPlayFree(QUuid userId){
+    if(currentPhase == Phase::freeplay){
+        // set user as active user.
+        setActiveUserID(userId);
+        // reset the board to the state in the last search phase
+        board->revertToBeginning();
+        // Set the steps counter to 0
+        emit updateMoves(0);
+    }
 
 }
 

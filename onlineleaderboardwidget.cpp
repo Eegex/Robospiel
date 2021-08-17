@@ -37,7 +37,7 @@ void OnlineLeaderboardWidget::setOnlineWidget()
 	lay->addWidget(biddingBox);
 	lay->addWidget(bidBtn);
 	lay->addWidget(tableView);
-	lname->setText(localUser->getName());
+    lname->setText(localUser->getName());
 	lname->show();
 	tableView->show();
 	biddingBox->show();

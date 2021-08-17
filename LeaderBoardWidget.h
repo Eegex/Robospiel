@@ -32,6 +32,7 @@ public slots:
 signals:
 	void userAdded(User* u);
 	void biddingAccepted(QUuid userId, int bidding);
+    void userWasClicked(QUuid userId);
 };
 
 #endif // LEADERBOARDWIDGET_H

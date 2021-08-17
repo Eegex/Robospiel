@@ -70,7 +70,8 @@ public:
     void resetAndNextTarget();
     void resetForNextUser();
     void handleUserGivingUp();
-    void letUserPlayFree(User *user);
+    void letUserPlayFree(QUuid userId);
+    void decideIfUserCanPlayFree(QUuid userId);
 public slots:
 	static void startNetworkDebugger();
 	void calculateWinner();

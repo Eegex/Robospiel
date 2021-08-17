@@ -29,9 +29,9 @@ public:
 
 private:
 	QGridLayout * lay = new QGridLayout(this);
-	QPushButton * bidBtn = new QPushButton(this); //accept in biddingWidget
-	QLabel * lname = new QLabel(this); //labelName in biddingWdiget
-	SpinBox * biddingBox = new SpinBox(this); //lSpinBox in biddingWidget
+    QPushButton * bidBtn = new QPushButton(this); //accept in biddingWidget
+    QLabel * lname = new QLabel(this); //labelName in biddingWdiget
+    SpinBox * biddingBox = new SpinBox(this); //lSpinBox in biddingWidget
 	QTableView * tableView = new QTableView(this);
 	int userBidding = User::maxBid;
 	User * localUser = nullptr;
