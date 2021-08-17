@@ -70,6 +70,7 @@ public:
     void resetAndNextTarget();
     void resetForNextUser();
     void handleUserGivingUp();
+    void letUserPlayFree(User *user);
 public slots:
 	static void startNetworkDebugger();
 	void calculateWinner();

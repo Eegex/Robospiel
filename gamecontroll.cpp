@@ -725,7 +725,9 @@ void GameControll::calculateWinner()
 {
 	QUuid activeUserId = getActiveUserID();
 	User* activeUser = getUserById(activeUserId);
-	nextTarget(); //Generate a new target, this should reset the current LeaderBoardWidget
+    //nextTarget(); //Generate a new target, this should reset the current LeaderBoardWidget
+    //TODO: is this what I want to make freeplay happen?
+    switchPhase(Phase::freeplay);
 	activeUser->incrementPoints();
 	const QString username = activeUser->getName();
 	qDebug()<<"User "<<username<<" has successfully ended the round with "<<board->getMoves()<<" moves, their current points are "<<activeUser->getPoints()<<". \nI think the move counter is already reset for the next round at this point...";
@@ -913,12 +915,19 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 	{
 		if(currentPhase == Phase::presentation)
 		{
+
+            //TODO:
+            // set user who just made a point as active user.
+            // Save the state that the game had right when the point was scored.
+
+            letUserPlayFree(getUserById(activeUserID));
 			emit updateActionButtonText(tr("Next"));
 			currentPhase = phase;
 			showGuide({tr("time to show off")+ "[]"});
 			emit enableMenus(false);
 			instance.hasSkipped = 0;
 			emit focusBoard();
+            enableActionBtn(localUserIsActiveUser()); // TODO: does this make sense here?
 			return true;
 		}
 		break;
@@ -940,6 +949,15 @@ QVector<KeyMapping*> * GameControll::getMapping()
 		load();
 	}
 	return &instance.mapping;
+}
+
+void GameControll::letUserPlayFree(User *user){
+    //TODO:
+    // set user as active user.
+    // make all other usernames into buttons, allowing the active user to click them
+    // reset the board to the state in the last search phase
+    // Set the steps counter to 0
+
 }
 
 void GameControll::setMapping(QVector<KeyMapping*> mapping)
