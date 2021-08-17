@@ -27,6 +27,10 @@ void BoardView::setBoard(Board * b)
 	{
 		playerWidgets.at(playerNumber)->moveAnimated(tileToDesktopCoordinates(board->players.at(playerNumber)), board->players.at(playerNumber)->getPosition(), std::max(width(), height())*1.2);
 	});
+    connect(board,&Board::playerBeam,this, [&](int playerNumber)
+    {
+        playerWidgets.at(playerNumber)->moveAnimated(tileToDesktopCoordinates(board->players.at(playerNumber)), board->players.at(playerNumber)->getPosition(), std::max(width(), height())*1.2);
+    });
 	connect(board,&Board::paintPlayers,this, [&]()
 	{
 		for (int i =0;i<playerWidgets.length() ;i++ )

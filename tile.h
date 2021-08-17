@@ -20,6 +20,10 @@ public:
 	void setPlayer(int value);
     Tile* northTile = nullptr;
     Tile* westTile = nullptr;
+    Tile* copyTile(Tile* tile);
+
+
+
 
     void setInnerWall(Direction direction, bool set);
     static Tile *fromJSON(QJsonObject json);

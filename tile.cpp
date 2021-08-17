@@ -17,6 +17,11 @@ Tile::Tile(QPoint position, Tile* north, Tile* west, QObject *parent) :  QObject
 
 Tile::Tile(){}
 
+Tile *Tile::copyTile(Tile* tile){
+
+    return new Tile(tile->position, tile->northTile, tile->westTile, tile->parent());
+}
+
 QJsonObject Tile::toJSON()
 {
 	QJsonObject json;

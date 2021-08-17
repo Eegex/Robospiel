@@ -24,6 +24,7 @@ Board::Board(int width, int height, int playerNumber, QObject *parent) : Board(p
 		qDebug()<< "Board contructor was called with too many players!";
 	}
 	makeNewBoard(width, height, playerNumber);
+    //saveCurrentPositionOfPlayers();
 	startNewRound();
 }
 
@@ -803,7 +804,7 @@ void Board::revert()
 	if(!history.isEmpty())
 	{
 		HistoryElement h = history.takeLast();
-		if(h.action & PlayerAction::movement)
+        if(h.action & PlayerAction::movement)//binary number magic
 		{
 			int direction = h.action-PlayerAction::movement;
 			direction = direction > static_cast<int>(Direction::east) ? direction>>2 : direction<<2; //invert direction
@@ -827,6 +828,29 @@ void Board::revertToBeginning()
 	{
 		revert();
 	}
+}
+
+void Board::saveCurrentPositionOfPlayers(){
+    playersAfterGoalHit.clear();
+    for(Tile* p:players){
+        playersAfterGoalHit.append(p->copyTile(p));
+    }
+}
+
+void Board::setSavedStateToCurrent(){
+    if(playersAfterGoalHit.length() >0){
+        players.clear();
+        for(Tile* p:playersAfterGoalHit){
+            players.append(p->copyTile(p));
+            emit playerBeam(players.length()-1);
+        }
+        deleteSavedState();
+    }
+    emit boardChanged(); //no idea if that is necessary...
+}
+
+void Board::deleteSavedState(){
+    playersAfterGoalHit.clear();
 }
 
 int Board::addPlayer(Tile * t)

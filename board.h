@@ -25,7 +25,8 @@ public:
 	Tile *getTile(int x, int y);
 	QSize getSize();
 	QString printDirection(Direction direction);
-	QVector<Tile*> players;
+    QVector<Tile*> players;
+    QVector<Tile*> playersAfterGoalHit;
 	Tile * goal = nullptr;
 	int seeker = 0;
 	int activePlayer = 0;
@@ -55,6 +56,9 @@ public:
 	static Board * fromBinary(const QString base64);
     void updateRandomGenerator(int seed);
     void setMoves(int moves);
+    void saveCurrentPositionOfPlayers();
+    void deleteSavedState();
+    void setSavedStateToCurrent();
 public slots:
 	void startNewRound();
 	int switchPlayer(Direction d);
@@ -62,6 +66,7 @@ signals:
 	void boardChanged();
 	void paintPlayers();
 	void playerMoved(int playerNumber, int goalHit); //-1 when goal was not reached, number of moves otherwise
+    void playerBeam(int playerNumber);
 	void goalMoved();
 protected:
 	void placeGoalAwayFromSeeker();
