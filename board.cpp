@@ -10,8 +10,8 @@ Board::Board(QObject *parent) : QObject(parent)
 	r = new QRandomGenerator(QTime::currentTime().msecsSinceStartOfDay());
 }
 
-/*! constructs a new game board
- * \brief Board::Board
+/*!
+ * \brief Board::Board constructs a new game board
  * \param width - how many tiles are there in the width direction
  * \param height - how many tiles there are in the height direction
  * \param playerNumber - number of players
@@ -24,7 +24,7 @@ Board::Board(int width, int height, int playerNumber, QObject *parent) : Board(p
 		qDebug()<< "Board contructor was called with too many players!";
 	}
 	makeNewBoard(width, height, playerNumber);
-	//saveCurrentPositionOfPlayers();
+    //saveCurrentPositionOfPlayers();
 	startNewRound();
 }
 
@@ -39,7 +39,7 @@ void Board::makeNewBoard(int width, int height, int playerNumber)
 	makeNewWalls(width, height);
 	makeNewPlayers(playerNumber);
 	makeNewGoal();
-	emit boardChanged();
+    //emit boardChanged();
 }
 
 /*!
@@ -54,7 +54,7 @@ void Board::makeNewPlayers(int playerNumber)
 		Tile * t = getRandomUnoccupiedTile();
 		t->setPlayer(i);
 		players.append(t);
-		emit playerMoved(i,(goal == t && seeker == activePlayer) ? moves : -1);
+        emit playerMoved(i,(goal == t && seeker == activePlayer) ? moves : -1);
 	}
 }
 
@@ -81,7 +81,7 @@ void Board::makeNewSeeker(bool random)
 		seeker = (seeker+1)%players.length();
 	}
 	activePlayer = seeker;
-	emit boardChanged();
+    //emit boardChanged();
 
 }
 
@@ -117,7 +117,7 @@ void Board::makeNewWalls(int width, int height)
 	}
 	placeOuterWalls();
 	placeInnerWalls();
-	emit boardChanged();
+    //emit boardChanged();
 }
 
 QString Board::toBinary()
@@ -271,7 +271,10 @@ void Board::setPlayerOnTile(int player, Tile* tile)
 	tile->setPlayer(player);
 	players[player] = tile;
 }
-
+/*!
+ * \brief Board::startNewRound is responsible for setting everything up for a new round.
+ * It makes a new seeker and goal and resets history and moves.
+ */
 void Board::startNewRound()
 {
 	resetMoves();
@@ -282,8 +285,13 @@ void Board::startNewRound()
 	makeNewGoal();
 	//else:
 	//placeGoalAwayFromSeeker();
-	emit boardChanged();
 }
+
+/*!
+ * \brief Board::getTile returns a pointer to a tile given the coordinates of that tile
+ * \param p - coordinates of the tile (column of tile starting at 0, row of tile starting at 0)
+ * \return pointer to the tile
+ */
 
 Tile* Board::getTile(const QPoint p)
 {
@@ -294,21 +302,44 @@ Tile* Board::getTile(const QPoint p)
 	return nullptr;
 }
 
+/*!
+ * \brief Board::getTile returns a pointer to a tile given the coordinates of that tile
+ * \param x - column of tile starting at 0
+ * \param y - row of tile starting at 0
+ * \return pointer to the tile
+ */
+
 Tile* Board::getTile(int x, int y)
 {
 	return getTile({x,y});
 }
+
+/*!
+ * \brief Board::getSize
+ * \return the size of the board as (width, height)
+ */
 
 QSize Board::getSize()
 {
 	return QSize(tiles.first().size(),tiles.size());
 }
 
+/*!
+ * \brief Board::getRandomTile
+ * \return pointer to a random tile from the board
+ */
+
 Tile* Board::getRandomTile()
 {
 
 	return tiles.at(r->bounded(tiles.length())).at(r->bounded(tiles.at(0).length()));
 }
+
+
+/*!
+ * \brief Board::getRandomUnoccupiedTile
+ * \return a tile that has no player nor goal currently placed on it
+ */
 
 Tile* Board::getRandomUnoccupiedTile()
 {
@@ -795,7 +826,7 @@ void Board::changeActivePlayer(int playerNumber, bool isRevert)
 		history.append(h);
 	}
 	activePlayer = playerNumber;
-	emit boardChanged();
+    //emit boardChanged();
 }
 
 /*!
@@ -854,7 +885,7 @@ void Board::setSavedStateToCurrent()
 		}
 		playersAfterGoalHit.clear();
 	}
-	emit boardChanged(); //no idea if that is necessary...
+    //emit boardChanged(); //no idea if that is necessary...
 }
 
 int Board::addPlayer(Tile * t)
@@ -873,7 +904,7 @@ void Board::updateColors(QColor b, QColor w, QColor g, QColor p1, QColor p2)
 	playerLow = p1;
 	playerHigh = p2;
 	emit paintPlayers();
-	emit boardChanged();
+    //emit boardChanged();
 }
 
 /*!
