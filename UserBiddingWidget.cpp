@@ -29,8 +29,8 @@ UserBiddingWidget::UserBiddingWidget(User * u, QWidget *parent) : QWidget(parent
 	qDebug()<<"In Creation of UserBiddingWidget, Name is: "<<labelName<<" points are "<<lSpinBox->value();
 }
 
-/**
- * @brief UserBiddingWidget::deactivateBtn
+/*!
+ * \brief UserBiddingWidget::deactivateBtn
  * This function deactivates the bid button. What this function also does is it sets the bidding timestamp for all the people that haven't bid this round.
  * This is needed for the edge case where someone legitimately bids the maximum amount but then has to wait for all the people whose bid was set to the maximum amount since technically
  * those people bid before the legitimate person.
@@ -51,8 +51,8 @@ void UserBiddingWidget::activateBtn(){
 	lSpinBox->setEnabled(true);
 }
 
-/**
- * @brief UserBiddingWidget::updateLayout
+/*!
+ * \brief UserBiddingWidget::updateLayout
  * This function updates all the layout components associated with a user.
  */
 void UserBiddingWidget::updateLayout()

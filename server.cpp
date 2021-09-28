@@ -16,8 +16,8 @@ Server& Server::getInstance()
 	return instance;
 }
 
-/**
- * @brief Server::deleteInstance Consider using Server::closeServer(), the sigleton shouldn't be deleted while the program is running.
+/*!
+ * \brief Server::deleteInstance Consider using Server::closeServer(), the sigleton shouldn't be deleted while the program is running.
  */
 void Server::deleteInstance()
 {
@@ -25,10 +25,10 @@ void Server::deleteInstance()
 	server = nullptr;
 }
 
-/**
- * @brief Server::startServer emits either serverNotStarted or serverStarted
- * @param address
- * @param port
+/*!
+ * \brief Server::startServer emits either serverNotStarted or serverStarted
+ * \param address
+ * \param port
  */
 void Server::startServer(QString address, int port)
 {
@@ -53,11 +53,11 @@ void Server::startServer(QString address, int port)
 	emit instance.serverStarted(server->serverAddress(), server->serverPort());
 }
 
-/**
- * @brief Server::sendMessageToClients sends the additionalData to all connected clients
+/*!
+ * \brief Server::sendMessageToClients sends the additionalData to all connected clients
  * (and triggers local interpretation of additionalData as well)
- * @param additionalData
- * @return the number of clients where an error occured and the data may not have been sent correctly
+ * \param additionalData
+ * \return the number of clients where an error occured and the data may not have been sent correctly
  */
 int Server::sendMessageToClients(QJsonObject additionalData)
 {
@@ -67,11 +67,11 @@ int Server::sendMessageToClients(QJsonObject additionalData)
 	return forwardMessageToClients(message);
 }
 
-/**
- * @brief Server::forwardMessageToClients sends the message to all connected clients
+/*!
+ * \brief Server::forwardMessageToClients sends the message to all connected clients
  * (and triggers local interpretation of additionalData as well)
- * @param message
- * @return the number of clients where an error occured and the data may not have been sent correctly
+ * \param message
+ * \return the number of clients where an error occured and the data may not have been sent correctly
  */
 int Server::forwardMessageToClients(QString message)
 {
@@ -87,8 +87,8 @@ int Server::forwardMessageToClients(QString message)
 	return errorCount;
 }
 
-/**
- * @brief Server::addClient Accepts a client that tries to connect to the server, setup of mesage distribution to all other clients,
+/*!
+ * \brief Server::addClient Accepts a client that tries to connect to the server, setup of mesage distribution to all other clients,
  * sends current state of the game to the new client and syncronizes the random generators.
  * Emits clientsChanged.
  */

@@ -27,8 +27,8 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
     player = new QMediaPlayer;
 }
 
-/**
- * @brief GameControll::initializeConnections relies on Server and Client singletons.
+/*!
+ * \brief GameControll::initializeConnections relies on Server and Client singletons.
  * Initialization of static variables can happen in random order, so this has to wait, until all static variables are present.
  */
 void GameControll::initializeConnections()
@@ -130,10 +130,10 @@ void GameControll::adaptFromJSON(QJsonObject json)
     }
 }
 
-/**
- * @brief GameControll::sendToServerWithData forwards the message to all clients / triggers the action directly when you are offline
- * @param a Playeraction
- * @param info JSON Object
+/*!
+ * \brief GameControll::sendToServerWithData forwards the message to all clients / triggers the action directly when you are offline
+ * \param a Playeraction
+ * \param info JSON Object
  */
 void GameControll::sendToServerWithData(PlayerAction a, QJsonObject info)
 {
@@ -157,9 +157,9 @@ void GameControll::sendToServerWithData(PlayerAction a, QJsonObject info)
     }
 }
 
-/**
- * @brief GameControll::sendToServer forwards the message to all clients / triggers the action directly when you are offline
- * @param a Playeraction to forward to clients
+/*!
+ * \brief GameControll::sendToServer forwards the message to all clients / triggers the action directly when you are offline
+ * \param a Playeraction to forward to clients
  */
 void GameControll::sendToServer(PlayerAction a)
 {
@@ -245,9 +245,9 @@ Board * GameControll::setBoard(Board* newBoard)
     return instance.board;
 }
 
-/**
- * @brief GameControll::exeQTAction executes different actions, because they were send by the server / triggered directly when you are offline
- * @param data
+/*!
+ * \brief GameControll::exeQTAction executes different actions, because they were send by the server / triggered directly when you are offline
+ * \param data
  */
 void GameControll::exeQTAction(QJsonObject data)
 {
@@ -374,10 +374,10 @@ void GameControll::exeQTAction(QJsonObject data)
     }
 }
 
-/**
- * @brief GameControll::triggerAction
- * @param action
- * @warning Don't write actual functionality here! It only sends the actions to the server. Functionality is in exeQTdata()!!!
+/*!
+ * \brief GameControll::triggerAction
+ * \param action
+ * \warning Don't write actual functionality here! It only sends the actions to the server. Functionality is in exeQTdata()!!!
  */
 void GameControll::triggerAction(PlayerAction action)
 {
@@ -449,8 +449,8 @@ void GameControll::triggerActionWithData(PlayerAction action, QJsonObject data)
     emit instance.actionTriggeredWithData(action, data);
 }
 
-/**
- * @brief GameControll::calculateGameStatus called after each movement of a player (and when reverting, ...)
+/*!
+ * \brief GameControll::calculateGameStatus called after each movement of a player (and when reverting, ...)
  * This function calculates whether the game has ended, either with the player hitting the goal or the player running out of moves.
  * In the latter case, the next player is being drawn
  */
@@ -539,8 +539,8 @@ void GameControll::updateRandomGenerator(int seed)
     }
 }
 
-/**
- * @brief GameControll::resetForNextUser reset after failed try and loads next user
+/*!
+ * \brief GameControll::resetForNextUser reset after failed try and loads next user
  */
 void GameControll::resetForNextUser()
 {
@@ -567,11 +567,11 @@ int GameControll::getUserIndexById(QUuid id)
     return -1;
 }
 
-/**
- * @brief GameControll::getNextUser
- * @param lastUserId
- * @return
- * @warning works ONLY if the users are sorted by bidding before the method call
+/*!
+ * \brief GameControll::getNextUser
+ * \param lastUserId
+ * \return
+ * \warning works ONLY if the users are sorted by bidding before the method call
  */
 User* GameControll::getNextUser(QUuid lastUserId) //TODO fix leaving clients
 {
@@ -592,9 +592,9 @@ User* GameControll::getNextUser(QUuid lastUserId) //TODO fix leaving clients
     return nullptr;
 }
 
-/**
- * @brief GameControll::sortBy
- * @param strategy
+/*!
+ * \brief GameControll::sortBy
+ * \param strategy
  * This function sorts the users in the backend by a predefined Strategy:
  * BID: The users are being sorted in ascending order based on the bid they've sent
  * POINTS: The users are being sorted in descending order based on the number of points
@@ -692,9 +692,9 @@ void GameControll::sortBy(strategy strategy)
     instance.leaderboard->updateAllUsers();
 }
 
-/**
- * @brief GameControll::addUser called by exeQTActionWithData when the action is newUser
- * @param user
+/*!
+ * \brief GameControll::addUser called by exeQTActionWithData when the action is newUser
+ * \param user
  */
 void GameControll::addUser(User* user)
 {
@@ -720,8 +720,8 @@ void GameControll::addUser(User* user)
     instance.leaderboard->updateAllUsers();
 }
 
-/**
- * @brief GameControll::calculateWinner This function is being called when the first player has reached their goal
+/*!
+ * \brief GameControll::calculateWinner This function is being called when the first player has reached their goal
  */
 void GameControll::calculateWinner()
 {
@@ -735,10 +735,10 @@ void GameControll::calculateWinner()
     switchPhase(Phase::freeplay);
 }
 
-/**
- * @brief GameControll::getUserById get pointer to User from UserId returns nullptr if user not found
- * @param id
- * @return
+/*!
+ * \brief GameControll::getUserById get pointer to User from UserId returns nullptr if user not found
+ * \param id
+ * \return
  */
 User* GameControll::getUserById(QUuid id)
 {
@@ -767,9 +767,9 @@ void GameControll::changeBidding(int bidding, QUuid id)
     Q_ASSERT_X(false,"GameControll::changeBidding","User not found");
 }
 
-/**
- * @brief GameControll::initializeUser current user of the system is initialised (only when server or client starts)
- * @return
+/*!
+ * \brief GameControll::initializeUser current user of the system is initialised (only when server or client starts)
+ * \return
  */
 User * GameControll::initializeUser()
 {
@@ -780,9 +780,9 @@ User * GameControll::initializeUser()
     return u;
 }
 
-/**
- * @brief GameControll::setLeaderboard
- * @param value
+/*!
+ * \brief GameControll::setLeaderboard
+ * \param value
  */
 void GameControll::setLeaderboard(LeaderBoardWidget * value)
 {
@@ -1015,8 +1015,8 @@ void GameControll::updateTimer()
     emit time(timeLeft);
 }
 
-/**
- * @brief GameControll::endTimer skips timer
+/*!
+ * \brief GameControll::endTimer skips timer
  */
 void GameControll::endTimer()
 {

@@ -10,7 +10,7 @@
 
 class KeyMapping
 {
-/**
+/*!
   * Qt::Key_F31 = swipe up
   * Qt::Key_F32 = swipe right
   * Qt::Key_F33 = swipe down

@@ -10,12 +10,12 @@ Board::Board(QObject *parent) : QObject(parent)
 	r = new QRandomGenerator(QTime::currentTime().msecsSinceStartOfDay());
 }
 
-/** constructs a new game board
- * @brief Board::Board
- * @param width - how many tiles are there in the width direction
- * @param height - how many tiles there are in the height direction
- * @param playerNumber - number of players
- * @param parent
+/*! constructs a new game board
+ * \brief Board::Board
+ * \param width - how many tiles are there in the width direction
+ * \param height - how many tiles there are in the height direction
+ * \param playerNumber - number of players
+ * \param parent
  */
 Board::Board(int width, int height, int playerNumber, QObject *parent) : Board(parent)
 {
@@ -28,13 +28,12 @@ Board::Board(int width, int height, int playerNumber, QObject *parent) : Board(p
 	startNewRound();
 }
 
-/**
- * @brief Board::makeNewBoard - constructs a new game board with new Walls, players and a goal
- * @param width
- * @param height
- * @param playerNumber
+/*!
+ * \brief Board::makeNewBoard - constructs a new game board with new Walls, players and a goal
+ * \param width
+ * \param height
+ * \param playerNumber
  */
-
 void Board::makeNewBoard(int width, int height, int playerNumber)
 {
 	makeNewWalls(width, height);
@@ -43,10 +42,9 @@ void Board::makeNewBoard(int width, int height, int playerNumber)
 	emit boardChanged();
 }
 
-/**
- * @brief Board::makeNewPlayers
- * deletes all players and places them new random tiles. Also emits the
- * @param playerNumber
+/*!
+ * \brief Board::makeNewPlayers deletes all players and places them new random tiles. Also emits the playerMoved signal.
+ * \param playerNumber
  */
 void Board::makeNewPlayers(int playerNumber)
 {
@@ -60,9 +58,9 @@ void Board::makeNewPlayers(int playerNumber)
 	}
 }
 
-/**
- * @brief Board::makeNewSeeker - changes the player that is the seeker to a new one
- * @param random - do you want the new player to a surprise? Else the seekers will switch in a certain order (depending on their id)
+/*!
+ * \brief Board::makeNewSeeker - changes the player that is the seeker to a new one
+ * \param random - do you want the new player to a surprise? Else the seekers will switch in a certain order (depending on their id)
  */
 void Board::makeNewSeeker(bool random)
 {
@@ -87,10 +85,9 @@ void Board::makeNewSeeker(bool random)
 
 }
 
-/**
- * @brief Board::makeNewGoal - places a new goal
+/*!
+ * \brief Board::makeNewGoal - places a new goal
  */
-
 void Board::makeNewGoal()
 {
 	placeGoalInCorner();
@@ -263,10 +260,10 @@ Board * Board::fromBinary(const QString base64)
 	return newBoard;
 }
 
-/**
- * @brief Board::setPlayerOnTile yes, actually removes player from former tile
- * @param player
- * @param tile
+/*!
+ * \brief Board::setPlayerOnTile yes, actually removes player from former tile
+ * \param player
+ * \param tile
  */
 void Board::setPlayerOnTile(int player, Tile* tile)
 {
@@ -409,7 +406,7 @@ void Board::placeOuterWalls()
 	}
 }
 
-/**
+/*!
 This method tries to place one outerwall. (One wall that is in a 90 degree angle to the sides of the board)
 It can only be called with the Direction south (for walls on the left and right side)
 or east (for walls on the upper and lower side)as an argument.
@@ -462,7 +459,7 @@ void Board::placeInnerWalls()
 	}
 }
 
-/**
+/*!
 This method tries to place one innerwall on a specific Tile. (One "corner" consisting of two walls that are in a 90 degree angle to each other)
 It is called with the Tile it should be placed on and a direction. The Direction indicates the position one of the walls will have on the Tile, the other wall will be at the clockwise next direction.
 EXAMPLE: |_  this innerwall would be a south wall. _| this innerwall would be an east wall.
@@ -535,8 +532,8 @@ bool Board::placeInnerWallifFits(Tile* tile, Direction direction)
 	return false;
 }
 
-/**
- * @brief Board::placeGoalInCorner - places a goal into a spot that has two walls that are in a right angle to each other
+/*!
+ * \brief Board::placeGoalInCorner - places a goal into a spot that has two walls that are in a right angle to each other
  */
 void Board::placeGoalInCorner()
 {
@@ -572,10 +569,10 @@ void Board::placeGoalInCorner()
 	return;
 }
 
-/**
- * @brief Board::isTileCorner - checks if a tile has two walls that are in a right angle to each other
- * @param tile
- * @return
+/*!
+ * \brief Board::isTileCorner - checks if a tile has two walls that are in a right angle to each other
+ * \param tile
+ * \return
  */
 bool Board::isTileCorner(Tile* tile){
 
@@ -660,11 +657,11 @@ QColor Board::getPlayerColorHigh() const
 	return playerHigh;
 }
 
-/**
- * @brief Board::getNextDirection
- * @param direction
- * @param numberOfClockwiseSteps
- * @return
+/*!
+ * \brief Board::getNextDirection
+ * \param direction
+ * \param numberOfClockwiseSteps
+ * \return
  */
 Direction Board::getNextDirection(Direction direction, int numberOfClockwiseSteps)
 {
@@ -801,8 +798,8 @@ void Board::changeActivePlayer(int playerNumber, bool isRevert)
 	emit boardChanged();
 }
 
-/**
- * @brief Board::revert ist super
+/*!
+ * \brief Board::revert ist super
  */
 void Board::revert()
 {
@@ -852,7 +849,7 @@ void Board::setSavedStateToCurrent()
 		for(QPoint p:qAsConst(playersAfterGoalHit))
 		{
 			setPlayerOnTile(i,getTile(p));
-            emit playerBeam(i);
+			emit playerBeam(i);
 			i++;
 		}
 		playersAfterGoalHit.clear();
@@ -879,10 +876,10 @@ void Board::updateColors(QColor b, QColor w, QColor g, QColor p1, QColor p2)
 	emit boardChanged();
 }
 
-/**
- * @brief Board::switchPlayer This method is called with a direction that indicates the way the gamer wants to switch the player.
- * @param d search Direction
- * @return id of next active Player
+/*!
+ * \brief Board::switchPlayer This method is called with a direction that indicates the way the gamer wants to switch the player.
+ * \param d search Direction
+ * \return id of next active Player
  * We compute the angle each player has from the activePlayer (up would be 360/0 degrees, then it goes clockwise)
  * As well as the distance each playe has from the active one
  *  From these two values a Fittingscore is computed and the player with the SMALLEST one is chosen as the next active player

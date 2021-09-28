@@ -15,6 +15,9 @@
 #include "gamecontroll.h"
 #include "tablemodel.h"
 
+/*!
+ * \brief The OnlineLeaderboardWidget class ist auch super
+ */
 class OnlineLeaderboardWidget : public LeaderBoardWidget
 {
 	Q_OBJECT
@@ -29,9 +32,9 @@ public:
 
 private:
 	QGridLayout * lay = new QGridLayout(this);
-    QPushButton * bidBtn = new QPushButton(this); //accept in biddingWidget
-    QLabel * lname = new QLabel(this); //labelName in biddingWdiget
-    SpinBox * biddingBox = new SpinBox(this); //lSpinBox in biddingWidget
+	QPushButton * bidBtn = new QPushButton(this); //accept in biddingWidget
+	QLabel * lname = new QLabel(this); //labelName in biddingWdiget
+	SpinBox * biddingBox = new SpinBox(this); //lSpinBox in biddingWidget
 	QTableView * tableView = new QTableView(this);
 	int userBidding = User::maxBid;
 	User * localUser = nullptr;
@@ -51,7 +54,7 @@ signals:
 	void biddingChangedOnline(int userBidding); // before
 	void userAdded(User* u); //TODO
 //	void biddingAccepted(QUuid userId, int bidding); // before: biddingChangedOnline
-    void leaderBoardSet(bool t);
+	void leaderBoardSet(bool t);
 };
 
 #endif // ONLINELEADERBOARDWIDGET_H

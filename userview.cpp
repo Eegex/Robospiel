@@ -1,8 +1,8 @@
 #include "userview.h"
 
-/**
- * @brief UserView::UserView This is the UI-Widget where the user can choose between a local game and being a client or server.
- * @param parent
+/*!
+ * \brief UserView::UserView This is the UI-Widget where the user can choose between a local game and being a client or server.
+ * \param parent
  */
 UserView::UserView(QPushButton *actionBtn, QWidget *parent) : QWidget(parent)
 {

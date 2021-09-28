@@ -30,8 +30,8 @@ UserCreationWidget::UserCreationWidget(QWidget *parent) : QWidget(parent)
 	setLayout(lay);
 }
 
-/**
- * @brief UserCreationWidget::addUser
+/*!
+ * \brief UserCreationWidget::addUser
  * This Function adds a new user to the backend and calls TriggerActionWithData
  */
 void UserCreationWidget::addUser()

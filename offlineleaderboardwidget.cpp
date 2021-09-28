@@ -11,10 +11,10 @@ OfflineLeaderBoardWidget::OfflineLeaderBoardWidget()
 	setLayout(lay);
 }
 
-/**
- * @brief OfflineLeaderBoardWidget::getBiddingWidgetIndexByID
- * @param id
- * @return
+/*!
+ * \brief OfflineLeaderBoardWidget::getBiddingWidgetIndexByID
+ * \param id
+ * \return
  * This function returns the List Index of the BiddingWidget with the given ID
  * This is needed because the List of Pointers to BiddingWidgets might not reflect the actual ordering
  */
@@ -31,8 +31,8 @@ unsigned int OfflineLeaderBoardWidget::getBiddingWidgetIndexByID(QUuid id){
 	return 0;
 }
 
-/**
- * @brief OfflineLeaderBoardWidget::updateLayout
+/*!
+ * \brief OfflineLeaderBoardWidget::updateLayout
  * This function is just there to update the visual layout
  */
 void OfflineLeaderBoardWidget::updateLayout(){
@@ -55,9 +55,9 @@ void OfflineLeaderBoardWidget::setBiddingFocus()
 	// not implemented
 }
 
-/**
- * @brief OfflineLeaderBoardWidget::addUser
- * @param newUser
+/*!
+ * \brief OfflineLeaderBoardWidget::addUser
+ * \param newUser
  * This function adds a new UserBiddingWidget to the list of user bidding widgets
  * This is needed to properly display the list of Users
  */
@@ -82,10 +82,10 @@ void OfflineLeaderBoardWidget::addUser(User * newUser)
 	updateLayout();
 }
 
-/**
- * @brief OfflineLeaderBoardWidget::updateBidding
- * @param id
- * @param bidding
+/*!
+ * \brief OfflineLeaderBoardWidget::updateBidding
+ * \param id
+ * \param bidding
  * This function updates the bidding of the user with the provided ID
  */
 void OfflineLeaderBoardWidget::updateBidding(QUuid id, int bidding)
@@ -100,10 +100,10 @@ void OfflineLeaderBoardWidget::updateBidding(QUuid id, int bidding)
 	}
 }
 
-/**
- * @brief OfflineLeaderBoardWidget::updateName
- * @param id
- * @param name
+/*!
+ * \brief OfflineLeaderBoardWidget::updateName
+ * \param id
+ * \param name
  * This function updates the name of the user with the provided ID
  */
 void OfflineLeaderBoardWidget::updateName(QUuid id, QString name)
@@ -140,8 +140,8 @@ void OfflineLeaderBoardWidget::activateInput()
 		ubw->activateBtn();
 }
 
-/**
- * @brief OfflineLeaderBoardWidget::updateAllUsers
+/*!
+ * \brief OfflineLeaderBoardWidget::updateAllUsers
  * This function updates the visual Data of all users, it does this by first pulling all the necessary information from the back end and then sorting them
  * according to their placement in the user list in the back end since the sorting function (e.g. by points or bidding) happens in the back end
  */

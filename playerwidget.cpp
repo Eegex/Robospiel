@@ -69,19 +69,19 @@ void PlayerWidget::paintEvent(QPaintEvent *event)
 	event->accept();
 }
 
-/**
- * @brief PlayerWidget::getPlayerColor
- * @return computes a color for the player based on color settings of the board.
+/*!
+ * \brief PlayerWidget::getPlayerColor
+ * \return computes a color for the player based on color settings of the board.
  */
 QColor PlayerWidget::getPlayerColor()
 {
     return getPlayerColor(board, playerNumber); //this is just a guess, I hope that playerNumber is really the index
 }
 
-/**
- * @brief PlayerWidget::getPlayerColor
- * @param playerIndex
- * @return computes a color for the playerIndex-th player based on color settings of the board.
+/*!
+ * \brief PlayerWidget::getPlayerColor
+ * \param playerIndex
+ * \return computes a color for the playerIndex-th player based on color settings of the board.
  */
 QColor PlayerWidget::getPlayerColor(Board* board, int playerIndex) //maybe not the perfect place for this method... but playerWidgets and goalwidgets need it and it's right there...
 {
@@ -116,20 +116,20 @@ QColor PlayerWidget::getPlayerColor(Board* board, int playerIndex) //maybe not t
 }
 
 
-/**
- * @param vector
- * @return length of the vector
+/*!
+ * \param vector
+ * \return length of the vector
  */
 double PlayerWidget::length(QPoint vector)
 {
 	return sqrt(pow(vector.x(), 2) + pow(vector.y(), 2));
 }
 
-/**
- * @brief PlayerWidget::moveAnimated
- * @param point the coordinates in the window
- * @param target the coordinates of the target tile
- * @param speed of the animation in pixels per second
+/*!
+ * \brief PlayerWidget::moveAnimated
+ * \param point the coordinates in the window
+ * \param target the coordinates of the target tile
+ * \param speed of the animation in pixels per second
  */
 void PlayerWidget::moveAnimated(QPoint point, QPoint target, double speed)
 {

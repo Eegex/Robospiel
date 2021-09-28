@@ -7,8 +7,8 @@
 #include <QWidget>
 #include "networkview.h"
 
-/**
- * @brief The UserView class is a Container for NetworkView and online/offline-LeaderboardWidget
+/*!
+ * \brief The UserView class is a Container for NetworkView and online/offline-LeaderboardWidget
  */
 class UserView : public QWidget
 {

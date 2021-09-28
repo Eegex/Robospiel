@@ -15,8 +15,8 @@
 #include "networkdebugger.h"
 
 enum strategy {points, bid};
-/**
- * @brief The GameControll class macht eigentlich alles
+/*!
+ * \brief The GameControll class macht eigentlich alles
  */
 class GameControll : public QObject
 {

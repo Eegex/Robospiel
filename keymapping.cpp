@@ -44,10 +44,10 @@ QVector<Qt::Key> KeyMapping::getKeys() const
     return keys;
 }
 
-/**
- * @brief KeyMapping::addKey
- * @param key
- * @return false if the key was already contained and nothing changed
+/*!
+ * \brief KeyMapping::addKey
+ * \param key
+ * \return false if the key was already contained and nothing changed
  */
 bool KeyMapping::addKey(Qt::Key key)
 {

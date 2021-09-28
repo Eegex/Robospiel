@@ -2,14 +2,14 @@
 
 #include <QJsonObject>
 
-/**
- * @brief Tile::Tile Represents a tile of the board.
+/*!
+ * \brief Tile::Tile Represents a tile of the board.
  * In each tile only information about east and south walls are stored to prevent duplicate information when representing a complete board with multiple tiles.
  * When the north/west neighbour doesn't exist, the tile has a wall in this direction.
- * @param position x and y coordiantes in relation to the whole board.
- * @param north The upper neighbour
- * @param west The left neighbour
- * @param parent
+ * \param position x and y coordiantes in relation to the whole board.
+ * \param north The upper neighbour
+ * \param west The left neighbour
+ * \param parent
  */
 Tile::Tile(QPoint position, Tile* north, Tile* west, QObject *parent) :  QObject(parent), northTile(north), westTile(west), position(position), playerOnThisTile(-1)
 {
@@ -43,10 +43,10 @@ QJsonObject Tile::toJSON()
 }
 
 //the tile still has to be coupled with its north and west neighbours
-/**
- * @brief After the conversion of multiple tiles of a board, they have to be coupled by setting northTile and westTile.
- * @param json
- * @return the new tile
+/*!
+ * \brief After the conversion of multiple tiles of a board, they have to be coupled by setting northTile and westTile.
+ * \param json
+ * \return the new tile
  */
 Tile* Tile::fromJSON(QJsonObject json)
 {
@@ -68,10 +68,10 @@ void Tile::setPosition(const QPoint &value)
 	position = value;
 }
 
-/**
- * @brief Tile::setWall
- * @param direction
- * @param if set==false, existing walls are removed
+/*!
+ * \brief Tile::setWall
+ * \param direction
+ * \param if set==false, existing walls are removed
  */
 void Tile::setWall(Direction direction, bool set)
 {
@@ -100,10 +100,10 @@ void Tile::setWall(Direction direction, bool set)
 	}
 }
 
-/**
- * @brief Tile::setInnerWall sets a wall at direction and one clockwise next to it
- * @param direction
- * @param if set==false, existing walls are removed
+/*!
+ * \brief Tile::setInnerWall sets a wall at direction and one clockwise next to it
+ * \param direction
+ * \param if set==false, existing walls are removed
  */
 void Tile::setInnerWall(Direction direction, bool set)
 {
@@ -143,10 +143,10 @@ void Tile::setInnerWall(Direction direction, bool set)
 
 }
 
-/**
- * @brief Tile::getWall
- * @param direction
- * @return When the north/west neighbour is missing, a default wall in this direction is returned.
+/*!
+ * \brief Tile::getWall
+ * \param direction
+ * \return When the north/west neighbour is missing, a default wall in this direction is returned.
  */
 bool Tile::getWall(Direction direction)
 {

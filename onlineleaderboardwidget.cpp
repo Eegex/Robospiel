@@ -37,13 +37,13 @@ void OnlineLeaderboardWidget::setOnlineWidget()
 	lay->addWidget(biddingBox);
 	lay->addWidget(bidBtn);
 	lay->addWidget(tableView);
-    lname->setText(localUser->getName());
+	lname->setText(localUser->getName());
 	lname->show();
 	tableView->show();
 	biddingBox->show();
 	bidBtn->show();
 	lay->update();
-    emit leaderBoardSet(true);
+	emit leaderBoardSet(true);
 }
 
 void OnlineLeaderboardWidget::setLocalUser(User * u)
@@ -60,7 +60,7 @@ void OnlineLeaderboardWidget::btnPressed()
 	if(biddingBox->value() > 1)
 	{
 		biddingBox->setMaximum(userBidding = biddingBox->value());
-        bidBtn->setText(tr("Bid") + ":" + QString::number(userBidding));
+		bidBtn->setText(tr("Bid") + ":" + QString::number(userBidding));
 		biddingBox->setFocus();
 		biddingBox->selectAll();
 		qDebug() << "Player changed their bidding to: " << userBidding;
@@ -72,6 +72,11 @@ void OnlineLeaderboardWidget::btnPressed()
 	}
 }
 
+/*!
+ * \brief OnlineLeaderboardWidget::updateBidding ist super
+ * \param id
+ * \param bidding
+ */
 void OnlineLeaderboardWidget::updateBidding(QUuid id, int bidding)
 {
 	//qDebug() << "OnlineLeaderboardWidget::updateBidding(QUuid " << id << ", int " << bidding << ")";
@@ -161,7 +166,7 @@ void OnlineLeaderboardWidget::addUser(User *u)
 			biddingBox->setMaximum(std::min(bid,User::maxBid));
 			if(!localUser->getHasBid())
 			{
-				bidBtn->setText(BID_BTN_TEXT);
+				bidBtn->setText(tr("Accept Bid"));
 				biddingBox->setValue(1);
 			}
 			else
@@ -193,7 +198,8 @@ void OnlineLeaderboardWidget::activateInput()
 void OnlineLeaderboardWidget::setBiddingFocus()
 {
 	biddingBox->setFocus();
-	QTimer::singleShot(15,biddingBox,&SpinBox::selectAll);
+	biddingBox->selectAll();
+//	QTimer::singleShot(50,biddingBox,&SpinBox::selectAll);
 }
 
 void OnlineLeaderboardWidget::updateAllUsers()

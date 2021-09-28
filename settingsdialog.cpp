@@ -85,8 +85,8 @@ bool SettingsDialog::getShowTopBidding() const
 	return settings.value(topBidding).toBool();
 }
 
-/**
- * @brief SettingsDialog::load loads a settings-File from at QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)).
+/*!
+ * \brief SettingsDialog::load loads a settings-File from at QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)).
  * If none exists, standard values are set.
  */
 void SettingsDialog::load()
@@ -176,8 +176,8 @@ void SettingsDialog::load()
 
 }
 
-/**
- * @brief SettingsDialog::save Applies the settings and saves them to a file (at QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)).
+/*!
+ * \brief SettingsDialog::save Applies the settings and saves them to a file (at QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)).
  */
 void SettingsDialog::save()
 {
