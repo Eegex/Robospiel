@@ -9,6 +9,14 @@
 #include "user.h"
 #define DEFAULTUSERNAME tr("New User")
 
+/*!
+    \class Widget to create a new user for the offline mode.
+    Contains a line edit for the user name and can open a colorpicker.
+*/
+/*!
+ * @brief UserCreationWidget::UserCreationWidget
+ * @param parent parent widget
+ */
 UserCreationWidget::UserCreationWidget(QWidget *parent) : QWidget(parent)
 {
 	connect(addColourBtn,&QPushButton::clicked,this,&UserCreationWidget::addColour);
@@ -32,29 +40,36 @@ UserCreationWidget::UserCreationWidget(QWidget *parent) : QWidget(parent)
 
 /*!
  * \brief UserCreationWidget::addUser
- * This Function adds a new user to the backend and calls TriggerActionWithData
+ * This function adds a new user to the backend and calls TriggerActionWithData
  */
 void UserCreationWidget::addUser()
 {
 	qDebug()<<"Addition Request of user with name "<<userNamePicker->text()<<"and colour "<<userColourPicker->selectedColor().name();
+    qDebug()<<"Current Colour"<<userColourPicker->selectedColor().name();
 	User* user = new User(userNamePicker->text()!=nullptr?userNamePicker->text():DEFAULTUSERNAME, userColourPicker->selectedColor());
-	qDebug()<<"Current Colour"<<userColourPicker->selectedColor().name();
+    GameControll::triggerActionWithData(PlayerAction::newUser, user->toJSON());
+
 	delete userColourPicker;
 	userColourPicker = new QColorDialog;
-
-	GameControll::triggerActionWithData(PlayerAction::newUser, user->toJSON());
-	connect(userColourPicker, &QColorDialog::colorSelected, this, [&](const QColor &colour)
-	{
-	   addColourBtn->setStyleSheet("background-color: " + colour.name());
-	});
+    connect(userColourPicker, &QColorDialog::colorSelected, this, [&](const QColor &colour)
+    {
+       addColourBtn->setStyleSheet("background-color: " + colour.name());
+    });
 }
 
+/*!
+ * @brief UserCreationWidget::resetFields resets the selected color and the name field
+ */
 void UserCreationWidget::resetFields()
 {
 	addColourBtn->setStyleSheet("background-color: 0xFFFFFF");
 	userNamePicker->setText("");
 }
-void UserCreationWidget::addColour(){userColourPicker->show();}
-QPushButton * UserCreationWidget::getAddBtn(){return addUserBtn;}
-QColorDialog * UserCreationWidget::getColorDialog(){return userColourPicker;}
-QLineEdit * UserCreationWidget::getLineEdit(){return userNamePicker;}
+
+/*!
+ * @brief UserCreationWidget::addColour displays a separate window with the colorpicker
+ */
+void UserCreationWidget::addColour()
+{
+    userColourPicker->show();
+}
