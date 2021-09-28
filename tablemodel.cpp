@@ -19,11 +19,22 @@ int TableModel::rowCount(const QModelIndex &/*parent*/) const
 	return GameControll::getUsers()->size();
 }
 
+/*!
+ * \brief TableModel::columnCount returns the amount of colums for every point in the table
+ * \return 3
+ */
 int TableModel::columnCount(const QModelIndex &/*parent*/) const
 {
 	return 3;
 }
 
+/*!
+ * \brief TableModel::data If the given index is valid, it returns either the corresponding data (name, bidding or points) if
+ * the role is Qt::DisplayRole or it returns the color of the given row if the first column is given
+ * \param index row and columnnumber
+ * \param role DisplayRole or ForegroundRole
+ * \return corresponding data
+ */
 QVariant TableModel::data(const QModelIndex &index, int role) const
 {
 	if(index.isValid())
@@ -58,6 +69,13 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
 	return QVariant();
 }
 
+/*!
+ * \brief TableModel::headerData only available if role is Qt::isplayRole and orientation is Qt::Horizontal
+ * \param section
+ * \param orientation
+ * \param role
+ * \returns the given section of the header (Names, Bidding or Points)
+ */
 QVariant TableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
 	if (role != Qt::DisplayRole)
@@ -75,7 +93,11 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
 	}
 }
 
-Qt::ItemFlags TableModel::flags(const QModelIndex &index) const
+/*!
+ * \brief TableModel::flags returns if items of the table can be selected or if the user can interact with it
+ * \return Qt::ItemIsSelectable or Qt::ItemIsEnabled
+ */
+Qt::ItemFlags TableModel::flags(const QModelIndex /*&index*/) const
 {
 	return Qt::ItemIsSelectable|Qt::ItemIsEnabled;
 }
@@ -88,6 +110,11 @@ void TableModel::updateUsers()
 	emit layoutChanged();
 }
 
+/*!
+ * \brief TableModel::findUser returns user with the given id if existing in GameControll
+ * \param id of the user
+ * \return user of given id
+ */
 User * TableModel::findUser(QUuid id)
 {
 	for(User * u: *GameControll::getUsers())
