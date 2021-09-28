@@ -50,6 +50,11 @@ void OfflineLeaderBoardWidget::updateLayout(){
 	lay->update();
 }
 
+/*!
+ * @brief OfflineLeaderBoardWidget::setBiddingFocus
+ * is not implemented in the offline leaderboardwidget,
+ * because different input fields (for different users) need to have the focus and it has to be shifted manually by the users.
+ */
 void OfflineLeaderBoardWidget::setBiddingFocus()
 {
 	// not implemented

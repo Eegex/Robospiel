@@ -30,7 +30,6 @@ public slots:
 	virtual void setBiddingFocus() = 0;
 
 signals:
-	void userAdded(User* u);
 	void biddingAccepted(QUuid userId, int bidding);
     void userWasClicked(QUuid userId);
 };

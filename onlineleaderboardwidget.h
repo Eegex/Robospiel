@@ -52,7 +52,6 @@ public slots:
 	void setBiddingFocus();
 signals:
 	void biddingChangedOnline(int userBidding); // before
-	void userAdded(User* u); //TODO
 //	void biddingAccepted(QUuid userId, int bidding); // before: biddingChangedOnline
 	void leaderBoardSet(bool t);
 };
