@@ -23,6 +23,10 @@
 #include <QSwipeGesture>
 
 
+/*!
+ * \class BoardView
+ * \brief The BoardView class displays a Board
+ */
 class BoardView : public QWidget
 {
 	Q_OBJECT
