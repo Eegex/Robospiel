@@ -1,5 +1,9 @@
 #include "boardview.h"
 
+/*!
+ * \brief BoardView::BoardView Constructs a BoardView Object
+ * \param parent the parent QWidget
+ */
 BoardView::BoardView(QWidget *parent) : QWidget(parent)
 {
 	setMouseTracking(true);
@@ -8,9 +12,13 @@ BoardView::BoardView(QWidget *parent) : QWidget(parent)
 	grabGesture(Qt::SwipeGesture);
 }
 
-void BoardView::setBoard(Board * b)
+/*!
+ * \brief Sets and connects the given board and  sets the layout, pawns and goal up.
+ * \param board The board to load
+ */
+void BoardView::setBoard(Board * board)
 {
-	board = b;
+	this->board = board;
 	connect(board,SIGNAL(boardChanged()),this,SLOT(update()));
 	while(!playerWidgets.isEmpty())
 	{
@@ -43,37 +51,61 @@ void BoardView::setBoard(Board * b)
 	adjustSize();
 }
 
+/*!
+ * \brief BoardView::setDebugOutputEnabled
+ * \param set
+ */
 void BoardView::setDebugOutputEnabled(bool set)
 {
 	showDebugOutput = set;
 }
 
+/*!
+ * \brief BoardView::resize
+ * \param pixelPerTile
+ */
 void BoardView::resize(int pixelPerTile)
 {
 	tileSize = QSize(pixelPerTile,pixelPerTile);
 	QWidget::resize(board->getSize() * pixelPerTile + QSize(10,10));
 }
 
+/*!
+ * \brief BoardView::sizeHint
+ * \return
+ */
 QSize BoardView::sizeHint() const
 {
 	return board->getSize() * 50 + QSize(10,10);
 }
 
+/*!
+ * \brief BoardView::makeNewAll
+ */
 void BoardView::makeNewAll()
 {
 	board->makeNewBoard(board->getSize().width(), board->getSize().height(), board->players.length());
 }
 
+/*!
+ * \brief BoardView::makeNewPlayers
+ */
 void BoardView::makeNewPlayers()
 {
 	board->makeNewPlayers(board->players.length());
 }
 
+/*!
+ * \brief BoardView::makeNewSeeker
+ */
 void BoardView::makeNewSeeker()
 {
 	board->makeNewSeeker(false);
 }
 
+/*!
+ * \brief BoardView::makeNewWalls
+ */
 void BoardView::makeNewWalls()
 {
 	board->makeNewWalls(board->getSize().width(), board->getSize().height());
@@ -84,6 +116,11 @@ void BoardView::makeNewTarget()
 	board->makeNewGoal();
 }
 
+/*!
+ * \brief BoardView::coordsToTile
+ * \param p
+ * \return
+ */
 Tile * BoardView::coordsToTile(QPoint p)
 {
 	int x = (p.x() - 5) / tileSize.width();
@@ -91,11 +128,20 @@ Tile * BoardView::coordsToTile(QPoint p)
 	return board->getTile(x,y);
 }
 
+/*!
+ * \brief BoardView::setMapping
+ * \param value
+ */
 void BoardView::setMapping(QVector<KeyMapping*> * value)
 {
 	mapping = value;
 }
 
+/*!
+ * \brief BoardView::tileToDesktopCoordinates
+ * \param tile
+ * \return
+ */
 QPoint BoardView::tileToDesktopCoordinates(Tile* tile)
 {
 	double tileHeight = (height() - 10) / static_cast<double>(board->getSize().height());
@@ -103,6 +149,11 @@ QPoint BoardView::tileToDesktopCoordinates(Tile* tile)
 	return QPoint(5+(tile->getPosition().rx())*tileWidth,5+(tile->getPosition().ry())*tileHeight);
 }
 
+/*!
+ * \brief BoardView::addPlayer
+ * \param i
+ * \return
+ */
 PlayerWidget * BoardView::addPlayer(int i)
 {
 	PlayerWidget * newPlayer = new PlayerWidget(QSize(50,50),i,board,this);
@@ -122,6 +173,10 @@ PlayerWidget * BoardView::addPlayer(int i)
 	return newPlayer;
 }
 
+/*!
+ * \brief BoardView::paintEvent
+ * \param event
+ */
 void BoardView::paintEvent(QPaintEvent * event)
 {
 	QPainter painter;
@@ -195,6 +250,10 @@ void BoardView::paintEvent(QPaintEvent * event)
 	event->accept();
 }
 
+/*!
+ * \brief BoardView::resizeEvent
+ * \param event
+ */
 void BoardView::resizeEvent(QResizeEvent * event)
 {
 	int w = event->size().width() / board->getSize().width();
@@ -243,6 +302,10 @@ void BoardView::resizeEvent(QResizeEvent * event)
 	event->accept();
 }
 
+/*!
+ * \brief BoardView::mousePressEvent
+ * \param event
+ */
 void BoardView::mousePressEvent(QMouseEvent * event)
 {
 	if(event->buttons() & Qt::LeftButton)
@@ -256,6 +319,10 @@ void BoardView::mousePressEvent(QMouseEvent * event)
 	}
 }
 
+/*!
+ * \brief BoardView::mouseMoveEvent
+ * \param event
+ */
 void BoardView::mouseMoveEvent(QMouseEvent * event)
 {
 	if(event->buttons() & Qt::LeftButton)
@@ -312,12 +379,20 @@ void BoardView::mouseMoveEvent(QMouseEvent * event)
 	}
 }
 
+/*!
+ * \brief BoardView::keyPressEvent
+ * \param event
+ */
 void BoardView::keyPressEvent(QKeyEvent * event)
 {
 	handleKeyPress(event->key());
 	QWidget::keyPressEvent(event);
 }
 
+/*!
+ * \brief BoardView::handleKeyPress
+ * \param key
+ */
 void BoardView::handleKeyPress(int key)
 {
 	for(const KeyMapping * k:qAsConst(*mapping))
@@ -330,6 +405,11 @@ void BoardView::handleKeyPress(int key)
 	}
 }
 
+/*!
+ * \brief BoardView::event
+ * \param event
+ * \return
+ */
 bool BoardView::event(QEvent * event)
 {
 	if(event->type() == QEvent::Gesture)
@@ -367,6 +447,10 @@ bool BoardView::event(QEvent * event)
 	return QWidget::event(event);
 }
 
+/*!
+ * \brief BoardView::getBoard
+ * \return
+ */
 Board * BoardView::getBoard()
 {
 	return board;

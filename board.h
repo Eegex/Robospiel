@@ -61,14 +61,28 @@ public:
 	void setSavedStateToCurrent();
 	Tile * getTile(int x, int y);
 public slots:
+
+
 	void startNewRound();
 	int switchPlayer(Direction d);
 signals:
-	void boardChanged();
+    // void boardChanged(); if you find this and everything still works, you can just delete it everywhere
 	void paintPlayers();
-	void playerMoved(int playerNumber, int goalHit); //-1 when goal was not reached, number of moves otherwise
+    /*!
+     * \brief playerMoved tells that a player in the model has changed its position by being moved by a user during the game
+     * \param playerNumber - index of the player that has moved
+     * \param goalHit - -1 when goal was not reached, number of moves otherwise
+     */
+    void playerMoved(int playerNumber, int goalHit);
+    /*!
+     * \brief playerBeam tells that a player in the model has changed its position because of an internal need for them to move
+     * \param playerNumber index of the player that has moved
+     */
 	void playerBeam(int playerNumber);
-	void goalMoved();
+    /*!
+     * \brief goalMoved tells that the goal has moved in the model
+     */
+    void goalMoved();
 protected:
 	void placeGoalAwayFromSeeker();
 private:
