@@ -48,9 +48,6 @@ public slots:
 	void setBiddingFocus();
 	//void newUser();
 
-signals:
-	void userAdded(struct Userdata * newUser);
-
 };
 
 #endif // OFFLINELEADERBOARDWIDGET_H

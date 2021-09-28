@@ -25,15 +25,12 @@ private:
     QPushButton * addColourBtn = new QPushButton("Farbe hinzufügen", this);
     QColor * UserColor = new QColor();
     unsigned int numOfUsers = 0;
-
-public slots:
+private slots:
     void addUser();
     void addColour();
     void resetFields();
-    QPushButton * getAddBtn();
-    QColorDialog * getColorDialog();
-    QLineEdit * getLineEdit();
+
 signals:
-    void userAdded(struct UserData * newUser); //Argument: Nutzer
+    void userAdded(struct UserData * newUser); //Argument: User
 };
 #endif // USERCREATIONWIDGET_H
