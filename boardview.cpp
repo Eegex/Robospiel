@@ -47,7 +47,10 @@ void BoardView::setBoard(Board * board)
 		}
 	}
 	);
-	connect(board,&Board::goalMoved,this, [&](){goalwidget->move(tileToDesktopCoordinates(board->goal));});
+	connect(board,&Board::goalMoved,this,[&]()
+	{
+		goalwidget->move(tileToDesktopCoordinates(this->board->goal));
+	});
 	adjustSize();
 }
 

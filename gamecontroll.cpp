@@ -476,7 +476,7 @@ void GameControll::calculateGameStatus()
 				GameControll::triggerAction(revert);
 				User * user = instance.users.first();
 				const QString& username = user->getName();
-				showGuide({tr("You are out of steps, looser!")+ "[]", tr("Getting frutrated? Maybe pay attention next time you bit!")+ "[]", tr("Buhuuu! All your steps are up, ") + username + "!" + "[]", tr("No steps, no luck, I guess, your stuck!")+ "[]", tr("Somebody doesn't know how to count!")+ "[]"});
+				showGuide({tr("You are out of steps, looser!")+ "[]", tr("Getting frustrated? Maybe pay attention next time you bit!")+ "[]", tr("Buhuuu! All your steps are up, ") + username + "!" + "[]", tr("No steps, no luck, I guess, your stuck!")+ "[]", tr("Somebody doesn't know how to count!")+ "[]"});
 			}
 		}
 	}
@@ -549,10 +549,10 @@ void GameControll::resetForNextUser()
 	Q_ASSERT_X(user,"GameControll::resetForNextUser","User is nullptr");
 	showGuide({ tr("Present your solution, ") + user->getName() + "[]",tr("Your turn, ") + user->getName() + "[]" });
 	setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
-	enableActionBtn(localUserIsActiveUser());
+	emit enableActionBtn(localUserIsActiveUser());
 	getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
 	emit updateMoves(0);
-	qDebug()<<"Active User is now "<<user->getName();
+	qDebug() << "Active User is now " <<user->getName();
 }
 
 int GameControll::getUserIndexById(QUuid id)
@@ -806,8 +806,8 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
 		json.insert("bidding", bidding);
 		triggerActionWithData(PlayerAction::sendBidding, json);
 	});
-	//TODO: I fucking hate connects! They come from hell and never work...
-	//connect(instance.leaderboard, &LeaderBoardWidget::userWasClicked(), &GameControll::getInstance(), letUserPlayFree());
+	//TODO: UI anbinden
+	connect(instance.leaderboard, &LeaderBoardWidget::userWasClicked, &GameControll::getInstance(), &GameControll::letUserPlayFree);
 
 
 }
@@ -909,7 +909,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 			emit enableMenus(false);
 			instance.hasSkipped = 0;
 			emit focusBoard();
-			enableActionBtn(localUserIsActiveUser()); // TODO: does this make sense here?
+			emit enableActionBtn(localUserIsActiveUser()); // TODO: does this make sense here?
 			return true;
 		}
 		break;
@@ -919,9 +919,8 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 		if(currentPhase == Phase::presentation)
 		{
 
-			//TODO:
-			// Set user who just made a point as active user.
-			// Save the state that the game had right when the point was scored.
+			/*TODO: Set user who just made a point as active user.
+			 Save the state that the game had right when the point was scored.*/
 			board->saveCurrentPositionOfPlayers();
 
 			currentPhase = phase;
@@ -931,7 +930,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 			emit enableMenus(false);
 			instance.hasSkipped = 0;
 			emit focusBoard();
-			enableActionBtn(localUserIsActiveUser()); // TODO: does this make sense here?
+			emit enableActionBtn(localUserIsActiveUser()); // TODO: does this make sense here?
 			return true;
 		}
 		break;
@@ -971,8 +970,10 @@ void GameControll::decideIfUserCanPlayFree(QUuid userId){
 
 }
 
-void GameControll::letUserPlayFree(QUuid userId){
-	if(currentPhase == Phase::freeplay){
+void GameControll::letUserPlayFree(QUuid userId)
+{
+	if(currentPhase == Phase::freeplay)
+	{
 		// set user as active user.
 		setActiveUserID(userId);
 		// reset the board to the state in the last search phase
@@ -980,7 +981,6 @@ void GameControll::letUserPlayFree(QUuid userId){
 		// Set the steps counter to 0
 		emit updateMoves(0);
 	}
-
 }
 
 void GameControll::setMapping(QVector<KeyMapping*> mapping)
@@ -1074,7 +1074,7 @@ void GameControll::addDefaultUsers()
 
 void GameControll::showGuide(const QStringList & texts)
 {
-	QString text = texts.at(instance.r->bounded(texts.size())); //TODO: synchronize?
+	QString text = texts.at(instance.r->bounded(texts.size())); //TODO: synchronize? (...d?)
 	assert(text.endsWith("]"));
 	QStringList list = text.split(QRegularExpression("[\\[\\]]"),Qt::KeepEmptyParts);
 	list.removeLast();

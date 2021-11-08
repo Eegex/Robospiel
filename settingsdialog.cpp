@@ -161,7 +161,7 @@ void SettingsDialog::load()
 		settings.insert(topBidding,false);
 	}
 	delete keyMappings;
-	keyMappings = new KeyMappingView(mapping, this); //TODO: ...?
+	keyMappings = new KeyMappingView(mapping, this);
 	twTabs->addTab(keyMappings,tr("Key mappings"));
 	leUsername->setText(getUsername());
 	pbUserColor->setStyleSheet("background-color:" + settings.value(usercolor).toString());
@@ -206,8 +206,8 @@ void SettingsDialog::save()
 	}
 	emit colorsChanged();
 	emit newMapping(keyMappings->getMapping());
-    emit usernameChanged(settings.value(username).toString());
-    emit usercolorChanged(QColor(settings.value(usercolor).toString()));
+	emit usernameChanged(settings.value(username).toString());
+	emit usercolorChanged(QColor(settings.value(usercolor).toString()));
 	if(isVisible())
 	{
 		close();
