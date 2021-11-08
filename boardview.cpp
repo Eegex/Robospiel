@@ -16,9 +16,9 @@ BoardView::BoardView(QWidget *parent) : QWidget(parent)
  * \brief Sets and connects the given board and  sets the layout, pawns and goal up.
  * \param board The board to load
  */
-void BoardView::setBoard(Board * board)
+void BoardView::setBoard(Board * newBoard)
 {
-	this->board = board;
+	this->board = newBoard;
 	connect(board,SIGNAL(boardChanged()),this,SLOT(update()));
 	while(!playerWidgets.isEmpty())
 	{
@@ -49,7 +49,7 @@ void BoardView::setBoard(Board * board)
 	);
 	connect(board,&Board::goalMoved,this,[&]()
 	{
-		goalwidget->move(tileToDesktopCoordinates(this->board->goal));
+		goalwidget->move(tileToDesktopCoordinates(board->goal));
 	});
 	adjustSize();
 }
