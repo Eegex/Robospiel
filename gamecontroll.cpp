@@ -344,6 +344,7 @@ void GameControll::exeQTAction(QJsonObject data)
         {
             GameControll::triggerAction(PlayerAction::nextTarget);
         }
+        break;
 
 	case PlayerAction::nextTarget:
 		nextTarget();

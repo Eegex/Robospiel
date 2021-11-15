@@ -67,6 +67,7 @@ void MainWidget::handleActionButtonRelease()
 	case GameControll::Phase::freeplay: {
         //GameControll::triggerAction(PlayerAction::nextTarget); leave this in the code, for the case that Nora needs it
         //disables vote before skipping the goal
+        actionBtn->setDisabled(true);
         GameControll::triggerAction(PlayerAction::skipGoal);
 		break;
 	}
