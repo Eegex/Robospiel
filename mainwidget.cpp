@@ -49,8 +49,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	});
 	glMain->addWidget(userView,4,1,Qt::AlignCenter);
 	connect(&GameControll::getInstance(),&GameControll::time,this,&MainWidget::updateTimer);
-	connect(&GameControll::getInstance(),&GameControll::updateSkip,this,&MainWidget::setSkipButtonText);
-	connect(&GameControll::getInstance(),&GameControll::updateActionButtonText,this,&MainWidget::setActionButtonText);
+    connect(&GameControll::getInstance(),&GameControll::updateSkipText,this,&MainWidget::setSkipButtonText);
+    connect(&GameControll::getInstance(),&GameControll::updateActionButtonText,this,&MainWidget::setActionBtnText);
 }
 
 void MainWidget::handleActionButtonRelease()
@@ -65,7 +65,9 @@ void MainWidget::handleActionButtonRelease()
 	case GameControll::Phase::search: {}
 	case GameControll::Phase::idle: {}
 	case GameControll::Phase::freeplay: {
-		GameControll::triggerAction(PlayerAction::nextTarget);
+        //GameControll::triggerAction(PlayerAction::nextTarget); leave this in the code, for the case that Nora needs it
+        //disables vote before skipping the goal
+        GameControll::triggerAction(PlayerAction::skipGoal);
 		break;
 	}
 	case GameControll::Phase::presentation: {
@@ -78,20 +80,20 @@ void MainWidget::handleActionButtonRelease()
 
 }
 
-void MainWidget::setSkipButtonText(int current, int all)
+void MainWidget::setSkipButtonText(QString text, int current, int all)
 {
 	if(current == 0)
 	{
-		actionBtn->setText(tr("Skip"));
+        actionBtn->setText(text);
 	}
 	else
 	{
-        actionBtn->setText(tr("Skip")+ "(" +QString::number(current)+"/"+QString::number(all)+")");
+        actionBtn->setText(text+ "(" +QString::number(current)+"/"+QString::number(all)+")");
 
 	}
 }
 
-void MainWidget::setActionButtonText(const QString &text)
+void MainWidget::setActionBtnText(const QString &text)
 {
 	actionBtn->setEnabled(true);
 	actionBtn->setText(text);

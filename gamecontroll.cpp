@@ -62,7 +62,8 @@ QJsonObject GameControll::toJSON() //TODO make sure the replaced Objects don't g
 	json.insert("searchTime", instance.searchTime);
 	json.insert("remainingTimerTime", instance.countdown.remainingTime());
 	json.insert("timeLeft", instance.timeLeft);
-	json.insert("skipCounter", instance.skipCounter);
+    json.insert("skipTimerCounter", instance.skipTimerCounter);
+    json.insert("skipGoalCounter", instance.skipGoalCounter);
 	QJsonArray jsonUsers;
 	for(User * user : qAsConst(instance.users))
 	{
@@ -95,7 +96,8 @@ void GameControll::adaptFromJSON(QJsonObject json)
 	instance.searchTime = json.value("searchTime").toInt();
 	instance.timeLeft = json.value("timeLeft").toInt();
 	instance.countdown.stop();
-	instance.skipCounter=json.value("skipCounter").toInt();
+    instance.skipTimerCounter=json.value("skipTimerCounter").toInt();
+    instance.skipGoalCounter=json.value("skipGoalCounter").toInt();
 	if(json.value("remainingTimerTime").toInt()!=-1)
 	{
 		QTimer::singleShot(json.value("remainingTimerTime").toInt(), &instance, [=]()
@@ -307,16 +309,16 @@ void GameControll::exeQTAction(QJsonObject data)
 			qDebug()<<path;
 			player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/rick.mp3"));
 			player->setVolume(50);
-			skipCounter++;
-			emit updateSkip(skipCounter, users.length());
-			if(skipCounter==users.length()-1)
+            skipTimerCounter++;
+            emit updateSkipText(tr("Skip"), skipTimerCounter, users.length());
+            if(skipTimerCounter==users.length()-1)
 			{
 				if (!instance.hasSkipped)
 				{
 					player->play();
 				}
 			}
-			if(skipCounter==users.length())
+            if(skipTimerCounter==users.length())
 			{
 				endTimer();
 				player->stop();
@@ -328,6 +330,20 @@ void GameControll::exeQTAction(QJsonObject data)
 		}
 
 		break;
+    case skipGoal:
+        if(Server::isActive()||Client::isActive())
+        {
+            skipGoalCounter++;
+            emit updateSkipText(tr("Next"), skipGoalCounter, users.length()/2+1);
+            if(skipGoalCounter>users.length()/2)
+            {
+                GameControll::triggerAction(PlayerAction::nextTarget);
+            }
+        }
+        else
+        {
+            GameControll::triggerAction(PlayerAction::nextTarget);
+        }
 
 	case PlayerAction::nextTarget:
 		nextTarget();
@@ -411,9 +427,9 @@ void GameControll::triggerAction(PlayerAction action)
 		//			return;
 		//		}
 	}
-	else if(action & PlayerAction::other)
+    else if(action & PlayerAction::other) //TODO overly complicated ifs? Remove or explain!
 	{
-		if(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay || action == PlayerAction::skipTimer)
+        if(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay || action == PlayerAction::skipTimer || action == PlayerAction::skipGoal)
 		{
 			emit instance.actionTriggered(action);
 			return;
@@ -837,6 +853,7 @@ void GameControll::nextTarget()
 {
 	qDebug()<<"next target!!";
 
+
 	board->setSavedStateToCurrent();
 	if(switchPhase(Phase::search))
 	{
@@ -846,7 +863,8 @@ void GameControll::nextTarget()
 		{
 			u->setBidding(User::maxBid);
 		}
-		skipCounter = 0;
+        skipTimerCounter = 0;
+        skipGoalCounter = 0;
 		emit updateMoves(0);
 		leaderboard->activateInput();
 		board->startNewRound();

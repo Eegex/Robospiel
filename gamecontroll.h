@@ -113,7 +113,8 @@ private:
 	bool localUserIsActiveUser();
 	bool hasSkipped = 0;
 	static void updateRandomGenerator(int seed);
-	int skipCounter = 0;
+    int skipTimerCounter = 0;
+    int skipGoalCounter = 0;
 signals:
 	void actionTriggeredWithData(PlayerAction action, QJsonObject additionalData);
 	void actionTriggered(PlayerAction action);
@@ -126,7 +127,7 @@ signals:
 	void enableMenus(bool boolean);
     void enableActionBtn(bool boolean);
 	void newBoard(Board* b);
-	void updateSkip(int current, int all);
+    void updateSkipText(QString text, int current, int all);
     void updateActionButtonText(const QString &text);
 	void focusBoard();
 	void updateMoves(int moves);
