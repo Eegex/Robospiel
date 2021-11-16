@@ -14,7 +14,7 @@ BoardView::BoardView(QWidget *parent) : QWidget(parent)
 
 /*!
  * \brief Sets and connects the given board and  sets the layout, pawns and goal up.
- * \param board The board to load
+ * \param newBoard The board to load
  */
 void BoardView::setBoard(Board * newBoard)
 {
