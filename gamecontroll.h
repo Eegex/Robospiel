@@ -72,6 +72,7 @@ public:
     void handleUserGivingUp();
     void letUserPlayFree(QUuid userId);
     void decideIfUserCanPlayFree(QUuid userId);
+    bool localUserIsActiveUser();
 public slots:
 	static void startNetworkDebugger();
 	void calculateWinner();
@@ -110,7 +111,7 @@ private:
 	int getUserIndexById(QUuid id);
 
 
-	bool localUserIsActiveUser();
+
 	bool hasSkipped = 0;
 	static void updateRandomGenerator(int seed);
     int skipTimerCounter = 0;

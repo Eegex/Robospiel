@@ -329,9 +329,12 @@ void MainWidget::initializeView(Board* b, QVector<KeyMapping*>* m)
 	connect(view,&BoardView::action,&GameControll::getInstance(),&GameControll::triggerAction);
 	connect(view,&BoardView::activePlayerChanged,&GameControll::getInstance(),[=](int playerNumber)->void
 	{
-		QJsonObject data;
-		data.insert("playerNumber", playerNumber);
-		GameControll::triggerActionWithData(PlayerAction::playerSwitch, data);
+        if(GameControll::getInstance().localUserIsActiveUser()){
+            QJsonObject data;
+            data.insert("playerNumber", playerNumber);
+            GameControll::triggerActionWithData(PlayerAction::playerSwitch, data);
+        }
+
 	});
 	glMain->addWidget(view,1,0,4,1,Qt::AlignCenter);
 }

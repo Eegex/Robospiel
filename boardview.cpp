@@ -163,6 +163,7 @@ PlayerWidget * BoardView::addPlayer(int i)
 	playerWidgets.append(newPlayer);
 	connect(newPlayer, &PlayerWidget::clicked,this, [&](int playerNumber)
 	{
+
 		emit activePlayerChanged(playerNumber);
 	});
 	connect(newPlayer, &PlayerWidget::reposition, this, [&](int playerNumber)
