@@ -28,7 +28,7 @@ public:
 	explicit MainWidget(QWidget *parent = nullptr);
 	void setMenuBar(QMenuBar * bar);
 	void enableActionBtn(bool boolean);
-    void setSkipButtonText(QString text, int current, int all);
+    void setSkipButtonText(int current, int all);
     void setActionBtnText(const QString &text);
 	void handleActionButtonRelease();
 private slots:

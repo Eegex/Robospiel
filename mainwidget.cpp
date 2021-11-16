@@ -81,16 +81,16 @@ void MainWidget::handleActionButtonRelease()
 
 }
 
-void MainWidget::setSkipButtonText(QString text, int current, int all)
+void MainWidget::setSkipButtonText(int current, int all)
 {
+    QString t = actionBtn->text();
 	if(current == 0)
 	{
-        actionBtn->setText(text);
+        actionBtn->setText(t);
 	}
 	else
 	{
-        actionBtn->setText(text+ "(" +QString::number(current)+"/"+QString::number(all)+")");
-
+        actionBtn->setText(t+ "(" +QString::number(current)+"/"+QString::number(all)+")");
 	}
 }
 

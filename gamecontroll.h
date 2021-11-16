@@ -127,7 +127,7 @@ signals:
 	void enableMenus(bool boolean);
     void enableActionBtn(bool boolean);
 	void newBoard(Board* b);
-    void updateSkipText(QString text, int current, int all);
+    void updateSkipText(int current, int all);
     void updateActionButtonText(const QString &text);
 	void focusBoard();
 	void updateMoves(int moves);
