@@ -24,6 +24,7 @@ NetworkModel::NetworkModel()
 	playerActionStrings.insert(PlayerAction::sendBidding,"sendBidding");
 	playerActionStrings.insert(PlayerAction::clearBidding,"clearBidding");
 	playerActionStrings.insert(PlayerAction::skipTimer,"skipTimer");
+    playerActionStrings.insert(PlayerAction::skipGoal,"skipGoal");
 	playerActionStrings.insert(PlayerAction::other,"other");
 	playerActionStrings.insert(PlayerAction::giveUp,"giveUp");
 	playerActionStrings.insert(PlayerAction::revert,"revert");
