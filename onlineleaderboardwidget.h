@@ -54,6 +54,8 @@ signals:
 	void biddingChangedOnline(int userBidding); // before
 //	void biddingAccepted(QUuid userId, int bidding); // before: biddingChangedOnline
 	void leaderBoardSet(bool t);
+private slots:
+	void userClicked(const QModelIndex & index);
 };
 
 #endif // ONLINELEADERBOARDWIDGET_H

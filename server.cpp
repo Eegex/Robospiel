@@ -104,45 +104,45 @@ void Server::addClient()
 	connections.append(connection);
 
 	connect(connection, &ConnectionToClient::deleteConnection, this, [=](ConnectionToClient* toDelete)->void{
-        User* u = toDelete->getUser();
+		User* u = toDelete->getUser();
 		connections.remove(connections.indexOf(toDelete));
 		delete toDelete;
 		toDelete = nullptr;
 		emit clientsChanged(connections.length());
-        //TODO reset local data in clients and server
+		//TODO reset local data in clients and server
 
 
-        QJsonObject data;
-        data.insert("action", PlayerAction::userLeft);
-        data.insert("user", u->toJSON());
-        sendMessageToClients(data);
+		QJsonObject data;
+		data.insert("action", PlayerAction::userLeft);
+		data.insert("user", u->toJSON());
+		sendMessageToClients(data);
 	});
 	connect(connection, &ConnectionToClient::receivedMessage, this, [this](QString message){
 		ConnectionToClient * senderConnection = dynamic_cast<ConnectionToClient*>(sender()); //get connection over sender instead of capturing it to prevent stupid behavior
 		Q_ASSERT_X(senderConnection,"Server::addClient() receivedMessage-lambda","senderConnection is nullptr");
 		QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
-        //network debugging
-        User * u = senderConnection->getUser();
-        if(u)
-        {
-            data.insert("Client","S: " + u->getName());
-        }
-        else
-        {
-            data.insert("Client","-");
-        }
-        GameControll::addTransmission(data);
+		//network debugging
+		User * u = senderConnection->getUser();
+		if(u)
+		{
+			data.insert("Client","S: " + u->getName());
+		}
+		else
+		{
+			data.insert("Client","-");
+		}
+		GameControll::addTransmission(data);
 
 
 		PlayerAction action = static_cast<PlayerAction>(data.value("action").toInt());
 		if(action == PlayerAction::registerClient)
 		{
-            senderConnection->setUser(User::fromJSON(data));
-        }
-        else
-        {
-            Server::forwardMessageToClients(message);
-        }
+			senderConnection->setUser(User::fromJSON(data));
+		}
+		else
+		{
+			Server::forwardMessageToClients(message);
+		}
 
 
 	});
@@ -155,10 +155,7 @@ void Server::addClient()
 
 	emit clientsChanged(connections.length());
 
-	QJsonObject seed;
-	seed.insert("Seed",QTime::currentTime().msecsSinceStartOfDay());
-
-	GameControll::triggerActionWithData(PlayerAction::syncRandomGenerators,seed);
+	GameControll::triggerActionWithData(PlayerAction::syncRandomGenerators,{{"Seed",QTime::currentTime().msecsSinceStartOfDay()}});
 }
 
 void Server::closeServer()

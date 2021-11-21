@@ -6,11 +6,11 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	GameControll::initializeConnections();
 	glMain = new QGridLayout(this);
 	//GameControll::setLeaderboard(userView->getLeaderboard());
-    actionBtn = new QPushButton(tr("Start"), this);
-    actionBtn->setEnabled(false); // should only be enabled as soon as we have the leaderboard and we can actually start the game
-    userView = new UserView(actionBtn, this);
+	actionBtn = new QPushButton(tr("Start"), this);
+	actionBtn->setEnabled(false); // should only be enabled as soon as we have the leaderboard and we can actually start the game
+	userView = new UserView(actionBtn, this);
 
-    initializeView(GameControll::setBoard(new Board(16, 16, 5)), GameControll::getMapping());
+	initializeView(GameControll::setBoard(new Board(16, 16, 5)), GameControll::getMapping());
 	//connect(view, &BoardView::lastAnimationAfterGoalHitEnded, game, &GameControll::calculateWinner);
 	networkView = new NetworkView;
 	lcd = new QLCDNumber(this);
@@ -49,8 +49,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	});
 	glMain->addWidget(userView,4,1,Qt::AlignCenter);
 	connect(&GameControll::getInstance(),&GameControll::time,this,&MainWidget::updateTimer);
-    connect(&GameControll::getInstance(),&GameControll::updateSkipText,this,&MainWidget::setSkipButtonText);
-    connect(&GameControll::getInstance(),&GameControll::updateActionButtonText,this,&MainWidget::setActionBtnText);
+	connect(&GameControll::getInstance(),&GameControll::updateSkipText,this,&MainWidget::setSkipButtonText);
+	connect(&GameControll::getInstance(),&GameControll::updateActionButtonText,this,&MainWidget::setActionBtnText);
 }
 
 void MainWidget::handleActionButtonRelease()
@@ -65,10 +65,10 @@ void MainWidget::handleActionButtonRelease()
 	case GameControll::Phase::search: {}
 	case GameControll::Phase::idle: {}
 	case GameControll::Phase::freeplay: {
-        //GameControll::triggerAction(PlayerAction::nextTarget); leave this in the code, for the case that Nora needs it
-        //disables vote before skipping the goal
-        actionBtn->setDisabled(true);
-        GameControll::triggerAction(PlayerAction::skipGoal);
+		//GameControll::triggerAction(PlayerAction::nextTarget); leave this in the code, for the case that Nora needs it
+		//disables vote before skipping the goal
+		actionBtn->setDisabled(true);
+		GameControll::triggerAction(PlayerAction::skipGoal);
 		break;
 	}
 	case GameControll::Phase::presentation: {
@@ -83,14 +83,14 @@ void MainWidget::handleActionButtonRelease()
 
 void MainWidget::setSkipButtonText(int current, int all)
 {
-    QString t = actionBtn->text();
+	QString t = actionBtn->text();
 	if(current == 0)
 	{
-        actionBtn->setText(t);
+		actionBtn->setText(t);
 	}
 	else
 	{
-        actionBtn->setText(t+ "(" +QString::number(current)+"/"+QString::number(all)+")");
+		actionBtn->setText(t+ "(" +QString::number(current)+"/"+QString::number(all)+")");
 	}
 }
 
@@ -329,11 +329,10 @@ void MainWidget::initializeView(Board* b, QVector<KeyMapping*>* m)
 	connect(view,&BoardView::action,&GameControll::getInstance(),&GameControll::triggerAction);
 	connect(view,&BoardView::activePlayerChanged,&GameControll::getInstance(),[=](int playerNumber)->void
 	{
-        if(GameControll::getInstance().localUserIsActiveUser()){
-            QJsonObject data;
-            data.insert("playerNumber", playerNumber);
-            GameControll::triggerActionWithData(PlayerAction::playerSwitch, data);
-        }
+		if(GameControll::getInstance().localUserIsActiveUser())
+		{
+			GameControll::triggerActionWithData(PlayerAction::playerSwitch, {{"playerNumber", playerNumber}});
+		}
 
 	});
 	glMain->addWidget(view,1,0,4,1,Qt::AlignCenter);

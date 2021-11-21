@@ -67,12 +67,12 @@ public:
 	static void addTransmission(QJsonObject transmission);
 	static void disableAnnoyingSounds();
 	static User *getLocalUser();
-    void resetAndNextTarget();
-    void resetForNextUser();
-    void handleUserGivingUp();
-    void letUserPlayFree(QUuid userId);
-    void decideIfUserCanPlayFree(QUuid userId);
-    bool localUserIsActiveUser();
+	void resetAndNextTarget();
+	void resetForNextUser();
+	void handleUserGivingUp();
+	void letUserPlayFree(const QUuid & userId);
+	void decideIfUserCanPlayFree(QUuid userId);
+	bool localUserIsActiveUser();
 public slots:
 	static void startNetworkDebugger();
 	void calculateWinner();
@@ -81,7 +81,7 @@ public slots:
 	void nextTarget();
 	void remakeBoard();
 	QUuid getActiveUserID();
-	void setActiveUserID(QUuid id);
+	void setActiveUserID(const QUuid & id);
 
 
 private:
@@ -114,8 +114,8 @@ private:
 
 	bool hasSkipped = 0;
 	static void updateRandomGenerator(int seed);
-    int skipTimerCounter = 0;
-    int skipGoalCounter = 0;
+	int skipTimerCounter = 0;
+	int skipGoalCounter = 0;
 signals:
 	void actionTriggeredWithData(PlayerAction action, QJsonObject additionalData);
 	void actionTriggered(PlayerAction action);
@@ -126,10 +126,10 @@ signals:
 	void newOnlineUser(User* user);
 	void updateGuide(const QString & txt);
 	void enableMenus(bool boolean);
-    void enableActionBtn(bool boolean);
+	void enableActionBtn(bool boolean);
 	void newBoard(Board* b);
-    void updateSkipText(int current, int all);
-    void updateActionButtonText(const QString &text);
+	void updateSkipText(int current, int all);
+	void updateActionButtonText(const QString &text);
 	void focusBoard();
 	void updateMoves(int moves);
 

@@ -22,6 +22,7 @@ public:
 	void toChoiceMenu();
 private:
 
+	static QString defaultServer;
 	bool allowClientAndServer=false;
 
 	QLayout* layout = nullptr;
