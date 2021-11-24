@@ -72,7 +72,7 @@ public:
     void resetAndNextTarget();
     void resetForNextUser();
     void handleUserGivingUp();
-    void letUserPlayFree(QUuid userId);
+    void letUserPlayFree(const QUuid & userId);
     void decideIfUserCanPlayFree(QUuid userId);
     bool localUserIsActiveUser();
     void updateVoteNumbers();
@@ -84,7 +84,7 @@ public slots:
 	void nextTarget();
 	void remakeBoard();
 	QUuid getActiveUserID();
-	void setActiveUserID(QUuid id);
+	void setActiveUserID(const QUuid & id);
 
 
 private:

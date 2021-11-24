@@ -5,13 +5,18 @@
 
 class SpinBox : public QSpinBox
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    SpinBox(QWidget* paren=nullptr);
+	SpinBox(QWidget* paren=nullptr);
+	void setSelectAllOnFocus(bool newSelectAllOnFocus);
+
 public slots:
-    void keyPressEvent(QKeyEvent *event);
+	void focusInEvent(QFocusEvent * event);
+	void keyPressEvent(QKeyEvent *event);
+private:
+	bool selectAllOnFocus = false;
 signals:
-    void returnPressed();
+	void returnPressed();
 };
 
 #endif // SPINBOX_H

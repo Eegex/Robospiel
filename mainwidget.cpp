@@ -18,7 +18,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 
     userView = new UserView(actionBtn, this);
 
-    initializeView(GameControll::setBoard(new Board(16, 16, 5)), GameControll::getMapping());
+	initializeView(GameControll::setBoard(new Board(16, 16, 5)), GameControll::getMapping());
 	//connect(view, &BoardView::lastAnimationAfterGoalHitEnded, game, &GameControll::calculateWinner);
 	networkView = new NetworkView;
 	lcd = new QLCDNumber(this);
@@ -97,7 +97,6 @@ void MainWidget::handleActionButtonRelease()
 
 void MainWidget::updateActionBtnText()
 {
-
     QString text = actionBtnTexts.value(GameControll::getCurrentPhase());
     if(GameControll::getVoteCounter()>0)
     {
@@ -106,9 +105,6 @@ void MainWidget::updateActionBtnText()
         actionBtn->setEnabled(true);
     }
     actionBtn->setText(text);
-
-
-
 }
 
 void MainWidget::setMenuBar(QMenuBar * bar)
@@ -339,11 +335,10 @@ void MainWidget::initializeView(Board* b, QVector<KeyMapping*>* m)
 	connect(view,&BoardView::action,&GameControll::getInstance(),&GameControll::triggerAction);
 	connect(view,&BoardView::activePlayerChanged,&GameControll::getInstance(),[=](int playerNumber)->void
 	{
-        if(GameControll::getInstance().localUserIsActiveUser()){
-            QJsonObject data;
-            data.insert("playerNumber", playerNumber);
-            GameControll::triggerActionWithData(PlayerAction::playerSwitch, data);
-        }
+		if(GameControll::getInstance().localUserIsActiveUser())
+		{
+			GameControll::triggerActionWithData(PlayerAction::playerSwitch, {{"playerNumber", playerNumber}});
+		}
 
 	});
 	glMain->addWidget(view,1,0,4,1,Qt::AlignCenter);

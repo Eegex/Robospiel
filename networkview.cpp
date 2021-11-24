@@ -8,6 +8,8 @@
 #include <QTime>
 #include <QVBoxLayout>
 
+QString NetworkView::defaultServer = "localhost";  //NOTE: Quick access to default server
+
 NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 {
 	QValidator *intValidator = new QIntValidator(this);
@@ -18,7 +20,7 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 	clientContainer = new QWidget(this);
 	clientContainer->setObjectName("ClientContainer");
 	gridClient = new QVBoxLayout(clientContainer);
-	leClientAddress = new QLineEdit("acqcke5skvirioi1.myfritz.net",clientContainer);
+	leClientAddress = new QLineEdit(defaultServer,clientContainer);
 	leClientAddress->setPlaceholderText(tr("Server Address"));
 	leClientPort = new QLineEdit("8050",clientContainer);
 	leClientPort->setPlaceholderText(tr("Server Port"));
@@ -63,7 +65,7 @@ NetworkView::NetworkView(QWidget *parent) : QWidget(parent)
 	QNetworkAccessManager * ipSearcher = new QNetworkAccessManager(this);
 	connect(ipSearcher,&QNetworkAccessManager::finished,this,[=](QNetworkReply * reply)
 	{
-		leServerAddress->setText("acqcke5skvirioi1.myfritz.net"/*reply->readAll()*/);
+		leServerAddress->setText(defaultServer/*reply->readAll()*/);
 		leServerPort->setText("8050");
 		reply->deleteLater();
 		ipSearcher->deleteLater();
