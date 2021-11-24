@@ -6,8 +6,16 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	GameControll::initializeConnections();
 	glMain = new QGridLayout(this);
 	//GameControll::setLeaderboard(userView->getLeaderboard());
-    actionBtn = new QPushButton(tr("Start"), this);
+
+    actionBtnTexts.insert(GameControll::Phase::idle, tr("Start"));
+    actionBtnTexts.insert(GameControll::Phase::search, tr("Next"));
+    actionBtnTexts.insert(GameControll::Phase::countdown, tr("Skip"));
+    actionBtnTexts.insert(GameControll::Phase::presentation, tr("Give Up"));
+    actionBtnTexts.insert(GameControll::Phase::freeplay, tr("Next"));
+    actionBtn = new QPushButton(this);
+    updateActionBtnText();
     actionBtn->setEnabled(false); // should only be enabled as soon as we have the leaderboard and we can actually start the game
+
     userView = new UserView(actionBtn, this);
 
     initializeView(GameControll::setBoard(new Board(16, 16, 5)), GameControll::getMapping());
@@ -49,17 +57,23 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	});
 	glMain->addWidget(userView,4,1,Qt::AlignCenter);
 	connect(&GameControll::getInstance(),&GameControll::time,this,&MainWidget::updateTimer);
-    connect(&GameControll::getInstance(),&GameControll::updateSkipText,this,&MainWidget::setSkipButtonText);
-    connect(&GameControll::getInstance(),&GameControll::updateActionButtonText,this,&MainWidget::setActionBtnText);
+    connect(&GameControll::getInstance(),&GameControll::updateActionButtonText,this,&MainWidget::updateActionBtnText);
 }
 
 void MainWidget::handleActionButtonRelease()
 {
-	switch (GameControll::getCurrentPhase()) {
+    //Phase -> ButtonDisablen?,aktion,erwartete Anzahl
+    //idle -> ja, Spiel starten, alle
+    //search -> ja, skipTarget, Hälfte
+    //countdown -> ja, skipTimer, alle
+    //presentation ->nein, give up, nur man selber
+    //freeplay -> ja, Freeplay abbrechen um weiterspielen zu können, Hälfte || alle, weil es dann weitergeht und alle mitmachen sollten? Andererseits können Leute dann nciht kurzzeitig aussezten
+
+    switch (GameControll::getCurrentPhase()) {
 	case GameControll::Phase::countdown:{
-		actionBtn->setDisabled(true);
 		GameControll::disableAnnoyingSounds();
-		GameControll::triggerAction(PlayerAction::skipTimer);
+        actionBtn->setDisabled(true);
+        GameControll::triggerAction(PlayerAction::vote);
 		break;
 	}
 	case GameControll::Phase::search: {}
@@ -68,7 +82,7 @@ void MainWidget::handleActionButtonRelease()
         //GameControll::triggerAction(PlayerAction::nextTarget); leave this in the code, for the case that Nora needs it
         //disables vote before skipping the goal
         actionBtn->setDisabled(true);
-        GameControll::triggerAction(PlayerAction::skipGoal);
+        GameControll::triggerAction(PlayerAction::vote);
 		break;
 	}
 	case GameControll::Phase::presentation: {
@@ -81,23 +95,19 @@ void MainWidget::handleActionButtonRelease()
 
 }
 
-void MainWidget::setSkipButtonText(int current, int all)
+void MainWidget::updateActionBtnText()
 {
-    QString t = actionBtn->text();
-	if(current == 0)
-	{
-        actionBtn->setText(t);
-	}
-	else
-	{
-        actionBtn->setText(t+ "(" +QString::number(current)+"/"+QString::number(all)+")");
-	}
-}
 
-void MainWidget::setActionBtnText(const QString &text)
-{
-	actionBtn->setEnabled(true);
-	actionBtn->setText(text);
+    QString text = actionBtnTexts.value(GameControll::getCurrentPhase());
+    if(GameControll::getVoteCounter()>0)
+    {
+        text += "("+QString::number(GameControll::getVoteCounter())+"/"+QString::number(GameControll::getVoteThreshold())+")";
+    } else {
+        actionBtn->setEnabled(true);
+    }
+    actionBtn->setText(text);
+
+
 
 }
 

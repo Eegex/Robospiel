@@ -62,8 +62,8 @@ QJsonObject GameControll::toJSON() //TODO make sure the replaced Objects don't g
     json.insert("searchTime", instance.searchTime);
     json.insert("remainingTimerTime", instance.countdown.remainingTime());
     json.insert("timeLeft", instance.timeLeft);
-    json.insert("skipTimerCounter", instance.skipTimerCounter);
-    json.insert("skipGoalCounter", instance.skipGoalCounter);
+    json.insert("voteCounter", instance.voteCounter);
+    json.insert("voteThreshold", instance.voteThreshold);
     QJsonArray jsonUsers;
     for(User * user : qAsConst(instance.users))
     {
@@ -96,8 +96,8 @@ void GameControll::adaptFromJSON(QJsonObject json)
     instance.searchTime = json.value("searchTime").toInt();
     instance.timeLeft = json.value("timeLeft").toInt();
     instance.countdown.stop();
-    instance.skipTimerCounter=json.value("skipTimerCounter").toInt();
-    instance.skipGoalCounter=json.value("skipGoalCounter").toInt();
+    instance.voteCounter=json.value("voteCounter").toInt();
+    instance.voteThreshold=json.value("voteThreshold").toInt();
     if(json.value("remainingTimerTime").toInt()!=-1)
     {
         QTimer::singleShot(json.value("remainingTimerTime").toInt(), &instance, [=]()
@@ -302,57 +302,50 @@ void GameControll::exeQTAction(QJsonObject data)
     case syncRandomGenerators:
         updateRandomGenerator(data.value("Seed").toInt());
         break;
-    case skipTimer:
-        if(Server::isActive()||Client::isActive())
+    case vote:
+        voteCounter++;
+        emit updateActionButtonText();
+
+        switch (currentPhase) {
+        case Phase::countdown: //voting to skip the remaining countdown phase
         {
-            QString path = QDir::currentPath();
-            qDebug()<<path;
-            player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/rick.mp3"));
-            player->setVolume(50);
-            skipTimerCounter++;
-            emit updateSkipText(skipTimerCounter, users.length());
-            if(skipTimerCounter==users.length()-1)
+            if(Server::isActive()||Client::isActive())
             {
-                if (!instance.hasSkipped)
+                QString path = QDir::currentPath();
+                qDebug()<<path;
+                player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/rick.mp3"));
+                player->setVolume(50);
+                if(voteCounter==voteThreshold-1 && !instance.hasSkipped)
                 {
                     player->play();
                 }
+                if(voteCounter>=voteThreshold)
+                {
+                    endTimer();
+                    player->stop();
+                }
             }
-            if(skipTimerCounter==users.length())
+            else
             {
                 endTimer();
-                player->stop();
             }
+            break;
         }
-        else
-        {
-            endTimer();
-        }
-
-        break;
-    case skipGoal:
-        if(Server::isActive()||Client::isActive())
-        {
-            skipGoalCounter++;
-
-            if(currentPhase == Phase::idle){
-
-                emit updateSkipText(skipGoalCounter, users.length());
-            }
-            else{
-                emit updateSkipText(skipGoalCounter, users.length()/2+1);
-            }
-            if(skipGoalCounter>users.length()/2)
+        case Phase::search:
+        case Phase::freeplay:
+        case Phase::idle: //voting to start new round
+            //Aussagenlogik: online ->vC>=vT ist !online v vC>=vT            
+            if(!(Server::isActive()||Client::isActive()) || voteCounter>=voteThreshold)
             {
                 GameControll::triggerAction(PlayerAction::nextTarget);
             }
-        }
-        else
-        {
-            GameControll::triggerAction(PlayerAction::nextTarget);
+            break;
+        case Phase::presentation:
+            break;
+
+
         }
         break;
-
     case PlayerAction::nextTarget:
         nextTarget();
         break;
@@ -437,7 +430,7 @@ void GameControll::triggerAction(PlayerAction action)
     }
     else if(action & PlayerAction::other) //TODO overly complicated ifs? Remove or explain!
     {
-        if(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay || action == PlayerAction::skipTimer || action == PlayerAction::skipGoal)
+        if(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay || action == PlayerAction::vote)
         {
             emit instance.actionTriggered(action);
             return;
@@ -742,6 +735,7 @@ void GameControll::addUser(User* user)
     instance.users.append(user);
     instance.leaderboard->addUser(user);
     instance.leaderboard->updateAllUsers();
+    instance.updateVoteNumbers();
 }
 
 /*!
@@ -832,6 +826,7 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
     });
     //TODO: UI anbinden
     connect(instance.leaderboard, &LeaderBoardWidget::userWasClicked, &GameControll::getInstance(), &GameControll::letUserPlayFree);
+    instance.switchPhase(instance.currentPhase); //correct initializiation, can't happen earlier, because MainWidget has to be initialized first
 
 
 }
@@ -871,8 +866,6 @@ void GameControll::nextTarget()
         {
             u->setBidding(User::maxBid);
         }
-        skipTimerCounter = 0;
-        skipGoalCounter = 0;
         emit updateMoves(0);
         leaderboard->activateInput();
         board->startNewRound();
@@ -886,23 +879,31 @@ bool GameControll::switchPhase(GameControll::Phase phase)
     {
     case Phase::idle:
     {
-        emit updateActionButtonText(tr("Start"));
         currentPhase = phase;
+
+        voteCounter=0;
+        updateVoteNumbers();
+
         showGuide({tr("boooring")+ "[]",tr("i am not creative")+ "[2000]" + tr("at all")+ "[2000]" + tr("fuck you") + "[]", tr("We are in idle now!")+ "[]", tr("Lets do some idling!")+ "[]", tr("Okay, so you aren't capable of dealing with a real mode, are you?")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Too dumb for a real game!")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Idle again? Are we ever going to PLAY?")+ "[2000]" +tr("We are in idle.")+ "[]"});
         emit enableMenus(true);
         instance.hasSkipped = 0;
+
         return true;
     }
     case Phase::search:
     {
         if(currentPhase != Phase::countdown)
         {
-            emit updateActionButtonText(tr("Next"));
-            instance.leaderboard->setBiddingFocus();
             currentPhase = phase;
+
+            voteCounter=0;
+            updateVoteNumbers();
+
+            instance.leaderboard->setBiddingFocus();
             showGuide({tr("Start bidding")+ "[]",tr("Let's go! Bid!")+ "[]", tr("You can bid now!")+ "[]",  tr("Lets do some bidding!")+ "[]", tr("I bet you wont find anything! But you can try to...")+ "[2000]" +tr("Make your biddings!")+ "[]", tr("Make your biddings! Well if you find anything...")+ "[]"});
             emit enableMenus(false);
             instance.hasSkipped = 0;
+
             return true;
         }
         break;
@@ -911,15 +912,19 @@ bool GameControll::switchPhase(GameControll::Phase phase)
     {
         if(currentPhase == Phase::search)
         {
-            emit updateActionButtonText(tr("Skip"));
-            instance.leaderboard->setBiddingFocus();
             currentPhase = phase;
+
+            voteCounter=0;
+            updateVoteNumbers();
+
+            instance.leaderboard->setBiddingFocus();
             showGuide({tr("Counting down")+ "[]", tr("Stressed yet? The Timer is running!")+ "[]", tr("You will never find anything in a minute!")+ "[]" });
             timeLeft = searchTime; //60
             emit time(timeLeft);
             countdown.start();
             emit enableMenus(false);
             instance.hasSkipped = 0;
+
             return true;
         }
         break;
@@ -928,14 +933,18 @@ bool GameControll::switchPhase(GameControll::Phase phase)
     {
         if(currentPhase == Phase::countdown)
         {
-            emit updateActionButtonText(tr("Give Up"));
+            currentPhase = phase;
+
+            voteCounter=0; //not used. Fill with different values to implement (voting to skip the presentation phase)
+            updateVoteNumbers();
+
             //Set Player to player with minimum bid, aka first player after being sorted
             emit biddingDone();
-            currentPhase = phase;
             emit enableMenus(false);
             instance.hasSkipped = 0;
             emit focusBoard();
             emit enableActionBtn(localUserIsActiveUser()); // TODO: does this make sense here?
+
             return true;
         }
         break;
@@ -951,12 +960,16 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 
             currentPhase = phase;
             letUserPlayFree(activeUserID);
-            emit updateActionButtonText(tr("Next"));
+
+            voteCounter=0;
+            updateVoteNumbers();
+
             showGuide({tr("Freeplay")+ "[2000]"+ tr("time to show off")+ "[]"});
             emit enableMenus(false);
             instance.hasSkipped = 0;
             emit focusBoard();
             emit enableActionBtn(true); // TODO: does this make sense here?
+
             return true;
         }
         break;
@@ -1170,4 +1183,36 @@ void GameControll::setActionWhenAnimationEnded(functionPointer function)
 void GameControll::disableAnnoyingSounds(){
     instance.player->stop();
     instance.hasSkipped = 1;
+}
+
+int GameControll::getVoteCounter() {
+    return instance.voteCounter;
+}
+
+int GameControll::getVoteThreshold() {
+    return instance.voteThreshold;
+}
+
+void GameControll::updateVoteNumbers()
+{
+    switch(currentPhase)
+    {
+    case Phase::idle:
+        voteThreshold = users.length(); //all players have to agree to start playing again
+        break;
+    case Phase::search:
+        voteThreshold = ceil(users.length()*1.0/2); //half of the players have to agree to skip the current target
+        break;
+    case Phase::countdown:
+        voteThreshold = users.length(); //all players have to agree to skip the remaining countdown
+        break;
+    case Phase::presentation:
+        voteThreshold = users.length();
+        break;
+    case Phase::freeplay:
+        voteThreshold = users.length(); //all players have to agree to start playing again
+        break;
+    }
+    qDebug()<<"Updated voting numbers"<<(int)currentPhase<<voteThreshold<<users.length();
+    emit updateActionButtonText();
 }

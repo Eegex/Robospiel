@@ -28,8 +28,7 @@ public:
 	explicit MainWidget(QWidget *parent = nullptr);
 	void setMenuBar(QMenuBar * bar);
 	void enableActionBtn(bool boolean);
-    void setSkipButtonText(int current, int all);
-    void setActionBtnText(const QString &text);
+    void updateActionBtnText();
 	void handleActionButtonRelease();
 private slots:
 	void updateTimer(int remaining);
@@ -72,6 +71,8 @@ private:
 	QAction * aNewAll = nullptr;
 	QAction * aNewTarget = nullptr;
 	QAction * aGoToIdle = nullptr;
+
+    QMap<GameControll::Phase, QString> actionBtnTexts;
 
 	void initializeView(Board *b, QVector<KeyMapping *> *m);
 	void connectView(BoardView * view);
