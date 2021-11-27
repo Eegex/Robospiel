@@ -33,6 +33,7 @@ NetworkModel::NetworkModel()
 	playerActionStrings.insert(PlayerAction::newUser,"newUser");
 	playerActionStrings.insert(PlayerAction::changedUsername,"changedUsername");
 	playerActionStrings.insert(PlayerAction::changedUserColor,"changedUserColor");
+    playerActionStrings.insert(PlayerAction::changedUserColor,"changedTimerTime");
 	playerActionStrings.insert(PlayerAction::userLeft,"userLeft");
 	playerActionStrings.insert(PlayerAction::update,"update");
 	playerActionStrings.insert(PlayerAction::completeUpdate,"completeUpdate");

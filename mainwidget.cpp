@@ -251,7 +251,6 @@ void MainWidget::updateGuide(const QString & txt)
 void MainWidget::enableMenus(bool boolean)
 {
 	mNewStuff->setEnabled(boolean);
-	aSettings->setEnabled(boolean);
 	aEditBoard->setEnabled(boolean);
 }
 

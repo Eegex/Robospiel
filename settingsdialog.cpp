@@ -7,6 +7,7 @@ SettingsDialog::SettingsDialog(QVector<KeyMapping*> mapping, QDialog * parent) :
 	QWidget * generalWidget = new QWidget(this);
 	generalWidget->setLayout(flGeneral);
 	flGeneral->addRow(tr("User name"),leUsername);
+    flGeneral->addRow(tr("Timer time (when you're server)"),leTimerTime);
 	flGeneral->addRow(tr("User color"),pbUserColor);
 	flGeneral->addRow(tr("Background color"),pbBackgroundColor);
 	flGeneral->addRow(tr("Wall color"),pbWallColor);
@@ -28,6 +29,9 @@ SettingsDialog::SettingsDialog(QVector<KeyMapping*> mapping, QDialog * parent) :
 	connect(leUsername,&QLineEdit::editingFinished,this,[&](){
 		settings.insert(username,leUsername->text());
 	});
+    connect(leTimerTime,&QSpinBox::editingFinished,this,[&](){
+        settings.insert(timertime,leTimerTime->value());
+    });
 	connect(pbUserColor,&QPushButton::clicked,this,[&](){
 		settings.insert(usercolor,QColorDialog::getColor(getUsercolor()).name()); pbUserColor->setStyleSheet("background-color:" + settings.value(usercolor).toString());
 	});
@@ -43,6 +47,10 @@ SettingsDialog::SettingsDialog(QVector<KeyMapping*> mapping, QDialog * parent) :
 QString SettingsDialog::getUsername() const
 {
 	return settings.value(username).toString();
+}
+int SettingsDialog::getTimerTime() const
+{
+    return settings.value(timertime).toInt();
 }
 
 QColor SettingsDialog::getUsercolor() const
@@ -132,6 +140,10 @@ void SettingsDialog::load()
 	{
 		settings.insert(username,tr("New User"));
 	}
+    if(!settings.contains(timertime))
+    {
+        settings.insert(timertime,30);
+    }
 	if(!settings.contains(usercolor))
 	{
 		settings.insert(usercolor,"#000000");
@@ -164,6 +176,10 @@ void SettingsDialog::load()
 	keyMappings = new KeyMappingView(mapping, this);
 	twTabs->addTab(keyMappings,tr("Key mappings"));
 	leUsername->setText(getUsername());
+    leTimerTime->setMinimum(1);
+    leTimerTime->setMaximum(99);
+    leTimerTime->setSingleStep(5);
+    leTimerTime->setValue(getTimerTime());
 	pbUserColor->setStyleSheet("background-color:" + settings.value(usercolor).toString());
 	pbBackgroundColor->setStyleSheet("background-color:" + settings.value(background).toString());
 	pbWallColor->setStyleSheet("background-color:" + settings.value(wallcolor).toString());
@@ -207,9 +223,23 @@ void SettingsDialog::save()
 	emit colorsChanged();
 	emit newMapping(keyMappings->getMapping());
 	emit usernameChanged(settings.value(username).toString());
+    emit timertimeChanged(settings.value(timertime).toInt());
 	emit usercolorChanged(QColor(settings.value(usercolor).toString()));
 	if(isVisible())
 	{
 		close();
 	}
+
+
+}
+
+void SettingsDialog::enableTimerChange(bool boolean){
+    leTimerTime->setDisabled(!boolean);
+
+}
+
+void SettingsDialog::giveServerTimerTimeToEveryone(){
+//     emit timertimeChanged(settings.value(timertime).toString().toInt());
+
+
 }

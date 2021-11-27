@@ -15,6 +15,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QCheckBox>
+#include <QSpinBox>
 #include "keymapping.h"
 #include "keymappingview.h"
 
@@ -24,6 +25,7 @@ class SettingsDialog : public QDialog
 public:
 	explicit SettingsDialog(QVector<KeyMapping *> mapping, QDialog *parent = nullptr);
 	QString getUsername() const;
+    int getTimerTime() const;
 	QColor getUsercolor() const;
 	QColor getBackground() const;
 	QColor getWallcolor() const;
@@ -32,14 +34,17 @@ public:
 	bool getShowTopBidding() const;
 
 	QColor getPlayerColorLow() const;
-	QColor getPlayerColorHigh() const;
+    QColor getPlayerColorHigh() const;
+    void giveServerTimerTimeToEveryone();
+    void enableTimerChange(bool boolean);
 public slots:
 	void load();
 	void save();
 
 private:
 	QVBoxLayout * lay = new QVBoxLayout(this);
-	QLineEdit * leUsername = new QLineEdit(this);
+    QLineEdit * leUsername = new QLineEdit(this);
+    QSpinBox * leTimerTime = new QSpinBox(this);
 	QPushButton * pbUserColor = new QPushButton(this);
 	QPushButton * pbBackgroundColor = new QPushButton(this);
 	QPushButton * pbWallColor = new QPushButton(this);
@@ -53,6 +58,7 @@ private:
 	KeyMappingView * keyMappings = nullptr;
 	QJsonObject settings;
 	const QString username = "un";
+    const QString timertime = "tt";
 	const QString usercolor = "sc";
 	const QString background = "bc";
 	const QString wallcolor = "wc";
@@ -65,6 +71,7 @@ signals:
 	void newMapping(QVector<KeyMapping*> mapping);
 	void colorsChanged();
 	void usernameChanged(QString name);
+    void timertimeChanged(int time);
 	void usercolorChanged(QColor color);
 
 private slots:

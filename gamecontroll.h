@@ -76,6 +76,7 @@ public:
     void decideIfUserCanPlayFree(QUuid userId);
     bool localUserIsActiveUser();
     void updateVoteNumbers();
+    void setPhase(GameControll::Phase phase);
 public slots:
 	static void startNetworkDebugger();
 	void calculateWinner();
