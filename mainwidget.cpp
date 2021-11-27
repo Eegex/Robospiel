@@ -206,6 +206,7 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	});
 	connect(&GameControll::getInstance(), &GameControll::enableMenus, this, &MainWidget::enableMenus);
 	connect(&GameControll::getInstance(), &GameControll::enableActionBtn, this, &MainWidget::enableActionBtn);
+    connect(&GameControll::getInstance(), &GameControll::enableIdleBtn, this, &MainWidget::enableIdle);
 	connect(sbWidth, SIGNAL(valueChanged(int)), this, SLOT(updatePlayerMaximum(int)));
 	connect(sbHeight, SIGNAL(valueChanged(int)), this, SLOT(updatePlayerMaximum(int)));
 	connectView(view);
@@ -252,6 +253,10 @@ void MainWidget::enableMenus(bool boolean)
 {
 	mNewStuff->setEnabled(boolean);
 	aEditBoard->setEnabled(boolean);
+}
+
+void MainWidget::enableIdle(bool boolean){
+    aGoToIdle->setEnabled(boolean);
 }
 
 void MainWidget::focusBoard()

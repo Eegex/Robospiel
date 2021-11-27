@@ -28,8 +28,9 @@ public:
 	explicit MainWidget(QWidget *parent = nullptr);
 	void setMenuBar(QMenuBar * bar);
 	void enableActionBtn(bool boolean);
+    void enableIdle(bool boolean);
     void updateActionBtnText();
-	void handleActionButtonRelease();
+    void handleActionButtonRelease();
 private slots:
 	void updateTimer(int remaining);
 	void editBoard();

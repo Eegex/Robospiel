@@ -131,6 +131,7 @@ signals:
 	void updateGuide(const QString & txt);
 	void enableMenus(bool boolean);
     void enableActionBtn(bool boolean);
+    void enableIdleBtn(bool boolean);
     void newBoard(Board* b);
     void updateActionButtonText();
 	void focusBoard();

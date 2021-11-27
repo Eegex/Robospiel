@@ -99,7 +99,7 @@ void GameControll::adaptFromJSON(QJsonObject json)
     //    instance.switchPhase(static_cast<Phase>(phase));
 
     instance.setPhase(static_cast<Phase>(phase));
-//    instance.currentPhase=static_cast<Phase>(json.value("currentPhase").toInt());
+    //    instance.currentPhase=static_cast<Phase>(json.value("currentPhase").toInt());
     setBoard(Board::fromBinary(json.value("board").toString()));
     instance.setActiveUserID(QUuid::fromString(json.value("activeUserID").toString()));
     instance.searchTime = json.value("searchTime").toInt();
@@ -937,6 +937,7 @@ void GameControll::setPhase(GameControll::Phase phase){
         voteCounter=0;
         updateVoteNumbers();
         showGuide({tr("boooring")+ "[]",tr("i am not creative")+ "[2000]" + tr("at all")+ "[2000]" + tr("fuck you") + "[]", tr("We are in idle now!")+ "[]", tr("Lets do some idling!")+ "[]", tr("Okay, so you aren't capable of dealing with a real mode, are you?")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Too dumb for a real game!")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Idle again? Are we ever going to PLAY?")+ "[2000]" +tr("We are in idle.")+ "[]"});
+        emit enableIdleBtn(false);
         emit enableMenus(true);
         instance.hasSkipped = 0;
         settings->enableTimerChange(true);
@@ -952,6 +953,7 @@ void GameControll::setPhase(GameControll::Phase phase){
 
         instance.leaderboard->setBiddingFocus();
         showGuide({tr("Start bidding")+ "[]",tr("Let's go! Bid!")+ "[]", tr("You can bid now!")+ "[]",  tr("Lets do some bidding!")+ "[]", tr("I bet you wont find anything! But you can try to...")+ "[2000]" +tr("Make your biddings!")+ "[]", tr("Make your biddings! Well if you find anything...")+ "[]"});
+        emit enableIdleBtn(false);
         emit enableMenus(false);
         instance.hasSkipped = 0;
 
@@ -971,6 +973,7 @@ void GameControll::setPhase(GameControll::Phase phase){
         //        timeLeft = searchTime; //60
         //        emit time(timeLeft);
         //        countdown.start();
+        emit enableIdleBtn(false);
         emit enableMenus(false);
         instance.hasSkipped = 0;
         settings->enableTimerChange(false);
@@ -988,6 +991,7 @@ void GameControll::setPhase(GameControll::Phase phase){
 
         //Set Player to player with minimum bid, aka first player after being sorted
         //emit biddingDone();
+        emit enableIdleBtn(false);
         emit enableMenus(false);
         instance.hasSkipped = 0;
         emit focusBoard();
@@ -1013,6 +1017,7 @@ void GameControll::setPhase(GameControll::Phase phase){
 
         showGuide({tr("Freeplay")+ "[2000]"+ tr("time to show off")+ "[]"});
         emit enableMenus(false);
+        emit enableIdleBtn(true);
         instance.hasSkipped = 0;
         emit focusBoard();
         emit enableActionBtn(true); // TODO: does this make sense here?
@@ -1043,6 +1048,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
             //            settings->enableTimerChange(true);
             return true;
         }
+        break;
     }
     case Phase::search:
     {
