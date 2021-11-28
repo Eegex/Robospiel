@@ -94,11 +94,9 @@ void GameControll::adaptFromJSON(QJsonObject json)
 
 
     // hack to reuse the switchPhase function
-    int phase = json.value("currentPhase").toInt();
     //    instance.currentPhase=static_cast<Phase>(std::max(phase - 1,0));
     //    instance.switchPhase(static_cast<Phase>(phase));
 
-    instance.setPhase(static_cast<Phase>(phase));
     //    instance.currentPhase=static_cast<Phase>(json.value("currentPhase").toInt());
     setBoard(Board::fromBinary(json.value("board").toString()));
     instance.setActiveUserID(QUuid::fromString(json.value("activeUserID").toString()));
@@ -123,6 +121,11 @@ void GameControll::adaptFromJSON(QJsonObject json)
         instance.users.append(user);
         instance.leaderboard->addUser(user);
     }
+
+    // This should stay down here in order to ensure we have the users before we set the phase to "presentation" (there we need the name of the active user)
+
+    int phase = json.value("currentPhase").toInt();
+    instance.setPhase(static_cast<Phase>(phase));
 
     switch(json.value("actionWhenAnimationEndedAsInt").toInt())
     {
@@ -518,7 +521,7 @@ void GameControll::triggerActionWithData(PlayerAction action, QJsonObject data)
         return;
     }
     if(action == PlayerAction::changedTimerTime && instance.currentPhase == Phase::countdown){
-        return; //TODO: Ich will verhindern dass jmd im countdown die Zeit ändert, eig kann das aber sowieso nicht passieren, oder?
+        return;
     }
     emit instance.actionTriggeredWithData(action, data);
 }
@@ -925,7 +928,7 @@ void GameControll::nextTarget()
     }
 }
 
-void GameControll::setPhase(GameControll::Phase phase){
+void GameControll::setPhase(GameControll::Phase phase){ //TODO: once it turns out the phases word like this (with switchPhase) please delete all the commented sections and move "currentPhase = phase;" and "updateVoteNumbers();" before the switch-case
 
     switch(phase)
     {
@@ -934,7 +937,7 @@ void GameControll::setPhase(GameControll::Phase phase){
 
 
         currentPhase = phase;
-        voteCounter=0;
+        //voteCounter=0;
         updateVoteNumbers();
         showGuide({tr("boooring")+ "[]",tr("i am not creative")+ "[2000]" + tr("at all")+ "[2000]" + tr("fuck you") + "[]", tr("We are in idle now!")+ "[]", tr("Lets do some idling!")+ "[]", tr("Okay, so you aren't capable of dealing with a real mode, are you?")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Too dumb for a real game!")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Idle again? Are we ever going to PLAY?")+ "[2000]" +tr("We are in idle.")+ "[]"});
         emit enableIdleBtn(false);
@@ -948,7 +951,7 @@ void GameControll::setPhase(GameControll::Phase phase){
     {
 
         currentPhase = phase;
-        voteCounter=0;
+        //voteCounter=0;
         updateVoteNumbers();
 
         instance.leaderboard->setBiddingFocus();
@@ -965,7 +968,7 @@ void GameControll::setPhase(GameControll::Phase phase){
 
         currentPhase = phase;
 
-        voteCounter=0;
+        //voteCounter=0;
         updateVoteNumbers();
 
         instance.leaderboard->setBiddingFocus();
@@ -986,16 +989,16 @@ void GameControll::setPhase(GameControll::Phase phase){
 
         currentPhase = phase;
 
-        voteCounter=0; //not used. Fill with different values to implement (voting to skip the presentation phase)
+        //voteCounter=0; //not used. Fill with different values to implement (voting to skip the presentation phase)
         updateVoteNumbers();
 
         //Set Player to player with minimum bid, aka first player after being sorted
-        //emit biddingDone();
+        emit biddingDone();
         emit enableIdleBtn(false);
         emit enableMenus(false);
         instance.hasSkipped = 0;
         emit focusBoard();
-        emit enableActionBtn(localUserIsActiveUser()); // TODO: does this make sense here?
+        emit enableActionBtn(localUserIsActiveUser());
         settings->enableTimerChange(true);
 
 
@@ -1012,7 +1015,7 @@ void GameControll::setPhase(GameControll::Phase phase){
         currentPhase = phase;
         letUserPlayFree(activeUserID);
 
-        voteCounter=0;
+        //voteCounter=0;
         updateVoteNumbers();
 
         showGuide({tr("Freeplay")+ "[2000]"+ tr("time to show off")+ "[]"});
@@ -1028,7 +1031,7 @@ void GameControll::setPhase(GameControll::Phase phase){
 
 }
 
-bool GameControll::switchPhase(GameControll::Phase phase)
+bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns out the phases word like this (with setPhase) please delete all the commented sections
 {
     qDebug() << "GameControll::switchPhase(GameControll::Phase " << static_cast<int>(phase) << ")";
     switch(phase)
@@ -1038,6 +1041,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
 
         if(currentPhase == Phase::freeplay || currentPhase == Phase::idle)
         {
+            voteCounter=0;
             setPhase(phase);
             //            currentPhase = phase;
             //            voteCounter=0;
@@ -1054,6 +1058,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
     {
         if(currentPhase == Phase::freeplay || currentPhase == Phase::idle || currentPhase == Phase::search)
         {
+            voteCounter=0;
             setPhase(phase);
             //            currentPhase = phase;
 
@@ -1076,6 +1081,7 @@ bool GameControll::switchPhase(GameControll::Phase phase)
             timeLeft = searchTime; //60
             emit time(timeLeft);
             countdown.start();
+            voteCounter=0;
             setPhase(phase);
             //            currentPhase = phase;
 
@@ -1099,7 +1105,8 @@ bool GameControll::switchPhase(GameControll::Phase phase)
     {
         if(currentPhase == Phase::countdown)
         {
-            emit biddingDone();
+            //emit biddingDone();
+            voteCounter=0;
             setPhase(phase);
             //            currentPhase = phase;
 
@@ -1388,4 +1395,8 @@ void GameControll::updateVoteNumbers()
     }
     qDebug()<<"Updated voting numbers"<<(int)currentPhase<<voteThreshold<<users.length();
     emit updateActionButtonText();
+    //TODO: There is one case where this function is called (because of a new user?) and the emit updateActionButtonText(); leads to the "GIVE UP" String in presentation being set enabled, though it shouldn't be. Checking this here is super ugly, but I don't know where else...
+    if(currentPhase == Phase::presentation && !localUserIsActiveUser()){
+        emit enableActionBtn(false);
+    }
 }

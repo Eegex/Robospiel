@@ -102,6 +102,8 @@ void MainWidget::updateActionBtnText()
     {
         text += "("+QString::number(GameControll::getVoteCounter())+"/"+QString::number(GameControll::getVoteThreshold())+")";
     } else {
+        //TODO: Es gibt einen case wo hier GIVE UP steht und es kein Vote gibt und man will einfach nicht, dass es hier enabled wird. Momentan wird sich da in updateVoteNumbers() drum gekümmert
+
         actionBtn->setEnabled(true);
     }
     actionBtn->setText(text);
