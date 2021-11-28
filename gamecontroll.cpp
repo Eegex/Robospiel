@@ -91,13 +91,6 @@ QJsonObject GameControll::toJSON() //TODO make sure the replaced Objects don't g
 
 void GameControll::adaptFromJSON(QJsonObject json)
 {
-
-
-    // hack to reuse the switchPhase function
-    //    instance.currentPhase=static_cast<Phase>(std::max(phase - 1,0));
-    //    instance.switchPhase(static_cast<Phase>(phase));
-
-    //    instance.currentPhase=static_cast<Phase>(json.value("currentPhase").toInt());
     setBoard(Board::fromBinary(json.value("board").toString()));
     instance.setActiveUserID(QUuid::fromString(json.value("activeUserID").toString()));
     instance.searchTime = json.value("searchTime").toInt();
@@ -934,22 +927,19 @@ void GameControll::setPhase(GameControll::Phase phase){ //TODO: once it turns ou
     {
     case Phase::idle:
     {
-
-
         currentPhase = phase;
         //voteCounter=0;
         updateVoteNumbers();
+
         showGuide({tr("boooring")+ "[]",tr("i am not creative")+ "[2000]" + tr("at all")+ "[2000]" + tr("fuck you") + "[]", tr("We are in idle now!")+ "[]", tr("Lets do some idling!")+ "[]", tr("Okay, so you aren't capable of dealing with a real mode, are you?")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Too dumb for a real game!")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Idle again? Are we ever going to PLAY?")+ "[2000]" +tr("We are in idle.")+ "[]"});
         emit enableIdleBtn(false);
         emit enableMenus(true);
         instance.hasSkipped = 0;
         settings->enableTimerChange(true);
         break;
-
     }
     case Phase::search:
     {
-
         currentPhase = phase;
         //voteCounter=0;
         updateVoteNumbers();
@@ -967,7 +957,6 @@ void GameControll::setPhase(GameControll::Phase phase){ //TODO: once it turns ou
     {
 
         currentPhase = phase;
-
         //voteCounter=0;
         updateVoteNumbers();
 
@@ -1000,14 +989,10 @@ void GameControll::setPhase(GameControll::Phase phase){ //TODO: once it turns ou
         emit focusBoard();
         emit enableActionBtn(localUserIsActiveUser());
         settings->enableTimerChange(true);
-
-
         break;
     }
     case Phase::freeplay:
     {
-
-
         /*TODO: Set user who just made a point as active user.
              Save the state that the game had right when the point was scored.*/
         board->saveCurrentPositionOfPlayers();
@@ -1024,7 +1009,6 @@ void GameControll::setPhase(GameControll::Phase phase){ //TODO: once it turns ou
         instance.hasSkipped = 0;
         emit focusBoard();
         emit enableActionBtn(true); // TODO: does this make sense here?
-
         break;
     }
     }
@@ -1130,7 +1114,6 @@ bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns 
         if(currentPhase == Phase::presentation)
         {
             setPhase(phase);
-
             //            /*TODO: Set user who just made a point as active user.
             //             Save the state that the game had right when the point was scored.*/
             //            board->saveCurrentPositionOfPlayers();
@@ -1146,7 +1129,6 @@ bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns 
             //            instance.hasSkipped = 0;
             //            emit focusBoard();
             //            emit enableActionBtn(true); // TODO: does this make sense here?
-
             return true;
         }
         break;
