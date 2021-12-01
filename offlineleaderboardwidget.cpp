@@ -37,8 +37,12 @@ unsigned int OfflineLeaderBoardWidget::getBiddingWidgetIndexByID(QUuid id){
  */
 void OfflineLeaderBoardWidget::updateLayout(){
 	qDebug()<<"Called UpdateLayout, number of Users is "<<numOfUsers<<", running in offline mode!";
-	for(unsigned int i = 0; i<numOfUsers; i++)
+    qDebug()<<"List of Users, starting from 0:";
+    for(unsigned int i = 0; i < numOfUsers; i++)
+        qDebug()<<users.at(i)->getUser()->getName();
+    for(unsigned int i = 0; i < numOfUsers; i++)
 	{
+        qDebug()<<"Adding user with name " << users.at(i)->getUser()->getName() << " at position " << i;
 		lay->addWidget(users.at(i), i, 0);
 	}
 	lay->addWidget(userCreationWidget, numOfUsers, 0);
@@ -100,9 +104,20 @@ void OfflineLeaderBoardWidget::updateBidding(QUuid id, int bidding)
 	{
 		if(ubw->getId() == id)
 		{
-			ubw->updateBidding(bidding);
+            //If User hasn't bid, show a different number, this prevents the thing from looking like garbage
+            if(ubw->getUser()->getHasBid())
+                ubw->updateBidding(bidding);
+            else
+                ubw->updateBidding(-1);
 		}
 	}
+}
+
+void OfflineLeaderBoardWidget::newRound(){
+    for(UserBiddingWidget* ubw : users)
+    {
+            ubw->updateBidding(0);
+    }
 }
 
 /*!
@@ -160,6 +175,11 @@ void OfflineLeaderBoardWidget::updateAllUsers()
 		updateColour(ubw->getUser()->getId(), ubw->getUser()->getColor());
 	}
 	QVector<UserBiddingWidget*> temp;
+    //This creates the sorted view that we want
+    qDebug()<<"Outputting things";
+    for(User* u : *GameControll::getInstance().getUsers())
+        qDebug()<<u->getName();
+
 	for(User* u : *GameControll::getInstance().getUsers())
 	{
 		for(UserBiddingWidget* ubw : users)
@@ -173,7 +193,7 @@ void OfflineLeaderBoardWidget::updateAllUsers()
 	qDebug()<<"Sorted Users!\n";
 	for(unsigned int i = 0; i<numOfUsers; i++)
 	{
-		qDebug()<<"Position: "<<i<<" "<<users[i]->getUser()->getName();
+        qDebug()<<"Position: "<<i<<" "<<temp[i]->getUser()->getName(); //Was users[i]
 	}
 	users = temp;
 	updateLayout();

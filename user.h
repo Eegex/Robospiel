@@ -11,7 +11,7 @@ class User : public QObject
 {
 	Q_OBJECT
 public:
-	static const int maxBid;
+    static const int maxBid;
 	User(QString name, QColor color, QObject *parent=nullptr);
 	~User();
 	QString getName() const;
@@ -37,7 +37,7 @@ private:
 	QString name;
 	QColor color;
 	QUuid id;
-	int bidding = maxBid;
+    int bidding = 0; //This was maxBid, is now 0 because of the offlineLeaderBoardWidget
 	int points = 0;
 	unsigned long timeStamp = 0;
 	bool hasBid = false;

@@ -14,6 +14,7 @@ SettingsDialog::SettingsDialog(QVector<KeyMapping*> mapping, QDialog * parent) :
 	flGeneral->addRow(tr("Player color start"),pbPlayerColorLow);
 	flGeneral->addRow(tr("Player color end"),pbPlayerColorHigh);
 	flGeneral->addRow(tr("Show top bidder on timer"),cbTopBidding);
+    flGeneral->addRow(tr("Fair Mode on"), cbFairMode);
 	pbUserColor->setStyleSheet("background-color:" + settings.value(usercolor).toString());
 	pbBackgroundColor->setStyleSheet("background-color:" + settings.value(background).toString());
 	pbWallColor->setStyleSheet("background-color:" + settings.value(wallcolor).toString());
@@ -21,6 +22,7 @@ SettingsDialog::SettingsDialog(QVector<KeyMapping*> mapping, QDialog * parent) :
 	pbPlayerColorLow->setStyleSheet("background-color:" + settings.value(playercolorlow).toString());
 	pbPlayerColorHigh->setStyleSheet("background-color:" + settings.value(playercolorhigh).toString());
 	cbTopBidding->setChecked(getShowTopBidding());
+    cbFairMode->setChecked(getFairModeOn());
 	twTabs->addTab(generalWidget,tr("General"));
 	keyMappings = new KeyMappingView(mapping, this);
 	twTabs->addTab(keyMappings,tr("Key mappings"));
@@ -37,7 +39,8 @@ SettingsDialog::SettingsDialog(QVector<KeyMapping*> mapping, QDialog * parent) :
 	connect(pbPlayerColorLow,&QPushButton::clicked,this,[&](){ settings.insert(playercolorlow,QColorDialog::getColor(getPlayerColorLow()).name()); pbPlayerColorLow->setStyleSheet("background-color:" + settings.value(playercolorlow).toString()); });
 	connect(pbPlayerColorHigh,&QPushButton::clicked,this,[&](){ settings.insert(playercolorhigh,QColorDialog::getColor(getPlayerColorHigh()).name()); pbPlayerColorHigh->setStyleSheet("background-color:" + settings.value(playercolorhigh).toString()); });
 	connect(cbTopBidding,&QCheckBox::toggled,this,[&](){ settings.insert(topBidding,cbTopBidding->isChecked()); });
-	connect(pbSave,&QPushButton::clicked,this,&SettingsDialog::save);
+    connect(cbFairMode,&QCheckBox::toggled,this,[&](){ settings.insert(fairMode,cbFairMode->isChecked()); });
+    connect(pbSave,&QPushButton::clicked,this,&SettingsDialog::save);
 }
 
 QString SettingsDialog::getUsername() const
@@ -83,6 +86,11 @@ QVector<KeyMapping *> SettingsDialog::getMapping() const
 bool SettingsDialog::getShowTopBidding() const
 {
 	return settings.value(topBidding).toBool();
+}
+
+bool SettingsDialog::getFairModeOn() const
+{
+    return settings.value(fairMode).toBool();
 }
 
 /*!
@@ -160,6 +168,10 @@ void SettingsDialog::load()
 	{
 		settings.insert(topBidding,false);
 	}
+    if(!settings.contains(fairMode))
+    {
+        settings.insert(fairMode,true);
+    }
 	delete keyMappings;
 	keyMappings = new KeyMappingView(mapping, this);
 	twTabs->addTab(keyMappings,tr("Key mappings"));
@@ -171,6 +183,7 @@ void SettingsDialog::load()
 	pbPlayerColorLow->setStyleSheet("background-color:" + settings.value(playercolorlow).toString());
 	pbPlayerColorHigh->setStyleSheet("background-color:" + settings.value(playercolorhigh).toString());
 	cbTopBidding->setChecked(getShowTopBidding());
+    cbFairMode->setChecked(getFairModeOn());
 
 
 

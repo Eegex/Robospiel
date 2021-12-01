@@ -133,7 +133,7 @@ double PlayerWidget::length(QPoint vector)
  */
 void PlayerWidget::moveAnimated(QPoint point, QPoint target, double speed)
 {
-
+    qDebug()<<"Called Function MoveAnimated!!!!";
 	double distance;
 	if(animations.size() > 0)
 	{

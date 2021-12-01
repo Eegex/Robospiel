@@ -34,6 +34,7 @@ UserBiddingWidget::UserBiddingWidget(User * u, QWidget *parent) : QWidget(parent
 	});
 	lSpinBox->setMinimum(MIN_BID);
 	lSpinBox->setSingleStep(1);
+    qDebug()<<"In Creation of UserBiddingWidget, adding user with bidding " << user->getBidding();
 	lSpinBox->setValue(user->getBidding());
 	updateLayout();
 	qDebug()<<"In Creation of UserBiddingWidget, Name is: "<<labelName<<" points are "<<lSpinBox->value();

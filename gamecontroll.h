@@ -57,9 +57,6 @@ public:
 	static void initializeConnections();
 	static QVector<User*>* getUsers();
 	static void addUser(User *user);
-
-	static void sortBy(strategy strategy);
-
 	static functionPointer getActionWhenAnimationEnded();
 	static void setActionWhenAnimationEnded(functionPointer function);
 	static void addDefaultUsers();
@@ -67,6 +64,7 @@ public:
 	static void addTransmission(QJsonObject transmission);
 	static void disableAnnoyingSounds();
 	static User *getLocalUser();
+    void sortBy(strategy strategy);
     void resetAndNextTarget();
     void resetForNextUser();
     void handleUserGivingUp();

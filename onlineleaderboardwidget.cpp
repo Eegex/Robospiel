@@ -72,6 +72,10 @@ void OnlineLeaderboardWidget::btnPressed()
 	}
 }
 
+void OnlineLeaderboardWidget::newRound(){
+    //TODO
+}
+
 /*!
  * \brief OnlineLeaderboardWidget::updateBidding ist super
  * \param id

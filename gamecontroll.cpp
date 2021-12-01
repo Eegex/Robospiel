@@ -620,6 +620,7 @@ void GameControll::sortBy(strategy strategy)
 		{
 			//qDebug()<<"AdditionIndex: "<<additionIndex;
 			minBid = User::maxBid;
+            minTimeStamp = QDateTime::currentDateTime().toMSecsSinceEpoch();
 			for(User* user : qAsConst(instance.users))
 			{
 				//qDebug()<<"SortByBidding: USER "<<user->getName()<<" with bidding "<<user->getBidding()<<"and timestamp: "<<user->getTimeStamp();
@@ -628,7 +629,7 @@ void GameControll::sortBy(strategy strategy)
 					//qDebug()<<"User: "<<user->getName()<<" has lower bid than the current Minimum";
 					if(user->getBidding() == minBid)
 					{
-						if(user->getTimeStamp() <= minTimeStamp) //check the timestamp
+                        if(user->getTimeStamp() <= minTimeStamp) //check the timestamp
 						{
 							//qDebug()<<"Bidding is the same, timestamp is earlier, user is "<<user->getName();
 							minUser = user; //Set the Widget to add to the new list to the user
@@ -652,11 +653,11 @@ void GameControll::sortBy(strategy strategy)
 			sortedUsers.append(minUser);
 		}
 		instance.users = sortedUsers;
-		/*for(int i = 0; i<instance.users.size(); i++)
+        for(int i = 0; i<instance.users.size(); i++)
 		{
-			qDebug()<<"SortedUsers: User "<<i<<": "<<instance.users[i]->getName()<<" with points: "<<instance.users[i]->getPoints()<<" and timestamp "<<instance.users[i]->getTimeStamp();
+            qDebug()<<"SortedUsers (Bidding): User "<<i<<": "<<instance.users[i]->getName()<<" with points: "<<instance.users[i]->getPoints()<<" and timestamp "<<instance.users[i]->getTimeStamp();
 			//isActive[i] = true;
-		}*/
+        }
 	}
 	if(strategy == points)
 	{
@@ -689,6 +690,18 @@ void GameControll::sortBy(strategy strategy)
 			//isActive[i] = true;
 		}
 	}
+
+    if(instance.getSettingsDialog()->getFairModeOn() && (Server::isActive() || Client::isActive())){
+        if(getLocalUser() == instance.users.at(0)){
+            QString path = QDir::currentPath();
+            player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/count.mp3"));
+            player->setVolume(50);
+            player->play();
+        }
+    } else {
+        player->stop();
+    }
+
 	instance.leaderboard->updateAllUsers();
 }
 
@@ -845,6 +858,7 @@ void GameControll::nextTarget()
 		for(User* u: qAsConst(users))
 		{
 			u->setBidding(User::maxBid);
+            leaderboard->newRound();
 		}
 		skipCounter = 0;
 		emit updateMoves(0);

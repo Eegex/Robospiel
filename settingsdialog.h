@@ -29,6 +29,7 @@ public:
 	QColor getWallcolor() const;
 	QColor getGridcolor() const;
 	QVector<KeyMapping *> getMapping() const;
+    bool getFairModeOn() const;
 	bool getShowTopBidding() const;
 
 	QColor getPlayerColorLow() const;
@@ -47,6 +48,7 @@ private:
 	QPushButton * pbPlayerColorLow = new QPushButton(this);
 	QPushButton * pbPlayerColorHigh = new QPushButton(this);
 	QCheckBox * cbTopBidding = new QCheckBox(this);
+    QCheckBox * cbFairMode = new QCheckBox(this);
 	QTabWidget * twTabs = new QTabWidget(this);
 	QPushButton * pbSave = new QPushButton(tr("Save"),this);
 	QFormLayout * flGeneral = new QFormLayout;
@@ -59,6 +61,7 @@ private:
 	const QString gridcolor = "gc";
 	const QString keymappings = "km";
 	const QString topBidding = "tb";
+    const QString fairMode = "fm";
 	const QString playercolorlow = "pcl";
 	const QString playercolorhigh = "pch";
 signals:

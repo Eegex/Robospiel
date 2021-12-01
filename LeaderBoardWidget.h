@@ -24,6 +24,7 @@ public slots:
 	virtual void updateBidding(QUuid id, int bidding) = 0;
 	virtual void updateName(QUuid id, QString name) = 0;
 	virtual void updateColour(QUuid id, QColor color) = 0;
+    virtual void newRound() = 0; //Reset Bidding fields for Offline Leaderboard
 	virtual void deactivateInput() = 0;
 	virtual void activateInput() = 0;
 	virtual void updateAllUsers() = 0; //Change List to reflect current game status

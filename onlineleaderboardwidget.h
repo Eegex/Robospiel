@@ -44,6 +44,7 @@ public slots:
 	// void setBidding(QUuid id, int bidding); // before
 	void updateBidding(QUuid id, int bidding);
 	// void updateName(QString newName); // before
+    void newRound(); //TODO
 	void updateName(QUuid id, QString name);
 	void updateColour(QUuid id, QColor color);
 	void deactivateInput();

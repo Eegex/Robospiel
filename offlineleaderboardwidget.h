@@ -42,6 +42,7 @@ public slots:
 	void updateName(QUuid id, QString name);
 	void updateColour(QUuid id, QColor colour);
 	void updateAllUsers();
+    void newRound();
 	void deactivateInput();
 	void activateInput();
 	void updateLayout();
