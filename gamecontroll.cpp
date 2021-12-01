@@ -1113,6 +1113,7 @@ bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns 
     {
         if(currentPhase == Phase::presentation)
         {
+            //TODO: muss hier voteCounter=0 rein?
             setPhase(phase);
             //            /*TODO: Set user who just made a point as active user.
             //             Save the state that the game had right when the point was scored.*/
