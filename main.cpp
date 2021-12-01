@@ -11,11 +11,11 @@
 
 int main(int argc, char *argv[])
 {
-    QDir saveOrdner(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation));
-    qDebug()<<saveOrdner;
+	QDir saveOrdner(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation));
+	qDebug()<<saveOrdner;
 	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 	QApplication a(argc, argv);
-//	a.setPalette(QPalette(QColor(255,255,255),QColor(10,10,10),QColor(40,40,40),QColor(0,0,0),QColor(30,30,30),QColor(255,90,0),QColor(QColor(20,20,20))));
+	//a.setPalette(QPalette(QColor(255,255,255),QColor(10,10,10),QColor(40,40,40),QColor(0,0,0),QColor(30,30,30),QColor(255,90,0),QColor(QColor(20,20,20))));
 	QFont defaultFont = a.font();
 	defaultFont.setPointSize(8);
 	a.setFont(defaultFont);

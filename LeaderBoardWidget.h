@@ -32,7 +32,7 @@ public slots:
 
 signals:
 	void biddingAccepted(QUuid userId, int bidding);
-    void userWasClicked(QUuid userId);
+	void userWasClicked(QUuid userId);
 };
 
 #endif // LEADERBOARDWIDGET_H

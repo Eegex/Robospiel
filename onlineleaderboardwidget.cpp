@@ -15,12 +15,22 @@ void OnlineLeaderboardWidget::initialize()
 	tableView->hide();
 	setOnlineWidget();
 	setLayout(lay);
-
+	biddingBox->setSelectAllOnFocus(true);
 	tableView->setModel(model);
+	connect(tableView, &QTableView::clicked,this,&OnlineLeaderboardWidget::userClicked);
 	biddingBox->setSpecialValueText(tr("No Bid"));
 	connect(bidBtn,&QPushButton::clicked, this, &OnlineLeaderboardWidget::btnPressed);
 	connect(biddingBox,&SpinBox::returnPressed, this,  &OnlineLeaderboardWidget::btnPressed);
 	//connect(this, &OnlineLeaderboardWidget::updateLayout, tableView, &QTableWidget::clearContents);
+}
+
+void OnlineLeaderboardWidget::userClicked(const QModelIndex & index)
+{
+	if(!index.column())
+	{
+		qDebug() << "Name clicked" << index;
+		emit userWasClicked(GameControll::getUsers()->at(index.row())->getId());
+	}
 }
 
 User * OnlineLeaderboardWidget::getLocalUser() const
@@ -61,14 +71,13 @@ void OnlineLeaderboardWidget::btnPressed()
 	{
 		biddingBox->setMaximum(userBidding = biddingBox->value());
 		bidBtn->setText(tr("Bid") + ":" + QString::number(userBidding));
-		biddingBox->setFocus();
-		biddingBox->selectAll();
-		qDebug() << "Player changed their bidding to: " << userBidding;
 		emit biddingAccepted(localUser->getId(), userBidding);
+		setBiddingFocus();
+		qDebug() << "Player changed their bidding to: " << userBidding;
 	}
 	else
 	{
-		qDebug()<<"Someone has tried to bid No Bid";
+		qDebug() << "Someone has tried to bid No Bid";
 	}
 }
 

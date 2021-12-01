@@ -65,11 +65,16 @@ public:
 	static void disableAnnoyingSounds();
 	static User *getLocalUser();
     void sortBy(strategy strategy);
+    static int getVoteCounter();
+    static int getVoteThreshold();
     void resetAndNextTarget();
     void resetForNextUser();
     void handleUserGivingUp();
-    void letUserPlayFree(QUuid userId);
+    void letUserPlayFree(const QUuid & userId);
     void decideIfUserCanPlayFree(QUuid userId);
+    bool localUserIsActiveUser();
+    void updateVoteNumbers();
+    void setPhase(GameControll::Phase phase);
 public slots:
 	static void startNetworkDebugger();
 	void calculateWinner();
@@ -78,7 +83,7 @@ public slots:
 	void nextTarget();
 	void remakeBoard();
 	QUuid getActiveUserID();
-	void setActiveUserID(QUuid id);
+	void setActiveUserID(const QUuid & id);
 
 
 private:
@@ -90,7 +95,7 @@ private:
 	QVector<GuideLine> guideList;
 	QVector<User*> users;
 	LeaderBoardWidget * leaderboard = nullptr;
-	Phase currentPhase = Phase::freeplay; //freeplay
+    Phase currentPhase = Phase::idle; //freeplay
 	SettingsDialog * settings = nullptr;
 	QVector<KeyMapping*> mapping;
 	Board * board = nullptr;
@@ -108,10 +113,11 @@ private:
 	int getUserIndexById(QUuid id);
 
 
-	bool localUserIsActiveUser();
+
 	bool hasSkipped = 0;
 	static void updateRandomGenerator(int seed);
-	int skipCounter = 0;
+    int voteCounter = 0;
+    int voteThreshold = 0;
 signals:
 	void actionTriggeredWithData(PlayerAction action, QJsonObject additionalData);
 	void actionTriggered(PlayerAction action);
@@ -123,9 +129,9 @@ signals:
 	void updateGuide(const QString & txt);
 	void enableMenus(bool boolean);
     void enableActionBtn(bool boolean);
-	void newBoard(Board* b);
-	void updateSkip(int current, int all);
-    void updateActionButtonText(const QString &text);
+    void enableIdleBtn(bool boolean);
+    void newBoard(Board* b);
+    void updateActionButtonText();
 	void focusBoard();
 	void updateMoves(int moves);
 

@@ -14,7 +14,7 @@ BoardView::BoardView(QWidget *parent) : QWidget(parent)
 
 /*!
  * \brief Sets and connects the given board and  sets the layout, pawns and goal up.
- * \param board The board to load
+ * \param newBoard The board to load
  */
 void BoardView::setBoard(Board * newBoard)
 {
@@ -163,6 +163,7 @@ PlayerWidget * BoardView::addPlayer(int i)
 	playerWidgets.append(newPlayer);
 	connect(newPlayer, &PlayerWidget::clicked,this, [&](int playerNumber)
 	{
+
 		emit activePlayerChanged(playerNumber);
 	});
 	connect(newPlayer, &PlayerWidget::reposition, this, [&](int playerNumber)
