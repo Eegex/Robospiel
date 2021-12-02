@@ -774,17 +774,17 @@ void GameControll::sortBy(strategy strategy)
 		}
 	}
 
-    if(instance.getSettingsDialog()->getFairModeOn()){ // && (Server::isActive() || Client::isActive())){
-        qDebug() << "Local User: " << getLocalUser()->getName() << " First User: " << instance.users.at(0)->getName();
-        if(getLocalUser() == instance.users.at(0)){
-            QString path = QDir::currentPath();
-            player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/count.mp3"));
-            player->setVolume(50);
-            player->play();
-        }
-    } else {
-        player->stop();
-    }
+	if(instance.getSettingsDialog()->getFairModeOn()){ // && (Server::isActive() || Client::isActive())){
+		qDebug() << "Local User: " << getLocalUser()->getName() << " First User: " << instance.users.at(0)->getName();
+		if(getLocalUser() == instance.users.at(0)){
+			QString path = QDir::currentPath();
+			player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/count.mp3"));
+			player->setVolume(50);
+			player->play();
+		}
+	} else {
+		player->stop();
+	}
 
 	instance.leaderboard->updateAllUsers();
 }
@@ -1201,8 +1201,6 @@ void GameControll::letUserPlayFree(const QUuid & userId)
 	qDebug() << "GameControll::letUserPlayFree(const QUuid & userId)";
 	if(currentPhase == Phase::freeplay)
 	{
-		// set user as active user.
-		setActiveUserID(userId);
 		triggerActionWithData(PlayerAction::changeActiveUser, {{"userId",userId.toString()}});
 		// reset the board to the state in the last search phase
 		board->revertToBeginning();
