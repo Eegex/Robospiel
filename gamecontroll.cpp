@@ -512,21 +512,42 @@ void GameControll::addTransmission(QJsonObject transmission)
 void GameControll::triggerActionWithData(PlayerAction action, QJsonObject data)
 {
 	qDebug() << "GameControll::triggerActionWithData(PlayerAction " << action << ", QJsonObject " << data << ")";
-	if(action == PlayerAction::playerSwitch && !((instance.currentPhase == Phase::presentation&&instance.localUserIsActiveUser()) || instance.currentPhase == Phase::freeplay)) //make sure you can only click players in the right phases
+	switch (action)
 	{
-		return;
+	case playerSwitch:
+	{
+		if(!((instance.currentPhase == Phase::presentation && instance.localUserIsActiveUser()) || instance.currentPhase == Phase::freeplay))
+		{
+			return;
+		}
+		break;
 	}
-	else if(action == PlayerAction::sendBidding && !(instance.currentPhase == Phase::search || instance.currentPhase == Phase::countdown))
+	case sendBidding:
 	{
-		return;
+		if(!(instance.currentPhase == Phase::search || instance.currentPhase == Phase::countdown))
+		{
+			return;
+		}
+		break;
 	}
-	else if(action == PlayerAction::changedTimerTime && instance.currentPhase == Phase::countdown)
+	case changeActiveUser:
 	{
-		return;
+		if(!instance.localUserIsActiveUser() || instance.activeUserID == QUuid(data.value("userId").toString()) || instance.currentPhase != Phase::freeplay)
+		{
+			return;
+		}
+		break;
 	}
-	else if(action == PlayerAction::changeActiveUser && !instance.localUserIsActiveUser())
+	case changedTimerTime:
 	{
-		return;
+		if(instance.currentPhase == Phase::countdown)
+		{
+			return;
+		}
+		break;
+	}
+	default:
+		break;
 	}
 	emit instance.actionTriggeredWithData(action, data);
 }
@@ -774,15 +795,19 @@ void GameControll::sortBy(strategy strategy)
 		}
 	}
 
-	if(instance.getSettingsDialog()->getFairModeOn()){ // && (Server::isActive() || Client::isActive())){
+	if(instance.getSettingsDialog()->getFairModeOn())
+	{ // && (Server::isActive() || Client::isActive())){
 		qDebug() << "Local User: " << getLocalUser()->getName() << " First User: " << instance.users.at(0)->getName();
-		if(getLocalUser() == instance.users.at(0)){
+		if(getLocalUser() == instance.users.at(0))
+		{
 			QString path = QDir::currentPath();
 			player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/count.mp3"));
 			player->setVolume(50);
 			player->play();
 		}
-	} else {
+	}
+	else
+	{
 		player->stop();
 	}
 
@@ -901,9 +926,11 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
 	{
 		triggerActionWithData(PlayerAction::sendBidding, {{"userId",userId.toString()},{"bidding",bidding}});
 	});
-	connect(instance.leaderboard, &LeaderBoardWidget::userWasClicked, &GameControll::getInstance(), &GameControll::letUserPlayFree);
+	connect(instance.leaderboard, &LeaderBoardWidget::userWasClicked, &GameControll::getInstance(), [&](QUuid userId)
+	{
+		triggerActionWithData(PlayerAction::changeActiveUser, {{"userId",userId.toString()}});
+	});
 	instance.switchPhase(instance.currentPhase); //correct initializiation, can't happen earlier, because MainWidget has to be initialized first
-
 }
 
 const User * GameControll::getMinBid()
@@ -1178,21 +1205,6 @@ QVector<KeyMapping*> * GameControll::getMapping()
 		load();
 	}
 	return &instance.mapping;
-}
-
-void GameControll::decideIfUserCanPlayFree(QUuid userId){
-	//TODO: connect this function to this userIds name being clicked in leaderboardwidget
-	//check if it was clicked by the active user (Maybe this needs to be done in the widget)
-
-	//check that this user is not the active user
-	if(activeUserID != userId)
-	{
-		//check that we are in the right phase
-		if(currentPhase==Phase::freeplay)
-		{
-			triggerActionWithData(PlayerAction::changeActiveUser, {{"userId",userId.toString()}});
-		}
-	}
 }
 
 void GameControll::letUserPlayFree(const QUuid & userId)

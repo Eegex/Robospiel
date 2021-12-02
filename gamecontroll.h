@@ -64,17 +64,17 @@ public:
 	static void addTransmission(QJsonObject transmission);
 	static void disableAnnoyingSounds();
 	static User *getLocalUser();
-    void sortBy(strategy strategy);
-    static int getVoteCounter();
-    static int getVoteThreshold();
-    void resetAndNextTarget();
-    void resetForNextUser();
-    void handleUserGivingUp();
-    void letUserPlayFree(const QUuid & userId);
-    void decideIfUserCanPlayFree(QUuid userId);
-    bool localUserIsActiveUser();
-    void updateVoteNumbers();
-    void setPhase(GameControll::Phase phase);
+	void sortBy(strategy strategy);
+	static int getVoteCounter();
+	static int getVoteThreshold();
+	void resetAndNextTarget();
+	void resetForNextUser();
+	void handleUserGivingUp();
+	void letUserPlayFree(const QUuid & userId);
+	void decideIfUserCanPlayFree(QUuid userId);
+	bool localUserIsActiveUser();
+	void updateVoteNumbers();
+	void setPhase(GameControll::Phase phase);
 public slots:
 	static void startNetworkDebugger();
 	void calculateWinner();
@@ -95,7 +95,7 @@ private:
 	QVector<GuideLine> guideList;
 	QVector<User*> users;
 	LeaderBoardWidget * leaderboard = nullptr;
-    Phase currentPhase = Phase::idle; //freeplay
+	Phase currentPhase = Phase::idle; //freeplay
 	SettingsDialog * settings = nullptr;
 	QVector<KeyMapping*> mapping;
 	Board * board = nullptr;
@@ -116,8 +116,8 @@ private:
 
 	bool hasSkipped = 0;
 	static void updateRandomGenerator(int seed);
-    int voteCounter = 0;
-    int voteThreshold = 0;
+	int voteCounter = 0;
+	int voteThreshold = 0;
 signals:
 	void actionTriggeredWithData(PlayerAction action, QJsonObject additionalData);
 	void actionTriggered(PlayerAction action);
@@ -128,10 +128,10 @@ signals:
 	void newOnlineUser(User* user);
 	void updateGuide(const QString & txt);
 	void enableMenus(bool boolean);
-    void enableActionBtn(bool boolean);
-    void enableIdleBtn(bool boolean);
-    void newBoard(Board* b);
-    void updateActionButtonText();
+	void enableActionBtn(bool boolean);
+	void enableIdleBtn(bool boolean);
+	void newBoard(Board* b);
+	void updateActionButtonText();
 	void focusBoard();
 	void updateMoves(int moves);
 
