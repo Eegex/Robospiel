@@ -320,7 +320,7 @@ void GameControll::exeQTAction(QJsonObject data)
 	}
 	case changeActiveUser:
 	{
-		setActiveUserID(data.value("userId").toString());
+		letUserPlayFree(data.value("userId").toString());
 		break;
 	}
 	case completeUpdate:
@@ -1185,15 +1185,14 @@ void GameControll::decideIfUserCanPlayFree(QUuid userId){
 	//check if it was clicked by the active user (Maybe this needs to be done in the widget)
 
 	//check that this user is not the active user
-	if(activeUserID != userId){
+	if(activeUserID != userId)
+	{
 		//check that we are in the right phase
-		if(currentPhase==Phase::freeplay){
-			letUserPlayFree(userId);
+		if(currentPhase==Phase::freeplay)
+		{
+			triggerActionWithData(PlayerAction::changeActiveUser, {{"userId",userId.toString()}});
 		}
 	}
-
-
-
 }
 
 void GameControll::letUserPlayFree(const QUuid & userId)
@@ -1201,7 +1200,8 @@ void GameControll::letUserPlayFree(const QUuid & userId)
 	qDebug() << "GameControll::letUserPlayFree(const QUuid & userId)";
 	if(currentPhase == Phase::freeplay)
 	{
-		triggerActionWithData(PlayerAction::changeActiveUser, {{"userId",userId.toString()}});
+		// set user as active user.
+		setActiveUserID(userId);
 		// reset the board to the state in the last search phase
 		board->revertToBeginning();
 		// Set the steps counter to 0
