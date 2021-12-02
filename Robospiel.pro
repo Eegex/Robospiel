@@ -87,4 +87,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
+	Sounds/count.mp3 \
 	Sounds/rick.mp3
