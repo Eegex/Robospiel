@@ -7,16 +7,16 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	glMain = new QGridLayout(this);
 	//GameControll::setLeaderboard(userView->getLeaderboard());
 
-    actionBtnTexts.insert(GameControll::Phase::idle, tr("Start"));
-    actionBtnTexts.insert(GameControll::Phase::search, tr("Next"));
-    actionBtnTexts.insert(GameControll::Phase::countdown, tr("Skip"));
-    actionBtnTexts.insert(GameControll::Phase::presentation, tr("Give Up"));
-    actionBtnTexts.insert(GameControll::Phase::freeplay, tr("Next"));
-    actionBtn = new QPushButton(this);
-    updateActionBtnText();
-    actionBtn->setEnabled(false); // should only be enabled as soon as we have the leaderboard and we can actually start the game
+	actionBtnTexts.insert(GameControll::Phase::idle, tr("Start"));
+	actionBtnTexts.insert(GameControll::Phase::search, tr("Next"));
+	actionBtnTexts.insert(GameControll::Phase::countdown, tr("Skip"));
+	actionBtnTexts.insert(GameControll::Phase::presentation, tr("Give Up"));
+	actionBtnTexts.insert(GameControll::Phase::freeplay, tr("Next"));
+	actionBtn = new QPushButton(this);
+	updateActionBtnText();
+	actionBtn->setEnabled(false); // should only be enabled as soon as we have the leaderboard and we can actually start the game
 
-    userView = new UserView(actionBtn, this);
+	userView = new UserView(actionBtn, this);
 
 	initializeView(GameControll::setBoard(new Board(16, 16, 5)), GameControll::getMapping());
 	//connect(view, &BoardView::lastAnimationAfterGoalHitEnded, game, &GameControll::calculateWinner);
@@ -57,32 +57,32 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	});
 	glMain->addWidget(userView,4,1,Qt::AlignCenter);
 	connect(&GameControll::getInstance(),&GameControll::time,this,&MainWidget::updateTimer);
-    connect(&GameControll::getInstance(),&GameControll::updateActionButtonText,this,&MainWidget::updateActionBtnText);
+	connect(&GameControll::getInstance(),&GameControll::updateActionButtonText,this,&MainWidget::updateActionBtnText);
 }
 
 void MainWidget::handleActionButtonRelease()
 {
-    //Phase -> ButtonDisablen?,aktion,erwartete Anzahl
-    //idle -> ja, Spiel starten, alle
-    //search -> ja, skipTarget, Hälfte
-    //countdown -> ja, skipTimer, alle
-    //presentation ->nein, give up, nur man selber
-    //freeplay -> ja, Freeplay abbrechen um weiterspielen zu können, Hälfte || alle, weil es dann weitergeht und alle mitmachen sollten? Andererseits können Leute dann nciht kurzzeitig aussezten
+	//Phase -> ButtonDisablen?,aktion,erwartete Anzahl
+	//idle -> ja, Spiel starten, alle
+	//search -> ja, skipTarget, Hälfte
+	//countdown -> ja, skipTimer, alle
+	//presentation ->nein, give up, nur man selber
+	//freeplay -> ja, Freeplay abbrechen um weiterspielen zu können, Hälfte || alle, weil es dann weitergeht und alle mitmachen sollten? Andererseits können Leute dann nciht kurzzeitig aussezten
 
-    switch (GameControll::getCurrentPhase()) {
+	switch (GameControll::getCurrentPhase()) {
 	case GameControll::Phase::countdown:{
 		GameControll::disableAnnoyingSounds();
-        actionBtn->setDisabled(true);
-        GameControll::triggerAction(PlayerAction::vote);
+		actionBtn->setDisabled(true);
+		GameControll::triggerAction(PlayerAction::vote);
 		break;
 	}
 	case GameControll::Phase::search: {}
 	case GameControll::Phase::idle: {}
 	case GameControll::Phase::freeplay: {
-        //GameControll::triggerAction(PlayerAction::nextTarget); leave this in the code, for the case that Nora needs it
-        //disables vote before skipping the goal
-        actionBtn->setDisabled(true);
-        GameControll::triggerAction(PlayerAction::vote);
+		//GameControll::triggerAction(PlayerAction::nextTarget); leave this in the code, for the case that Nora needs it
+		//disables vote before skipping the goal
+		actionBtn->setDisabled(true);
+		GameControll::triggerAction(PlayerAction::vote);
 		break;
 	}
 	case GameControll::Phase::presentation: {
@@ -97,16 +97,18 @@ void MainWidget::handleActionButtonRelease()
 
 void MainWidget::updateActionBtnText()
 {
-    QString text = actionBtnTexts.value(GameControll::getCurrentPhase());
-    if(GameControll::getVoteCounter()>0)
-    {
-        text += "("+QString::number(GameControll::getVoteCounter())+"/"+QString::number(GameControll::getVoteThreshold())+")";
-    } else {
-        //TODO: Es gibt einen case wo hier GIVE UP steht und es kein Vote gibt und man will einfach nicht, dass es hier enabled wird. Momentan wird sich da in updateVoteNumbers() drum gekümmert
+	QString text = actionBtnTexts.value(GameControll::getCurrentPhase());
+	if(GameControll::getVoteCounter()>0)
+	{
+		text += "("+QString::number(GameControll::getVoteCounter())+"/"+QString::number(GameControll::getVoteThreshold())+")";
+	}
+	else
+	{
+		//TODO: Es gibt einen case wo hier GIVE UP steht und es kein Vote gibt und man will einfach nicht, dass es hier enabled wird. Momentan wird sich da in updateVoteNumbers() drum gekümmert
 
-        actionBtn->setEnabled(true);
-    }
-    actionBtn->setText(text);
+		actionBtn->setEnabled(true);
+	}
+	actionBtn->setText(text);
 }
 
 void MainWidget::setMenuBar(QMenuBar * bar)
@@ -208,7 +210,7 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	});
 	connect(&GameControll::getInstance(), &GameControll::enableMenus, this, &MainWidget::enableMenus);
 	connect(&GameControll::getInstance(), &GameControll::enableActionBtn, this, &MainWidget::enableActionBtn);
-    connect(&GameControll::getInstance(), &GameControll::enableIdleBtn, this, &MainWidget::enableIdle);
+	connect(&GameControll::getInstance(), &GameControll::enableIdleBtn, this, &MainWidget::enableIdle);
 	connect(sbWidth, SIGNAL(valueChanged(int)), this, SLOT(updatePlayerMaximum(int)));
 	connect(sbHeight, SIGNAL(valueChanged(int)), this, SLOT(updatePlayerMaximum(int)));
 	connectView(view);
@@ -258,7 +260,7 @@ void MainWidget::enableMenus(bool boolean)
 }
 
 void MainWidget::enableIdle(bool boolean){
-    aGoToIdle->setEnabled(boolean);
+	aGoToIdle->setEnabled(boolean);
 }
 
 void MainWidget::focusBoard()

@@ -23,7 +23,7 @@ NetworkModel::NetworkModel()
 	playerActionStrings.insert(PlayerAction::enterBidding,"enterBidding");
 	playerActionStrings.insert(PlayerAction::sendBidding,"sendBidding");
 	playerActionStrings.insert(PlayerAction::clearBidding,"clearBidding");
-    playerActionStrings.insert(PlayerAction::vote,"vote");
+	playerActionStrings.insert(PlayerAction::vote,"vote");
 	playerActionStrings.insert(PlayerAction::other,"other");
 	playerActionStrings.insert(PlayerAction::giveUp,"giveUp");
 	playerActionStrings.insert(PlayerAction::revert,"revert");
@@ -33,7 +33,7 @@ NetworkModel::NetworkModel()
 	playerActionStrings.insert(PlayerAction::newUser,"newUser");
 	playerActionStrings.insert(PlayerAction::changedUsername,"changedUsername");
 	playerActionStrings.insert(PlayerAction::changedUserColor,"changedUserColor");
-    playerActionStrings.insert(PlayerAction::changedUserColor,"changedTimerTime");
+	playerActionStrings.insert(PlayerAction::changedUserColor,"changedTimerTime");
 	playerActionStrings.insert(PlayerAction::userLeft,"userLeft");
 	playerActionStrings.insert(PlayerAction::update,"update");
 	playerActionStrings.insert(PlayerAction::completeUpdate,"completeUpdate");
@@ -45,6 +45,8 @@ NetworkModel::NetworkModel()
 	playerActionStrings.insert(PlayerAction::intern,"intern");
 	playerActionStrings.insert(PlayerAction::syncRandomGenerators,"syncRandomGenerators");
 	playerActionStrings.insert(PlayerAction::registerClient,"registerClient");
+	playerActionStrings.insert(PlayerAction::changeActiveUser,"changeActiveUser");
+	playerActionStrings.insert(PlayerAction::changedTimerTime,"changedTimerTime");
 	columns << "Zeitpunkt" << "Sender" << "Nutzer" << "PlayerAction" << "Daten";
 }
 
