@@ -1265,7 +1265,7 @@ void GameControll::showGuide(const QStringList & texts)
 			duration = 1000;
 		}
 
-        instance.guideList.append({QStringList({tr("idle"),tr("search"), tr("countdown"), tr("presentation"),tr("freeplay")}).at(static_cast<int>(instance.currentPhase))+": "+ list.at(i),duration});
+        instance.guideList.append({phaseAsString(instance.currentPhase)+": "+ list.at(i),duration});
 	}
 	instance.nextGuide();
 }
@@ -1358,4 +1358,24 @@ void GameControll::updateVoteNumbers()
 	if(currentPhase == Phase::presentation && !localUserIsActiveUser()){
 		emit enableActionBtn(false);
 	}
+
+
+
+
+}
+
+
+bool GameControll::localUserIsServer(){
+    return Server::isActive();
+
+}
+
+bool GameControll::localUserIsClient(){
+    return Client::isActive();
+
+}
+
+
+QString GameControll::phaseAsString(Phase phase){
+    return QStringList({tr("idle"),tr("search"), tr("countdown"), tr("presentation"),tr("freeplay")}).at(static_cast<int>(phase));
 }
