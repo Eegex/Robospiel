@@ -809,19 +809,16 @@ void GameControll::sortBy(strategy strategy)
 		}
 	}
 
-    if(instance.getSettingsDialog()->getFairModeOn() && (Server::isActive() || Client::isActive()))
-	{ // && (Server::isActive() || Client::isActive())){
+    if(instance.getSettingsDialog()->getFairModeOn() && (Server::isActive() || Client::isActive())){
 		qDebug() << "Local User: " << getLocalUser()->getName() << " First User: " << instance.users.at(0)->getName();
-		if(getLocalUser() == instance.users.at(0))
-		{
+        if(getLocalUser()->getId() == instance.users.at(0)->getId()){
 			QString path = QDir::currentPath();
 			player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/count.mp3"));
 			player->setVolume(50);
 			player->play();
 		}
 	}
-	else
-	{
+	else{
 		player->stop();
 	}
 
