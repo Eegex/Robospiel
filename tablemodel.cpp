@@ -64,6 +64,10 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
 					return GameControll::getUsers()->at(index.row())->getColor();
 				}
 			}
+			else if(role == Qt::TextAlignmentRole)
+			{
+				return Qt::AlignCenter;
+			}
 		}
 	}
 	return QVariant();
@@ -99,7 +103,7 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
  */
 Qt::ItemFlags TableModel::flags(const QModelIndex /*&index*/) const
 {
-	return Qt::ItemIsSelectable|Qt::ItemIsEnabled;
+	return Qt::ItemIsEnabled;
 }
 
 /*!

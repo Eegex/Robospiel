@@ -1,6 +1,7 @@
 #include "onlineleaderboardwidget.h"
 #include <QDebug>
 #include <QBrush>
+#include <QHeaderView>
 
 OnlineLeaderboardWidget::OnlineLeaderboardWidget()
 {
@@ -17,7 +18,11 @@ void OnlineLeaderboardWidget::initialize()
 	setLayout(lay);
 	biddingBox->setSelectAllOnFocus(true);
 	tableView->setModel(model);
-	connect(tableView, &QTableView::clicked,this,&OnlineLeaderboardWidget::userClicked);
+	delegate = new LeaderboardDelegate({tableView->horizontalHeader()->sectionSize(0),tableView->verticalHeader()->sectionSize(0)},this);
+	connect(tableView->horizontalHeader(),&QHeaderView::sectionResized,delegate,&LeaderboardDelegate::updateSizeHint);
+	tableView->setItemDelegate(delegate);
+	connect(tableView, &QTableView::entered,delegate,&LeaderboardDelegate::userHovered);
+	connect(tableView, &QTableView::clicked,delegate,&LeaderboardDelegate::userClicked);
 	biddingBox->setSpecialValueText(tr("No Bid"));
 	connect(bidBtn,&QPushButton::clicked, this, &OnlineLeaderboardWidget::btnPressed);
 	connect(biddingBox,&SpinBox::returnPressed, this,  &OnlineLeaderboardWidget::btnPressed);
@@ -82,7 +87,7 @@ void OnlineLeaderboardWidget::btnPressed()
 }
 
 void OnlineLeaderboardWidget::newRound(){
-    //TODO
+	//TODO
 }
 
 /*!
@@ -218,4 +223,13 @@ void OnlineLeaderboardWidget::setBiddingFocus()
 void OnlineLeaderboardWidget::updateAllUsers()
 {
 	model->updateUsers();
+}
+
+void OnlineLeaderboardWidget::setFreeplayButtonsVisible(bool visible)
+{
+	if(delegate)
+	{
+		delegate->setButtonVisible(visible);
+	}
+	tableView->update();
 }

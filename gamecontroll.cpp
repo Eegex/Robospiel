@@ -974,8 +974,8 @@ void GameControll::nextTarget()
 	}
 }
 
-void GameControll::setPhase(GameControll::Phase phase){ //TODO: once it turns out the phases word like this (with switchPhase) please delete all the commented sections and move "currentPhase = phase;" and "updateVoteNumbers();" before the switch-case
-
+void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out the phases word like this (with switchPhase) please delete all the commented sections and move "currentPhase = phase;" and "updateVoteNumbers();" before the switch-case
+{
 	switch(phase)
 	{
 	case Phase::idle:
@@ -984,6 +984,7 @@ void GameControll::setPhase(GameControll::Phase phase){ //TODO: once it turns ou
 		//voteCounter=0;
 		updateVoteNumbers();
 
+		instance.leaderboard->setFreeplayButtonsVisible(false);
 		showGuide({tr("boooring")+ "[]",tr("i am not creative")+ "[2000]" + tr("at all")+ "[2000]" + tr("fuck you") + "[]", tr("We are in idle now!")+ "[]", tr("Lets do some idling!")+ "[]", tr("Okay, so you aren't capable of dealing with a real mode, are you?")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Too dumb for a real game!")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Idle again? Are we ever going to PLAY?")+ "[2000]" +tr("We are in idle.")+ "[]"});
 		emit enableIdleBtn(false);
 		emit enableMenus(true);
@@ -997,6 +998,7 @@ void GameControll::setPhase(GameControll::Phase phase){ //TODO: once it turns ou
 		//voteCounter=0;
 		updateVoteNumbers();
 
+		instance.leaderboard->setFreeplayButtonsVisible(false);
 		instance.leaderboard->setBiddingFocus();
 		showGuide({tr("Start bidding")+ "[]",tr("Let's go! Bid!")+ "[]", tr("You can bid now!")+ "[]",  tr("Lets do some bidding!")+ "[]", tr("I bet you wont find anything! But you can try to...")+ "[2000]" +tr("Make your biddings!")+ "[]", tr("Make your biddings! Well if you find anything...")+ "[]"});
 		emit enableIdleBtn(false);
@@ -1055,7 +1057,7 @@ void GameControll::setPhase(GameControll::Phase phase){ //TODO: once it turns ou
 
 		//voteCounter=0;
 		updateVoteNumbers();
-
+		instance.leaderboard->setFreeplayButtonsVisible(true);
 		showGuide({tr("Freeplay")+ "[2000]"+ tr("time to show off")+ "[]"});
 		emit enableMenus(false);
 		emit enableIdleBtn(true);
@@ -1065,7 +1067,6 @@ void GameControll::setPhase(GameControll::Phase phase){ //TODO: once it turns ou
 		break;
 	}
 	}
-
 }
 
 bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns out the phases word like this (with setPhase) please delete all the commented sections

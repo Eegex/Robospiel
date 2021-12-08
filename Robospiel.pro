@@ -24,6 +24,7 @@ SOURCES += \
     keyinput.cpp \
     keymapping.cpp \
     keymappingview.cpp \
+    leaderboarddelegate.cpp \
     main.cpp \
     mainwidget.cpp \
     mainwindow.cpp \
@@ -59,6 +60,7 @@ HEADERS += \
     keyinput.h \
     keymapping.h \
     keymappingview.h \
+    leaderboarddelegate.h \
     mainwidget.h \
     mainwindow.h \
     networkdebugger.h \

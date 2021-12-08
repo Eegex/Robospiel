@@ -24,7 +24,7 @@ Board::Board(int width, int height, int playerNumber, QObject *parent) : Board(p
 		qDebug()<< "Board contructor was called with too many players!";
 	}
 	makeNewBoard(width, height, playerNumber);
-    //saveCurrentPositionOfPlayers();
+	//saveCurrentPositionOfPlayers();
 	startNewRound();
 }
 
@@ -39,7 +39,7 @@ void Board::makeNewBoard(int width, int height, int playerNumber)
 	makeNewWalls(width, height);
 	makeNewPlayers(playerNumber);
 	makeNewGoal();
-    //emit boardChanged();
+	//emit boardChanged();
 }
 
 /*!
@@ -54,7 +54,7 @@ void Board::makeNewPlayers(int playerNumber)
 		Tile * t = getRandomUnoccupiedTile();
 		t->setPlayer(i);
 		players.append(t);
-        emit playerMoved(i,(goal == t && seeker == activePlayer) ? moves : -1);
+		emit playerMoved(i,(goal == t && seeker == activePlayer) ? moves : -1);
 	}
 }
 
@@ -81,7 +81,7 @@ void Board::makeNewSeeker(bool random)
 		seeker = (seeker+1)%players.length();
 	}
 	activePlayer = seeker;
-    //emit boardChanged();
+	//emit boardChanged();
 
 }
 
@@ -117,7 +117,7 @@ void Board::makeNewWalls(int width, int height)
 	}
 	placeOuterWalls();
 	placeInnerWalls();
-    //emit boardChanged();
+	//emit boardChanged();
 }
 
 QString Board::toBinary()
@@ -271,6 +271,7 @@ void Board::setPlayerOnTile(int player, Tile* tile)
 	tile->setPlayer(player);
 	players[player] = tile;
 }
+
 /*!
  * \brief Board::startNewRound is responsible for setting everything up for a new round.
  * It makes a new seeker and goal and resets history and moves.
@@ -292,7 +293,6 @@ void Board::startNewRound()
  * \param p - coordinates of the tile (column of tile starting at 0, row of tile starting at 0)
  * \return pointer to the tile
  */
-
 Tile* Board::getTile(const QPoint p)
 {
 	if(p.x() < getSize().width() && p.y() < getSize().height() && p.x()>= 0 && p.y()>= 0)
@@ -308,7 +308,6 @@ Tile* Board::getTile(const QPoint p)
  * \param y - row of tile starting at 0
  * \return pointer to the tile
  */
-
 Tile* Board::getTile(int x, int y)
 {
 	return getTile({x,y});
@@ -318,7 +317,6 @@ Tile* Board::getTile(int x, int y)
  * \brief Board::getSize
  * \return the size of the board as (width, height)
  */
-
 QSize Board::getSize()
 {
 	return QSize(tiles.first().size(),tiles.size());
@@ -328,7 +326,6 @@ QSize Board::getSize()
  * \brief Board::getRandomTile
  * \return pointer to a random tile from the board
  */
-
 Tile* Board::getRandomTile()
 {
 
@@ -340,7 +337,6 @@ Tile* Board::getRandomTile()
  * \brief Board::getRandomUnoccupiedTile
  * \return a tile that has no player nor goal currently placed on it
  */
-
 Tile* Board::getRandomUnoccupiedTile()
 {
 	bool tileIsValid = false;
@@ -826,7 +822,7 @@ void Board::changeActivePlayer(int playerNumber, bool isRevert)
 		history.append(h);
 	}
 	activePlayer = playerNumber;
-    //emit boardChanged();
+	//emit boardChanged();
 }
 
 /*!
@@ -885,7 +881,7 @@ void Board::setSavedStateToCurrent()
 		}
 		playersAfterGoalHit.clear();
 	}
-    //emit boardChanged(); //no idea if that is necessary...
+	//emit boardChanged(); //no idea if that is necessary...
 }
 
 int Board::addPlayer(Tile * t)
@@ -904,7 +900,7 @@ void Board::updateColors(QColor b, QColor w, QColor g, QColor p1, QColor p2)
 	playerLow = p1;
 	playerHigh = p2;
 	emit paintPlayers();
-    //emit boardChanged();
+	//emit boardChanged();
 }
 
 /*!

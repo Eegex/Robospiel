@@ -7,13 +7,14 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QUuid>
-#include "spinbox.h"
 #include <QTableView>
+#include "spinbox.h"
 #include "Direction.h"
 #include "LeaderBoardWidget.h"
 #include "user.h"
 #include "gamecontroll.h"
 #include "tablemodel.h"
+#include "leaderboarddelegate.h"
 
 /*!
  * \brief The OnlineLeaderboardWidget class ist auch super
@@ -39,18 +40,20 @@ private:
 	int userBidding = User::maxBid;
 	User * localUser = nullptr;
 	TableModel * model = new TableModel(this);
+	LeaderboardDelegate * delegate = nullptr;
 public slots:
 	void btnPressed();
 	// void setBidding(QUuid id, int bidding); // before
 	void updateBidding(QUuid id, int bidding);
 	// void updateName(QString newName); // before
-    void newRound(); //TODO
+	void newRound(); //TODO
 	void updateName(QUuid id, QString name);
 	void updateColour(QUuid id, QColor color);
 	void deactivateInput();
 	void updateAllUsers(); //TODO
 	void activateInput();
 	void setBiddingFocus();
+	void setFreeplayButtonsVisible(bool visible);
 signals:
 	void biddingChangedOnline(int userBidding); // before
 //	void biddingAccepted(QUuid userId, int bidding); // before: biddingChangedOnline

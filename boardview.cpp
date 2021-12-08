@@ -251,6 +251,10 @@ void BoardView::paintEvent(QPaintEvent * event)
 		}
 	}
 	painter.end();
+	for(PlayerWidget * widget:qAsConst(playerWidgets))
+	{
+		widget->update();
+	}
 	event->accept();
 }
 
