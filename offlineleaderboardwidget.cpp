@@ -88,6 +88,7 @@ void OfflineLeaderBoardWidget::addUser(User * newUser)
 		emit biddingAccepted(id, bid);
 	});
 	connect(newWidget->getUser(), &User::biddingChanged, this, &OfflineLeaderBoardWidget::updateBidding);
+    connect(newWidget->getUser(), &User::pointsChanged, this, &OfflineLeaderBoardWidget::updateAllUsers);
 	updateLayout();
 }
 

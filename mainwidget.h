@@ -54,6 +54,7 @@ private:
 	QAction * aNetworking = nullptr;
 	QAction * aEditBoard = nullptr;
 	QAction * aNextTarget = nullptr;
+    QAction * aResetPoints = nullptr;
 	QAction * aSettings = nullptr;
 	QAction * aDebugger = nullptr;
 	QMenu * mNewGame = nullptr;

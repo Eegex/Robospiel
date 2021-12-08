@@ -188,6 +188,7 @@ void OnlineLeaderboardWidget::addUser(User *u)
 			}
 		}
 	});
+    connect(u, &User::pointsChanged, this, [=]()->void{model->update();});
 	model->updateUsers();
 }
 

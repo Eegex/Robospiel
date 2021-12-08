@@ -22,7 +22,6 @@ public:
 	void setName(QString n);
 	void setColor(QColor c);
 	void setBidding(int b);
-	void addPoints(int p);
 	unsigned long getTimeStamp() const;
 	QJsonObject toJSON();
 	static User* fromJSON(QJsonObject json);
@@ -32,6 +31,7 @@ public:
 	bool operator <(const User & u) const;
 	bool getHasBid() const;
 
+    void resetPoints();
 private:
 	User(QObject *parent=nullptr);
 	QString name;

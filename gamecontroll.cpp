@@ -385,8 +385,6 @@ void GameControll::exeQTAction(QJsonObject data)
 			break;
 		case Phase::presentation:
 			break;
-
-
 		}
 		break;
 	}
@@ -438,6 +436,15 @@ void GameControll::exeQTAction(QJsonObject data)
 		searchTime = data.value("length").toInt();
 		break;
 	}
+    case resetPoints:
+    {
+        for(User* u : *(instance.getUsers()))
+        {
+            u->resetPoints();
+
+        }
+        break;
+    }
 	case giveUp:
 	{
 		GameControll::getInstance().handleUserGivingUp();
@@ -496,6 +503,9 @@ void GameControll::triggerAction(PlayerAction action)
         }
 		emit instance.actionTriggered(action);
 		return;
+    }
+    else if (action==PlayerAction::resetPoints) {
+        emit instance.actionTriggered(action);
     }
 	return;
 }
@@ -799,7 +809,7 @@ void GameControll::sortBy(strategy strategy)
 		}
 	}
 
-	if(instance.getSettingsDialog()->getFairModeOn())
+    if(instance.getSettingsDialog()->getFairModeOn() && (Server::isActive() || Client::isActive()))
 	{ // && (Server::isActive() || Client::isActive())){
 		qDebug() << "Local User: " << getLocalUser()->getName() << " First User: " << instance.users.at(0)->getName();
 		if(getLocalUser() == instance.users.at(0))
@@ -934,6 +944,7 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
 	{
 		triggerActionWithData(PlayerAction::changeActiveUser, {{"userId",userId.toString()}});
 	});
+
 	instance.switchPhase(instance.currentPhase); //correct initializiation, can't happen earlier, because MainWidget has to be initialized first
 }
 

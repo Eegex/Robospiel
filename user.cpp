@@ -87,6 +87,12 @@ void User::incrementPoints()
 	emit pointsChanged(id, points);
 }
 
+void User::resetPoints()
+{
+    points=0;
+    emit pointsChanged(id, points);
+}
+
 QString User::getName() const
 {
 	return name;
@@ -137,11 +143,6 @@ void User::setBidding(int b)
 	}
 	qDebug() << hasBid;
 	emit biddingChanged(id, b);
-}
-
-void User::addPoints(int p)
-{
-	points += p;
 }
 
 unsigned long User::getTimeStamp() const
