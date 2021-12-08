@@ -169,35 +169,54 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	QMenu *menu2 = new QMenu(tr("Next Target"),this);
 	aNextTarget = new QAction(tr("Next Target"),this);
 	menu2->addAction(aNextTarget);
+
+    QMenu *menu4 = new QMenu(tr("Reset points"),this);
+    aResetPoints = new QAction(tr("Reset points"),this);
+    menu4->addAction(aResetPoints);
+
 	QMenu *menu3 = new QMenu(tr("Settings"),this);
 	aSettings = new QAction(tr("Settings"),this);
-	connect(aSettings,&QAction::triggered,&GameControll::getInstance(),&GameControll::showSettings);
 	menu3->addAction(aSettings);
 	menu3->addAction(aGoToIdle);
+
+    QMenu *menu5 = new QMenu(tr("Debug"),this);
+    aDebugger = new QAction(tr("Debug"),this);
+    menu5->addAction(aDebugger);
 
 	bar->addMenu(mNewStuff);
 	bar->addMenu(menu1);
 	bar->addMenu(menu2);
 	bar->addMenu(menu3);
+    bar->addMenu(menu4);
+    bar->addMenu(menu5);
 #else
 	bar->addMenu(mNewStuff);
 	aEditBoard = new QAction(tr("Edit Board"),this);
-
 	bar->addAction(aEditBoard);
+
 	aNextTarget = new QAction(tr("Next Target"),this);
 	bar->addAction(aNextTarget);
+
+    aResetPoints = new QAction(tr("Reset points"),this);
+    bar->addAction(aResetPoints);
+
 	aSettings = new QAction(tr("Settings"),this);
-	connect(aSettings,&QAction::triggered,&GameControll::getInstance(),&GameControll::showSettings);
 	bar->addAction(aSettings);
 	bar->addAction(aGoToIdle);
 	aDebugger = new QAction(tr("Debug"),this);
 	bar->addAction(aDebugger);
-	connect(aDebugger,&QAction::triggered,&GameControll::getInstance(),&GameControll::startNetworkDebugger);
-	connect(aDebugger,&QAction::triggered,this,[&](){
-		aDebugger->setText("Clear Log");
-	});
+
+
 
 #endif
+    connect(aDebugger,&QAction::triggered,&GameControll::getInstance(),&GameControll::startNetworkDebugger);
+    connect(aDebugger,&QAction::triggered,this,[&](){
+        aDebugger->setText("Clear Log");
+    });
+    connect(aSettings,&QAction::triggered,&GameControll::getInstance(),&GameControll::showSettings);
+    connect(aResetPoints, &QAction::triggered, this, [=]()->void{
+        GameControll::getInstance().triggerAction(PlayerAction::resetPoints);
+    });
 	connect(aEditBoard,&QAction::triggered,this,[=]()->void{
 		GameControll::getInstance().triggerAction(PlayerAction::editBoard);
 		editBoard();

@@ -1,4 +1,5 @@
 #include <QJsonObject>
+#include <QStringList>
 #include <QUuid>
 #include "gamecontroll.h"
 #include "server.h"
@@ -384,8 +385,6 @@ void GameControll::exeQTAction(QJsonObject data)
 			break;
 		case Phase::presentation:
 			break;
-
-
 		}
 		break;
 	}
@@ -437,6 +436,15 @@ void GameControll::exeQTAction(QJsonObject data)
 		searchTime = data.value("length").toInt();
 		break;
 	}
+    case resetPoints:
+    {
+        for(User* u : *(instance.getUsers()))
+        {
+            u->resetPoints();
+
+        }
+        break;
+    }
 	case giveUp:
 	{
 		GameControll::getInstance().handleUserGivingUp();
@@ -490,9 +498,15 @@ void GameControll::triggerAction(PlayerAction action)
 	}
 	else if(action & PlayerAction::menuAction)
 	{
+        if(action == PlayerAction::setIdle && instance.currentPhase == Phase::search && !Server::isActive()){ //if any client manages to press idle even though they are in search (and it should be disabled) its caught here
+            return;
+        }
 		emit instance.actionTriggered(action);
 		return;
-	}
+    }
+    else if (action==PlayerAction::resetPoints) {
+        emit instance.actionTriggered(action);
+    }
 	return;
 }
 
@@ -795,19 +809,16 @@ void GameControll::sortBy(strategy strategy)
 		}
 	}
 
-	if(instance.getSettingsDialog()->getFairModeOn())
-	{ // && (Server::isActive() || Client::isActive())){
+    if(instance.getSettingsDialog()->getFairModeOn() && (Server::isActive() || Client::isActive())){
 		qDebug() << "Local User: " << getLocalUser()->getName() << " First User: " << instance.users.at(0)->getName();
-		if(getLocalUser() == instance.users.at(0))
-		{
+        if(getLocalUser()->getId() == instance.users.at(0)->getId()){
 			QString path = QDir::currentPath();
 			player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/count.mp3"));
 			player->setVolume(50);
 			player->play();
 		}
 	}
-	else
-	{
+	else{
 		player->stop();
 	}
 
@@ -930,6 +941,7 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
 	{
 		triggerActionWithData(PlayerAction::changeActiveUser, {{"userId",userId.toString()}});
 	});
+
 	instance.switchPhase(instance.currentPhase); //correct initializiation, can't happen earlier, because MainWidget has to be initialized first
 }
 
@@ -981,7 +993,6 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 	case Phase::idle:
 	{
 		currentPhase = phase;
-		//voteCounter=0;
 		updateVoteNumbers();
 
 		instance.leaderboard->setFreeplayButtonsVisible(false);
@@ -995,13 +1006,15 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 	case Phase::search:
 	{
 		currentPhase = phase;
-		//voteCounter=0;
 		updateVoteNumbers();
 
 		instance.leaderboard->setFreeplayButtonsVisible(false);
 		instance.leaderboard->setBiddingFocus();
 		showGuide({tr("Start bidding")+ "[]",tr("Let's go! Bid!")+ "[]", tr("You can bid now!")+ "[]",  tr("Lets do some bidding!")+ "[]", tr("I bet you wont find anything! But you can try to...")+ "[2000]" +tr("Make your biddings!")+ "[]", tr("Make your biddings! Well if you find anything...")+ "[]"});
-		emit enableIdleBtn(false);
+        emit enableIdleBtn(false);
+        if(Server::isActive()){
+            emit enableIdleBtn(true);
+        }
 		emit enableMenus(false);
 		instance.hasSkipped = 0;
 
@@ -1012,14 +1025,10 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 	{
 
 		currentPhase = phase;
-		//voteCounter=0;
 		updateVoteNumbers();
 
 		instance.leaderboard->setBiddingFocus();
 		showGuide({tr("Counting down")+ "[]", tr("Stressed yet? The Timer is running!")+ "[]", tr("You will never find anything in a minute!")+ "[]" });
-		//        timeLeft = searchTime; //60
-		//        emit time(timeLeft);
-		//        countdown.start();
 		emit enableIdleBtn(false);
 		emit enableMenus(false);
 		instance.hasSkipped = 0;
@@ -1054,8 +1063,6 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 
 		currentPhase = phase;
 		letUserPlayFree(activeUserID);
-
-		//voteCounter=0;
 		updateVoteNumbers();
 		instance.leaderboard->setFreeplayButtonsVisible(true);
 		showGuide({tr("Freeplay")+ "[2000]"+ tr("time to show off")+ "[]"});
@@ -1077,17 +1084,10 @@ bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns 
 	case Phase::idle:
 	{
 
-		if(currentPhase == Phase::freeplay || currentPhase == Phase::idle)
+        if(currentPhase == Phase::freeplay || currentPhase == Phase::idle || currentPhase == Phase::search) //I allow going to idle from search here, but this is only supposed to work when the server wants it, this should be managed in switchPhase be disabling the button for everyone else
 		{
 			voteCounter=0;
 			setPhase(phase);
-			//            currentPhase = phase;
-			//            voteCounter=0;
-			//            updateVoteNumbers();
-			//            showGuide({tr("boooring")+ "[]",tr("i am not creative")+ "[2000]" + tr("at all")+ "[2000]" + tr("fuck you") + "[]", tr("We are in idle now!")+ "[]", tr("Lets do some idling!")+ "[]", tr("Okay, so you aren't capable of dealing with a real mode, are you?")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Too dumb for a real game!")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Idle again? Are we ever going to PLAY?")+ "[2000]" +tr("We are in idle.")+ "[]"});
-			//            emit enableMenus(true);
-			//            instance.hasSkipped = 0;
-			//            settings->enableTimerChange(true);
 			return true;
 		}
 		break;
@@ -1098,16 +1098,6 @@ bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns 
 		{
 			voteCounter=0;
 			setPhase(phase);
-			//            currentPhase = phase;
-
-			//            voteCounter=0;
-			//            updateVoteNumbers();
-
-			//            instance.leaderboard->setBiddingFocus();
-			//            showGuide({tr("Start bidding")+ "[]",tr("Let's go! Bid!")+ "[]", tr("You can bid now!")+ "[]",  tr("Lets do some bidding!")+ "[]", tr("I bet you wont find anything! But you can try to...")+ "[2000]" +tr("Make your biddings!")+ "[]", tr("Make your biddings! Well if you find anything...")+ "[]"});
-			//            emit enableMenus(false);
-			//            instance.hasSkipped = 0;
-
 			return true;
 		}
 		break;
@@ -1121,20 +1111,6 @@ bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns 
 			countdown.start();
 			voteCounter=0;
 			setPhase(phase);
-			//            currentPhase = phase;
-
-			//            voteCounter=0;
-			//            updateVoteNumbers();
-
-			//            instance.leaderboard->setBiddingFocus();
-			//            showGuide({tr("Counting down")+ "[]", tr("Stressed yet? The Timer is running!")+ "[]", tr("You will never find anything in a minute!")+ "[]" });
-			//            timeLeft = searchTime; //60
-			//            emit time(timeLeft);
-			//            countdown.start();
-			//            emit enableMenus(false);
-			//            instance.hasSkipped = 0;
-			//            settings->enableTimerChange(false);
-
 			return true;
 		}
 		break;
@@ -1143,22 +1119,8 @@ bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns 
 	{
 		if(currentPhase == Phase::countdown)
 		{
-			//emit biddingDone();
 			voteCounter=0;
 			setPhase(phase);
-			//            currentPhase = phase;
-
-			//            voteCounter=0; //not used. Fill with different values to implement (voting to skip the presentation phase)
-			//            updateVoteNumbers();
-
-			//            //Set Player to player with minimum bid, aka first player after being sorted
-			//            emit biddingDone();
-			//            emit enableMenus(false);
-			//            instance.hasSkipped = 0;
-			//            emit focusBoard();
-			//            emit enableActionBtn(localUserIsActiveUser()); // TODO: does this make sense here?
-			//            settings->enableTimerChange(true);
-
 			return true;
 		}
 		break;
@@ -1169,21 +1131,6 @@ bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns 
 		{
 			//TODO: muss hier voteCounter=0 rein?
 			setPhase(phase);
-			//            /*TODO: Set user who just made a point as active user.
-			//             Save the state that the game had right when the point was scored.*/
-			//            board->saveCurrentPositionOfPlayers();
-
-			//            currentPhase = phase;
-			//            letUserPlayFree(activeUserID);
-
-			//            voteCounter=0;
-			//            updateVoteNumbers();
-
-			//            showGuide({tr("Freeplay")+ "[2000]"+ tr("time to show off")+ "[]"});
-			//            emit enableMenus(false);
-			//            instance.hasSkipped = 0;
-			//            emit focusBoard();
-			//            emit enableActionBtn(true); // TODO: does this make sense here?
 			return true;
 		}
 		break;
@@ -1326,7 +1273,8 @@ void GameControll::showGuide(const QStringList & texts)
 		{
 			duration = 1000;
 		}
-		instance.guideList.append({list.at(i),duration});
+
+        instance.guideList.append({phaseAsString(instance.currentPhase)+": "+ list.at(i),duration});
 	}
 	instance.nextGuide();
 }
@@ -1419,4 +1367,24 @@ void GameControll::updateVoteNumbers()
 	if(currentPhase == Phase::presentation && !localUserIsActiveUser()){
 		emit enableActionBtn(false);
 	}
+
+
+
+
+}
+
+
+bool GameControll::localUserIsServer(){
+    return Server::isActive();
+
+}
+
+bool GameControll::localUserIsClient(){
+    return Client::isActive();
+
+}
+
+
+QString GameControll::phaseAsString(Phase phase){
+    return QStringList({tr("idle"),tr("search"), tr("countdown"), tr("presentation"),tr("freeplay")}).at(static_cast<int>(phase));
 }

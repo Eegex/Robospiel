@@ -21,17 +21,6 @@ UserBiddingWidget::UserBiddingWidget(User * u, QWidget *parent) : QWidget(parent
 	userLayout->addWidget(pointsName, 0, 3); //Far Right (AfD)
 	setLayout(userLayout);
 	connect(accept,&QPushButton::clicked,this,&UserBiddingWidget::btnPressed); //When player has accepted bid, disable the button
-	connect(user, &User::biddingChanged, this, [&](QUuid id, int bid)
-	{
-		if(id == user->getId())
-		{
-			updateBidding(bid);
-		}
-	});
-	connect(user, &User::biddingChanged, this, [&](QUuid, int)
-	{
-		updateLayout();
-	});
 	lSpinBox->setMinimum(MIN_BID);
 	lSpinBox->setSingleStep(1);
     qDebug()<<"In Creation of UserBiddingWidget, adding user with bidding " << user->getBidding();
