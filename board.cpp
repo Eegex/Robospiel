@@ -82,7 +82,6 @@ void Board::makeNewSeeker(bool random)
 	}
 	activePlayer = seeker;
 	//emit boardChanged();
-
 }
 
 /*!

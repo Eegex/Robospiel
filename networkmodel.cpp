@@ -40,6 +40,7 @@ NetworkModel::NetworkModel()
 	playerActionStrings.insert(PlayerAction::boardUpdate,"boardUpdate");
 	playerActionStrings.insert(PlayerAction::menuAction,"menuAction");
 	playerActionStrings.insert(PlayerAction::editBoard,"editBoard");
+	playerActionStrings.insert(PlayerAction::blockBoard,"blockBoard");
 	playerActionStrings.insert(PlayerAction::nextTarget,"nextTarget");
 	playerActionStrings.insert(PlayerAction::setIdle,"setIdle");
 	playerActionStrings.insert(PlayerAction::intern,"intern");

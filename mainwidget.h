@@ -28,9 +28,9 @@ public:
 	explicit MainWidget(QWidget *parent = nullptr);
 	void setMenuBar(QMenuBar * bar);
 	void enableActionBtn(bool boolean);
-    void enableIdle(bool boolean);
-    void updateActionBtnText();
-    void handleActionButtonRelease();
+	void enableIdle(bool boolean);
+	void updateActionBtnText();
+	void handleActionButtonRelease();
 private slots:
 	void updateTimer(int remaining);
 	void editBoard();
@@ -38,6 +38,7 @@ private slots:
 	void createBoard();
 	void updateGuide(const QString & txt);
 	void enableMenus(bool boolean);
+	void enableBoard(bool enabled);
 	void focusBoard();
 
 private:
@@ -54,7 +55,7 @@ private:
 	QAction * aNetworking = nullptr;
 	QAction * aEditBoard = nullptr;
 	QAction * aNextTarget = nullptr;
-    QAction * aResetPoints = nullptr;
+	QAction * aResetPoints = nullptr;
 	QAction * aSettings = nullptr;
 	QAction * aDebugger = nullptr;
 	QMenu * mNewGame = nullptr;
@@ -74,7 +75,7 @@ private:
 	QAction * aNewTarget = nullptr;
 	QAction * aGoToIdle = nullptr;
 
-    QMap<GameControll::Phase, QString> actionBtnTexts;
+	QMap<GameControll::Phase, QString> actionBtnTexts;
 
 	void initializeView(Board *b, QVector<KeyMapping *> *m);
 	void connectView(BoardView * view);

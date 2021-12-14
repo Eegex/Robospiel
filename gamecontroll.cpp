@@ -19,10 +19,6 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 {
 	countdown.setSingleShot(false);
 	countdown.setInterval(1s);
-	connect(&countdown,&QTimer::timeout,this,&GameControll::updateTimer);
-	connect(this, &GameControll::actionTriggeredWithData, this, &GameControll::sendToServerWithData);
-	connect(this, &GameControll::actionTriggered, this, &GameControll::sendToServer);
-	connect(&guideTimer,&QTimer::timeout,this,&GameControll::nextGuide);
 	r = new QRandomGenerator(QTime::currentTime().msecsSinceStartOfDay());
 	player = new QMediaPlayer;
 
@@ -36,6 +32,10 @@ void GameControll::initializeConnections()
 {
 	connect(&Server::getInstance(), &Server::actionReceived, &GameControll::getInstance(), &GameControll::exeQTAction);
 	connect(&Client::getInstance(), &Client::actionReceived, &GameControll::getInstance(), &GameControll::exeQTAction);
+	connect(&instance.countdown,&QTimer::timeout, &instance,&GameControll::updateTimer);
+	connect(&instance, &GameControll::actionTriggeredWithData, &instance, &GameControll::sendToServerWithData);
+	connect(&instance, &GameControll::actionTriggered, &instance, &GameControll::sendToServer);
+	connect(&instance.guideTimer,&QTimer::timeout, &instance,&GameControll::nextGuide);
 }
 
 void GameControll::startNetworkDebugger()
@@ -329,9 +329,15 @@ void GameControll::exeQTAction(QJsonObject data)
 		adaptFromJSON(data);
 		break;
 	}
+	case blockBoard:
+	{
+		emit setBoardEnabled(false);
+		break;
+	}
 	case editBoard:
 	{
-		//disableBoard();//TODO
+		setBoard(Board::fromBinary(data.value("board").toString()));
+		emit setBoardEnabled(true);
 		break;
 	}
 	case setIdle:
@@ -436,15 +442,15 @@ void GameControll::exeQTAction(QJsonObject data)
 		searchTime = data.value("length").toInt();
 		break;
 	}
-    case resetPoints:
-    {
-        for(User* u : *(instance.getUsers()))
-        {
-            u->resetPoints();
+	case resetPoints:
+	{
+		for(User* u : *(instance.getUsers()))
+		{
+			u->resetPoints();
 
-        }
-        break;
-    }
+		}
+		break;
+	}
 	case giveUp:
 	{
 		GameControll::getInstance().handleUserGivingUp();
@@ -498,15 +504,15 @@ void GameControll::triggerAction(PlayerAction action)
 	}
 	else if(action & PlayerAction::menuAction)
 	{
-        if(action == PlayerAction::setIdle && instance.currentPhase == Phase::search && !Server::isActive()){ //if any client manages to press idle even though they are in search (and it should be disabled) its caught here
-            return;
-        }
+		if(action == PlayerAction::setIdle && instance.currentPhase == Phase::search && !Server::isActive()){ //if any client manages to press idle even though they are in search (and it should be disabled) its caught here
+			return;
+		}
 		emit instance.actionTriggered(action);
 		return;
-    }
-    else if (action==PlayerAction::resetPoints) {
-        emit instance.actionTriggered(action);
-    }
+	}
+	else if (action==PlayerAction::resetPoints) {
+		emit instance.actionTriggered(action);
+	}
 	return;
 }
 
@@ -723,7 +729,7 @@ void GameControll::sortBy(strategy strategy)
 {
 	QVector<User*> sortedUsers;
 	unsigned long minTimeStamp = QDateTime::currentMSecsSinceEpoch();
-	bool isActive[instance.users.size()];
+	QBitArray isActive(instance.users.size());
 	for(int i = 0; i<instance.users.size(); i++)
 	{
 		isActive[i] = 1; //Set all users to be active
@@ -738,7 +744,7 @@ void GameControll::sortBy(strategy strategy)
 		{
 			//qDebug()<<"AdditionIndex: "<<additionIndex;
 			minBid = User::maxBid;
-			minTimeStamp = QDateTime::currentDateTime().toMSecsSinceEpoch();
+			minTimeStamp = QDateTime::currentMSecsSinceEpoch();
 			for(User* user : qAsConst(instance.users))
 			{
 				//qDebug()<<"SortByBidding: USER "<<user->getName()<<" with bidding "<<user->getBidding()<<"and timestamp: "<<user->getTimeStamp();
@@ -809,9 +815,9 @@ void GameControll::sortBy(strategy strategy)
 		}
 	}
 
-    if(instance.getSettingsDialog()->getFairModeOn() && (Server::isActive() || Client::isActive())){
+	if(instance.getSettingsDialog()->getFairModeOn() && (Server::isActive() || Client::isActive())){
 		qDebug() << "Local User: " << getLocalUser()->getName() << " First User: " << instance.users.at(0)->getName();
-        if(getLocalUser()->getId() == instance.users.at(0)->getId()){
+		if(getLocalUser()->getId() == instance.users.at(0)->getId()){
 			QString path = QDir::currentPath();
 			player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/count.mp3"));
 			player->setVolume(50);
@@ -1011,10 +1017,10 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 		instance.leaderboard->setFreeplayButtonsVisible(false);
 		instance.leaderboard->setBiddingFocus();
 		showGuide({tr("Start bidding")+ "[]",tr("Let's go! Bid!")+ "[]", tr("You can bid now!")+ "[]",  tr("Lets do some bidding!")+ "[]", tr("I bet you wont find anything! But you can try to...")+ "[2000]" +tr("Make your biddings!")+ "[]", tr("Make your biddings! Well if you find anything...")+ "[]"});
-        emit enableIdleBtn(false);
-        if(Server::isActive()){
-            emit enableIdleBtn(true);
-        }
+		emit enableIdleBtn(false);
+		if(Server::isActive()){
+			emit enableIdleBtn(true);
+		}
 		emit enableMenus(false);
 		instance.hasSkipped = 0;
 
@@ -1084,7 +1090,7 @@ bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns 
 	case Phase::idle:
 	{
 
-        if(currentPhase == Phase::freeplay || currentPhase == Phase::idle || currentPhase == Phase::search) //I allow going to idle from search here, but this is only supposed to work when the server wants it, this should be managed in switchPhase be disabling the button for everyone else
+		if(currentPhase == Phase::freeplay || currentPhase == Phase::idle || currentPhase == Phase::search) //I allow going to idle from search here, but this is only supposed to work when the server wants it, this should be managed in switchPhase be disabling the button for everyone else
 		{
 			voteCounter=0;
 			setPhase(phase);
@@ -1274,7 +1280,7 @@ void GameControll::showGuide(const QStringList & texts)
 			duration = 1000;
 		}
 
-        instance.guideList.append({phaseAsString(instance.currentPhase)+": "+ list.at(i),duration});
+		instance.guideList.append({phaseAsString(instance.currentPhase)+": "+ list.at(i),duration});
 	}
 	instance.nextGuide();
 }
@@ -1375,16 +1381,16 @@ void GameControll::updateVoteNumbers()
 
 
 bool GameControll::localUserIsServer(){
-    return Server::isActive();
+	return Server::isActive();
 
 }
 
 bool GameControll::localUserIsClient(){
-    return Client::isActive();
+	return Client::isActive();
 
 }
 
 
 QString GameControll::phaseAsString(Phase phase){
-    return QStringList({tr("idle"),tr("search"), tr("countdown"), tr("presentation"),tr("freeplay")}).at(static_cast<int>(phase));
+	return QStringList({tr("idle"),tr("search"), tr("countdown"), tr("presentation"),tr("freeplay")}).at(static_cast<int>(phase));
 }

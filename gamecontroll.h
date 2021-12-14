@@ -74,10 +74,10 @@ public:
 	void decideIfUserCanPlayFree(QUuid userId);
 	bool localUserIsActiveUser();
 	void updateVoteNumbers();
-    void setPhase(GameControll::Phase phase);
-    bool localUserIsServer();
-    bool localUserIsClient();
-    static QString phaseAsString(Phase phase);
+	void setPhase(GameControll::Phase phase);
+	bool localUserIsServer();
+	bool localUserIsClient();
+	static QString phaseAsString(Phase phase);
 public slots:
 	static void startNetworkDebugger();
 	void calculateWinner();
@@ -137,6 +137,7 @@ signals:
 	void updateActionButtonText();
 	void focusBoard();
 	void updateMoves(int moves);
+	void setBoardEnabled(bool enabled);
 
 private slots:
 	void updateTimer();

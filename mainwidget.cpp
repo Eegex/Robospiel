@@ -42,7 +42,17 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	adjustSize();
 	glMain->addWidget(actionBtn,2,1,Qt::AlignCenter);
 	connect(actionBtn, &QPushButton::released, this, &MainWidget::handleActionButtonRelease);
-
+	connect(&GameControll::getInstance(), &GameControll::setBoardEnabled, this, [&](bool enabled)
+	{
+		if(edit)
+		{
+			edit->setEnabled(enabled);
+		}
+		else
+		{
+			view->setEnabled(enabled);
+		}
+	});
 	glMain->addWidget(dlSteps,3,1,Qt::AlignCenter);
 	connect(&GameControll::getInstance(),&GameControll::updateMoves,this,[&](int steps)
 	{
@@ -69,8 +79,10 @@ void MainWidget::handleActionButtonRelease()
 	//presentation ->nein, give up, nur man selber
 	//freeplay -> ja, Freeplay abbrechen um weiterspielen zu können, Hälfte || alle, weil es dann weitergeht und alle mitmachen sollten? Andererseits können Leute dann nciht kurzzeitig aussezten
 
-	switch (GameControll::getCurrentPhase()) {
-	case GameControll::Phase::countdown:{
+	switch (GameControll::getCurrentPhase())
+	{
+	case GameControll::Phase::countdown:
+	{
 		GameControll::disableAnnoyingSounds();
 		actionBtn->setDisabled(true);
 		GameControll::triggerAction(PlayerAction::vote);
@@ -78,17 +90,18 @@ void MainWidget::handleActionButtonRelease()
 	}
 	case GameControll::Phase::search: {}
 	case GameControll::Phase::idle: {}
-	case GameControll::Phase::freeplay: {
+	case GameControll::Phase::freeplay:
+	{
 		//GameControll::triggerAction(PlayerAction::nextTarget); leave this in the code, for the case that Nora needs it
 		//disables vote before skipping the goal
 		actionBtn->setDisabled(true);
 		GameControll::triggerAction(PlayerAction::vote);
 		break;
 	}
-	case GameControll::Phase::presentation: {
-
+	case GameControll::Phase::presentation:
+	{
 		GameControll::triggerAction(PlayerAction::giveUp);
-//        emit view->animationEnded();
+		//emit view->animationEnded();
 		break;
 	}
 	}
@@ -170,25 +183,25 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	aNextTarget = new QAction(tr("Next Target"),this);
 	menu2->addAction(aNextTarget);
 
-    QMenu *menu4 = new QMenu(tr("Reset points"),this);
-    aResetPoints = new QAction(tr("Reset points"),this);
-    menu4->addAction(aResetPoints);
+	QMenu *menu4 = new QMenu(tr("Reset points"),this);
+	aResetPoints = new QAction(tr("Reset points"),this);
+	menu4->addAction(aResetPoints);
 
 	QMenu *menu3 = new QMenu(tr("Settings"),this);
 	aSettings = new QAction(tr("Settings"),this);
 	menu3->addAction(aSettings);
 	menu3->addAction(aGoToIdle);
 
-    QMenu *menu5 = new QMenu(tr("Debug"),this);
-    aDebugger = new QAction(tr("Debug"),this);
-    menu5->addAction(aDebugger);
+	QMenu *menu5 = new QMenu(tr("Debug"),this);
+	aDebugger = new QAction(tr("Debug"),this);
+	menu5->addAction(aDebugger);
 
 	bar->addMenu(mNewStuff);
 	bar->addMenu(menu1);
 	bar->addMenu(menu2);
 	bar->addMenu(menu3);
-    bar->addMenu(menu4);
-    bar->addMenu(menu5);
+	bar->addMenu(menu4);
+	bar->addMenu(menu5);
 #else
 	bar->addMenu(mNewStuff);
 	aEditBoard = new QAction(tr("Edit Board"),this);
@@ -197,8 +210,8 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	aNextTarget = new QAction(tr("Next Target"),this);
 	bar->addAction(aNextTarget);
 
-    aResetPoints = new QAction(tr("Reset points"),this);
-    bar->addAction(aResetPoints);
+	aResetPoints = new QAction(tr("Reset points"),this);
+	bar->addAction(aResetPoints);
 
 	aSettings = new QAction(tr("Settings"),this);
 	bar->addAction(aSettings);
@@ -209,23 +222,35 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 
 
 #endif
-    connect(aDebugger,&QAction::triggered,&GameControll::getInstance(),&GameControll::startNetworkDebugger);
-    connect(aDebugger,&QAction::triggered,this,[&](){
-        aDebugger->setText("Clear Log");
-    });
-    connect(aSettings,&QAction::triggered,&GameControll::getInstance(),&GameControll::showSettings);
-    connect(aResetPoints, &QAction::triggered, this, [=]()->void{
-        GameControll::getInstance().triggerAction(PlayerAction::resetPoints);
-    });
-	connect(aEditBoard,&QAction::triggered,this,[=]()->void{
-		GameControll::getInstance().triggerAction(PlayerAction::editBoard);
-		editBoard();
+	connect(aDebugger,&QAction::triggered,&GameControll::getInstance(),&GameControll::startNetworkDebugger);
+	connect(aDebugger,&QAction::triggered,this,[&]()
+	{
+		aDebugger->setText("Clear Log");
 	});
-	connect(aNextTarget,&QAction::triggered,this, [=]()->void{
-		GameControll::getInstance().triggerAction(PlayerAction::nextTarget);
+	connect(aSettings,&QAction::triggered,&GameControll::getInstance(),&GameControll::showSettings);
+	connect(aResetPoints, &QAction::triggered, this, [=]()->void
+	{
+		GameControll::triggerAction(PlayerAction::resetPoints);
 	});
-	connect(aGoToIdle, &QAction::triggered, &GameControll::getInstance(), [=]()->void{
-		GameControll::getInstance().triggerAction(PlayerAction::setIdle);
+	connect(aEditBoard,&QAction::triggered,this,[=]()->void
+	{
+		if(edit)
+		{
+			GameControll::triggerActionWithData(PlayerAction::editBoard,{{"board", GameControll::getBoard()->toBinary()}});
+		}
+		else
+		{
+			GameControll::triggerAction(PlayerAction::blockBoard);
+		}
+		this->editBoard();
+	});
+	connect(aNextTarget,&QAction::triggered,this, [=]()->void
+	{
+		GameControll::triggerAction(PlayerAction::nextTarget);
+	});
+	connect(aGoToIdle, &QAction::triggered, &GameControll::getInstance(), [=]()->void
+	{
+		GameControll::triggerAction(PlayerAction::setIdle);
 	});
 	connect(&GameControll::getInstance(), &GameControll::enableMenus, this, &MainWidget::enableMenus);
 	connect(&GameControll::getInstance(), &GameControll::enableActionBtn, this, &MainWidget::enableActionBtn);
@@ -265,6 +290,7 @@ void MainWidget::createBoard()
 		edit->setBoard(GameControll::setBoard(new Board(sbWidth->value(),sbHeight->value(),sbPlayer->value())));
 		glMain->addWidget(edit,1,0,5,1,Qt::AlignCenter); //same here...
 	}
+	GameControll::triggerActionWithData(PlayerAction::editBoard,{{"board",GameControll::getBoard()->toBinary()}});
 }
 
 void MainWidget::updateGuide(const QString & txt)
@@ -276,6 +302,18 @@ void MainWidget::enableMenus(bool boolean)
 {
 	mNewStuff->setEnabled(boolean);
 	aEditBoard->setEnabled(boolean);
+}
+
+void MainWidget::enableBoard(bool enabled)
+{
+	if(view)
+	{
+		view->setEnabled(enabled);
+	}
+	else
+	{
+		edit->setEnabled(enabled);
+	}
 }
 
 void MainWidget::enableIdle(bool boolean){
@@ -297,6 +335,15 @@ void MainWidget::enableActionBtn(bool boolean)
 
 void MainWidget::editBoard()
 {
+	bool enabled = false;
+	if(edit)
+	{
+		enabled = edit->isEnabled();
+	}
+	else
+	{
+		enabled = view->isEnabled();
+	}
 	if(GameControll::getCurrentPhase() == GameControll::Phase::idle && !edit)
 	{
 		edit = new BoardEditor(this);
@@ -313,6 +360,10 @@ void MainWidget::editBoard()
 		aEditBoard->setText(tr("Edit Board"));
 		delete edit;
 		edit = nullptr;
+	}
+	if(!edit)
+	{
+		view->setEnabled(enabled);
 	}
 }
 
