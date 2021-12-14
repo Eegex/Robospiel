@@ -16,7 +16,7 @@ UserView::UserView(QPushButton *actionBtn, QWidget *parent) : QWidget(parent)
 		network->hide();
 		btnBack->show();
 		layout->addWidget(leaderboard, 0, 0);
-        actionBtn->setEnabled(true);
+		actionBtn->setEnabled(true);
 	});
 	connect(network, &NetworkView::leaderboardOffline, this, [=](){
 		leaderboard = new OfflineLeaderBoardWidget();
@@ -30,6 +30,7 @@ UserView::UserView(QPushButton *actionBtn, QWidget *parent) : QWidget(parent)
 	connect(btnBack, &QPushButton::pressed, this, [=](){
 		layout->removeWidget(leaderboard);
 		leaderboard->deleteLater();
+		GameControll::clearUsers();
 
 		network->toChoiceMenu();
 		network->show(); //TODO: ausreichend?

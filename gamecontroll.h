@@ -60,6 +60,7 @@ public:
 	static functionPointer getActionWhenAnimationEnded();
 	static void setActionWhenAnimationEnded(functionPointer function);
 	static void addDefaultUsers();
+	static void clearUsers();
 	static void triggerAction(PlayerAction action);
 	static void addTransmission(QJsonObject transmission);
 	static void disableAnnoyingSounds();
@@ -115,8 +116,6 @@ private:
 	User *getNextUser(QUuid lastUserId);
 	int getUserIndexById(QUuid id);
 
-
-
 	bool hasSkipped = 0;
 	static void updateRandomGenerator(int seed);
 	int voteCounter = 0;
@@ -147,6 +146,7 @@ private slots:
 	void calculateGameStatus();
 	void changeBidding(int bidding, QUuid id);
 	void nextGuide();
+	void syncBoard();
 };
 
 #endif // GAMECONTROLL_H

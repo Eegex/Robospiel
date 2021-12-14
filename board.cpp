@@ -39,7 +39,7 @@ void Board::makeNewBoard(int width, int height, int playerNumber)
 	makeNewWalls(width, height);
 	makeNewPlayers(playerNumber);
 	makeNewGoal();
-	//emit boardChanged();
+	emit boardChanged();
 }
 
 /*!
@@ -55,6 +55,7 @@ void Board::makeNewPlayers(int playerNumber)
 		t->setPlayer(i);
 		players.append(t);
 		emit playerMoved(i,(goal == t && seeker == activePlayer) ? moves : -1);
+		emit boardChanged();
 	}
 }
 
@@ -81,7 +82,7 @@ void Board::makeNewSeeker(bool random)
 		seeker = (seeker+1)%players.length();
 	}
 	activePlayer = seeker;
-	//emit boardChanged();
+	emit boardChanged();
 }
 
 /*!
@@ -91,6 +92,7 @@ void Board::makeNewGoal()
 {
 	placeGoalInCorner();
 	emit goalMoved();
+	emit boardChanged();
 }
 
 void Board::makeNewWalls(int width, int height)
@@ -116,7 +118,7 @@ void Board::makeNewWalls(int width, int height)
 	}
 	placeOuterWalls();
 	placeInnerWalls();
-	//emit boardChanged();
+	emit boardChanged();
 }
 
 QString Board::toBinary()

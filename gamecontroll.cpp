@@ -254,11 +254,12 @@ Board * GameControll::setBoard(Board* newBoard)
 	{
 		instance.board->updateColors(instance.settings->getBackground(), instance.settings->getWallcolor(), instance.settings->getGridcolor(), instance.settings->getPlayerColorLow(), instance.settings->getPlayerColorHigh());
 	}
-	connect(instance.board, &Board::playerMoved, &GameControll::getInstance(), [&](int, int) // Please note that this connect has to come BEFORE the one that is below, otherwise we will have problem with reverting to the thrid to last positions once the steps are all used up :(!
+	connect(instance.board, &Board::playerMoved, &GameControll::getInstance(), [&](int, int) // Please note that this connect has to come BEFORE the one that is below, otherwise we will have a problem with reverting to the thrid to last positions once the steps are all used up :(!
 	{
 		emit instance.updateMoves(instance.board->getMoves());
 	});
 	connect(instance.board, &Board::playerMoved, &GameControll::getInstance(), &GameControll::calculateGameStatus); // Please note that this connect has to come AFTER the one that is above!
+	connect(instance.board, &Board::boardChanged, &GameControll::getInstance(), &GameControll::syncBoard);
 	emit instance.newBoard(instance.board);
 	return instance.board;
 }
@@ -1264,6 +1265,14 @@ void GameControll::addDefaultUsers()
 	triggerActionWithData(PlayerAction::newUser, nora);
 }
 
+void GameControll::clearUsers()
+{
+	while(!instance.users.isEmpty())
+	{
+		delete instance.users.takeFirst();
+	}
+}
+
 void GameControll::showGuide(const QStringList & texts)
 {
 	QString text = texts.at(instance.r->bounded(texts.size())); //TODO: synchronize? (...d?)
@@ -1316,6 +1325,11 @@ void GameControll::nextGuide()
 		emit updateGuide(gl.line);
 		guideTimer.start(gl.duration);
 	}
+}
+
+void GameControll::syncBoard()
+{
+	triggerActionWithData(PlayerAction::editBoard,{{"board",instance.board->toBinary()}});
 }
 
 QVector<User*>* GameControll::getUsers()

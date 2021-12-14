@@ -66,7 +66,7 @@ public slots:
 	void startNewRound();
 	int switchPlayer(Direction d);
 signals:
-	// void boardChanged(); if you find this and everything still works, you can just delete it everywhere
+	void boardChanged();
 	void paintPlayers();
 	/*!
 	 * \brief playerMoved tells that a player in the model has changed its position by being moved by a user during the game
