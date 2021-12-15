@@ -114,7 +114,7 @@ void Server::addClient()
 
 		QJsonObject data;
 		data.insert("action", PlayerAction::userLeft);
-		data.insert("user", u->toJSON());
+        data.insert("userId", u->getId().toString());
 		sendMessageToClients(data);
 	});
 	connect(connection, &ConnectionToClient::receivedMessage, this, [this](QString message){

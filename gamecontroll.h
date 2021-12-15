@@ -78,7 +78,9 @@ public:
 	void setPhase(GameControll::Phase phase);
 	bool localUserIsServer();
 	bool localUserIsClient();
-	static QString phaseAsString(Phase phase);
+    static QString phaseAsString(Phase phase);
+
+    void evaluateVote();
 public slots:
 	static void startNetworkDebugger();
 	void calculateWinner();
@@ -120,6 +122,7 @@ private:
 	static void updateRandomGenerator(int seed);
 	int voteCounter = 0;
 	int voteThreshold = 0;
+    void resetVotes();
 signals:
 	void actionTriggeredWithData(PlayerAction action, QJsonObject additionalData);
 	void actionTriggered(PlayerAction action);

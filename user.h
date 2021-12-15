@@ -32,6 +32,8 @@ public:
 	bool getHasBid() const;
 
     void resetPoints();
+    void setHasVoted(bool newValue);
+    bool getHasVoted();
 private:
 	User(QObject *parent=nullptr);
 	QString name;
@@ -41,6 +43,7 @@ private:
 	int points = 0;
 	unsigned long timeStamp = 0;
 	bool hasBid = false;
+    bool hasVoted = false;
 	static int userCount;
 
 signals:

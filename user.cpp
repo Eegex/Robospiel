@@ -61,6 +61,7 @@ QJsonObject User::toJSON()
 	json.insert("bidding", getBidding());
 	json.insert("points", getPoints());
 	json.insert("hasBid", hasBid);
+    json.insert("hasVoted", hasVoted);
 
 	QString timeStampString = QString("%1").arg(getTimeStamp());
 	json.insert("lastBiddingTime", timeStampString);
@@ -78,6 +79,7 @@ User* User::fromJSON(QJsonObject json)
 	user->timeStamp = json.value("lastBiddingTime").toString().toULong();
 	qDebug() << "fromJSON hasBid";
 	user->hasBid = json.value("hasBid").toBool();
+    user->hasVoted = json.value("hasVoted").toBool();
 	return user;
 }
 
@@ -164,4 +166,14 @@ bool User::operator<(const User * u) const
 		return (getBidding() == u->getBidding() && getTimeStamp() < u->getTimeStamp()) || getBidding() < u->getBidding();
 	}
 	return hasBid || !u->hasBid;
+}
+
+void User::setHasVoted(bool newValue)
+{
+    hasVoted = newValue;
+}
+
+bool User::getHasVoted()
+{
+    return hasVoted;
 }

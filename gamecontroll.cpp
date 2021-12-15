@@ -353,46 +353,9 @@ void GameControll::exeQTAction(QJsonObject data)
 	}
 	case vote:
 	{
+        getUserById(QUuid(data.value("userId").toString()))->setHasVoted(true);
 		voteCounter++;
-		emit updateActionButtonText();
-
-		switch (currentPhase) {
-		case Phase::countdown: //voting to skip the remaining countdown phase
-		{
-			if(Server::isActive()||Client::isActive())
-			{
-				QString path = QDir::currentPath();
-				qDebug()<<path;
-				player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/rick.mp3"));
-				player->setVolume(50);
-				if(voteCounter==voteThreshold-1 && !instance.hasSkipped)
-				{
-					player->play();
-				}
-				if(voteCounter>=voteThreshold)
-				{
-					endTimer();
-					player->stop();
-				}
-			}
-			else
-			{
-				endTimer();
-			}
-			break;
-		}
-		case Phase::search:
-		case Phase::freeplay:
-		case Phase::idle: //voting to start new round
-			//Aussagenlogik: online ->vC>=vT ist !online v vC>=vT
-			if(!(Server::isActive()||Client::isActive()) || voteCounter>=voteThreshold)
-			{
-				GameControll::triggerAction(PlayerAction::nextTarget);
-			}
-			break;
-		case Phase::presentation:
-			break;
-		}
+        evaluateVote();
 		break;
 	}
 	case PlayerAction::nextTarget:
@@ -402,28 +365,21 @@ void GameControll::exeQTAction(QJsonObject data)
 	}
 	case userLeft:
 	{
-		user = User::fromJSON(data.value("user").toObject());
+        QUuid id = QUuid(data.value("userId").toString());
 
-		//TODO fix skip
+        user = getUserById(id);
+        board->setMoves(INT32_MAX); //TODO explanation?
+        calculateGameStatus();
+        users.remove(users.indexOf(user));
+        leaderboard->updateAllUsers();
 
-
-		for(int i=0; i<users.size(); i++)
-		{
-			if(users.at(i)->getId()==user->getId())
-			{
-				if(activeUserID==user->getId())
-				{
-					board->setMoves(INT32_MAX);
-					calculateGameStatus();
-				}
-
-				users.removeAt(i);
-				//delete
-				leaderboard->updateAllUsers();
-				break;
-			}
-		}
-
+        if(user->getHasVoted())
+        {
+            voteCounter--;
+        }
+        updateVoteNumbers();
+        evaluateVote();
+        delete user;
 		break;
 	}
 	case changedUserColor:
@@ -468,7 +424,7 @@ void GameControll::exeQTAction(QJsonObject data)
 void GameControll::triggerAction(PlayerAction action)
 {
 	qDebug()<<"Called function TriggerAction with parameters "<<action;
-	if(instance.localUserIsActiveUser() && action & PlayerAction::movement)
+    if(action & PlayerAction::movement && instance.localUserIsActiveUser())
 	{
 		if((instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay)) //If online only let the active user move
 		{
@@ -497,7 +453,7 @@ void GameControll::triggerAction(PlayerAction action)
 	}
 	else if(action & PlayerAction::other) //TODO overly complicated ifs? Remove or explain!
 	{
-		if(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay || action == PlayerAction::vote)
+        if(instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay)
 		{
 			emit instance.actionTriggered(action);
 			return;
@@ -1093,7 +1049,7 @@ bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns 
 
 		if(currentPhase == Phase::freeplay || currentPhase == Phase::idle || currentPhase == Phase::search) //I allow going to idle from search here, but this is only supposed to work when the server wants it, this should be managed in switchPhase be disabling the button for everyone else
 		{
-			voteCounter=0;
+            resetVotes();
 			setPhase(phase);
 			return true;
 		}
@@ -1103,7 +1059,7 @@ bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns 
 	{
 		if(currentPhase == Phase::freeplay || currentPhase == Phase::idle || currentPhase == Phase::search)
 		{
-			voteCounter=0;
+            resetVotes();
 			setPhase(phase);
 			return true;
 		}
@@ -1116,7 +1072,7 @@ bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns 
 			timeLeft = searchTime; //60
 			emit time(timeLeft);
 			countdown.start();
-			voteCounter=0;
+            resetVotes();
 			setPhase(phase);
 			return true;
 		}
@@ -1126,7 +1082,7 @@ bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns 
 	{
 		if(currentPhase == Phase::countdown)
 		{
-			voteCounter=0;
+            resetVotes();
 			setPhase(phase);
 			return true;
 		}
@@ -1363,6 +1319,7 @@ int GameControll::getVoteThreshold() {
 
 void GameControll::updateVoteNumbers()
 {
+    //get current thresholds
 	switch(currentPhase)
 	{
 	case Phase::idle:
@@ -1381,15 +1338,57 @@ void GameControll::updateVoteNumbers()
 		voteThreshold = users.length(); //all players have to agree to start playing again
 		break;
 	}
+    //voteThreshold = std::max(voteThreshold, 1);
 	qDebug()<<"Updated voting numbers"<<(int)currentPhase<<voteThreshold<<users.length();
 	emit updateActionButtonText();
 	//TODO: There is one case where this function is called (because of a new user?) and the emit updateActionButtonText(); leads to the "GIVE UP" String in presentation being set enabled, though it shouldn't be. Checking this here is super ugly, but I don't know where else...
 	if(currentPhase == Phase::presentation && !localUserIsActiveUser()){
 		emit enableActionBtn(false);
 	}
+}
 
+void GameControll::evaluateVote()
+{
+    emit updateActionButtonText();
 
-
+    //evaluate
+    switch (currentPhase) {
+    case Phase::countdown: //voting to skip the remaining countdown phase
+    {
+        if(Server::isActive()||Client::isActive())
+        {
+            QString path = QDir::currentPath();
+            qDebug()<<path;
+            player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/rick.mp3"));
+            player->setVolume(50);
+            if(voteCounter==voteThreshold-1 && !instance.hasSkipped)
+            {
+                player->play();
+            }
+            if(voteCounter>=voteThreshold)
+            {
+                endTimer();
+                player->stop();
+            }
+        }
+        else
+        {
+            endTimer();
+        }
+        break;
+    }
+    case Phase::search:
+    case Phase::freeplay:
+    case Phase::idle: //voting to start new round
+        //Aussagenlogik: online ->vC>=vT ist !online v vC>=vT
+        if(!(Server::isActive()||Client::isActive()) || voteCounter>=voteThreshold)
+        {
+            GameControll::triggerAction(PlayerAction::nextTarget);
+        }
+        break;
+    case Phase::presentation:
+        break;
+    }
 
 }
 
@@ -1402,6 +1401,15 @@ bool GameControll::localUserIsServer(){
 bool GameControll::localUserIsClient(){
 	return Client::isActive();
 
+}
+
+void GameControll::resetVotes()
+{
+    voteCounter=0;
+    for(User* u : users)
+    {
+        u->setHasVoted(false);
+    }
 }
 
 

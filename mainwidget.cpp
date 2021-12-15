@@ -84,8 +84,8 @@ void MainWidget::handleActionButtonRelease()
 	case GameControll::Phase::countdown:
 	{
 		GameControll::disableAnnoyingSounds();
-		actionBtn->setDisabled(true);
-		GameControll::triggerAction(PlayerAction::vote);
+		actionBtn->setDisabled(true);        
+        GameControll::triggerActionWithData(PlayerAction::vote, {{"userId", GameControll::getLocalUser()->getId().toString()}});
 		break;
 	}
 	case GameControll::Phase::search: {}
@@ -95,12 +95,12 @@ void MainWidget::handleActionButtonRelease()
 		//GameControll::triggerAction(PlayerAction::nextTarget); leave this in the code, for the case that Nora needs it
 		//disables vote before skipping the goal
 		actionBtn->setDisabled(true);
-		GameControll::triggerAction(PlayerAction::vote);
+        GameControll::triggerActionWithData(PlayerAction::vote, {{"userId", GameControll::getLocalUser()->getId().toString()}});
 		break;
 	}
 	case GameControll::Phase::presentation:
 	{
-		GameControll::triggerAction(PlayerAction::giveUp);
+        GameControll::triggerAction(PlayerAction::giveUp);
 		//emit view->animationEnded();
 		break;
 	}
