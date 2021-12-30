@@ -95,15 +95,15 @@ QVariant NetworkModel::data(const QModelIndex &index, int role) const
 					QUuid id;
 					if(!object.value("userId").isUndefined())
 					{
-						id = object.value("userId").toString();
+                        id = QUuid(object.value("userId").toString());
 					}
 					else if(!object.value("activeUserID").isUndefined())
 					{
-						id = object.value("activeUserID").toString();
+                        id = QUuid(object.value("activeUserID").toString());
 					}
 					else if(!object.value("id").isUndefined())
 					{
-						id = object.value("id").toString();
+                        id = QUuid(object.value("id").toString());
 					}
 					if(id.isNull())
 					{
@@ -136,15 +136,15 @@ QVariant NetworkModel::data(const QModelIndex &index, int role) const
 					QUuid id;
 					if(!object.value("userId").isUndefined())
 					{
-						id = object.value("userId").toString();
+                        id = QUuid(object.value("userId").toString());
 					}
 					else if(!object.value("activeUserID").isUndefined())
 					{
-						id = object.value("activeUserID").toString();
+                        id = QUuid(object.value("activeUserID").toString());
 					}
 					else if(!object.value("id").isUndefined())
 					{
-						id = object.value("id").toString();
+                        id = QUuid(object.value("id").toString());
 					}
 					if(!id.isNull())
 					{

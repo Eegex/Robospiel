@@ -3,6 +3,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QDataStream>
+#include <QIODevice>
 #include "board.h"
 
 Board::Board(QObject *parent) : QObject(parent)

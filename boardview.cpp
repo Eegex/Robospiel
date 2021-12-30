@@ -267,7 +267,6 @@ void BoardView::resizeEvent(QResizeEvent * event)
 	int w = event->size().width() / board->getSize().width();
 	int h = event->size().height() / board->getSize().height();
 	update();
-	currentEvent=*event;
 	QTimer::singleShot(50, this, [=]()->void{
 		//update players
 		for(int i = 0; i <board->players.length();i++)
@@ -285,10 +284,10 @@ void BoardView::resizeEvent(QResizeEvent * event)
 			QPoint newPosition = tileToDesktopCoordinates(board->players.at(i));
 			double factorX = 1;
 			double factorY = 1;
-			if(!currentEvent.oldSize().isEmpty() && playerWidgets.at(i)->getInAnimation())
+            if(!event->oldSize().isEmpty() && playerWidgets.at(i)->getInAnimation())
 			{
-				factorX = currentEvent.size().width()*1.0/currentEvent.oldSize().width();
-				factorY = currentEvent.size().height()*1.0/currentEvent.oldSize().height();
+                factorX = event->size().width()*1.0/event->oldSize().width();
+                factorY = event->size().height()*1.0/event->oldSize().height();
 				newPosition=playerWidgets.at(i)->pos();
 				double newX=newPosition.x()*factorX;
 				double newY=newPosition.y()*factorY;

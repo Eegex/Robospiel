@@ -6,6 +6,9 @@
 #include <QTime>
 #include <QDebug>
 #include <QMediaPlayer>
+#if QT_VERSION_MAJOR == 6
+    #include <QAudioOutput>
+#endif
 #include "LeaderBoardWidget.h"
 #include "user.h"
 #include "settingsdialog.h"
@@ -28,7 +31,7 @@ public:
 	{
 		GuideLine(const QString & line,int duration) : line(line), duration(duration)
 		{}
-		const QString line;
+        QString line;
 		int duration;
 	};
 	enum class Phase{idle, search, countdown, presentation, freeplay};
@@ -111,6 +114,9 @@ private:
 	functionPointer actionWhenAnimationEnded = nullptr; //ATTENTION! When you store a new method in this variable, you have to add it in GameControll::toJSON() and GameControll::adaptFromJSON()!!!
 	int searchTime = 60;
 	QMediaPlayer * player;
+    #if QT_VERSION_MAJOR == 6
+        QAudioOutput* audioOutput = new QAudioOutput();
+    #endif
 
 	explicit GameControll(QObject *parent = nullptr);
 	void sendToServer(PlayerAction a);

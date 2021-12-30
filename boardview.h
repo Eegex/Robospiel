@@ -67,7 +67,6 @@ protected:
 	//void callMoveActivePlayer(Direction d);
 	QPoint tileToDesktopCoordinates(Tile *tile);
 	virtual PlayerWidget * addPlayer(int i);
-	QResizeEvent currentEvent = QResizeEvent(QSize(-1,-1), QSize(-1,-1));
 signals:
 	void tileHovered(Tile * t);
 	void tileClicked(Tile * t);

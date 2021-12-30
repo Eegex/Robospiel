@@ -322,7 +322,7 @@ void GameControll::exeQTAction(QJsonObject data)
     }
     case changeActiveUser:
     {
-        letUserPlayFree(data.value("userId").toString());
+        letUserPlayFree(QUuid(data.value("userId").toString()));
         break;
     }
     case completeUpdate:
@@ -781,8 +781,15 @@ void GameControll::sortBy(strategy strategy)
         qDebug() << "Local User: " << getLocalUser()->getName() << " First User: " << instance.users.at(0)->getName();
         if(getLocalUser()->getId() == instance.users.at(0)->getId()){
             QString path = QDir::currentPath();
-            player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/count.mp3"));
-            player->setVolume(50);
+            #if QT_VERSION_MAJOR == 5
+                player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/count.mp3"));
+                player->setVolume(50);
+            #elif QT_VERSION_MAJOR == 6
+                player->setAudioOutput(audioOutput);
+                player->setSource(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/count.mp3"));
+                audioOutput->setVolume(50);
+            #endif
+
             player->play();
         }
     }
@@ -1364,8 +1371,15 @@ void GameControll::evaluateVote()
         {
             QString path = QDir::currentPath();
             qDebug()<<path;
-            player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/rick.mp3"));
-            player->setVolume(50);
+            #if QT_VERSION_MAJOR == 5
+                player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/rick.mp3"));
+                player->setVolume(50);
+            #elif QT_VERSION_MAJOR == 6
+                player->setAudioOutput(audioOutput);
+                player->setSource(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/rick.mp3"));
+                audioOutput->setVolume(50);
+            #endif
+
             if(voteCounter==voteThreshold-1 && !instance.hasSkipped)
             {
                 player->play();

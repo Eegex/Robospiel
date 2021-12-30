@@ -20,7 +20,7 @@ User::User(QString name, QColor color, QObject *parent) : QObject(parent), name(
 	User::id = QUuid::createUuid();
 	if(name=="")
 	{
-		name = tr("user ")+User::userCount++;
+        name = tr("user ")+QString::number(User::userCount++);
 	}
 }
 
