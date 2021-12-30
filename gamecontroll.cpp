@@ -1399,8 +1399,8 @@ void GameControll::evaluateVote()
     case Phase::search:
     case Phase::freeplay:
     case Phase::idle: //voting to start new round
-        //Aussagenlogik: online ->vC>=vT ist !online v vC>=vT
-        if(!(Server::isActive()||Client::isActive()) || voteCounter>=voteThreshold)
+        //Aussagenlogik: online ->VC>=VT ist !online v VC>=vT
+        if(!(Server::isActive()||Client::isActive()) || (voteCounter>=voteThreshold && Server::isActive()))
         {
             GameControll::triggerAction(PlayerAction::nextTarget);
         }
