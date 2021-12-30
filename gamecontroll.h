@@ -7,7 +7,7 @@
 #include <QDebug>
 #include <QMediaPlayer>
 #if QT_VERSION_MAJOR == 6
-    #include <QAudioOutput>
+	#include <QAudioOutput>
 #endif
 #include "LeaderBoardWidget.h"
 #include "user.h"
@@ -31,7 +31,7 @@ public:
 	{
 		GuideLine(const QString & line,int duration) : line(line), duration(duration)
 		{}
-        QString line;
+		QString line;
 		int duration;
 	};
 	enum class Phase{idle, search, countdown, presentation, freeplay};
@@ -81,9 +81,9 @@ public:
 	void setPhase(GameControll::Phase phase);
 	bool localUserIsServer();
 	bool localUserIsClient();
-    static QString phaseAsString(Phase phase);
+	static QString phaseAsString(Phase phase);
 
-    void evaluateVote();
+	void evaluateVote();
 public slots:
 	static void startNetworkDebugger();
 	void calculateWinner();
@@ -114,9 +114,9 @@ private:
 	functionPointer actionWhenAnimationEnded = nullptr; //ATTENTION! When you store a new method in this variable, you have to add it in GameControll::toJSON() and GameControll::adaptFromJSON()!!!
 	int searchTime = 60;
 	QMediaPlayer * player;
-    #if QT_VERSION_MAJOR == 6
-        QAudioOutput* audioOutput = new QAudioOutput();
-    #endif
+	#if QT_VERSION_MAJOR == 6
+		QAudioOutput* audioOutput = new QAudioOutput();
+	#endif
 
 	explicit GameControll(QObject *parent = nullptr);
 	void sendToServer(PlayerAction a);
@@ -124,11 +124,12 @@ private:
 	User *getNextUser(QUuid lastUserId);
 	int getUserIndexById(QUuid id);
 
-	bool hasSkipped = 0;
+	bool boardBlocked = false; // das wird bestimmt keine Probleme machen
+	bool hasSkipped = false;
 	static void updateRandomGenerator(int seed);
 	int voteCounter = 0;
 	int voteThreshold = 0;
-    void resetVotes();
+	void resetVotes();
 signals:
 	void actionTriggeredWithData(PlayerAction action, QJsonObject additionalData);
 	void actionTriggered(PlayerAction action);
