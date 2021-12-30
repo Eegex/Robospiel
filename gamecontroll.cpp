@@ -338,12 +338,9 @@ void GameControll::exeQTAction(QJsonObject data)
 	}
 	case editBoard:
 	{
-		if(boardBlocked)
-		{
-			setBoard(Board::fromBinary(data.value("board").toString()));
-			emit setBoardEnabled(true);
-			boardBlocked = false;
-		}
+		setBoard(Board::fromBinary(data.value("board").toString()));
+		emit setBoardEnabled(true);
+		boardBlocked = false;
 		break;
 	}
 	case setIdle:
@@ -532,6 +529,13 @@ void GameControll::triggerActionWithData(PlayerAction action, QJsonObject data)
 			return;
 		}
 		break;
+	}
+	case editBoard:
+	{
+		if(!instance.boardBlocked)
+		{
+			return;
+		}
 	}
 	default:
 		break;
