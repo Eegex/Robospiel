@@ -88,7 +88,7 @@ void OfflineLeaderBoardWidget::addUser(User * newUser)
 		emit biddingAccepted(id, bid);
 	});
 	connect(newWidget->getUser(), &User::biddingChanged, this, &OfflineLeaderBoardWidget::updateBidding);
-    connect(newWidget->getUser(), &User::pointsChanged, this, &OfflineLeaderBoardWidget::updateAllUsers);
+	connect(newWidget->getUser(), &User::pointsChanged, this, &OfflineLeaderBoardWidget::updateAllUsers);
 	updateLayout();
 }
 
@@ -129,7 +129,7 @@ void OfflineLeaderBoardWidget::newRound(){
  */
 void OfflineLeaderBoardWidget::updateName(QUuid id, QString name)
 {
-	for(UserBiddingWidget* ubw : users)
+	for(UserBiddingWidget * ubw : users)
 	{
 		if(ubw->getId() == id)
 		{
@@ -140,7 +140,7 @@ void OfflineLeaderBoardWidget::updateName(QUuid id, QString name)
 
 void OfflineLeaderBoardWidget::updateColour(QUuid id, QColor colour)
 {
-	for(UserBiddingWidget* ubw : users)
+	for(UserBiddingWidget * ubw : users)
 	{
 		if(ubw->getId() == id)
 		{
@@ -151,7 +151,7 @@ void OfflineLeaderBoardWidget::updateColour(QUuid id, QColor colour)
 
 void OfflineLeaderBoardWidget::deactivateInput()
 {
-	for(UserBiddingWidget* ubw : users)
+	for(UserBiddingWidget * ubw : users)
 		ubw->deactivateBtn();
 }
 
@@ -179,8 +179,9 @@ void OfflineLeaderBoardWidget::updateAllUsers()
 	//This creates the sorted view that we want
 	qDebug()<<"Outputting things";
 	for(User* u : *GameControll::getInstance().getUsers())
+	{
 		qDebug()<<u->getName();
-
+	}
 	for(User* u : *GameControll::getInstance().getUsers())
 	{
 		for(UserBiddingWidget* ubw : users)
@@ -191,10 +192,10 @@ void OfflineLeaderBoardWidget::updateAllUsers()
 			}
 		}
 	}
-	qDebug()<<"Sorted Users!\n";
+	qDebug() << "Sorted Users!\n";
 	for(unsigned int i = 0; i<numOfUsers; i++)
 	{
-		qDebug()<<"Position: "<<i<<" "<<temp[i]->getUser()->getName(); //Was users[i]
+		qDebug() << "Position: " << i << " " << temp[i]->getUser()->getName(); //Was users[i]
 	}
 	users = temp;
 	updateLayout();
