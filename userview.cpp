@@ -10,8 +10,15 @@ UserView::UserView(QPushButton *actionBtn, QWidget *parent) : QWidget(parent)
 	connect(network, &NetworkView::leaderboardOnline, this, [=](){
 		leaderboard = new OnlineLeaderboardWidget();
 		GameControll::getInstance().setLeaderboard(leaderboard);
-		dynamic_cast<OnlineLeaderboardWidget*>(leaderboard)->setLocalUser(GameControll::getInstance().initializeUser());
-		dynamic_cast<OnlineLeaderboardWidget*>(leaderboard)->initialize();
+
+		OnlineLeaderboardWidget* onlineLeaderboard = dynamic_cast<OnlineLeaderboardWidget*>(leaderboard);
+		if(onlineLeaderboard)
+		{
+			onlineLeaderboard->setLocalUser(GameControll::getInstance().initializeUser());
+			onlineLeaderboard->initialize();
+		} else {
+			qDebug()<<"In Userview constructor: "<<"no online leaderboard";
+		}
 
 		network->hide();
 		btnBack->show();
@@ -31,6 +38,7 @@ UserView::UserView(QPushButton *actionBtn, QWidget *parent) : QWidget(parent)
 		layout->removeWidget(leaderboard);
 		leaderboard->deleteLater();
 		GameControll::clearUsers();
+
 
 		network->toChoiceMenu();
 		network->show(); //TODO: ausreichend?

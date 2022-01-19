@@ -20,7 +20,6 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 
 	initializeView(GameControll::setBoard(new Board(16, 16, 5)), GameControll::getMapping());
 	//connect(view, &BoardView::lastAnimationAfterGoalHitEnded, game, &GameControll::calculateWinner);
-	networkView = new NetworkView;
 	lcd = new QLCDNumber(this);
 	lcd->setSegmentStyle(QLCDNumber::Flat);
 	lcd->setStyleSheet("QLCDNumber{"

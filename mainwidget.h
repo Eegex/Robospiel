@@ -47,7 +47,6 @@ private:
 	QGridLayout * glMain = nullptr;
 	BoardView * view = nullptr;
 	BoardEditor * edit = nullptr;
-	NetworkView * networkView = nullptr;
 	UserView * userView = nullptr;
 	QLCDNumber * lcd = nullptr;
 	QPushButton * actionBtn = nullptr;
