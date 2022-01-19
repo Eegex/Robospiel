@@ -236,6 +236,7 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 		if(edit)
 		{
 			GameControll::triggerActionWithData(PlayerAction::editBoard,{{"board", GameControll::getBoard()->toBinary()}});
+			GameControll::triggerActionWithData(PlayerAction::syncRandomGenerators,{{"Seed",QTime::currentTime().msecsSinceStartOfDay()}});
 		}
 		else
 		{

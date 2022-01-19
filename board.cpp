@@ -330,7 +330,6 @@ QSize Board::getSize()
  */
 Tile* Board::getRandomTile()
 {
-
 	return tiles.at(r->bounded(tiles.length())).at(r->bounded(tiles.at(0).length()));
 }
 
@@ -769,10 +768,7 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY, bool isRever
 
 	Tile * nextTile = getTile(currentTile->getPosition().rx() + changeOfXAxis,
 							  currentTile->getPosition().ry() + changeOfYAxis);
-	if(nextTile == nullptr)
-	{
-		qDebug()<< "nextTile was nullptr";
-	}
+	Q_ASSERT_X(!nextTile ,"Board::moveActivePlayer","nextTile is nullptr");
 	bool actualMovement = false;
 	while(!currentTile->getWall(d) && nextTile->getPlayer()==-1 && (currentTile->getPosition().x()!=targetX || currentTile->getPosition().y()!=targetY))
 	{
@@ -888,7 +884,6 @@ void Board::setSavedStateToCurrent()
 
 int Board::addPlayer(Tile * t)
 {
-	qDebug() << "Board::switchPlayer(Tile * t)";
 	players.append(t);
 	t->setPlayer(players.size() - 1);
 	return t->getPlayer();
