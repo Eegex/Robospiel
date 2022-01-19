@@ -25,6 +25,7 @@ private:
 	static Server instance;
 	static QTcpServer* server;
 	static QVector<ConnectionToClient*> connections;
+	static bool connected;
 signals:
 	void serverNotStarted();
 	void serverStarted(QHostAddress address, int port);

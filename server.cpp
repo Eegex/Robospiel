@@ -8,6 +8,7 @@
 
 QTcpServer* Server::server = new QTcpServer();
 Server Server::instance;
+bool Server::connected = false;
 QVector<ConnectionToClient*> Server::connections;
 Server::Server(QObject *parent) : QObject(parent) {}
 
@@ -48,8 +49,12 @@ void Server::startServer(QString address, int port)
 		emit instance.serverNotStarted();
 		return;
 	}
+	if(!connected)
+	{
+		connected = true;
+		connect(server, &QTcpServer::newConnection, &instance, &Server::addClient);
+	}
 
-	connect(server, &QTcpServer::newConnection, &instance, &Server::addClient);
 	emit instance.serverStarted(server->serverAddress(), server->serverPort());
 }
 
