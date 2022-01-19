@@ -26,6 +26,7 @@ private:
 	static Client instance;
 	static QTcpSocket* tcpSocket;
 	static QDataStream streamFromServer;
+	static bool connected;
 
 signals:
 	void errorInClient(QAbstractSocket::SocketError socketError);
