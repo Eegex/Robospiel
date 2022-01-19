@@ -17,7 +17,7 @@ void LeaderboardDelegate::paint(QPainter * painter, const QStyleOptionViewItem &
 		painter->save();
 		QPainterPath path;
 		painter->setPen(QPen(QColor(0xAAAAAA),1));
-		path.addRoundedRect(QRect({5,5},sizeHint(option,index)).adjusted(0,0,-10,-10),2.5,2.5);
+		path.addRoundedRect(option.rect.adjusted(5,5,-10,-10),2.5,2.5);
 		painter->fillPath(path,QApplication::palette().color(QPalette::ColorRole::Button));
 		//muss besser gehen, auch ohne wirklich einen Button zu erzeugen
 //		if(index.row() == clicked)

@@ -768,7 +768,7 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY, bool isRever
 
 	Tile * nextTile = getTile(currentTile->getPosition().rx() + changeOfXAxis,
 							  currentTile->getPosition().ry() + changeOfYAxis);
-	Q_ASSERT_X(!nextTile ,"Board::moveActivePlayer","nextTile is nullptr");
+	//Q_ASSERT_X(!nextTile ,"Board::moveActivePlayer","nextTile is nullptr");
 	bool actualMovement = false;
 	while(!currentTile->getWall(d) && nextTile->getPlayer()==-1 && (currentTile->getPosition().x()!=targetX || currentTile->getPosition().y()!=targetY))
 	{
