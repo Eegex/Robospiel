@@ -52,7 +52,7 @@ void OnlineLeaderboardWidget::setOnlineWidget()
 	lay->addWidget(biddingBox);
 	lay->addWidget(bidBtn);
 	lay->addWidget(tableView);
-	lname->setText(localUser->getName());
+    lname->setText(localUser->getName());
 	lname->show();
 	tableView->show();
 	biddingBox->show();
@@ -141,7 +141,10 @@ void OnlineLeaderboardWidget::updateName(QUuid id, QString newName)
 		lname->setText(newName);
 	}
 	lay->update();*/
+
+
 	model->update();
+    lname->setText(newName);
 }
 
 void OnlineLeaderboardWidget::updateColour(QUuid id, QColor color)
