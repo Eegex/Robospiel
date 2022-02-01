@@ -207,7 +207,7 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	bar->addAction(aEditBoard);
 
 	aNextTarget = new QAction(tr("Next Target"),this);
-	bar->addAction(aNextTarget);
+    //bar->addAction(aNextTarget);
 
 	aResetPoints = new QAction(tr("Reset points"),this);
 	bar->addAction(aResetPoints);
