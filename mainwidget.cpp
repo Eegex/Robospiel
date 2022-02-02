@@ -110,9 +110,22 @@ void MainWidget::handleActionButtonRelease()
 void MainWidget::updateActionBtnText()
 {
 	QString text = actionBtnTexts.value(GameControll::getCurrentPhase());
+	QString missingVotes = "";
 	if(GameControll::getVoteCounter()>0)
 	{
 		text += "("+QString::number(GameControll::getVoteCounter())+"/"+QString::number(GameControll::getVoteThreshold())+")";
+		for(User* u: *GameControll::getUsers())
+		{
+			if(!u->getHasVoted())
+			{
+				missingVotes+=u->getName()+", ";
+			}
+		}
+		if(missingVotes.length()>0)
+		{
+			missingVotes = missingVotes.chopped(2);
+			missingVotes = "Missing: " + missingVotes;
+		}
 	}
 	else
 	{
@@ -121,6 +134,7 @@ void MainWidget::updateActionBtnText()
 		actionBtn->setEnabled(true);
 	}
 	actionBtn->setText(text);
+	actionBtn->setToolTip(missingVotes);
 }
 
 void MainWidget::setMenuBar(QMenuBar * bar)

@@ -104,7 +104,7 @@ void GameControll::adaptFromJSON(QJsonObject json)
 	instance.searchTime = json.value("searchTime").toInt();
 	instance.timeLeft = json.value("timeLeft").toInt();
 	instance.countdown.stop();
-	instance.voteCounter=json.value("voteCounter").toInt();
+	instance.voteCounter=json.value("voteCounter").toInt(); //update of the btn in switchPhase
 	instance.voteThreshold=json.value("voteThreshold").toInt();
 	if(json.value("remainingTimerTime").toInt()!=-1)
 	{
