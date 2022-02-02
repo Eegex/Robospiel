@@ -83,7 +83,6 @@ public:
 	bool localUserIsClient();
 	static QString phaseAsString(Phase phase);
 
-	void evaluateVote();
 public slots:
 	static void startNetworkDebugger();
 	void calculateWinner();

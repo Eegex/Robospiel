@@ -357,7 +357,7 @@ void GameControll::exeQTAction(QJsonObject data)
 	{
 		getUserById(QUuid(data.value("userId").toString()))->setHasVoted(true);
 		voteCounter++;
-		evaluateVote();
+		updateVoteNumbers();
 		break;
 	}
 	case PlayerAction::nextTarget:
@@ -378,8 +378,9 @@ void GameControll::exeQTAction(QJsonObject data)
 		if(user->getHasVoted())
 		{
 			voteCounter--;
-		}
 
+		}
+		updateVoteNumbers();
 		break;
 	}
 	case changedUserColor:
@@ -1353,20 +1354,14 @@ void GameControll::updateVoteNumbers()
 		voteThreshold = users.length(); //all players have to agree to start playing again
 		break;
 	}
-	//voteThreshold = std::max(voteThreshold, 1);
-	//qDebug()<<"Updated voting numbers"<<(int)currentPhase<<voteThreshold<<users.length();
+	voteThreshold = std::max(voteThreshold, 1);
 	emit updateActionButtonText();
 	//TODO: There is one case where this function is called (because of a new user?) and the emit updateActionButtonText(); leads to the "GIVE UP" String in presentation being set enabled, though it shouldn't be. Checking this here is super ugly, but I don't know where else...
 	if(currentPhase == Phase::presentation && !localUserIsActiveUser()){
 		emit enableActionBtn(false);
 	}
-}
 
-void GameControll::evaluateVote()
-{
-	emit updateActionButtonText();
-
-	//evaluate
+	//check for consequences
 	switch (currentPhase) {
 	case Phase::countdown: //voting to skip the remaining countdown phase
 	{
@@ -1383,7 +1378,7 @@ void GameControll::evaluateVote()
 				audioOutput->setVolume(50);
 			#endif
 
-			if(voteCounter==voteThreshold-1 && !instance.hasSkipped)
+			if(voteCounter==voteThreshold-1 && !instance.hasSkipped && voteCounter>=1)
 			{
 				player->play();
 			}
