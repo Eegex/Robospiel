@@ -29,7 +29,7 @@ void PlayerWidget::paintEvent(QPaintEvent *event)
 	double width = bounds.width()*fractionOfTile;
 	double height = bounds.height()*fractionOfTile;
 
-    QColor color = getPlayerColor();
+	QColor color = getPlayerColor();
 	QPainter painter;
 
 
@@ -57,7 +57,7 @@ void PlayerWidget::paintEvent(QPaintEvent *event)
 		if(debugMode)
 		{
 			QColor debugColor = *new QColor(0,0,0);
-            if(getPlayerColor().value()<200){
+			if(getPlayerColor().value()<200){
 				debugColor = *new QColor(255,255,255);
 			}
 			pen.setColor(debugColor);
@@ -75,7 +75,7 @@ void PlayerWidget::paintEvent(QPaintEvent *event)
  */
 QColor PlayerWidget::getPlayerColor()
 {
-    return getPlayerColor(board, playerNumber); //this is just a guess, I hope that playerNumber is really the index
+	return getPlayerColor(board, playerNumber); //this is just a guess, I hope that playerNumber is really the index
 }
 
 /*!
@@ -86,8 +86,8 @@ QColor PlayerWidget::getPlayerColor()
 QColor PlayerWidget::getPlayerColor(Board* board, int playerIndex) //maybe not the perfect place for this method... but playerWidgets and goalwidgets need it and it's right there...
 {
 
-    int playerNum = board->players.length();
-    QColor color;
+	int playerNum = board->players.length();
+	QColor color;
 
 //    if(ownPlayerColors)
 //    {
@@ -109,10 +109,10 @@ QColor PlayerWidget::getPlayerColor(Board* board, int playerIndex) //maybe not t
 //    }
 //    else
 //    {
-        double stepSize = 359/playerNum;
-        color.setHsv(playerIndex*stepSize,200,200);
+		double stepSize = 359/playerNum;
+		color.setHsv(playerIndex*stepSize,200,200);
 //    }
-    return color;
+	return color;
 }
 
 
@@ -133,7 +133,7 @@ double PlayerWidget::length(QPoint vector)
  */
 void PlayerWidget::moveAnimated(QPoint point, QPoint target, double speed)
 {
-    qDebug()<<"Called Function MoveAnimated!!!!";
+	qDebug()<<"Called Function MoveAnimated!!!!";
 	double distance;
 	if(animations.size() > 0)
 	{
@@ -145,12 +145,19 @@ void PlayerWidget::moveAnimated(QPoint point, QPoint target, double speed)
 		distance = PlayerWidget::length(this->pos()-point);
 	}
 
+	auto startAnimation = [&](QPropertyAnimation * a)
+	{
+		double duration = std::min((0.9 + std::pow(animations.size(),2) * 0.05),1000.0);
+		a->setDuration(a->duration() / duration);
+		a->start();
+	};
 
 	QPropertyAnimation * animation = new QPropertyAnimation(this, "geometry");
 	animation->setDuration(1000*distance/speed);
 	animation->setEndValue(QRect(point.x(), point.y(), 0, 0));
 	animation->setEasingCurve(QEasingCurve::InQuad);
-	connect(animation, &QAbstractAnimation::finished, this, [=]()->void{
+	connect(animation, &QAbstractAnimation::finished, this, [=]()->void
+	{
 		animations.remove(0);
 		if(animations.isEmpty())
 		{
@@ -158,9 +165,8 @@ void PlayerWidget::moveAnimated(QPoint point, QPoint target, double speed)
 		}
 		else
 		{
-			animations.at(0).animation->start();
+			startAnimation(animations.at(0).animation);
 		}
-
 	});
 	Animation animationStruct;
 	animationStruct.animation=animation;
@@ -169,13 +175,13 @@ void PlayerWidget::moveAnimated(QPoint point, QPoint target, double speed)
 	animations.append(animationStruct);
 	if(animations.at(0).animation->state() != QAbstractAnimation::Running)
 	{
-		animations.at(0).animation->start();
+		startAnimation(animations.at(0).animation);
 	}
 }
 
 double PlayerWidget::timeFactor(QPoint delta, double factorX, double factorY)
 {
-	double xProportion = delta.x()/(delta.x()+delta.y());
+	double xProportion = delta.x()/std::min((delta.x()+delta.y()),1);
 
 	return xProportion*factorX + (1-xProportion)*factorY;
 }
@@ -202,7 +208,8 @@ bool PlayerWidget::resizeWhileAnimation(QVector<QPoint> newTargets, QPoint newPo
 
 		animation->setEndValue(QRect(newTargets.at(0), QSize(0, 0)));
 		animation->setEasingCurve(QEasingCurve::InQuad);
-		connect(animation, &QAbstractAnimation::finished, this, [=]()->void{
+		connect(animation, &QAbstractAnimation::finished, this, [=]()->void
+		{
 			animations.remove(0);
 			if(animations.isEmpty())
 			{
