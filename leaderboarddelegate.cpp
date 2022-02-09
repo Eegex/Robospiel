@@ -74,5 +74,10 @@ void LeaderboardDelegate::userClicked(const QModelIndex & index)
 	if(!index.column())
 	{
 		clicked = index.row();
+		if(buttonVisible)
+		{
+			QModelIndex copy = index;
+			emit userBtnClicked(copy);
+		}
 	}
 }
