@@ -124,7 +124,7 @@ void MainWidget::updateActionBtnText()
 		if(missingVotes.length()>0)
 		{
 			missingVotes = missingVotes.chopped(2);
-			missingVotes = "Missing: " + missingVotes;
+			missingVotes = tr("Missing: ") + missingVotes;
 		}
 	}
 	else
