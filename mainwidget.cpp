@@ -149,6 +149,7 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	sbPlayer = new QSpinBox(this);
 	aNewBoard = new QAction(tr("Create Board"),this);
 	aGoToIdle = new QAction(tr("Idle"),this);
+    aGoToIdle->setDisabled(true);
 	connect(aNewBoard,&QAction::triggered,this,&MainWidget::createBoard);
 	sbHeight->setMinimum(5);
 	sbHeight->setValue(view->getBoard()->getSize().height());
