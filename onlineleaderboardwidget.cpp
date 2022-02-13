@@ -144,7 +144,12 @@ void OnlineLeaderboardWidget::updateName(QUuid id, QString newName)
 
 
 	model->update();
-    lname->setText(newName);
+    if (localUser->getId() == id)
+    {
+        //localUser->setName(newName);
+        lname->setText(newName);
+    }
+    //lname->setText(newName);
 }
 
 void OnlineLeaderboardWidget::updateColour(QUuid id, QColor color)
