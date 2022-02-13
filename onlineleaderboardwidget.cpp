@@ -23,6 +23,7 @@ void OnlineLeaderboardWidget::initialize()
 	tableView->setItemDelegate(delegate);
 	connect(tableView, &QTableView::entered,delegate,&LeaderboardDelegate::userHovered);
 	connect(tableView, &QTableView::clicked,delegate,&LeaderboardDelegate::userClicked);
+	connect(delegate, &LeaderboardDelegate::userBtnClicked,this,&OnlineLeaderboardWidget::userClicked);
 	biddingBox->setSpecialValueText(tr("No Bid"));
 	connect(bidBtn,&QPushButton::clicked, this, &OnlineLeaderboardWidget::btnPressed);
 	connect(biddingBox,&SpinBox::returnPressed, this,  &OnlineLeaderboardWidget::btnPressed);

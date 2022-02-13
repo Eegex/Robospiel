@@ -21,6 +21,8 @@ private:
 	int clicked = -1;
 	QSize customSizeHint = {80,20};
 	bool buttonVisible = false;
+signals:
+	void userBtnClicked(QModelIndex & index);
 
 };
 

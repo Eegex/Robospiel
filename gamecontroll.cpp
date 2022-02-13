@@ -1320,16 +1320,19 @@ void GameControll::setActionWhenAnimationEnded(functionPointer function)
 	instance.actionWhenAnimationEnded=function;
 }
 
-void GameControll::disableAnnoyingSounds(){
+void GameControll::disableAnnoyingSounds()
+{
 	instance.player->stop();
 	instance.hasSkipped = 1;
 }
 
-int GameControll::getVoteCounter() {
+int GameControll::getVoteCounter()
+{
 	return instance.voteCounter;
 }
 
-int GameControll::getVoteThreshold() {
+int GameControll::getVoteThreshold()
+{
 	return instance.voteThreshold;
 }
 
@@ -1409,15 +1412,14 @@ void GameControll::updateVoteNumbers()
 
 }
 
-
-bool GameControll::localUserIsServer(){
+bool GameControll::localUserIsServer()
+{
 	return Server::isActive();
-
 }
 
-bool GameControll::localUserIsClient(){
+bool GameControll::localUserIsClient()
+{
 	return Client::isActive();
-
 }
 
 void GameControll::resetVotes()
@@ -1428,7 +1430,6 @@ void GameControll::resetVotes()
 		u->setHasVoted(false);
 	}
 }
-
 
 QString GameControll::phaseAsString(Phase phase){
 	return QStringList({tr("idle"),tr("search"), tr("countdown"), tr("presentation"),tr("freeplay")}).at(static_cast<int>(phase));
