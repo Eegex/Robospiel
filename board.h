@@ -58,7 +58,7 @@ public:
 	void setMoves(int moves);
 	void saveCurrentPositionOfPlayers();
 	void deleteSavedState();
-	void setSavedStateToCurrent();
+	void setCurrentToSavedState();
 	Tile * getTile(int x, int y);
 public slots:
 

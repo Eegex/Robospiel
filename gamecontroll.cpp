@@ -143,6 +143,8 @@ void GameControll::adaptFromJSON(QJsonObject json)
 		instance.actionWhenAnimationEnded=&GameControll::resetAndNextTarget;
 		break;
 	}
+
+//	qDebug()<<instance.getBoard();
 }
 
 /*!
@@ -950,7 +952,7 @@ void GameControll::nextTarget()
 {
 	//qDebug()<<"next target!!";
 
-	board->setSavedStateToCurrent();
+	board->setCurrentToSavedState();
 	if(switchPhase(Phase::search))
 	{
 		sortBy(points);
@@ -1037,9 +1039,8 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 	}
 	case Phase::freeplay:
 	{
-		/*TODO: Set user who just made a point as active user.
-			 Save the state that the game had right when the point was scored.*/
-		board->saveCurrentPositionOfPlayers();
+		//TODO: Set user who just made a point as active user.
+
 
 		currentPhase = phase;
 		letUserPlayFree(activeUserID);
@@ -1109,6 +1110,13 @@ bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns 
 	{
 		if(currentPhase == Phase::presentation)
 		{
+			//Save the state that the game had right when the point was scored.
+			/*Don't put this in setPhase:
+			When a client joins, only setPhase is called.
+			If saveCurrentPositionOfPlayers would be called, this would overwrite data with the freeplay-state.
+			For the next target, the board would be reset to a too late version of the board (possibly from the middle of freeplay phase)*/
+			board->saveCurrentPositionOfPlayers();
+
 			//TODO: muss hier voteCounter=0 rein?
 			setPhase(phase);
 			return true;

@@ -173,6 +173,16 @@ QString Board::toBinary()
 	s << static_cast<quint8>(seeker);
 	s << static_cast<quint8>(activePlayer);
 	s << static_cast<quint8>(moves);
+
+	qDebug()<<"Board::toBinary"<<"playersAfterGoalHit"<<playersAfterGoalHit.size();
+	s << static_cast<quint16>(playersAfterGoalHit.size());
+	for(QPoint p : playersAfterGoalHit)
+	{
+		s << static_cast<quint8>(p.x());
+		s << static_cast<quint8>(p.y());
+		qDebug()<<p;
+	}
+
 	return QString::fromUtf8(binary.toBase64());
 }
 
@@ -259,6 +269,23 @@ Board * Board::fromBinary(const QString base64)
 	newBoard->seeker = seeker;
 	newBoard->activePlayer = activePlayer;
 	newBoard->moves = moves;
+
+	quint16 playersAfterGoalHitLength;
+	s>>playersAfterGoalHitLength;
+	for(int i=0; i<playersAfterGoalHitLength; i++)
+	{
+		quint8 x;
+		quint8 y;
+		s>>x;
+		s>>y;
+		newBoard->playersAfterGoalHit.append(QPoint(x,y));
+	}
+
+	qDebug()<<"Board::fromBinary"<<"playersAfterGoalHit"<<newBoard->playersAfterGoalHit.size();
+	for(int i=0; i<newBoard->playersAfterGoalHit.size(); i++)
+	{
+		qDebug()<<newBoard->playersAfterGoalHit.at(i);
+	}
 	return newBoard;
 }
 
@@ -866,7 +893,7 @@ void Board::saveCurrentPositionOfPlayers()
 	}
 }
 
-void Board::setSavedStateToCurrent()
+void Board::setCurrentToSavedState()
 {
 	if(playersAfterGoalHit.length() >0)
 	{
