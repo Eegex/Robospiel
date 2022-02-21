@@ -31,10 +31,12 @@ public:
 	void initialize();
 	User * getLocalUser() const;
 
+
 private:
 	QGridLayout * lay = new QGridLayout(this);
 	QPushButton * bidBtn = new QPushButton(this); //accept in biddingWidget
 	QLabel * lname = new QLabel(this); //labelName in biddingWdiget
+    QLabel * lplayerInPower = new QLabel(this); //labelName in biddingWdiget
 	SpinBox * biddingBox = new SpinBox(this); //lSpinBox in biddingWidget
 	QTableView * tableView = new QTableView(this);
 	int userBidding = User::maxBid;
@@ -48,6 +50,8 @@ public slots:
 	// void updateName(QString newName); // before
 	void newRound(); //TODO
 	void updateName(QUuid id, QString name);
+    void updatePlayerInPower(QUuid id, QString newName);
+    void noPlayerInPower();
 	void updateColour(QUuid id, QColor color);
 	void deactivateInput();
 	void updateAllUsers(); //TODO

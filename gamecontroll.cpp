@@ -643,11 +643,14 @@ void GameControll::resetForNextUser()
 	Q_ASSERT_X(user,"GameControll::resetForNextUser","User is nullptr");
 	showGuide({ tr("Present your solution, ") + user->getName() + "[]",tr("Your turn, ") + user->getName() + "[]" });
 	setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
+    instance.leaderboard->updatePlayerInPower(user->getId(), user->getName());
 	emit enableActionBtn(localUserIsActiveUser());
 	getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
 	emit updateMoves(0);
 	qDebug() << "Active User is now " <<user->getName();
 }
+
+
 
 int GameControll::getUserIndexById(QUuid id)
 {
@@ -911,6 +914,7 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
 		User * user = instance.users.first();
 		Q_ASSERT_X(user,"GameControll::setLeaderboard","User is nullptr");
 		instance.setActiveUserID(user->getId());
+        instance.leaderboard->updatePlayerInPower(user->getId(), user->getName());
 		const QString& username = user->getName();
 		showGuide({ tr("Present your solution, ") + username + "[]",tr("Your turn, ") + username + "[]" });
 
@@ -977,6 +981,8 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 		currentPhase = phase;
 		updateVoteNumbers();
 
+        instance.leaderboard->noPlayerInPower(); //TODO: Am I breaking anything with this QUuid consrtcution? I basically just need a null there...
+
 		instance.leaderboard->setFreeplayButtonsVisible(false);
 		showGuide({tr("boooring")+ "[]",tr("i am not creative")+ "[2000]" + tr("at all")+ "[2000]" + tr("fuck you") + "[]", tr("We are in idle now!")+ "[]", tr("Lets do some idling!")+ "[]", tr("Okay, so you aren't capable of dealing with a real mode, are you?")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Too dumb for a real game!")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Idle again? Are we ever going to PLAY?")+ "[2000]" +tr("We are in idle.")+ "[]"});
 		emit enableIdleBtn(false);
@@ -990,6 +996,7 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 		currentPhase = phase;
 		updateVoteNumbers();
 
+        instance.leaderboard->noPlayerInPower();
 		instance.leaderboard->setFreeplayButtonsVisible(false);
 		instance.leaderboard->setBiddingFocus();
 		showGuide({tr("Start bidding")+ "[]",tr("Let's go! Bid!")+ "[]", tr("You can bid now!")+ "[]",  tr("Lets do some bidding!")+ "[]", tr("I bet you wont find anything! But you can try to...")+ "[2000]" +tr("Make your biddings!")+ "[]", tr("Make your biddings! Well if you find anything...")+ "[]"});
@@ -1008,6 +1015,7 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 
 		currentPhase = phase;
 		updateVoteNumbers();
+        instance.leaderboard->noPlayerInPower();
 
 		instance.leaderboard->setBiddingFocus();
 		showGuide({tr("Counting down")+ "[]", tr("Stressed yet? The Timer is running!")+ "[]", tr("You will never find anything in a minute!")+ "[]" });
@@ -1150,6 +1158,8 @@ void GameControll::letUserPlayFree(const QUuid & userId)
 	{
 		// set user as active user.
 		setActiveUserID(userId);
+        // show active user in UI
+        instance.leaderboard->updatePlayerInPower(userId, getUserById(userId)->getName());
 		// reset the board to the state in the last search phase
 		board->revertToBeginning();
 		// Set the steps counter to 0
@@ -1174,6 +1184,7 @@ QUuid GameControll::getActiveUserID()
 
 void GameControll::setActiveUserID(const QUuid & id)
 {
+
 	activeUserID = id;
 }
 

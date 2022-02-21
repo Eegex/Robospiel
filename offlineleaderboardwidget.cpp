@@ -138,6 +138,15 @@ void OfflineLeaderBoardWidget::updateName(QUuid id, QString name)
 	}
 }
 
+void OfflineLeaderBoardWidget::updatePlayerInPower(QUuid id, QString name)
+{
+    //TODO: no idea what should happen here, input would be appreciated!
+}
+void OfflineLeaderBoardWidget::noPlayerInPower()
+{
+    //TODO: no idea what should happen here, input would be appreciated!
+}
+
 void OfflineLeaderBoardWidget::updateColour(QUuid id, QColor colour)
 {
 	for(UserBiddingWidget * ubw : users)

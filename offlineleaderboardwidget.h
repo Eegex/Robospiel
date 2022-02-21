@@ -40,6 +40,8 @@ private:
 public slots:
 	void updateBidding(QUuid id, int bidding);
 	void updateName(QUuid id, QString name);
+    void updatePlayerInPower(QUuid id, QString name);
+    void noPlayerInPower();
 	void updateColour(QUuid id, QColor colour);
 	void updateAllUsers();
 	void newRound();

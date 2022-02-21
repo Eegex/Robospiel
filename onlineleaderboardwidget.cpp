@@ -12,6 +12,7 @@ void OnlineLeaderboardWidget::initialize()
 {
 	bidBtn->hide();
 	lname->hide();
+    lplayerInPower->hide();
 	biddingBox->hide();
 	tableView->hide();
 	setOnlineWidget();
@@ -49,12 +50,15 @@ void OnlineLeaderboardWidget::setOnlineWidget()
 	biddingBox->setMinimum(1);
 	biddingBox->setSingleStep(1);
 	bidBtn->setText(BID_BTN_TEXT);
-	lay->addWidget(lname);
+    lay->addWidget(lplayerInPower);
+    lay->addWidget(lname);
 	lay->addWidget(biddingBox);
 	lay->addWidget(bidBtn);
 	lay->addWidget(tableView);
     lname->setText(localUser->getName());
+    lplayerInPower->setText("");
 	lname->show();
+    lplayerInPower->show();
 	tableView->show();
 	biddingBox->show();
 	bidBtn->show();
@@ -151,6 +155,19 @@ void OnlineLeaderboardWidget::updateName(QUuid id, QString newName)
         lname->setText(newName);
     }
     //lname->setText(newName);
+}
+
+void OnlineLeaderboardWidget::updatePlayerInPower(QUuid id, QString newName){
+    model->update();
+    if(id == localUser->getId()){
+        newName = "YOU!!!";
+    }
+    lplayerInPower->setText(tr("playing: ") + newName);
+
+}
+
+void OnlineLeaderboardWidget::noPlayerInPower(){
+    lplayerInPower->setText(" - ");
 }
 
 void OnlineLeaderboardWidget::updateColour(QUuid id, QColor color)

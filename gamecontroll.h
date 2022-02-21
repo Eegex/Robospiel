@@ -83,6 +83,7 @@ public:
 	bool localUserIsClient();
 	static QString phaseAsString(Phase phase);
 
+    void setPlayerInPowerLabel(User *user);
 public slots:
 	static void startNetworkDebugger();
 	void calculateWinner();
