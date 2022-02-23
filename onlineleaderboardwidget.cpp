@@ -19,9 +19,11 @@ void OnlineLeaderboardWidget::initialize()
 	setLayout(lay);
 	biddingBox->setSelectAllOnFocus(true);
 	tableView->setModel(model);
+    tableView->resizeColumnsToContents();
+    tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 	delegate = new LeaderboardDelegate({tableView->horizontalHeader()->sectionSize(0),tableView->verticalHeader()->sectionSize(0)},this);
 	connect(tableView->horizontalHeader(),&QHeaderView::sectionResized,delegate,&LeaderboardDelegate::updateSizeHint);
-	tableView->setItemDelegate(delegate);
+    tableView->setItemDelegate(delegate);
 	connect(tableView, &QTableView::entered,delegate,&LeaderboardDelegate::userHovered);
 	connect(tableView, &QTableView::clicked,delegate,&LeaderboardDelegate::userClicked);
 	connect(delegate, &LeaderboardDelegate::userBtnClicked,this,&OnlineLeaderboardWidget::userClicked);
