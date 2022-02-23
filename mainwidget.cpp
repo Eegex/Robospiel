@@ -57,6 +57,11 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	{
 		if(steps)
 		{
+			if(steps<0 || steps>200)
+			{
+				Q_ASSERT_X(false, "mainwidget, lambda for updateMoves","weird number of steps");
+				qDebug()<<"weird number of steps";
+			}
 			dlSteps->setText(tr("Steps used: ") + QString::number(steps));
 		}
 		else
@@ -104,6 +109,10 @@ void MainWidget::handleActionButtonRelease()
 		break;
 	}
 	}
+
+	//trigger tooltip
+	QCursor::setPos(QCursor::pos()+QPoint(1,1));
+	//QCoreApplication::sendEvent(actionBtn, new QMouseEvent(QEvent::MouseMove, QPointF(0,0), pos(), pos(), Qt::NoButton, Qt::NoButton, Qt::NoModifier));
 
 }
 

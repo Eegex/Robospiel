@@ -370,12 +370,16 @@ void GameControll::exeQTAction(QJsonObject data)
 	case userLeft:
 	{
 		QUuid id = QUuid(data.value("userId").toString());
-
 		user = getUserById(id);
-		board->setMoves(INT32_MAX); //TODO explanation?
-					calculateGameStatus();
+
+		if(activeUserID==id)
+		{
+			handleUserGivingUp();
+		}
+		calculateGameStatus();
+
 		users.remove(users.indexOf(user));
-				leaderboard->updateAllUsers();
+		leaderboard->updateAllUsers();
 
 		if(user->getHasVoted())
 		{
