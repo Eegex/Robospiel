@@ -420,6 +420,23 @@ void GameControll::exeQTAction(QJsonObject data)
 		GameControll::getInstance().handleUserGivingUp();
 		break;
 	}
+    case switchServer:
+    {
+        QUuid id = QUuid(data.value("id").toString());
+        QString ip = data.value("ip").toString();
+        int port = data.value("port").toInt();
+        if(id == static_cast<OnlineLeaderboardWidget*>(leaderboard)->getLocalUser()->getId()){
+            //this user has to be the new server
+            Server::startServer("localhost", port);
+        }
+        else{
+            //this user can be a client
+            //wait around here
+            QThread::msleep(10);
+            Client::getInstance().startClient(ip, port);
+        }
+        break;
+    }
 	}
 }
 
@@ -544,6 +561,13 @@ void GameControll::triggerActionWithData(PlayerAction action, QJsonObject data)
 			return;
 		}
 	}
+    case switchServer:
+    {
+        if(!instance.localUserIsServer())
+        {
+            return;
+        }
+    }
 	default:
 		break;
 	}
