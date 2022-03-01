@@ -84,6 +84,7 @@ public:
 	static QString phaseAsString(Phase phase);
 
     void setPlayerInPowerLabel(User *user);
+    static void initiateServerSwitch();
 public slots:
 	static void startNetworkDebugger();
 	void calculateWinner();
@@ -141,6 +142,7 @@ signals:
 	void updateGuide(const QString & txt);
 	void enableMenus(bool boolean);
 	void enableActionBtn(bool boolean);
+    void enableServerSwitchBtn(bool boolean);
 	void enableIdleBtn(bool boolean);
 	void newBoard(Board* b);
 	void updateActionButtonText();

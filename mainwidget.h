@@ -28,9 +28,12 @@ public:
 	explicit MainWidget(QWidget *parent = nullptr);
 	void setMenuBar(QMenuBar * bar);
 	void enableActionBtn(bool boolean);
+    void enableServerSwitchBtn(bool boolean);
 	void enableIdle(bool boolean);
 	void updateActionBtnText();
-	void handleActionButtonRelease();
+    void handleActionButtonRelease();
+    void handleServerSwitch();
+
 private slots:
 	void updateTimer(int remaining);
 	void editBoard();
@@ -50,6 +53,7 @@ private:
 	UserView * userView = nullptr;
 	QLCDNumber * lcd = nullptr;
 	QPushButton * actionBtn = nullptr;
+    QPushButton * serverSwitchBtn = nullptr;
 	QMenuBar * menuBar = nullptr;
 	QAction * aNetworking = nullptr;
 	QAction * aEditBoard = nullptr;

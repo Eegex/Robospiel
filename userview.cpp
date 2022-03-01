@@ -4,7 +4,7 @@
  * \brief UserView::UserView This is the UI-Widget where the user can choose between a local game and being a client or server.
  * \param parent
  */
-UserView::UserView(QPushButton *actionBtn, QWidget *parent) : QWidget(parent)
+UserView::UserView(QPushButton *actionBtn, QPushButton *serverSwitchBtn, QWidget *parent) : QWidget(parent)
 {
 	network = new NetworkView();
 	connect(network, &NetworkView::leaderboardOnline, this, [=](){
@@ -24,6 +24,7 @@ UserView::UserView(QPushButton *actionBtn, QWidget *parent) : QWidget(parent)
 		btnBack->show();
 		layout->addWidget(leaderboard, 0, 0);
 		actionBtn->setEnabled(true);
+        serverSwitchBtn->setEnabled(true);
 	});
 	connect(network, &NetworkView::leaderboardOffline, this, [=](){
 		leaderboard = new OfflineLeaderBoardWidget();

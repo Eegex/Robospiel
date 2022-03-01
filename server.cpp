@@ -55,6 +55,7 @@ void Server::startServer(QString address, int port)
 	{
 		connected = true;
 		connect(server, &QTcpServer::newConnection, &instance, &Server::addClient);
+
 	}
 
 	emit instance.serverStarted(server->serverAddress(), server->serverPort());
@@ -183,7 +184,7 @@ void Server::switchServer()
     QUuid id = newServer->getUser()->getId();
     QString ip = "localhost";
     int port = 8050;
-    GameControll::triggerActionWithData(PlayerAction::switchServer,{{"id", id.toString()}, {"ip", ip}});
+    GameControll::triggerActionWithData(PlayerAction::switchServer,{{"port", port}, {"id", id.toString()}, {"ip", ip}});
 }
 
 bool Server::isActive()

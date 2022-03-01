@@ -13,10 +13,13 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	actionBtnTexts.insert(GameControll::Phase::presentation, tr("Give Up"));
 	actionBtnTexts.insert(GameControll::Phase::freeplay, tr("Next"));
 	actionBtn = new QPushButton(this);
+    serverSwitchBtn = new QPushButton(this);
+    serverSwitchBtn->setText("Server switch");
 	updateActionBtnText();
 	actionBtn->setEnabled(false); // should only be enabled as soon as we have the leaderboard and we can actually start the game
+    serverSwitchBtn->setEnabled(false); // should only be enabled as soon as we have the leaderboard and we can actually start the game
 
-	userView = new UserView(actionBtn, this);
+    userView = new UserView(actionBtn, serverSwitchBtn, this);
 
 	initializeView(GameControll::setBoard(new Board(16, 16, 5)), GameControll::getMapping());
 	//connect(view, &BoardView::lastAnimationAfterGoalHitEnded, game, &GameControll::calculateWinner);
@@ -40,10 +43,12 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(&GameControll::getInstance(),&GameControll::focusBoard,this,&MainWidget::focusBoard);
 	adjustSize();
 	glMain->addWidget(actionBtn,2,1,Qt::AlignCenter);
+    glMain->addWidget(serverSwitchBtn,2,2,Qt::AlignCenter);
 	connect(actionBtn, &QPushButton::released, this, &MainWidget::handleActionButtonRelease);
+    connect(serverSwitchBtn, &QPushButton::released, this, &MainWidget::handleServerSwitch);
 	connect(&GameControll::getInstance(), &GameControll::setBoardEnabled, this, [&](bool enabled)
 	{
-		if(edit)
+        if(edit)
 		{
 			edit->setEnabled(enabled);
 		}
@@ -73,6 +78,12 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(&GameControll::getInstance(),&GameControll::time,this,&MainWidget::updateTimer);
 	connect(&GameControll::getInstance(),&GameControll::updateActionButtonText,this,&MainWidget::updateActionBtnText);
 }
+
+
+void MainWidget::handleServerSwitch()
+    {
+        GameControll::initiateServerSwitch();
+    }
 
 void MainWidget::handleActionButtonRelease()
 {
@@ -278,6 +289,7 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	});
 	connect(&GameControll::getInstance(), &GameControll::enableMenus, this, &MainWidget::enableMenus);
 	connect(&GameControll::getInstance(), &GameControll::enableActionBtn, this, &MainWidget::enableActionBtn);
+    connect(&GameControll::getInstance(), &GameControll::enableServerSwitchBtn, this, &MainWidget::enableServerSwitchBtn);
 	connect(&GameControll::getInstance(), &GameControll::enableIdleBtn, this, &MainWidget::enableIdle);
 	connect(sbWidth, SIGNAL(valueChanged(int)), this, SLOT(updatePlayerMaximum(int)));
 	connect(sbHeight, SIGNAL(valueChanged(int)), this, SLOT(updatePlayerMaximum(int)));
@@ -355,6 +367,12 @@ void MainWidget::focusBoard()
 void MainWidget::enableActionBtn(bool boolean)
 {
 	actionBtn->setEnabled(boolean);
+}
+
+void MainWidget::enableServerSwitchBtn(bool boolean)
+{
+    serverSwitchBtn->setEnabled(boolean);
+    serverSwitchBtn->setVisible(boolean);
 }
 
 void MainWidget::editBoard()
