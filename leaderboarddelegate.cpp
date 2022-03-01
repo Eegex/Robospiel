@@ -22,6 +22,7 @@ void LeaderboardDelegate::paint(QPainter * painter, const QStyleOptionViewItem &
 		QPixmap px(r.size());
 		px.fill();
 		QPushButton btn(index.data().toString());
+		btn.setDisabled(clicked);
 		btn.setStyleSheet("color:" + index.data(Qt::ForegroundRole).value<QColor>().name());
 		btn.setGeometry(r);
 		btn.render(&px,QPoint(0,0),QRect({0,0},r.size()));
