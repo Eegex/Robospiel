@@ -4,6 +4,7 @@
 #include <QPainterPath>
 #include <QPen>
 #include <QPushButton>
+#include <QColor>
 #include <QDebug>
 #include <QPalette>
 
@@ -16,24 +17,15 @@ void LeaderboardDelegate::paint(QPainter * painter, const QStyleOptionViewItem &
 {
 	if(buttonVisible && index.column() == 0)
 	{
-		painter->save();
-		QPainterPath path;
-		painter->setPen(QPen(QColor(0xAAAAAA),1));
-		path.addRoundedRect(option.rect.adjusted(5,5,-10,-10),2.5,2.5);
-		painter->fillPath(path,QApplication::palette().color(QPalette::ColorRole::Button));
-		//muss besser gehen, auch ohne wirklich einen Button zu erzeugen
-//		if(index.row() == clicked)
-//		{
-//		}
-//		else if(index.row() == hovered)
-//		{
-//			painter->fillPath(path,QApplication::palette().color(QPalette::ColorRole::Highlight));
-//		}
-//		else
-//		{
-			//painter->drawPath(path);
-//		}
-		//painter->restore();
+		QRect r(option.rect);
+		r.adjust(smaller,smaller,-smaller,-smaller);
+		QPixmap px(r.size());
+		px.fill();
+		QPushButton btn(index.data().toString());
+		btn.setStyleSheet("color:" + index.data(Qt::ForegroundRole).value<QColor>().name());
+		btn.setGeometry(r);
+		btn.render(&px,QPoint(0,0),QRect({0,0},r.size()));
+		painter->drawPixmap(r,px);
 	}
 	else
 	{
