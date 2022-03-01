@@ -12,6 +12,7 @@ public:
 	void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
 	QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const;
 	void setButtonVisible(bool visible);
+
 public slots:
 	void updateSizeHint(int logicalIndex, int oldSize, int newSize);
 	void userHovered(const QModelIndex & index);
@@ -21,6 +22,7 @@ private:
 	int clicked = -1;
 	QSize customSizeHint = {80,20};
 	bool buttonVisible = false;
+	char smaller = 4;
 signals:
 	void userBtnClicked(QModelIndex & index);
 
