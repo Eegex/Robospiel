@@ -420,6 +420,33 @@ void GameControll::exeQTAction(QJsonObject data)
 		GameControll::getInstance().handleUserGivingUp();
 		break;
 	}
+    case switchServer:
+    {
+        qDebug() << data << "FUCK YOU";
+        QUuid id = QUuid(data.value("id").toString());
+        QString ip = data.value("ip").toString();
+        int port = data.value("port").toInt();
+        //int port = data.value("port").toString().toInt();
+        ip = "localhost";
+        port = 8050;
+        qDebug() << ip << "ip" << port << "port";
+        if(id == static_cast<OnlineLeaderboardWidget*>(leaderboard)->getLocalUser()->getId()){
+            //this user has to be the new server
+            Server::startServer(ip, port);
+        }
+//        else{
+//            //this user can be a client
+//            //wait around here
+//            QThread::msleep(100);
+//            if(localUserIsServer()){
+//                Server::getInstance().closeServer();
+//            }
+
+//            Client::getInstance().startClient(ip, port);
+//            instance.enableServerSwitchBtn(instance.localUserIsServer());
+//        }
+        break;
+    }
 	}
 }
 
@@ -543,7 +570,16 @@ void GameControll::triggerActionWithData(PlayerAction action, QJsonObject data)
 		{
 			return;
 		}
+        break;
 	}
+//    case switchServer:
+//    {
+//        if(!instance.localUserIsServer())
+//        {
+//            return;
+//        }
+//        break;
+//    }
 	default:
 		break;
 	}
@@ -897,6 +933,7 @@ void GameControll::changeBidding(int bidding, QUuid id)
  */
 User * GameControll::initializeUser()
 {
+    instance.enableServerSwitchBtn(instance.localUserIsServer());
 	User * u = new User(instance.getSettingsDialog()->getUsername(), instance.getSettingsDialog()->getUsercolor());
 	qDebug()<<"initializeUser with id: "<<u->getId();
 	triggerActionWithData(PlayerAction::registerClient, u->toJSON());
@@ -978,6 +1015,8 @@ void GameControll::nextTarget()
 
 void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out the phases word like this (with switchPhase) please delete all the commented sections and move "currentPhase = phase;" and "updateVoteNumbers();" before the switch-case
 {
+
+
 	switch(phase)
 	{
 	case Phase::idle:
@@ -997,6 +1036,8 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 	}
 	case Phase::search:
 	{
+        enableServerSwitchBtn(localUserIsServer());
+
 		currentPhase = phase;
 		updateVoteNumbers();
 
@@ -1067,11 +1108,13 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 		break;
 	}
 	}
+    player->stop();
 }
 
 bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns out the phases word like this (with setPhase) please delete all the commented sections
 {
 	//qDebug() << "GameControll::switchPhase(GameControll::Phase " << static_cast<int>(phase) << ")";
+
 	switch(phase)
 	{
 	case Phase::idle:
@@ -1433,6 +1476,15 @@ void GameControll::updateVoteNumbers()
 		break;
 	}
 
+}
+
+
+void GameControll::initiateServerSwitch()
+{
+    if(instance.localUserIsServer())
+    {
+        Server::switchServer();
+    }
 }
 
 bool GameControll::localUserIsServer()

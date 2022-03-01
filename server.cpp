@@ -44,15 +44,18 @@ void Server::startServer(QString address, int port)
 			server->close();
 		}
 	}
+    //make the server listen
 	if (!server->listen(QHostAddress(address),port))
 	{
 		emit instance.serverNotStarted();
 		return;
 	}
+    //connected just checks whether the connect has been called yet, so it is not connected multiple times.
 	if(!connected)
 	{
 		connected = true;
 		connect(server, &QTcpServer::newConnection, &instance, &Server::addClient);
+
 	}
 
 	emit instance.serverStarted(server->serverAddress(), server->serverPort());
@@ -107,7 +110,7 @@ void Server::addClient()
 
 	ConnectionToClient* connection = new ConnectionToClient(this, tcpServerConnection);
 	connections.append(connection);
-
+//"Das ist code für wenn ein CLient einfach geht" - Dorothee
 	connect(connection, &ConnectionToClient::deleteConnection, this, [=](ConnectionToClient* toDelete)->void{
 		User* u = toDelete->getUser();
 		connections.remove(connections.indexOf(toDelete));
@@ -173,6 +176,15 @@ void Server::closeServer()
 		toDelete = nullptr;
 	}
 	emit instance.serverClosed();
+}
+
+void Server::switchServer()
+{
+    ConnectionToClient* newServer = connections.takeFirst();
+    QUuid id = newServer->getUser()->getId();
+    QString ip = "localhost";
+    int port = 8050;
+    GameControll::triggerActionWithData(PlayerAction::switchServer,{{"port", port}, {"id", id.toString()}, {"ip", ip}});
 }
 
 bool Server::isActive()
