@@ -78,6 +78,8 @@ private:
 
 	void initializeView(Board *b, QVector<KeyMapping *> *m);
 	void connectView(BoardView * view);
+
+	//int testCounter=0;
 };
 
 #endif // MAINWIDGET_H

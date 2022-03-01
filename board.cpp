@@ -165,7 +165,7 @@ QString Board::toBinary()
 	s << static_cast<quint16>(history.size());
 	for(HistoryElement historyElement : qAsConst(history))
 	{
-		s << static_cast<quint8>(historyElement.action);
+		s << static_cast<quint32>(historyElement.action);
 		s << static_cast<quint8>(historyElement.previousPlayer);
 		s << static_cast<quint8>(historyElement.previousPosition.x());
 		s << static_cast<quint8>(historyElement.previousPosition.y());
@@ -174,7 +174,6 @@ QString Board::toBinary()
 	s << static_cast<quint8>(activePlayer);
 	s << static_cast<quint8>(moves);
 
-	qDebug()<<"Board::toBinary"<<"playersAfterGoalHit"<<playersAfterGoalHit.size();
 	s << static_cast<quint16>(playersAfterGoalHit.size());
 	for(QPoint p : playersAfterGoalHit)
 	{
@@ -191,7 +190,8 @@ Board * Board::fromBinary(const QString base64)
 	QByteArray data = QByteArray::fromBase64(base64.toUtf8());
 	QDataStream s(&data,QIODevice::ReadOnly);
 	quint8 height, width, playerSize, seeker, activePlayer, moves;
-	quint8 x, y, action, prevPlayer;
+	quint8 x, y, prevPlayer;
+	quint32 action;
 	quint16 eastWallSize, southWallSize, historySize;
 	QVector<QPoint> eastWalls;
 	QVector<QPoint> southWalls;
@@ -221,7 +221,10 @@ Board * Board::fromBinary(const QString base64)
 	s >> historySize;
 	for(int i = 0; i < historySize;i++)
 	{
-		s >> action >> prevPlayer >> x >> y;
+		s >> action;
+		s >> prevPlayer;
+		s >> x;
+		s >> y;
 		HistoryElement he;
 		he.action = static_cast<PlayerAction>(action);
 		he.previousPlayer = prevPlayer;
