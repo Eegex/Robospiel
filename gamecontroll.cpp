@@ -1067,6 +1067,7 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 		break;
 	}
 	}
+    player->stop();
 }
 
 bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns out the phases word like this (with setPhase) please delete all the commented sections

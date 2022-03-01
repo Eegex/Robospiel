@@ -22,6 +22,8 @@ User::User(QString name, QColor color, QObject *parent) : QObject(parent), name(
 	{
         name = tr("user ")+QString::number(User::userCount++);
 	}
+    User::bidding = User::maxBid; //This should fix the sort function
+    User::hasBid = false;
 }
 
 User::~User()
