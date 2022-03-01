@@ -16,6 +16,24 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	updateActionBtnText();
 	actionBtn->setEnabled(false); // should only be enabled as soon as we have the leaderboard and we can actually start the game
 
+	//-----Test für Tooltip-Update
+//	QTimer *timer = new QTimer(this);
+//	timer->setInterval(500);
+//	connect(timer, &QTimer::timeout, this, [=](){
+//		actionBtn->setToolTip(QString::number(testCounter++));
+//		if(testCounter%10)
+//		{
+//			if(actionBtn->hasFocus())
+//			{
+//				//trigger tooltip
+//				QCursor::setPos(QCursor::pos()+QPoint(1,1));
+//				//QCoreApplication::sendEvent(actionBtn, new QMouseEvent(QEvent::MouseMove, QPointF(0,0), pos(), pos(), Qt::NoButton, Qt::NoButton, Qt::NoModifier));
+//			}
+//		}
+//	});
+//	timer->start();
+	//-----
+
 	userView = new UserView(actionBtn, this);
 
 	initializeView(GameControll::setBoard(new Board(16, 16, 5)), GameControll::getMapping());
@@ -82,7 +100,6 @@ void MainWidget::handleActionButtonRelease()
 	//countdown -> ja, skipTimer, alle
 	//presentation ->nein, give up, nur man selber
 	//freeplay -> ja, Freeplay abbrechen um weiterspielen zu können, Hälfte || alle, weil es dann weitergeht und alle mitmachen sollten? Andererseits können Leute dann nciht kurzzeitig aussezten
-
 	switch (GameControll::getCurrentPhase())
 	{
 	case GameControll::Phase::countdown:
@@ -109,11 +126,6 @@ void MainWidget::handleActionButtonRelease()
 		break;
 	}
 	}
-
-	//trigger tooltip
-	QCursor::setPos(QCursor::pos()+QPoint(1,1));
-	//QCoreApplication::sendEvent(actionBtn, new QMouseEvent(QEvent::MouseMove, QPointF(0,0), pos(), pos(), Qt::NoButton, Qt::NoButton, Qt::NoModifier));
-
 }
 
 void MainWidget::updateActionBtnText()
@@ -144,6 +156,11 @@ void MainWidget::updateActionBtnText()
 	}
 	actionBtn->setText(text);
 	actionBtn->setToolTip(missingVotes);
+
+	//trigger tooltip
+	QCursor::setPos(QCursor::pos()+ QPoint(1,1));
+
+
 }
 
 void MainWidget::setMenuBar(QMenuBar * bar)
