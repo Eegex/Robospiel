@@ -3,6 +3,8 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QPen>
+#include <QPushButton>
+#include <QDebug>
 #include <QPalette>
 
 LeaderboardDelegate::LeaderboardDelegate(QSize size,QWidget * parent) : QStyledItemDelegate(parent)
@@ -29,11 +31,14 @@ void LeaderboardDelegate::paint(QPainter * painter, const QStyleOptionViewItem &
 //		}
 //		else
 //		{
-			painter->drawPath(path);
+			//painter->drawPath(path);
 //		}
-		painter->restore();
+		//painter->restore();
 	}
-	QStyledItemDelegate::paint(painter,option,index);
+	else
+	{
+		QStyledItemDelegate::paint(painter,option,index);
+	}
 }
 
 QSize LeaderboardDelegate::sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const
