@@ -81,9 +81,9 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 
 
 void MainWidget::handleServerSwitch()
-    {
-        GameControll::initiateServerSwitch();
-    }
+{
+    GameControll::initiateServerSwitch();
+}
 
 void MainWidget::handleActionButtonRelease()
 {
