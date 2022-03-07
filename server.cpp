@@ -180,7 +180,7 @@ void Server::closeServer()
 
 void Server::switchServer()
 {
-    ConnectionToClient* newServer = connections.takeFirst();
+    ConnectionToClient* newServer = connections.first();
     QUuid id = newServer->getUser()->getId();
     QString ip = "localhost";
     int port = 8050;
