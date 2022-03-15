@@ -438,14 +438,13 @@ void GameControll::exeQTAction(QJsonObject data)
         }
         else //we will now be clients
         {
-            //this user can be a client
+
             //wait around here
             QThread::msleep(100);
             if(!localUserIsServer()){ // we used to be a client and are still only a client
                 Client::getInstance().closeClient();
                 //Server::getInstance().closeServer();
             }
-            //QThread::msleep(100);
             Client::getInstance().startClient(ip, port);
             instance.enableServerSwitchBtn(instance.localUserIsServer());
         }
@@ -935,10 +934,13 @@ void GameControll::changeBidding(int bidding, QUuid id)
  * \brief GameControll::initializeUser current user of the system is initialised (only when server or client starts)
  * \return
  */
-User * GameControll::initializeUser()
+User * GameControll::initializeUser(User* u)
 {
+    if(!u){
+        u  = new User(instance.getSettingsDialog()->getUsername(), instance.getSettingsDialog()->getUsercolor());
+    }
     instance.enableServerSwitchBtn(instance.localUserIsServer());
-	User * u = new User(instance.getSettingsDialog()->getUsername(), instance.getSettingsDialog()->getUsercolor());
+
 	qDebug()<<"initializeUser with id: "<<u->getId();
 	triggerActionWithData(PlayerAction::registerClient, u->toJSON());
 	triggerActionWithData(PlayerAction::newUser, u->toJSON());
@@ -1428,6 +1430,7 @@ void GameControll::updateVoteNumbers()
 		break;
 	}
 	voteThreshold = std::max(voteThreshold, 1);
+    voteThreshold = 1;
 	emit updateActionButtonText();
 	//TODO: There is one case where this function is called (because of a new user?) and the emit updateActionButtonText(); leads to the "GIVE UP" String in presentation being set enabled, though it shouldn't be. Checking this here is super ugly, but I don't know where else...
 	if(currentPhase == Phase::presentation && !localUserIsActiveUser()){

@@ -84,7 +84,7 @@ public:
 	static QString phaseAsString(Phase phase);
 
     void setPlayerInPowerLabel(User *user);
-    static void initiateServerSwitch();
+    static User *initializeUser(User *user);
 public slots:
 	static void startNetworkDebugger();
 	void calculateWinner();

@@ -8,13 +8,18 @@ UserView::UserView(QPushButton *actionBtn, QPushButton *serverSwitchBtn, QWidget
 {
 	network = new NetworkView();
 	connect(network, &NetworkView::leaderboardOnline, this, [=](){
+        User* user = nullptr;
+        if(leaderboard){
+            OnlineLeaderboardWidget* onlineLeaderboard = dynamic_cast<OnlineLeaderboardWidget*>(leaderboard);
+            user = onlineLeaderboard->getLocalUser();
+        }
 		leaderboard = new OnlineLeaderboardWidget();
 		GameControll::getInstance().setLeaderboard(leaderboard);
 
 		OnlineLeaderboardWidget* onlineLeaderboard = dynamic_cast<OnlineLeaderboardWidget*>(leaderboard);
-		if(onlineLeaderboard)
+        if(onlineLeaderboard)
 		{
-			onlineLeaderboard->setLocalUser(GameControll::getInstance().initializeUser());
+            onlineLeaderboard->setLocalUser(GameControll::getInstance().initializeUser(user));
 			onlineLeaderboard->initialize();
 		} else {
 			qDebug()<<"In Userview constructor: "<<"no online leaderboard";
