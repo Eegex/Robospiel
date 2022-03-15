@@ -54,7 +54,6 @@ public:
 	static void adaptFromJSON(QJsonObject json);
 	static void setLeaderboard(LeaderBoardWidget * value);
 	static void addOnlineUser(User *user);
-	static User * initializeUser();
 	static void showGuide(const QStringList & texts);
 	static QString getLocalUserName();
 	static void initializeConnections();
@@ -84,6 +83,7 @@ public:
 	static QString phaseAsString(Phase phase);
 
     void setPlayerInPowerLabel(User *user);
+    static void initiateServerSwitch();
     static User *initializeUser(User *user);
 public slots:
 	static void startNetworkDebugger();
