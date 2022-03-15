@@ -427,23 +427,25 @@ void GameControll::exeQTAction(QJsonObject data)
         QString ip = data.value("ip").toString();
         int port = data.value("port").toInt();
         //int port = data.value("port").toString().toInt();
-        ip = "localhost";
-        port = 8050;
+        //ip = "localhost";
+        //port = 8050;
         qDebug() << ip << "ip" << port << "port";
-        if(id == static_cast<OnlineLeaderboardWidget*>(leaderboard)->getLocalUser()->getId())
+        if(id == static_cast<OnlineLeaderboardWidget*>(leaderboard)->getLocalUser()->getId()) //we are the new server
         {
             //this user has to be the new server
+            Client::getInstance().closeClient();
             Server::startServer(ip, port);
         }
-        else
+        else //we will now be clients
         {
             //this user can be a client
             //wait around here
             QThread::msleep(100);
-            if(localUserIsServer()){
-                Server::getInstance().closeServer();
+            if(!localUserIsServer()){ // we used to be a client and are still only a client
+                Client::getInstance().closeClient();
+                //Server::getInstance().closeServer();
             }
-
+            //QThread::msleep(100);
             Client::getInstance().startClient(ip, port);
             instance.enableServerSwitchBtn(instance.localUserIsServer());
         }
