@@ -183,10 +183,10 @@ void Server::switchServer()
     ConnectionToClient* newServer = connections.first();
     QUuid id = newServer->getUser()->getId();
     //QString ip = "localhost";
-    //int port = 8050;
+    int port = 8050;
 
     QHostAddress ip = newServer->getTcpSocket()->peerAddress();
-    int port = newServer->getTcpSocket()->peerPort();
+    //int port = newServer->getTcpSocket()->peerPort();
 
     qDebug() << "HEYA! port: " << port << "ip: " << ip.toString();
 
