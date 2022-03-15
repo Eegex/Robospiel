@@ -17,9 +17,12 @@ public:
 
 	User * getUser() const;
 
+    QTcpSocket *getTcpSocket() const;
+    void setTcpSocket(QTcpSocket *value);
+
 private:
-	QTcpSocket * tcpSocket = nullptr;
-	QDataStream streamFromClient;
+    QTcpSocket * tcpSocket = nullptr;
+    QDataStream streamFromClient;
 	User * user = nullptr;
 
 signals:

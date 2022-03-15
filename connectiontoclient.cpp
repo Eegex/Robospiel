@@ -20,13 +20,23 @@ User * ConnectionToClient::getUser() const
     return user;
 }
 
+QTcpSocket *ConnectionToClient::getTcpSocket() const
+{
+    return tcpSocket;
+}
+
+void ConnectionToClient::setTcpSocket(QTcpSocket *value)
+{
+    tcpSocket = value;
+}
+
 void ConnectionToClient::receiveMessage()
 {
     streamFromClient.startTransaction();
-
-	QString message;
-	streamFromClient >> message;
-
+    
+    QString message;
+    streamFromClient >> message;
+    
     if (!streamFromClient.commitTransaction())
     {
         return;

@@ -182,9 +182,17 @@ void Server::switchServer()
 {
     ConnectionToClient* newServer = connections.first();
     QUuid id = newServer->getUser()->getId();
-    QString ip = "localhost";
-    int port = 8050;
-    GameControll::triggerActionWithData(PlayerAction::switchServer,{{"port", port}, {"id", id.toString()}, {"ip", ip}});
+    //QString ip = "localhost";
+    //int port = 8050;
+
+    QHostAddress ip = newServer->getTcpSocket()->peerAddress();
+    int port = newServer->getTcpSocket()->peerPort();
+
+    qDebug() << "HEYA! port: " << port << "ip: " << ip.toString();
+
+
+
+    GameControll::triggerActionWithData(PlayerAction::switchServer,{{"port", port}, {"id", id.toString()}, {"ip", ip.toString()}});
 }
 
 bool Server::isActive()
