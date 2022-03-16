@@ -10,6 +10,8 @@ public:
 	SpinBox(QWidget* paren=nullptr);
 	void setSelectAllOnFocus(bool newSelectAllOnFocus);
 
+	bool getSelectAllOnFocus() const;
+
 public slots:
 	void focusInEvent(QFocusEvent * event);
 	void keyPressEvent(QKeyEvent *event);

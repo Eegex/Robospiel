@@ -83,6 +83,8 @@ private:
 	void initializeView(Board *b, QVector<KeyMapping *> *m);
 	void connectView(BoardView * view);
 
+	bool tooltipDir = false;
+
 	//int testCounter=0;
 };
 

@@ -245,8 +245,10 @@ void OnlineLeaderboardWidget::activateInput()
 void OnlineLeaderboardWidget::setBiddingFocus()
 {
 	biddingBox->setFocus();
-	biddingBox->selectAll();
-//	QTimer::singleShot(50,biddingBox,&SpinBox::selectAll);
+	if(biddingBox->getSelectAllOnFocus())
+	{
+		biddingBox->selectAll(); //Wird benötigt, weil das implementierte SpinBox::focusInEvent nicht aufgerufen wird, wenn der Fokus schon auf der Spinbox ist.
+	}
 }
 
 void OnlineLeaderboardWidget::updateAllUsers()

@@ -85,6 +85,8 @@ public:
     void setPlayerInPowerLabel(User *user);
     static void initiateServerSwitch();
     static User *initializeUser(User *user);
+	static LeaderBoardWidget* getLeaderboard();
+
 public slots:
 	static void startNetworkDebugger();
 	void calculateWinner();
