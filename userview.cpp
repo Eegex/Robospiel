@@ -12,6 +12,7 @@ UserView::UserView(QPushButton *actionBtn, QPushButton *serverSwitchBtn, QWidget
         if(leaderboard){
             OnlineLeaderboardWidget* onlineLeaderboard = dynamic_cast<OnlineLeaderboardWidget*>(leaderboard);
             user = onlineLeaderboard->getLocalUser();
+            onlineLeaderboard->deleteLater();
         }
 		leaderboard = new OnlineLeaderboardWidget();
 		GameControll::getInstance().setLeaderboard(leaderboard);
