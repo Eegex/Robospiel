@@ -6,45 +6,58 @@ ConnectionToClient::ConnectionToClient(QObject *parent, QTcpSocket *tcpSocket): 
 {
 	streamFromClient.setDevice(tcpSocket);
 	connect(tcpSocket, &QIODevice::readyRead, this, &ConnectionToClient::receiveMessage);
-	connect(tcpSocket, &QAbstractSocket::disconnected, this, [=]()->void{emit deleteConnection(this);});
-
+	connect(tcpSocket, &QAbstractSocket::disconnected, this, [=]()->void
+	{
+		emit deleteConnection(this);
+	});
 }
 
 void ConnectionToClient::setUser(User *value)
 {
-    user = value;
+	user = value;
+}
+
+void ConnectionToClient::sendLeft()
+{
+	qDebug() << "ConnectionToClient::sendLeft()";
+	if(tcpSocket->bytesToWrite() > 0)
+	{
+		tcpSocket->waitForBytesWritten();
+	}
+	tcpSocket->close();
+	tcpSocket->waitForDisconnected();
 }
 
 User * ConnectionToClient::getUser() const
 {
-    return user;
+	return user;
 }
 
 QTcpSocket *ConnectionToClient::getTcpSocket() const
 {
-    return tcpSocket;
+	return tcpSocket;
 }
 
 void ConnectionToClient::setTcpSocket(QTcpSocket *value)
 {
-    tcpSocket = value;
+	tcpSocket = value;
 }
 
 void ConnectionToClient::receiveMessage()
 {
-    streamFromClient.startTransaction();
-    
-    QString message;
-    streamFromClient >> message;
-    
-    if (!streamFromClient.commitTransaction())
-    {
-        return;
-    }
-    emit receivedMessage(message);
+	streamFromClient.startTransaction();
 
-    //process the next message, which might have be blocked by the current one, which was to long to be transmitted at once
-    receiveMessage();
+	QString message;
+	streamFromClient >> message;
+
+	if (!streamFromClient.commitTransaction())
+	{
+		return;
+	}
+	emit receivedMessage(message);
+
+	//process the next message, which might have be blocked by the current one, which was to long to be transmitted at once
+	receiveMessage();
 }
 
 bool ConnectionToClient::sendMessage(QString message)

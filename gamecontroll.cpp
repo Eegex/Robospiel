@@ -209,21 +209,24 @@ void GameControll::load()
 		instance.board->updateColors(instance.settings->getBackground(), instance.settings->getWallcolor(), instance.settings->getGridcolor(), instance.settings->getPlayerColorLow(), instance.settings->getPlayerColorHigh());
 	});
 	connect(instance.settings, &SettingsDialog::newMapping, &GameControll::getInstance(),[&](QVector<KeyMapping*> mapping){ instance.mapping = mapping; });
-	connect(instance.settings, &SettingsDialog::usercolorChanged, &instance, [=](QColor color){
+	connect(instance.settings, &SettingsDialog::usercolorChanged, &instance, [=](QColor color)
+	{
 		if(Server::isActive() || Client::isActive())
 		{
 			triggerActionWithData(PlayerAction::changedUserColor, {{"id", getLocalUser()->getId().toString()},{"color", color.name()}});
 		}
 
 	});
-	connect(instance.settings, &SettingsDialog::usernameChanged, &instance, [=](QString name){
+	connect(instance.settings, &SettingsDialog::usernameChanged, &instance, [=](QString name)
+	{
 		if(Server::isActive() || Client::isActive())
 		{
 			triggerActionWithData(PlayerAction::changedUsername, {{"id", getLocalUser()->getId().toString()},{"name", name}});
 		}
 	});
 
-	connect(instance.settings, &SettingsDialog::timertimeChanged, &instance, [=](int length){
+	connect(instance.settings, &SettingsDialog::timertimeChanged, &instance, [=](int length)
+	{
 		if(Server::isActive())
 		{
 			triggerActionWithData(PlayerAction::changedTimerTime, {{"length", length}});
@@ -433,6 +436,7 @@ void GameControll::exeQTAction(QJsonObject data)
 		if(id == static_cast<OnlineLeaderboardWidget*>(leaderboard)->getLocalUser()->getId()) //we are the new server
 		{
 			//this user has to be the new server
+//			QThread::msleep(50);
 			Client::getInstance().closeClient();
 			Server::startServer(ip, port);
 		}
@@ -440,13 +444,18 @@ void GameControll::exeQTAction(QJsonObject data)
 		{
 
 			//wait around here
-			QThread::msleep(100);
 			if(!localUserIsServer()) // we used to be a client and are still only a client
 			{
 				Client::getInstance().closeClient();
+//				QThread::msleep(100);
 				//Server::getInstance().closeServer();
 			}
+			else
+			{
+				Server::closeServer();
+			}
 			Client::getInstance().startClient(ip, port);
+			qDebug() << "sollte true false sein" << Client::isActive() << Server::isActive();
 			instance.enableServerSwitchBtn(instance.localUserIsServer());
 		}
 		break;
@@ -506,13 +515,15 @@ void GameControll::triggerAction(PlayerAction action)
 	}
 	else if(action & PlayerAction::menuAction)
 	{
-		if(action == PlayerAction::setIdle && instance.currentPhase == Phase::search && !Server::isActive()){ //if any client manages to press idle even though they are in search (and it should be disabled) its caught here
+		if(action == PlayerAction::setIdle && instance.currentPhase == Phase::search && !Server::isActive())
+		{ //if any client manages to press idle even though they are in search (and it should be disabled) its caught here
 			return;
 		}
 		emit instance.actionTriggered(action);
 		return;
 	}
-	else if (action==PlayerAction::resetPoints) {
+	else if (action==PlayerAction::resetPoints)
+	{
 		emit instance.actionTriggered(action);
 	}
 	return;
@@ -576,16 +587,10 @@ void GameControll::triggerActionWithData(PlayerAction action, QJsonObject data)
 		}
 		break;
 	}
-//    case switchServer:
-//    {
-//        if(!instance.localUserIsServer())
-//        {
-//            return;
-//        }
-//        break;
-//    }
 	default:
+	{
 		break;
+	}
 	}
 	emit instance.actionTriggeredWithData(action, data);
 }
@@ -1128,7 +1133,7 @@ bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns 
 	case Phase::idle:
 	{
 
-		if(currentPhase == Phase::freeplay || currentPhase == Phase::idle || currentPhase == Phase::search) //I allow going to idle from search here, but this is only supposed to work when the server wants it, this should be managed in switchPhase be disabling the button for everyone else
+		if(currentPhase == Phase::freeplay || currentPhase == Phase::search)/* || currentPhase == Phase::idle*/ //I allow going to idle from search here, but this is only supposed to work when the server wants it, this should be managed in switchPhase be disabling the button for everyone else
 		{
 			resetVotes();
 			setPhase(phase);
@@ -1138,7 +1143,7 @@ bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns 
 	}
 	case Phase::search:
 	{
-		if(currentPhase == Phase::freeplay || currentPhase == Phase::idle || currentPhase == Phase::search)
+		if(currentPhase == Phase::freeplay || currentPhase == Phase::idle)/* || currentPhase == Phase::search*/
 		{
 			resetVotes();
 			setPhase(phase);
@@ -1445,7 +1450,8 @@ void GameControll::updateVoteNumbers()
 	voteThreshold = std::max(voteThreshold, 1);
 	emit updateActionButtonText();
 	//TODO: There is one case where this function is called (because of a new user?) and the emit updateActionButtonText(); leads to the "GIVE UP" String in presentation being set enabled, though it shouldn't be. Checking this here is super ugly, but I don't know where else...
-	if(currentPhase == Phase::presentation && !localUserIsActiveUser()){
+	if(currentPhase == Phase::presentation && !localUserIsActiveUser())
+	{
 		emit enableActionBtn(false);
 	}
 

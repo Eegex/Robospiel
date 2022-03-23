@@ -44,13 +44,13 @@ void Server::startServer(QString address, int port)
 			server->close();
 		}
 	}
-    //make the server listen
+	//make the server listen
 	if (!server->listen(QHostAddress(address),port))
 	{
 		emit instance.serverNotStarted();
 		return;
 	}
-    //connected just checks whether the connect has been called yet, so it is not connected multiple times.
+	//connected just checks whether the connect has been called yet, so it is not connected multiple times.
 	if(!connected)
 	{
 		connected = true;
@@ -83,6 +83,7 @@ int Server::sendMessageToClients(QJsonObject additionalData)
  */
 int Server::forwardMessageToClients(QString message)
 {
+	qDebug() << "Server::forwardMessageToClients(QString " << message << ")";
 	int errorCount = 0;
 	for(ConnectionToClient* client : qAsConst(connections))
 	{
@@ -104,14 +105,20 @@ void Server::addClient()
 {
 	qDebug()<<"Added new Client to Server";
 	QTcpSocket* tcpServerConnection = server->nextPendingConnection();
-	if (!tcpServerConnection) {
+	if (!tcpServerConnection)
+	{
 		return;
 	}
 
 	ConnectionToClient* connection = new ConnectionToClient(this, tcpServerConnection);
 	connections.append(connection);
 //"Das ist code für wenn ein CLient einfach geht" - Dorothee
-	connect(connection, &ConnectionToClient::deleteConnection, this, [=](ConnectionToClient* toDelete)->void{
+	connect(connection, &ConnectionToClient::deleteConnection, this, [=](ConnectionToClient* toDelete)->void
+	{
+		if(!connections.contains(toDelete))
+		{
+			return;
+		}
 		User* u = toDelete->getUser();
 		connections.remove(connections.indexOf(toDelete));
 		delete toDelete;
@@ -122,10 +129,11 @@ void Server::addClient()
 
 		QJsonObject data;
 		data.insert("action", PlayerAction::userLeft);
-        data.insert("userId", u->getId().toString());
+		data.insert("userId", u->getId().toString());
 		sendMessageToClients(data);
 	});
-	connect(connection, &ConnectionToClient::receivedMessage, this, [this](QString message){
+	connect(connection, &ConnectionToClient::receivedMessage, this, [this](QString message)
+	{
 		ConnectionToClient * senderConnection = dynamic_cast<ConnectionToClient*>(sender()); //get connection over sender instead of capturing it to prevent stupid behavior
 		Q_ASSERT_X(senderConnection,"Server::addClient() receivedMessage-lambda","senderConnection is nullptr");
 		QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
@@ -169,31 +177,30 @@ void Server::addClient()
 void Server::closeServer()
 {
 	server->close();
+	qDebug() << "server closed leere connections";
 	while(!connections.empty())
 	{
-		ConnectionToClient* toDelete = connections.takeFirst();
+		ConnectionToClient * toDelete = connections.takeFirst();
+		toDelete->sendLeft();
 		delete toDelete;
-		toDelete = nullptr;
 	}
+	qDebug() << "Server tot";
 	emit instance.serverClosed();
 }
 
 void Server::switchServer()
 {
-    ConnectionToClient* newServer = connections.first();
-    QUuid id = newServer->getUser()->getId();
-    //QString ip = "localhost";
-    int port = 8050;
+	ConnectionToClient* newServer = connections.first();
+	QUuid id = newServer->getUser()->getId();
+	//QString ip = "localhost";
+	int port = 8050;
 
-    QHostAddress ip = newServer->getTcpSocket()->peerAddress();
-    //int port = newServer->getTcpSocket()->peerPort();
+	QHostAddress ip = newServer->getTcpSocket()->peerAddress();
+	//int port = newServer->getTcpSocket()->peerPort();
 
-    qDebug() << "HEYA! port: " << port << "ip: " << ip.toString();
+	qDebug() << "HEYA! port: " << port << "ip: " << ip.toString();
 
-
-
-    GameControll::triggerActionWithData(PlayerAction::switchServer,{{"port", port}, {"id", id.toString()}, {"ip", ip.toString()}});
-    Server::closeServer();
+	GameControll::triggerActionWithData(PlayerAction::switchServer,{{"port", port}, {"id", id.toString()}, {"ip", ip.toString()}});
 }
 
 bool Server::isActive()

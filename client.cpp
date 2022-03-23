@@ -45,6 +45,7 @@ void Client::startClient(QString serverAddress, int serverPort)
 
 
 	tcpSocket->connectToHost(serverAddress, serverPort);
+	tcpSocket->waitForConnected();
 }
 
 bool Client::sendMessageToServer(QJsonObject data)

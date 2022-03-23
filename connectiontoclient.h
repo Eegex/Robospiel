@@ -15,6 +15,8 @@ public:
 	ConnectionToClient(QObject *parent, QTcpSocket *tcpSocket);
 	void setUser(User *value);
 
+	void sendLeft();
+
 	User * getUser() const;
 
     QTcpSocket *getTcpSocket() const;
