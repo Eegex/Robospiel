@@ -19,20 +19,14 @@ void PlayerWidget::mousePressEvent(QMouseEvent *event)
 	}
 }
 
-
-
-
 void PlayerWidget::paintEvent(QPaintEvent *event)
 {
-
 	QRect bounds = rect();
 	double width = bounds.width()*fractionOfTile;
 	double height = bounds.height()*fractionOfTile;
 
 	QColor color = getPlayerColor();
 	QPainter painter;
-
-
 
 	QPen pen;
 	pen.setColor(color);
@@ -181,7 +175,12 @@ void PlayerWidget::moveAnimated(QPoint point, QPoint target, double speed)
 
 double PlayerWidget::timeFactor(QPoint delta, double factorX, double factorY)
 {
-	double xProportion = delta.x()/std::min((delta.x()+delta.y()),1);
+	double tmp = (delta.x()+delta.y());
+	if(tmp == 0.0)
+	{
+		tmp = 1.0;
+	}
+	double xProportion = delta.x()/tmp;
 
 	return xProportion*factorX + (1-xProportion)*factorY;
 }
@@ -237,8 +236,6 @@ bool PlayerWidget::resizeWhileAnimation(QVector<QPoint> newTargets, QPoint newPo
 		return true;
 	}
 	return false;
-
-
 }
 
 bool PlayerWidget::getInAnimation()
