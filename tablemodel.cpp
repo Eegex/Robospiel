@@ -101,7 +101,7 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
  * \brief TableModel::flags returns if items of the table can be selected or if the user can interact with it
  * \return Qt::ItemIsSelectable or Qt::ItemIsEnabled
  */
-Qt::ItemFlags TableModel::flags(const QModelIndex /*&index*/) const
+Qt::ItemFlags TableModel::flags(const QModelIndex & /*&index*/) const
 {
 	return Qt::ItemIsEnabled;
 }

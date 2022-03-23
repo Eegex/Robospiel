@@ -420,35 +420,35 @@ void GameControll::exeQTAction(QJsonObject data)
 		GameControll::getInstance().handleUserGivingUp();
 		break;
 	}
-    case switchServer:
-    {
-        qDebug() << data << "FUCK YOU";
-        QUuid id = QUuid(data.value("id").toString());
-        QString ip = data.value("ip").toString();
-        int port = data.value("port").toInt();
-        //int port = data.value("port").toString().toInt();
-        ip = "localhost";
-        port = 8050;
-        qDebug() << ip << "ip" << port << "port";
-        if(id == static_cast<OnlineLeaderboardWidget*>(leaderboard)->getLocalUser()->getId())
-        {
-            //this user has to be the new server
-            Server::startServer(ip, port);
-        }
-        else
-        {
-            //this user can be a client
-            //wait around here
-            QThread::msleep(100);
-            if(localUserIsServer()){
-                Server::getInstance().closeServer();
-            }
+	case switchServer:
+	{
+		qDebug() << data << "FUCK YOU";
+		QUuid id = QUuid(data.value("id").toString());
+		QString ip = data.value("ip").toString();
+		int port = data.value("port").toInt();
+		//int port = data.value("port").toString().toInt();
+		ip = "localhost";
+		port = 8050;
+		qDebug() << ip << "ip" << port << "port";
+		if(id == static_cast<OnlineLeaderboardWidget*>(leaderboard)->getLocalUser()->getId())
+		{
+			//this user has to be the new server
+			Server::startServer(ip, port);
+		}
+		else
+		{
+			//this user can be a client
+			//wait around here
+			QThread::msleep(100);
+			if(localUserIsServer()){
+				Server::getInstance().closeServer();
+			}
 
-            Client::getInstance().startClient(ip, port);
-            instance.enableServerSwitchBtn(instance.localUserIsServer());
-        }
-        break;
-    }
+			Client::getInstance().startClient(ip, port);
+			instance.enableServerSwitchBtn(instance.localUserIsServer());
+		}
+		break;
+	}
 	}
 }
 
@@ -572,7 +572,7 @@ void GameControll::triggerActionWithData(PlayerAction action, QJsonObject data)
 		{
 			return;
 		}
-        break;
+		break;
 	}
 //    case switchServer:
 //    {
@@ -685,7 +685,7 @@ void GameControll::resetForNextUser()
 	Q_ASSERT_X(user,"GameControll::resetForNextUser","User is nullptr");
 	showGuide({ tr("Present your solution, ") + user->getName() + "[]",tr("Your turn, ") + user->getName() + "[]" });
 	setActiveUserID(user->getId()); //Setze nächsten Spieler als aktiv
-    instance.leaderboard->updatePlayerInPower(user->getId(), user->getName());
+	instance.leaderboard->updatePlayerInPower(user->getId(), user->getName());
 	emit enableActionBtn(localUserIsActiveUser());
 	getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
 	emit updateMoves(0);
@@ -935,7 +935,7 @@ void GameControll::changeBidding(int bidding, QUuid id)
  */
 User * GameControll::initializeUser()
 {
-    instance.enableServerSwitchBtn(instance.localUserIsServer());
+	instance.enableServerSwitchBtn(instance.localUserIsServer());
 	User * u = new User(instance.getSettingsDialog()->getUsername(), instance.getSettingsDialog()->getUsercolor());
 	qDebug()<<"initializeUser with id: "<<u->getId();
 	triggerActionWithData(PlayerAction::registerClient, u->toJSON());
@@ -957,7 +957,7 @@ void GameControll::setLeaderboard(LeaderBoardWidget * value)
 		User * user = instance.users.first();
 		Q_ASSERT_X(user,"GameControll::setLeaderboard","User is nullptr");
 		instance.setActiveUserID(user->getId());
-        instance.leaderboard->updatePlayerInPower(user->getId(), user->getName());
+		instance.leaderboard->updatePlayerInPower(user->getId(), user->getName());
 		const QString& username = user->getName();
 		showGuide({ tr("Present your solution, ") + username + "[]",tr("Your turn, ") + username + "[]" });
 
@@ -1026,7 +1026,7 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 		currentPhase = phase;
 		updateVoteNumbers();
 
-        instance.leaderboard->noPlayerInPower(); //TODO: Am I breaking anything with this QUuid consrtcution? I basically just need a null there...
+		instance.leaderboard->noPlayerInPower(); //TODO: Am I breaking anything with this QUuid consrtcution? I basically just need a null there...
 
 		instance.leaderboard->setFreeplayButtonsVisible(false);
 		showGuide({tr("boooring")+ "[]",tr("i am not creative")+ "[2000]" + tr("at all")+ "[2000]" + tr("fuck you") + "[]", tr("We are in idle now!")+ "[]", tr("Lets do some idling!")+ "[]", tr("Okay, so you aren't capable of dealing with a real mode, are you?")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Too dumb for a real game!")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Idle again? Are we ever going to PLAY?")+ "[2000]" +tr("We are in idle.")+ "[]"});
@@ -1038,12 +1038,12 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 	}
 	case Phase::search:
 	{
-        enableServerSwitchBtn(localUserIsServer());
+		enableServerSwitchBtn(localUserIsServer());
 
 		currentPhase = phase;
 		updateVoteNumbers();
 
-        instance.leaderboard->noPlayerInPower();
+		instance.leaderboard->noPlayerInPower();
 		instance.leaderboard->setFreeplayButtonsVisible(false);
 		instance.leaderboard->setBiddingFocus();
 		showGuide({tr("Start bidding")+ "[]",tr("Let's go! Bid!")+ "[]", tr("You can bid now!")+ "[]",  tr("Lets do some bidding!")+ "[]", tr("I bet you wont find anything! But you can try to...")+ "[2000]" +tr("Make your biddings!")+ "[]", tr("Make your biddings! Well if you find anything...")+ "[]"});
@@ -1062,7 +1062,7 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 
 		currentPhase = phase;
 		updateVoteNumbers();
-        instance.leaderboard->noPlayerInPower();
+		instance.leaderboard->noPlayerInPower();
 
 		instance.leaderboard->setBiddingFocus();
 		showGuide({tr("Counting down")+ "[]", tr("Stressed yet? The Timer is running!")+ "[]", tr("You will never find anything in a minute!")+ "[]" });
@@ -1100,7 +1100,7 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 		currentPhase = phase;
 		letUserPlayFree(activeUserID);
 		updateVoteNumbers();
-		instance.leaderboard->setFreeplayButtonsVisible(true);
+		instance.leaderboard->setFreeplayButtonsVisible(localUserIsActiveUser());
 		showGuide({tr("Freeplay")+ "[2000]"+ tr("time to show off")+ "[]"});
 		emit enableMenus(false);
 		emit enableIdleBtn(true);
@@ -1110,7 +1110,7 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 		break;
 	}
 	}
-    player->stop();
+	player->stop();
 }
 
 bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns out the phases word like this (with setPhase) please delete all the commented sections
@@ -1207,8 +1207,9 @@ void GameControll::letUserPlayFree(const QUuid & userId)
 	{
 		// set user as active user.
 		setActiveUserID(userId);
-        // show active user in UI
-        instance.leaderboard->updatePlayerInPower(userId, getUserById(userId)->getName());
+		// show active user in UI
+		instance.leaderboard->updatePlayerInPower(userId, getUserById(userId)->getName());
+		instance.leaderboard->setFreeplayButtonsVisible(localUserIsActiveUser());
 		// reset the board to the state in the last search phase
 		board->revertToBeginning();
 		// Set the steps counter to 0
@@ -1483,10 +1484,10 @@ void GameControll::updateVoteNumbers()
 
 void GameControll::initiateServerSwitch()
 {
-    if(instance.localUserIsServer())
-    {
-        Server::switchServer();
-    }
+	if(instance.localUserIsServer())
+	{
+		Server::switchServer();
+	}
 }
 
 bool GameControll::localUserIsServer()
