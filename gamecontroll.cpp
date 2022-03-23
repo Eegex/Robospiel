@@ -1367,6 +1367,11 @@ User* GameControll::getLocalUser()
 		return static_cast<OnlineLeaderboardWidget*>(instance.leaderboard)->getLocalUser();
 	}
 	Q_ASSERT_X(false, "GameControll::getLocalUser", "no local user in gamecontroll");
+	//nur zum debuggen.
+	if(Server::isActive() || Client::isActive())
+	{
+		return static_cast<OnlineLeaderboardWidget*>(instance.leaderboard)->getLocalUser();
+	}
 	return nullptr;
 }
 
@@ -1520,6 +1525,7 @@ void GameControll::resetVotes()
 	}
 }
 
-QString GameControll::phaseAsString(Phase phase){
+QString GameControll::phaseAsString(Phase phase)
+{
 	return QStringList({tr("idle"),tr("search"), tr("countdown"), tr("presentation"),tr("freeplay")}).at(static_cast<int>(phase));
 }
