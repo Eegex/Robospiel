@@ -119,6 +119,10 @@ void MainWidget::handleActionButtonRelease()
 		break;
 	}
 	}
+	if(GameControll::getCurrentPhase()==GameControll::Phase::countdown || GameControll::getCurrentPhase()==GameControll::Phase::search)
+	{
+		GameControll::getLeaderboard()->setBiddingFocus();
+	}
 }
 
 void MainWidget::updateActionBtnText()
@@ -151,7 +155,8 @@ void MainWidget::updateActionBtnText()
 	actionBtn->setToolTip(missingVotes);
 
 	//trigger tooltip
-	QCursor::setPos(QCursor::pos()+ QPoint(1,1));
+	QCursor::setPos(QCursor::pos()+ QPoint(tooltipDir?  1 : -1, 0));
+	tooltipDir = !tooltipDir;
 
 
 }
