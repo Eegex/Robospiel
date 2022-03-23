@@ -323,6 +323,12 @@ void GameControll::exeQTAction(QJsonObject data)
 	{
 		user = User::fromJSON(data);
 		addUser(user);
+        if(localUserIsServer()){
+            if(getLocalUser()){
+
+                triggerActionWithData(PlayerAction::sendServerID, {{"id", getLocalUser()->getId().toString()}});
+            }
+        }
 		break;
 	}
 	case changeActiveUser:
@@ -402,6 +408,11 @@ void GameControll::exeQTAction(QJsonObject data)
 	{
 		getUserById(QUuid(data.value("id").toString()))->setName(data.value("name").toString());
 		leaderboard->updateName(QUuid(data.value("id").toString()), data.value("name").toString());
+        if(instance.localUserIsServer()){
+               if(getLocalUser()){
+                   triggerActionWithData(PlayerAction::sendServerID, {{"id", getLocalUser()->getId().toString()}});
+               }
+           }
 		break;
 	}
 	case changedTimerTime:
@@ -458,8 +469,20 @@ void GameControll::exeQTAction(QJsonObject data)
 			qDebug() << "sollte true false sein" << Client::isActive() << Server::isActive();
 			instance.enableServerSwitchBtn(instance.localUserIsServer());
 		}
+        //updateVoteNumbers();
+        instance.leaderboard->updateServerName(id, getUserById(id)->getName());
 		break;
+
 	}
+    case sendServerID:
+    {
+
+        QUuid id = QUuid(data.value("id").toString());
+        instance.leaderboard->updateServerName(id, getUserById(id)->getName());
+
+        break;
+
+    }
 	}
 }
 
@@ -951,6 +974,8 @@ User * GameControll::initializeUser(User* u)
 	qDebug()<<"initializeUser with id: "<<u->getId();
 	triggerActionWithData(PlayerAction::registerClient, u->toJSON());
 	triggerActionWithData(PlayerAction::newUser, u->toJSON());
+
+
 	return u;
 }
 
@@ -1378,6 +1403,7 @@ User* GameControll::getLocalUser()
 		return static_cast<OnlineLeaderboardWidget*>(instance.leaderboard)->getLocalUser();
 	}
 	return nullptr;
+
 }
 
 void GameControll::nextGuide()

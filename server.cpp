@@ -154,6 +154,7 @@ void Server::addClient()
 		if(action == PlayerAction::registerClient)
 		{
 			senderConnection->setUser(User::fromJSON(data));
+
 		}
 		else
 		{
@@ -190,6 +191,8 @@ void Server::closeServer()
 
 void Server::switchServer()
 {
+	if(!connections.empty())
+	{
 	ConnectionToClient* newServer = connections.first();
 	QUuid id = newServer->getUser()->getId();
 	//QString ip = "localhost";
@@ -201,6 +204,7 @@ void Server::switchServer()
 	qDebug() << "HEYA! port: " << port << "ip: " << ip.toString();
 
 	GameControll::triggerActionWithData(PlayerAction::switchServer,{{"port", port}, {"id", id.toString()}, {"ip", ip.toString()}});
+	}
 }
 
 bool Server::isActive()

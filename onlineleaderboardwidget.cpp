@@ -13,6 +13,7 @@ void OnlineLeaderboardWidget::initialize()
 	bidBtn->hide();
 	lname->hide();
 	lplayerInPower->hide();
+    lserver->hide();
 	biddingBox->hide();
 	tableView->hide();
 	setOnlineWidget();
@@ -53,14 +54,17 @@ void OnlineLeaderboardWidget::setOnlineWidget()
 	biddingBox->setSingleStep(1);
 	bidBtn->setText(BID_BTN_TEXT);
 	lay->addWidget(lplayerInPower);
+    lay->addWidget(lserver);
 	lay->addWidget(lname);
 	lay->addWidget(biddingBox);
 	lay->addWidget(bidBtn);
 	lay->addWidget(tableView);
 	lname->setText(localUser->getName());
 	lplayerInPower->setText("");
+    lserver->setText("Server: You");
 	lname->show();
 	lplayerInPower->show();
+    lserver->show();
 	tableView->show();
 	biddingBox->show();
 	bidBtn->show();
@@ -168,9 +172,20 @@ void OnlineLeaderboardWidget::updatePlayerInPower(QUuid id, QString newName){
 
 }
 
+
 void OnlineLeaderboardWidget::noPlayerInPower(){
-	lplayerInPower->setText(" - ");
+    lplayerInPower->setText(" - ");
 }
+
+void OnlineLeaderboardWidget::updateServerName(QUuid id, QString newName){
+
+    model->update();
+    if(id == localUser->getId()){
+        newName = "YOU!!!";
+    }
+    lserver->setText(tr("Server: ") + newName);
+}
+
 
 void OnlineLeaderboardWidget::updateColour(QUuid id, QColor color)
 {

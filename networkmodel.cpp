@@ -48,6 +48,7 @@ NetworkModel::NetworkModel()
 	playerActionStrings.insert(PlayerAction::registerClient,"registerClient");
 	playerActionStrings.insert(PlayerAction::changeActiveUser,"changeActiveUser");
     playerActionStrings.insert(PlayerAction::switchServer,"switchServer");
+    playerActionStrings.insert(PlayerAction::sendServerID,"sendServerID");
 	columns << "Zeitpunkt" << "Sender" << "Nutzer" << "PlayerAction" << "Daten";
 }
 

@@ -30,13 +30,13 @@ public:
 	void setLocalUser(User *u);
 	void initialize();
 	User * getLocalUser() const;
-
-
+    void updateServerName(QUuid id, QString newName);
 private:
 	QGridLayout * lay = new QGridLayout(this);
 	QPushButton * bidBtn = new QPushButton(this); //accept in biddingWidget
 	QLabel * lname = new QLabel(this); //labelName in biddingWdiget
-    QLabel * lplayerInPower = new QLabel(this); //labelName in biddingWdiget
+    QLabel * lplayerInPower = new QLabel(this);
+    QLabel * lserver = new QLabel(this);
 	SpinBox * biddingBox = new SpinBox(this); //lSpinBox in biddingWidget
 	QTableView * tableView = new QTableView(this);
 	int userBidding = User::maxBid;
