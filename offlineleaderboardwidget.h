@@ -30,7 +30,8 @@ public:
 	//void setUsername(QString name);
 	//void setUsercolor(QColor color);
 	QString getUsername();
-	QColor getUsercolor();
+    QColor getUsercolor();
+
 private:
 	QGridLayout * lay = new QGridLayout(this);
 	unsigned int numOfUsers = 0;
@@ -41,6 +42,7 @@ public slots:
 	void updateBidding(QUuid id, int bidding);
 	void updateName(QUuid id, QString name);
     void updatePlayerInPower(QUuid id, QString name);
+    void updateServerName(QUuid id, QString name);
     void noPlayerInPower();
 	void updateColour(QUuid id, QColor colour);
 	void updateAllUsers();

@@ -142,6 +142,10 @@ void OfflineLeaderBoardWidget::updatePlayerInPower(QUuid id, QString name)
 {
     //TODO: no idea what should happen here, input would be appreciated!
 }
+void OfflineLeaderBoardWidget::updateServerName(QUuid id, QString name)
+{
+    //TODO: no idea what should happen here, input would be appreciated!
+}
 void OfflineLeaderBoardWidget::noPlayerInPower()
 {
     //TODO: no idea what should happen here, input would be appreciated!
