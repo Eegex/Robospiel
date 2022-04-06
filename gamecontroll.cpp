@@ -470,6 +470,7 @@ void GameControll::exeQTAction(QJsonObject data)
 			instance.enableServerSwitchBtn(instance.localUserIsServer());
 		}
         //updateVoteNumbers();
+        updateActionButtonText();
         instance.leaderboard->updateServerName(id, getUserById(id)->getName());
 		break;
 
