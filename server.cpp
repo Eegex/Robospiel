@@ -205,6 +205,7 @@ void Server::switchServer()
 
 	GameControll::triggerActionWithData(PlayerAction::switchServer,{{"port", port}, {"id", id.toString()}, {"ip", ip.toString()}});
 	}
+    //test
 }
 
 bool Server::isActive()
