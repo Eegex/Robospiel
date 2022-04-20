@@ -17,11 +17,13 @@ public slots:
 	void updateSizeHint(int logicalIndex, int oldSize, int newSize);
 	void userHovered(const QModelIndex & index);
 	void userClicked(const QModelIndex & index);
+	void hideClickedButton();
 private:
 	int hovered = -1;
 	int clicked = -1;
 	QSize customSizeHint = {80,20};
 	bool buttonVisible = false;
+	bool delay = false;
 	char smaller = 4;
 signals:
 	void userBtnClicked(QModelIndex & index);

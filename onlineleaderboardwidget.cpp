@@ -13,18 +13,18 @@ void OnlineLeaderboardWidget::initialize()
 	bidBtn->hide();
 	lname->hide();
 	lplayerInPower->hide();
-    lserver->hide();
+	lserver->hide();
 	biddingBox->hide();
 	tableView->hide();
 	setOnlineWidget();
 	setLayout(lay);
 	biddingBox->setSelectAllOnFocus(true);
 	tableView->setModel(model);
-    tableView->resizeColumnsToContents();
-    tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+	tableView->resizeColumnsToContents();
+	tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 	delegate = new LeaderboardDelegate({tableView->horizontalHeader()->sectionSize(0),tableView->verticalHeader()->sectionSize(0)},this);
 	connect(tableView->horizontalHeader(),&QHeaderView::sectionResized,delegate,&LeaderboardDelegate::updateSizeHint);
-    tableView->setItemDelegate(delegate);
+	tableView->setItemDelegate(delegate);
 	connect(tableView, &QTableView::entered,delegate,&LeaderboardDelegate::userHovered);
 	connect(tableView, &QTableView::clicked,delegate,&LeaderboardDelegate::userClicked);
 	connect(delegate, &LeaderboardDelegate::userBtnClicked,this,&OnlineLeaderboardWidget::userClicked);
@@ -39,6 +39,11 @@ void OnlineLeaderboardWidget::userClicked(const QModelIndex & index)
 	if(!index.column())
 	{
 		qDebug() << "Name clicked" << index;
+		QTimer::singleShot(300,this,[&]()
+		{
+			delegate->hideClickedButton();
+			emit model->dataChanged(model->index(0,0),model->index(GameControll::getUsers()->size(),0));
+		});
 		emit userWasClicked(GameControll::getUsers()->at(index.row())->getId());
 	}
 }
@@ -54,17 +59,17 @@ void OnlineLeaderboardWidget::setOnlineWidget()
 	biddingBox->setSingleStep(1);
 	bidBtn->setText(BID_BTN_TEXT);
 	lay->addWidget(lplayerInPower);
-    lay->addWidget(lserver);
+	lay->addWidget(lserver);
 	lay->addWidget(lname);
 	lay->addWidget(biddingBox);
 	lay->addWidget(bidBtn);
 	lay->addWidget(tableView);
 	lname->setText(localUser->getName());
 	lplayerInPower->setText("");
-    lserver->setText("Server: You");
+	lserver->setText("Server: You");
 	lname->show();
 	lplayerInPower->show();
-    lserver->show();
+	lserver->show();
 	tableView->show();
 	biddingBox->show();
 	bidBtn->show();
@@ -174,16 +179,16 @@ void OnlineLeaderboardWidget::updatePlayerInPower(QUuid id, QString newName){
 
 
 void OnlineLeaderboardWidget::noPlayerInPower(){
-    lplayerInPower->setText(" - ");
+	lplayerInPower->setText(" - ");
 }
 
 void OnlineLeaderboardWidget::updateServerName(QUuid id, QString newName){
 
-    model->update();
-    if(id == localUser->getId()){
-        newName = "YOU!!!";
-    }
-    lserver->setText(tr("Server: ") + newName);
+	model->update();
+	if(id == localUser->getId()){
+		newName = "YOU!!!";
+	}
+	lserver->setText(tr("Server: ") + newName);
 }
 
 
