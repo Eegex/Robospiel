@@ -160,7 +160,7 @@ void OnlineLeaderboardWidget::updateName(QUuid id, QString newName)
 
 
 	model->update();
-	if (localUser->getId() == id)
+	if(localUser->getId() == id)
 	{
 		//localUser->setName(newName);
 		lname->setText(newName);
@@ -168,29 +168,30 @@ void OnlineLeaderboardWidget::updateName(QUuid id, QString newName)
 	//lname->setText(newName);
 }
 
-void OnlineLeaderboardWidget::updatePlayerInPower(QUuid id, QString newName){
+void OnlineLeaderboardWidget::updatePlayerInPower(QUuid id, QString newName)
+{
 	model->update();
-	if(id == localUser->getId()){
+	if(id == localUser->getId())
+	{
 		newName = "YOU!!!";
 	}
 	lplayerInPower->setText(tr("playing: ") + newName);
-
 }
 
-
-void OnlineLeaderboardWidget::noPlayerInPower(){
+void OnlineLeaderboardWidget::noPlayerInPower()
+{
 	lplayerInPower->setText(" - ");
 }
 
-void OnlineLeaderboardWidget::updateServerName(QUuid id, QString newName){
-
+void OnlineLeaderboardWidget::updateServerName(QUuid id, QString newName)
+{
 	model->update();
-	if(id == localUser->getId()){
+	if(id == localUser->getId())
+	{
 		newName = "YOU!!!";
 	}
 	lserver->setText(tr("Server: ") + newName);
 }
-
 
 void OnlineLeaderboardWidget::updateColour(QUuid id, QColor color)
 {
