@@ -3,6 +3,7 @@
 #include <QColor>
 #include <QUuid>
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QDebug>
 
 int User::userCount = 1;
@@ -18,6 +19,7 @@ const int User::maxBid = INT32_MAX;
 User::User(QString name, QColor color, QObject *parent) : QObject(parent), name(name), color(color)
 {
 	User::id = QUuid::createUuid();
+	votekickMap.insert(this->id, true);
 	if(name=="")
 	{
         name = tr("user ")+QString::number(User::userCount++);
@@ -64,6 +66,18 @@ QJsonObject User::toJSON()
 	json.insert("points", getPoints());
 	json.insert("hasBid", hasBid);
     json.insert("hasVoted", hasVoted);
+	json.insert("votekickCount", votekickCount);
+
+	QJsonArray mapUuids;
+	QJsonArray mapValues;
+	for(QUuid key : votekickMap.keys())
+	{
+		mapUuids.append(key.toString());
+		mapValues.append(votekickMap.value(key));
+	}
+	json.insert("votekickMapKeys", mapUuids);
+	json.insert("votekickMapValues", mapValues);
+
 
 	QString timeStampString = QString("%1").arg(getTimeStamp());
 	json.insert("lastBiddingTime", timeStampString);
@@ -82,6 +96,16 @@ User* User::fromJSON(QJsonObject json)
 	qDebug() << "fromJSON hasBid";
 	user->hasBid = json.value("hasBid").toBool();
     user->hasVoted = json.value("hasVoted").toBool();
+
+	user->votekickCount = json.value("votekickCount").toInt();
+	QJsonArray mapUuids = json.value("votekickMapKeys").toArray();
+	QJsonArray mapValues = json.value("votekickMapValues").toArray();
+	Q_ASSERT_X(mapUuids.size()==mapValues.size(), "User::fromJson", "Number of keys and values differ!");
+	for(int i=0; i<mapUuids.size(); i++)
+	{
+		user->votekickMap.insert(QUuid(mapUuids.at(i).toString()), mapValues.at(i).toBool());
+	}
+
 	return user;
 }
 
@@ -178,4 +202,18 @@ void User::setHasVoted(bool newValue)
 bool User::getHasVoted()
 {
     return hasVoted;
+}
+
+void User::setVotekick(QUuid fromUser, bool boolean)
+{
+	votekickMap.insert(fromUser, boolean);
+}
+
+void User::resetVotekick()
+{
+	for(QUuid key:votekickMap.keys())
+	{
+		votekickMap.insert(key, false);
+	}
+	votekickCount = 0;
 }

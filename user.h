@@ -34,6 +34,8 @@ public:
     void resetPoints();
     void setHasVoted(bool newValue);
     bool getHasVoted();
+	void setVotekick(QUuid fromUser, bool boolean);
+	void resetVotekick();
 private:
 	User(QObject *parent=nullptr);
 	QString name;
@@ -44,6 +46,11 @@ private:
 	unsigned long timeStamp = 0;
 	bool hasBid = false;
     bool hasVoted = false;
+
+	//Votekick
+	int votekickCount = 0;
+	QMap<QUuid,bool> votekickMap; //stores for which users was already voted by this user
+
 	static int userCount;
 
 signals:

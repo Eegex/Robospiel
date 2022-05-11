@@ -907,6 +907,10 @@ void GameControll::addUser(User* user)
 			return;
 		}
 	}
+	for(User* u: instance.users)
+	{
+		u->setVotekick(user->getId(), false);
+	}
 	instance.users.append(user);
 	instance.leaderboard->addUser(user);
 	instance.leaderboard->updateAllUsers();
@@ -1043,6 +1047,7 @@ void GameControll::nextTarget()
 		//reset all biddings
 		for(User* u: qAsConst(users))
 		{
+			u->resetVotekick();
 			u->setBidding(User::maxBid);
 			leaderboard->newRound();
 		}
