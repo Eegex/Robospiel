@@ -34,8 +34,9 @@ public:
     void resetPoints();
     void setHasVoted(bool newValue);
     bool getHasVoted();
-	void setVotekick(QUuid fromUser, bool boolean);
+	void setVotekick(QUuid toUser, bool boolean);
 	void resetVotekick();
+	void receiveVotekick();
 private:
 	User(QObject *parent=nullptr);
 	QString name;

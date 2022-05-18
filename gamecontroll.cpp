@@ -484,6 +484,14 @@ void GameControll::exeQTAction(QJsonObject data)
         break;
 
     }
+	case votekick:
+	{
+		User* from = getUserById(QUuid(data.value("fromUser").toString()));
+		User* to = getUserById(QUuid(data.value("toUser").toString()));
+		from->setVotekick(to->getId(), true);
+		to->receiveVotekick();
+		break;
+	}
 	}
 }
 

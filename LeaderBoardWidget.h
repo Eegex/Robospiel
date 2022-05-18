@@ -20,6 +20,7 @@ class LeaderBoardWidget : public QWidget
 public:
 	virtual void addUser(User* user) = 0;
 
+
 public slots:
 	virtual void updateBidding(QUuid id, int bidding) = 0;
     virtual void updateName(QUuid id, QString name) = 0;

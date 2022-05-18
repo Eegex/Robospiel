@@ -1,5 +1,7 @@
 #include "userview.h"
 
+UserView* UserView::instance = nullptr;
+
 /*!
  * \brief UserView::UserView This is the UI-Widget where the user can choose between a local game and being a client or server.
  * \param parent
@@ -42,26 +44,33 @@ UserView::UserView(QPushButton *actionBtn, QPushButton *serverSwitchBtn, QWidget
 		btnBack->show();
 	});
 	connect(btnBack, &QPushButton::pressed, this, [=](){
-		layout->removeWidget(leaderboard);
-		leaderboard->deleteLater();
-		GameControll::clearUsers();
-
-
-		network->toChoiceMenu();
-		network->show(); //TODO: ausreichend?
-		btnBack->hide();
-
-		//		GameControll::getInstance().setLeaderboard(leaderboard);
+		disconnectFromServer();
 	});
 	layout = new QGridLayout(this);
 	layout->addWidget(network, 0, 0);
 	layout->addWidget(btnBack, 1, 0);
 	btnBack->hide();
+
+	instance = this;
 }
 
 LeaderBoardWidget *UserView::getLeaderboard() const
 {
 	return leaderboard;
+}
+
+void UserView::disconnectFromServer()
+{
+	instance->layout->removeWidget(instance->leaderboard);
+	instance->leaderboard->deleteLater();
+	GameControll::clearUsers();
+
+
+	instance->network->toChoiceMenu();
+	instance->network->show(); //TODO: ausreichend?
+	instance->btnBack->hide();
+
+	//		GameControll::getInstance().setLeaderboard(leaderboard);
 }
 
 

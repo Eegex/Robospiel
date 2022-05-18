@@ -1,4 +1,6 @@
+#include "gamecontroll.h"
 #include "user.h"
+#include "userview.h"
 #include <QString>
 #include <QColor>
 #include <QUuid>
@@ -204,9 +206,9 @@ bool User::getHasVoted()
     return hasVoted;
 }
 
-void User::setVotekick(QUuid fromUser, bool boolean)
+void User::setVotekick(QUuid toUser, bool boolean)
 {
-	votekickMap.insert(fromUser, boolean);
+	votekickMap.insert(toUser, boolean);
 }
 
 void User::resetVotekick()
@@ -216,4 +218,14 @@ void User::resetVotekick()
 		votekickMap.insert(key, false);
 	}
 	votekickCount = 0;
+}
+
+void User::receiveVotekick()
+{
+	Q_ASSERT_X(Client::isActive()||Server::isActive(), "User::receiveVotekick()", "function should only be called, when online mode");
+	votekickCount++;
+	if(votekickCount>GameControll::getUsers()->size() && this==GameControll::getLocalUser()) //TODO == okay?
+	{
+		UserView::disconnectFromServer(); //TODO zentral durch GameControll?
+	}
 }

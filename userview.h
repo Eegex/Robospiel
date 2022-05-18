@@ -17,7 +17,9 @@ public:
     explicit UserView(QPushButton *actionBtn, QPushButton *serverSwitchBtn, QWidget *parent = nullptr);
 	LeaderBoardWidget *getLeaderboard() const;
 
+	static void disconnectFromServer();
 private:
+	static UserView* instance;
 	LeaderBoardWidget* leaderboard = nullptr;
 	NetworkView* network = nullptr;
 	QGridLayout* layout = nullptr;

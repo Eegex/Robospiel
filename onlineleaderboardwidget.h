@@ -30,7 +30,7 @@ public:
 	void setLocalUser(User *u);
 	void initialize();
 	User * getLocalUser() const;
-    void updateServerName(QUuid id, QString newName);
+	void updateServerName(QUuid id, QString newName);
 private:
 	QGridLayout * lay = new QGridLayout(this);
 	QPushButton * bidBtn = new QPushButton(this); //accept in biddingWidget
@@ -43,6 +43,7 @@ private:
 	User * localUser = nullptr;
 	TableModel * model = new TableModel(this);
 	LeaderboardDelegate * delegate = nullptr;
+
 public slots:
 	void btnPressed();
 	// void setBidding(QUuid id, int bidding); // before
