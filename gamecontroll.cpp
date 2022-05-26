@@ -215,7 +215,6 @@ void GameControll::load()
 		{
 			triggerActionWithData(PlayerAction::changedUserColor, {{"id", getLocalUser()->getId().toString()},{"color", color.name()}});
 		}
-
 	});
 	connect(instance.settings, &SettingsDialog::usernameChanged, &instance, [=](QString name)
 	{
@@ -224,7 +223,6 @@ void GameControll::load()
 			triggerActionWithData(PlayerAction::changedUsername, {{"id", getLocalUser()->getId().toString()},{"name", name}});
 		}
 	});
-
 	connect(instance.settings, &SettingsDialog::timertimeChanged, &instance, [=](int length)
 	{
 		if(Server::isActive())
@@ -232,8 +230,6 @@ void GameControll::load()
 			triggerActionWithData(PlayerAction::changedTimerTime, {{"length", length}});
 		}
 	});
-
-
 	if(instance.board)
 	{
 		instance.board->updateColors(instance.settings->getBackground(), instance.settings->getWallcolor(), instance.settings->getGridcolor(), instance.settings->getPlayerColorLow(), instance.settings->getPlayerColorHigh());
@@ -319,16 +315,29 @@ void GameControll::exeQTAction(QJsonObject data)
 		board->revertToBeginning();
 		break;
 	}
+	case resetPoints:
+	{
+		for(User* u : *(instance.getUsers()))
+		{
+			u->resetPoints();
+		}
+		break;
+	}
+	case giveUp:
+	{
+		GameControll::getInstance().handleUserGivingUp();
+		break;
+	}
 	case newUser:
 	{
 		user = User::fromJSON(data);
 		addUser(user);
-        if(localUserIsServer()){
-            if(getLocalUser()){
+		if(localUserIsServer()){
+			if(getLocalUser()){
 
-                triggerActionWithData(PlayerAction::sendServerID, {{"id", getLocalUser()->getId().toString()}});
-            }
-        }
+				triggerActionWithData(PlayerAction::sendServerID, {{"id", getLocalUser()->getId().toString()}});
+			}
+		}
 		break;
 	}
 	case changeActiveUser:
@@ -393,7 +402,6 @@ void GameControll::exeQTAction(QJsonObject data)
 		if(user->getHasVoted())
 		{
 			voteCounter--;
-
 		}
 		updateVoteNumbers();
 		break;
@@ -408,30 +416,18 @@ void GameControll::exeQTAction(QJsonObject data)
 	{
 		getUserById(QUuid(data.value("id").toString()))->setName(data.value("name").toString());
 		leaderboard->updateName(QUuid(data.value("id").toString()), data.value("name").toString());
-        if(instance.localUserIsServer()){
-               if(getLocalUser()){
-                   triggerActionWithData(PlayerAction::sendServerID, {{"id", getLocalUser()->getId().toString()}});
-               }
-           }
+		if(instance.localUserIsServer())
+		{
+			if(getLocalUser())
+			{
+				triggerActionWithData(PlayerAction::sendServerID, {{"id", getLocalUser()->getId().toString()}});
+			}
+		}
 		break;
 	}
 	case changedTimerTime:
 	{
 		searchTime = data.value("length").toInt();
-		break;
-	}
-	case resetPoints:
-	{
-		for(User* u : *(instance.getUsers()))
-		{
-			u->resetPoints();
-
-		}
-		break;
-	}
-	case giveUp:
-	{
-		GameControll::getInstance().handleUserGivingUp();
 		break;
 	}
 	case switchServer:
@@ -469,19 +465,16 @@ void GameControll::exeQTAction(QJsonObject data)
 			qDebug() << "sollte true false sein" << Client::isActive() << Server::isActive();
 			instance.enableServerSwitchBtn(instance.localUserIsServer());
 		}
-        //updateVoteNumbers();
-        updateActionButtonText();
-        instance.leaderboard->updateServerName(id, getUserById(id)->getName());
+		//updateVoteNumbers();
+		updateActionButtonText();
+		instance.leaderboard->updateServerName(id, getUserById(id)->getName());
 		break;
-
 	}
-    case sendServerID:
-    {
-
-        QUuid id = QUuid(data.value("id").toString());
-        instance.leaderboard->updateServerName(id, getUserById(id)->getName());
-
-        break;
+	case sendServerID:
+	{
+		QUuid id = QUuid(data.value("id").toString());
+		instance.leaderboard->updateServerName(id, getUserById(id)->getName());
+		break;
 
     }
 	case votekick:
@@ -659,7 +652,8 @@ void GameControll::calculateGameStatus()
 	}
 }
 
-void GameControll::handleUserGivingUp(){
+void GameControll::handleUserGivingUp()
+{
 	User* nextUser = getNextUser(activeUserID);
 	if(nextUser)//Not at last player yet, noch haben nicht alle versagt
 	{
@@ -668,6 +662,8 @@ void GameControll::handleUserGivingUp(){
 	else //Alles Versager
 	{
 		qDebug()<<"No User could end the round in their specified bid.";
+		//No one reached the goal so after freeplay it should load the reverted state
+		instance.board->revertToBeginning();
 		switchPhase(Phase::freeplay);
 		//GameControll::resetAndNextTarget();
 	}
@@ -1075,9 +1071,7 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 	{
 		currentPhase = phase;
 		updateVoteNumbers();
-
-		instance.leaderboard->noPlayerInPower(); //TODO: Am I breaking anything with this QUuid consrtcution? I basically just need a null there...
-
+		instance.leaderboard->noPlayerInPower(); //TODO: Am I breaking anything with this QUuid construction? I basically just need a null there...
 		instance.leaderboard->setFreeplayButtonsVisible(false);
 		showGuide({tr("boooring")+ "[]",tr("i am not creative")+ "[2000]" + tr("at all")+ "[2000]" + tr("fuck you") + "[]", tr("We are in idle now!")+ "[]", tr("Lets do some idling!")+ "[]", tr("Okay, so you aren't capable of dealing with a real mode, are you?")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Too dumb for a real game!")+ "[2000]" +tr("We are in idle.")+ "[]", tr("Idle again? Are we ever going to PLAY?")+ "[2000]" +tr("We are in idle.")+ "[]"});
 		emit enableIdleBtn(false);
@@ -1088,40 +1082,33 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 	}
 	case Phase::search:
 	{
-		enableServerSwitchBtn(localUserIsServer());
-
+		emit enableServerSwitchBtn(localUserIsServer());
 		currentPhase = phase;
 		updateVoteNumbers();
-
 		instance.leaderboard->noPlayerInPower();
 		instance.leaderboard->setFreeplayButtonsVisible(false);
 		instance.leaderboard->setBiddingFocus();
 		showGuide({tr("Start bidding")+ "[]",tr("Let's go! Bid!")+ "[]", tr("You can bid now!")+ "[]",  tr("Lets do some bidding!")+ "[]", tr("I bet you wont find anything! But you can try to...")+ "[2000]" +tr("Make your biddings!")+ "[]", tr("Make your biddings! Well if you find anything...")+ "[]"});
 		emit enableIdleBtn(false);
-		if(Server::isActive()){
+		if(Server::isActive())
+		{
 			emit enableIdleBtn(true);
 		}
 		emit enableMenus(false);
 		instance.hasSkipped = 0;
-
-
 		break;
 	}
 	case Phase::countdown:
 	{
-
 		currentPhase = phase;
 		updateVoteNumbers();
 		instance.leaderboard->noPlayerInPower();
-
 		instance.leaderboard->setBiddingFocus();
 		showGuide({tr("Counting down")+ "[]", tr("Stressed yet? The Timer is running!")+ "[]", tr("You will never find anything in a minute!")+ "[]" });
 		emit enableIdleBtn(false);
 		emit enableMenus(false);
 		instance.hasSkipped = 0;
 		settings->enableTimerChange(false);
-
-
 		break;
 	}
 	case Phase::presentation:
@@ -1145,8 +1132,6 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 	case Phase::freeplay:
 	{
 		//TODO: Set user who just made a point as active user.
-
-
 		currentPhase = phase;
 		letUserPlayFree(activeUserID);
 		updateVoteNumbers();
