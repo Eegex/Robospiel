@@ -206,9 +206,20 @@ bool User::getHasVoted()
     return hasVoted;
 }
 
+
 void User::setVotekick(QUuid toUser, bool boolean)
 {
 	votekickMap.insert(toUser, boolean);
+}
+
+/**
+ * @brief User::getVotekick
+ * @param toUser
+ * @return returns true if the User has already voted to kick toUser
+ */
+bool User::getVotekick(QUuid toUser)
+{
+	return votekickMap.value(toUser, false);
 }
 
 void User::resetVotekick()
@@ -218,6 +229,11 @@ void User::resetVotekick()
 		votekickMap.insert(key, false);
 	}
 	votekickCount = 0;
+}
+
+int User::getVotekickCount()
+{
+	return votekickCount;
 }
 
 void User::receiveVotekick()
