@@ -15,6 +15,7 @@ SOURCES += \
     UserBiddingWidget.cpp \
     board.cpp \
     boardeditor.cpp \
+    buttondelegate.cpp \
     goalwidget.cpp \
     boardview.cpp \
     client.cpp \
@@ -23,7 +24,6 @@ SOURCES += \
     keyinput.cpp \
     keymapping.cpp \
     keymappingview.cpp \
-    leaderboarddelegate.cpp \
     main.cpp \
     mainwidget.cpp \
     mainwindow.cpp \
@@ -34,6 +34,7 @@ SOURCES += \
     pawnwidget.cpp \
     networkview.cpp \
     playerwidget.cpp \
+    powerbuttondelegate.cpp \
     server.cpp \
     settingsdialog.cpp \
     spinbox.cpp \
@@ -51,6 +52,7 @@ HEADERS += \
     board.h \
     boardeditor.h \
     boardview.h \
+    buttondelegate.h \
     client.h \
     connectiontoclient.h \
     direction.h \
@@ -59,7 +61,6 @@ HEADERS += \
     keyinput.h \
     keymapping.h \
     keymappingview.h \
-    leaderboarddelegate.h \
     mainwidget.h \
     mainwindow.h \
     networkdebugger.h \
@@ -69,6 +70,7 @@ HEADERS += \
     offlineleaderboardwidget.h \
     pawnwidget.h \
     playerwidget.h \
+    powerbuttondelegate.h \
     server.h \
     settingsdialog.h \
     spinbox.h \

@@ -22,12 +22,12 @@ void OnlineLeaderboardWidget::initialize()
 	tableView->setModel(model);
 	tableView->resizeColumnsToContents();
 	tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-	delegate = new LeaderboardDelegate({tableView->horizontalHeader()->sectionSize(0),tableView->verticalHeader()->sectionSize(0)},this);
-	connect(tableView->horizontalHeader(),&QHeaderView::sectionResized,delegate,&LeaderboardDelegate::updateSizeHint);
-	tableView->setItemDelegate(delegate);
-	connect(tableView, &QTableView::entered,delegate,&LeaderboardDelegate::userHovered);
-	connect(tableView, &QTableView::clicked,delegate,&LeaderboardDelegate::userClicked);
-	connect(delegate, &LeaderboardDelegate::userBtnClicked,this,&OnlineLeaderboardWidget::userClicked);
+	powerButtonDelegate = new PowerButtonDelegate({tableView->horizontalHeader()->sectionSize(0),tableView->verticalHeader()->sectionSize(0)},this);
+	connect(tableView->horizontalHeader(),&QHeaderView::sectionResized,powerButtonDelegate,&PowerButtonDelegate::updateSizeHint);
+	tableView->setItemDelegate(powerButtonDelegate);
+	connect(tableView, &QTableView::entered,powerButtonDelegate,&ButtonDelegate::handleHover);
+	connect(tableView, &QTableView::clicked,powerButtonDelegate,&ButtonDelegate::handleClick);
+	connect(powerButtonDelegate, &ButtonDelegate::buttonClicked,this,&OnlineLeaderboardWidget::userClicked);
 	biddingBox->setSpecialValueText(tr("No Bid"));
 	connect(bidBtn,&QPushButton::clicked, this, &OnlineLeaderboardWidget::btnPressed);
 	connect(biddingBox,&SpinBox::returnPressed, this,  &OnlineLeaderboardWidget::btnPressed);
@@ -41,7 +41,7 @@ void OnlineLeaderboardWidget::userClicked(const QModelIndex & index)
 		qDebug() << "Name clicked" << index;
 		QTimer::singleShot(300,this,[&]()
 		{
-			delegate->hideClickedButton();
+			powerButtonDelegate->resetState();
 			emit model->dataChanged(model->index(0,0),model->index(GameControll::getUsers()->size(),0));
 		});
 		emit userWasClicked(GameControll::getUsers()->at(index.row())->getId());
@@ -279,9 +279,9 @@ void OnlineLeaderboardWidget::updateAllUsers()
 
 void OnlineLeaderboardWidget::setFreeplayButtonsVisible(bool visible)
 {
-	if(delegate)
+	if(powerButtonDelegate)
 	{
-		delegate->setButtonVisible(visible);
+		powerButtonDelegate->setButtonVisible(visible);
 	}
 	tableView->update();
 }

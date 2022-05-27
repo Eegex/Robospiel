@@ -8,13 +8,13 @@
 #include <QLabel>
 #include <QUuid>
 #include <QTableView>
+#include "powerbuttondelegate.h"
 #include "spinbox.h"
 #include "Direction.h"
 #include "LeaderBoardWidget.h"
 #include "user.h"
 #include "gamecontroll.h"
 #include "tablemodel.h"
-#include "leaderboarddelegate.h"
 
 /*!
  * \brief The OnlineLeaderboardWidget class ist auch super
@@ -42,7 +42,7 @@ private:
 	int userBidding = User::maxBid;
 	User * localUser = nullptr;
 	TableModel * model = new TableModel(this);
-	LeaderboardDelegate * delegate = nullptr;
+	PowerButtonDelegate * powerButtonDelegate = nullptr;
 
 public slots:
 	void btnPressed();
