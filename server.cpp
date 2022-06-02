@@ -8,7 +8,6 @@
 
 QTcpServer* Server::server = new QTcpServer();
 Server Server::instance;
-bool Server::connected = false;
 QVector<ConnectionToClient*> Server::connections;
 Server::Server(QObject *parent) : QObject(parent) {}
 
@@ -50,14 +49,7 @@ void Server::startServer(QString address, int port)
 		emit instance.serverNotStarted();
 		return;
 	}
-	//connected just checks whether the connect has been called yet, so it is not connected multiple times.
-	if(!connected)
-	{
-		connected = true;
-		connect(server, &QTcpServer::newConnection, &instance, &Server::addClient);
-
-	}
-
+	connect(server, &QTcpServer::newConnection, &instance, &Server::addClient,Qt::UniqueConnection);
 	emit instance.serverStarted(server->serverAddress(), server->serverPort());
 }
 
@@ -205,7 +197,7 @@ void Server::switchServer()
 
 	GameControll::triggerActionWithData(PlayerAction::switchServer,{{"port", port}, {"id", id.toString()}, {"ip", ip.toString()}});
 	}
-    //test
+	//test
 }
 
 bool Server::isActive()

@@ -23,11 +23,13 @@ public:
 private:
 	Client(QObject *parent = nullptr);
 	~Client();
+	bool sendMessage(QString message);
 	static Client instance;
 	static QTcpSocket* tcpSocket;
 	static QDataStream streamFromServer;
 	static bool connected;
-
+	static QTimer connectionWatchDog;
+	static bool disconnectCheck;
 signals:
 	void errorInClient(QAbstractSocket::SocketError socketError);
 	void clientIsStarting();
@@ -37,6 +39,7 @@ signals:
 
 private slots:
 	void processMessageFromServer();
+	void checkConnection();
 };
 
 #endif // CLIENT_H
