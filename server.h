@@ -12,21 +12,20 @@ class Server : public QObject
 {
 	Q_OBJECT
 public:
-    static Server& getInstance();
+	static Server& getInstance();
 	static void deleteInstance();
 
-    static void startServer(QString address, int port);
-    static int sendMessageToClients(QJsonObject additionalData);
-    static void closeServer();
-    static bool isActive();
-    static void switchServer();
+	static void startServer(QString address, int port);
+	static int sendMessageToClients(QJsonObject additionalData);
+	static void closeServer();
+	static bool isActive();
+	static void switchServer();
 private:
 	Server(QObject *parent = nullptr);
-    static int forwardMessageToClients(QString message);
+	static int forwardMessageToClients(QString message);
 	static Server instance;
 	static QTcpServer* server;
 	static QVector<ConnectionToClient*> connections;
-	static bool connected;
 signals:
 	void serverNotStarted();
 	void serverStarted(QHostAddress address, int port);

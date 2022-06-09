@@ -67,7 +67,11 @@ LeaderBoardWidget *UserView::getLeaderboard() const
 void UserView::disconnectFromServer()
 {
 	instance->layout->removeWidget(instance->leaderboard);
-	instance->leaderboard->deleteLater();
+	if(instance->getLeaderboard())
+	{
+		instance->leaderboard->deleteLater();
+		instance->leaderboard = nullptr;
+	}
 	GameControll::clearUsers();
 
 

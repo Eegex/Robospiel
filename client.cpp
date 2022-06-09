@@ -1,15 +1,21 @@
 #include "client.h"
+#include "userview.h"
 #include "gamecontroll.h"
 #include <QJsonDocument>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonObject>
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 //comment for helenas git
 
 Client Client::instance;
 QDataStream Client::streamFromServer;
 bool Client::connected = false;
+QTimer Client::connectionWatchDog;
+bool Client::disconnectCheck = false;
 QTcpSocket* Client::tcpSocket = new QTcpSocket();
 Client::Client(QObject *parent) : QObject(parent) {}
 
@@ -42,10 +48,11 @@ void Client::startClient(QString serverAddress, int serverPort)
 	emit clientIsStarting();
 	tcpSocket->close();
 	streamFromServer.setDevice(tcpSocket);
-
-
+	connect(&connectionWatchDog,&QTimer::timeout,&instance,&Client::checkConnection,Qt::UniqueConnection);
+	disconnectCheck = false;
 	tcpSocket->connectToHost(serverAddress, serverPort);
 	tcpSocket->waitForConnected();
+	connectionWatchDog.start(15s);
 }
 
 bool Client::sendMessageToServer(QJsonObject data)
@@ -55,17 +62,9 @@ bool Client::sendMessageToServer(QJsonObject data)
 	QJsonDocument document(data);
 	QString message = QString::fromUtf8(document.toJson());
 
-	QByteArray block;
-	QDataStream out(&block, QIODevice::WriteOnly);
-	out << message;
-    data.insert("Client",GameControll::getLocalUserName());
+	data.insert("Client",GameControll::getLocalUserName());
 	GameControll::addTransmission(data);
-	if(tcpSocket->isOpen())
-	{
-		return (tcpSocket->write(block)!=-1);
-	}
-	return false;
-
+	return sendMessage(message);
 }
 
 void Client::processMessageFromServer()
@@ -74,21 +73,48 @@ void Client::processMessageFromServer()
 	QString message;
 	streamFromServer.startTransaction();
 	streamFromServer >> message;
-
-	if (!streamFromServer.commitTransaction())
+	connectionWatchDog.start();
+	if(!streamFromServer.commitTransaction())
 	{
 		return;
 	}
+	if(message == "Heartbeat")
+	{
+		if(disconnectCheck)
+		{
+			//qDebug() << "Client: Heartbeat angenommen";
+			disconnectCheck = false;
+		}
+		else
+		{
+			//qDebug() << "Client: antwort Heartbeat";
+			sendMessage("Heartbeat");
+		}
+	}
+	else
+	{
+		QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
+		//qDebug() << data;
 
-	QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
-	qDebug() << data;
-
-	data.insert("Client","Server");
-	GameControll::addTransmission(data);
-	emit actionReceived(data);
-
+		data.insert("Client","Server");
+		GameControll::addTransmission(data);
+		emit actionReceived(data);
+	}
 	//process the next message, which might have be blocked by the current one, which was to long to be transmitted at once
 	processMessageFromServer();
+}
+
+void Client::checkConnection()
+{
+	if(disconnectCheck)
+	{
+		//qDebug() << "Server disconnected";
+		UserView::disconnectFromServer();
+		connectionWatchDog.stop();
+	}
+	disconnectCheck = true;
+	//qDebug() << "Client: sende Heartbeat";
+	sendMessage("Heartbeat");
 }
 
 void Client::closeClient()
@@ -104,4 +130,12 @@ bool Client::isActive()
 Client::~Client()
 {
 	delete tcpSocket; //closes the connection
+}
+
+bool Client::sendMessage(QString message)
+{
+	QByteArray block;
+	QDataStream out(&block, QIODevice::WriteOnly);
+	out << message;
+	return tcpSocket->isOpen() && (tcpSocket->write(block)!=-1);
 }
