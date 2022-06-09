@@ -15,29 +15,44 @@ ButtonDelegate::ButtonDelegate(QWidget* parent) : QStyledItemDelegate(parent)
 
 void ButtonDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
 {
-	QPoint p(index.row(), index.column());
-	if(hasButton(p) || delay==p)
+	QPoint p(index.column(), index.row());
+
+	//Button
+	if(hasButton(p)==2 || delay==p)
 	{
 		QRect r(option.rect);
 		r.adjust(smaller,smaller,-smaller,-smaller);
 		QPixmap px(r.size());
 		px.fill();
 		QPushButton btn(index.data().toString());
-		btn.setDisabled(buttonDisabled(p));
+		//btn.setDisabled(isButtonDisabled(p));
 		btn.setStyleSheet("color:" + index.data(Qt::ForegroundRole).value<QColor>().name());
+		btn.setDisabled(isButtonDisabled(p));
 		btn.setGeometry(r);
 		btn.render(&px,QPoint(0,0),QRect({0,0},r.size()));
 		painter->drawPixmap(r,px);
 	}
 	else
 	{
-		QStyledItemDelegate::paint(painter,option,index);
+		//only text
+		if(hasButton(p)==1)
+		{
+			QStyledItemDelegate::paint(painter,option,index);
+		}
+		else{
+			//white
+			QRect r(option.rect);
+			QPixmap px(r.size());
+			px.fill();
+			painter->drawPixmap(r,px);
+		}
+
 	}
 }
 
 QSize ButtonDelegate::sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const
 {
-	QPoint p(index.row(), index.column());
+	QPoint p(index.column(), index.row());
 	if(!getCustomSizeHint(p).isNull())
 	{
 		return getCustomSizeHint(p);
@@ -50,8 +65,8 @@ QSize ButtonDelegate::sizeHint(const QStyleOptionViewItem & option, const QModel
 
 void ButtonDelegate::handleHover(const QModelIndex & index)
 {
-	QPoint p(index.row(), index.column());
-	if(hasButton(p))
+	QPoint p(index.column(), index.row());
+	if(hasButton(p)==2)
 	{
 		hovered = p;
 		QModelIndex copy = index;
@@ -61,8 +76,8 @@ void ButtonDelegate::handleHover(const QModelIndex & index)
 
 void ButtonDelegate::handleClick(const QModelIndex & index)
 {
-	QPoint p(index.row(), index.column());
-	if(hasButton(p))
+	QPoint p(index.column(), index.row());
+	if(hasButton(p)==2 && !isButtonDisabled(p))
 	{
 		clicked = p;
 		delay = p;

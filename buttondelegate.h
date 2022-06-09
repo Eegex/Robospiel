@@ -25,8 +25,8 @@ signals:
 protected:
 	QPoint clicked = QPoint(-1,-1);
 private:
-	virtual bool hasButton(QPoint p) const =0;
-	virtual bool buttonDisabled(QPoint p) const=0;
+	virtual int hasButton(QPoint p) const =0; //0=no button, no text, 1=text, 2=button
+	virtual bool isButtonDisabled(QPoint p) const=0;
 	virtual QSize getCustomSizeHint(QPoint p) const=0;
 
 	QPoint hovered = QPoint(-1,-1);

@@ -21,7 +21,6 @@ const int User::maxBid = INT32_MAX;
 User::User(QString name, QColor color, QObject *parent) : QObject(parent), name(name), color(color)
 {
 	User::id = QUuid::createUuid();
-	votekickMap.insert(this->id, true);
 	if(name=="")
 	{
         name = tr("user ")+QString::number(User::userCount++);
@@ -240,8 +239,21 @@ void User::receiveVotekick()
 {
 	Q_ASSERT_X(Client::isActive()||Server::isActive(), "User::receiveVotekick()", "function should only be called, when online mode");
 	votekickCount++;
-	if(votekickCount>GameControll::getUsers()->size() && this==GameControll::getLocalUser()) //TODO == okay?
+	if(votekickCount>=GameControll::getUsers()->size()-1 && this==GameControll::getLocalUser()) //required number of votes: everyone, but oneself
 	{
+		qDebug() << "Votekick count high enough. Disconnecting " <<name;
 		UserView::disconnectFromServer(); //TODO zentral durch GameControll?
+		//TODO ggf. erst noch serverSwitch
 	}
+	//TODO votekick only for >=3 users?
+}
+
+void User::votekickInfo()
+{
+	qDebug() << "Votekickinfo for " << name;
+	for(auto key : votekickMap.keys())
+	{
+		qDebug() << "  " <<key << votekickMap.value(key);
+	}
+	qDebug();
 }

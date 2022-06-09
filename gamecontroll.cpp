@@ -731,9 +731,9 @@ void GameControll::resetForNextUser()
 
 int GameControll::getUserIndexById(QUuid id)
 {
-	for(int i=0; i<users.size(); i++)
+	for(int i=0; i<instance.users.size(); i++)
 	{
-		if(users.at(i)->getId()==id)
+		if(instance.users.at(i)->getId()==id)
 		{
 			return i;
 		}
@@ -919,6 +919,12 @@ void GameControll::addUser(User* user)
 	instance.leaderboard->addUser(user);
 	instance.leaderboard->updateAllUsers();
 	instance.updateVoteNumbers();
+
+	//See comment in GameControll::initializeUser
+	if(getLocalUser() && user->getId()==getLocalUser()->getId())
+	{
+		static_cast<OnlineLeaderboardWidget*>(instance.leaderboard)->setLocalUser(user);
+	}
 }
 
 /*!
@@ -950,8 +956,9 @@ User* GameControll::getUserById(QUuid id)
 			return u;
 		}
 	}
-	Q_ASSERT_X(false,"GameControll::getUserById","User not found");
-	return nullptr;
+	//Q_ASSERT_X(false,"GameControll::getUserById","User not found");
+	qDebug() << "GameControll::getUserById User not found";
+	return nullptr; //nullptr return used in initialization of OnlineLeaderboard. See comment in GameControll::initializeUser.
 }
 
 void GameControll::changeBidding(int bidding, QUuid id)
@@ -984,7 +991,20 @@ User * GameControll::initializeUser(User* u)
 	triggerActionWithData(PlayerAction::registerClient, u->toJSON());
 	triggerActionWithData(PlayerAction::newUser, u->toJSON());
 
+	/*
+	Problem: The new User is transmitted via JSOn -> is a different object from u.
+	The local user in OnlineLeaderboardWidget and the user in Gamecontroll::users should be the same object.
 
+	If this is in the server, the triggerActionWithData is synchronous, the new local user can be found in the if-statement below
+	and the new object can be used for initializing the Onlineleaderboard.
+
+	If this is in a client, the newUser-player action takes time to be executed. In this case, the replacement is handled in GameControll::addUser.
+	 */
+
+	if(instance.getUserById(u->getId()))
+	{
+	   return instance.getUserById(u->getId());
+	}
 	return u;
 }
 

@@ -42,7 +42,8 @@ SOURCES += \
     tile.cpp \
     user.cpp \
     usercreationwidget.cpp \
-    userview.cpp
+    userview.cpp \
+    votekickdelegate.cpp
 
 HEADERS += \
     Direction.h \
@@ -79,7 +80,8 @@ HEADERS += \
     boardview.h \
     direction.h \
     user.h \
-    userview.h
+    userview.h \
+    votekickdelegate.h
 
 TRANSLATIONS += \
 Robospiel_de_DE.ts

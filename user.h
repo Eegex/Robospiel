@@ -39,6 +39,7 @@ public:
 	void receiveVotekick();
 	bool getVotekick(QUuid toUser);
 	int getVotekickCount();
+	void votekickInfo();
 private:
 	User(QObject *parent=nullptr);
 	QString name;

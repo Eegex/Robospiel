@@ -16,7 +16,7 @@ UserView::UserView(QPushButton *actionBtn, QPushButton *serverSwitchBtn, QWidget
 		{
 			OnlineLeaderboardWidget* onlineLeaderboard = dynamic_cast<OnlineLeaderboardWidget*>(leaderboard);
 			user = onlineLeaderboard->getLocalUser();
-			onlineLeaderboard->deleteLater();
+			onlineLeaderboard->deleteLater(); //TODO bleibt der User erhalten, auch wenn das Leaderboard glöscht wird?
 		}
 		leaderboard = new OnlineLeaderboardWidget();
 		GameControll::getInstance().setLeaderboard(leaderboard);

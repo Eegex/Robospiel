@@ -86,6 +86,7 @@ public:
     static void initiateServerSwitch();
     static User *initializeUser(User *user);
 	static LeaderBoardWidget* getLeaderboard();
+	static int getUserIndexById(QUuid id);
 
 public slots:
 	static void startNetworkDebugger();
@@ -125,7 +126,7 @@ private:
 	void sendToServer(PlayerAction a);
 	User *getUserById(QUuid id);
 	User *getNextUser(QUuid lastUserId);
-	int getUserIndexById(QUuid id);
+
 
 	bool boardBlocked = false; // das wird bestimmt keine Probleme machen
 	bool hasSkipped = false;
