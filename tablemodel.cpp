@@ -25,7 +25,8 @@ int TableModel::rowCount(const QModelIndex &/*parent*/) const
  */
 int TableModel::columnCount(const QModelIndex &/*parent*/) const
 {
-	return 3;
+	//Name, Bidding, Points, Votekick-Button
+	return 4;
 }
 
 /*!
@@ -55,6 +56,18 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
 					return "-";
 				case 2:
 					return GameControll::getUsers()->at(index.row())->getPoints();
+				case 3:
+					if(GameControll::votekickActive())
+					{
+						if(index.column()==3 && (GameControll::getUserIndexById(GameControll::getLocalUser()->getId())!=index.row()))
+						{
+							return tr("Votekick") + " " + GameControll::getUsers()->at(index.row())->getName();
+						}
+						else
+						{
+							return QString::number(GameControll::getUsers()->at(index.row())->getVotekickCount()) + "/"+ QString::number(GameControll::getUsers()->size()-1);
+						}
+					}
 				}
 			}
 			else if(role == Qt::ForegroundRole)
@@ -88,7 +101,7 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
 	}
 	if (orientation == Qt::Horizontal)
 	{
-		QStringList header = {tr("Names"),tr("Bidding"),tr("Points")};
+		QStringList header = {tr("Names"),tr("Bidding"),tr("Points"), tr("Votekick")};
 		return header.at(section);
 	}
 	else

@@ -38,12 +38,12 @@ void PowerButtonDelegate::updateSizeHint(int logicalIndex, int /*oldSize*/, int 
 	}
 }
 
-bool PowerButtonDelegate::hasButton(QPoint p) const
+int PowerButtonDelegate::hasButton(QPoint p) const
 {
-	return buttonVisible && p.y()==0;
+	return buttonVisible && p.y()==0 ? 2 : 1;
 }
 
-bool PowerButtonDelegate::buttonDisabled(QPoint p) const
+bool PowerButtonDelegate::isButtonDisabled(QPoint p) const
 {
 	return p.x()==clicked.x();
 }

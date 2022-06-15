@@ -15,6 +15,7 @@
 #include "user.h"
 #include "gamecontroll.h"
 #include "tablemodel.h"
+#include "votekickdelegate.h"
 
 /*!
  * \brief The OnlineLeaderboardWidget class ist auch super
@@ -43,6 +44,7 @@ private:
 	User * localUser = nullptr;
 	TableModel * model = new TableModel(this);
 	PowerButtonDelegate * powerButtonDelegate = nullptr;
+	VotekickDelegate* votekickDelegate = nullptr;
 
 public slots:
 	void btnPressed();
@@ -65,6 +67,7 @@ signals:
 	void leaderBoardSet(bool t);
 private slots:
 	void userClicked(const QModelIndex & index);
+	void votekickClicked(const QModelIndex& index);
 };
 
 #endif // ONLINELEADERBOARDWIDGET_H

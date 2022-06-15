@@ -13,8 +13,8 @@ public:
 	void updateSizeHint(int logicalIndex, int oldSize, int newSize);
 
 private:
-	bool hasButton(QPoint p) const;
-	bool buttonDisabled(QPoint p) const;
+	int hasButton(QPoint p) const;
+	bool isButtonDisabled(QPoint p) const;
 	QSize getCustomSizeHint(QPoint p) const;
 
 	QSize customSizeHint = {80,20};

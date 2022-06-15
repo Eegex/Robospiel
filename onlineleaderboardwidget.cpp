@@ -22,12 +22,22 @@ void OnlineLeaderboardWidget::initialize()
 	tableView->setModel(model);
 	tableView->resizeColumnsToContents();
 	tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
 	powerButtonDelegate = new PowerButtonDelegate({tableView->horizontalHeader()->sectionSize(0),tableView->verticalHeader()->sectionSize(0)},this);
 	connect(tableView->horizontalHeader(),&QHeaderView::sectionResized,powerButtonDelegate,&PowerButtonDelegate::updateSizeHint);
-	tableView->setItemDelegate(powerButtonDelegate);
+	tableView->setItemDelegateForColumn(0, powerButtonDelegate);
 	connect(tableView, &QTableView::entered,powerButtonDelegate,&ButtonDelegate::handleHover);
 	connect(tableView, &QTableView::clicked,powerButtonDelegate,&ButtonDelegate::handleClick);
 	connect(powerButtonDelegate, &ButtonDelegate::buttonClicked,this,&OnlineLeaderboardWidget::userClicked);
+
+	int lastIndex = tableView->horizontalHeader()->count()-1;
+	votekickDelegate = new VotekickDelegate({tableView->horizontalHeader()->sectionSize(lastIndex),tableView->verticalHeader()->sectionSize(0)},this);
+	connect(tableView->horizontalHeader(),&QHeaderView::sectionResized,votekickDelegate,&VotekickDelegate::updateSizeHint);
+	tableView->setItemDelegateForColumn(lastIndex, votekickDelegate);
+	connect(tableView, &QTableView::entered,votekickDelegate,&ButtonDelegate::handleHover);
+	connect(tableView, &QTableView::clicked,votekickDelegate,&ButtonDelegate::handleClick);
+	connect(votekickDelegate, &ButtonDelegate::buttonClicked,this,&OnlineLeaderboardWidget::votekickClicked);
+
 	biddingBox->setSpecialValueText(tr("No Bid"));
 	connect(bidBtn,&QPushButton::clicked, this, &OnlineLeaderboardWidget::btnPressed);
 	connect(biddingBox,&SpinBox::returnPressed, this,  &OnlineLeaderboardWidget::btnPressed);
@@ -36,16 +46,25 @@ void OnlineLeaderboardWidget::initialize()
 
 void OnlineLeaderboardWidget::userClicked(const QModelIndex & index)
 {
-	if(!index.column())
+	QTimer::singleShot(300,this,[=]()
 	{
-		qDebug() << "Name clicked" << index;
-		QTimer::singleShot(300,this,[&]()
-		{
-			powerButtonDelegate->resetState();
-			emit model->dataChanged(model->index(0,0),model->index(GameControll::getUsers()->size(),0));
-		});
-		emit userWasClicked(GameControll::getUsers()->at(index.row())->getId());
-	}
+		powerButtonDelegate->resetState();
+		emit model->dataChanged(model->index(0,0),model->index(GameControll::getUsers()->size(),0));
+	});
+	emit userWasClicked(GameControll::getUsers()->at(index.row())->getId());
+}
+
+void OnlineLeaderboardWidget::votekickClicked(const QModelIndex& index)
+{
+	QTimer::singleShot(300,this,[=]()
+	{
+		votekickDelegate->resetState();
+		emit model->dataChanged(index, index);
+	});
+	QJsonObject data;
+	data.insert("fromUser", getLocalUser()->getId().toString());
+	data.insert("toUser", GameControll::getUsers()->at(index.row())->getId().toString());
+	GameControll::triggerActionWithData(PlayerAction::votekick, data);
 }
 
 User * OnlineLeaderboardWidget::getLocalUser() const

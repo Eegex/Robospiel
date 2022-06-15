@@ -48,7 +48,7 @@ void Client::startClient(QString serverAddress, int serverPort)
 	emit clientIsStarting();
 	tcpSocket->close();
 	streamFromServer.setDevice(tcpSocket);
-	connect(&connectionWatchDog,&QTimer::timeout,&instance,&Client::checkConnection,Qt::UniqueConnection);
+	//connect(&connectionWatchDog,&QTimer::timeout,&instance,&Client::checkConnection,Qt::UniqueConnection);
 	disconnectCheck = false;
 	tcpSocket->connectToHost(serverAddress, serverPort);
 	tcpSocket->waitForConnected();
