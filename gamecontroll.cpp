@@ -375,8 +375,11 @@ void GameControll::exeQTAction(QJsonObject data)
 	}
 	case vote:
 	{
+		if(!getUserById(QUuid(data.value("userId").toString()))->getHasVoted())
+		{
+			voteCounter++;
+		}
 		getUserById(QUuid(data.value("userId").toString()))->setHasVoted(true);
-		voteCounter++;
 		updateVoteNumbers();
 		break;
 	}
@@ -1510,7 +1513,8 @@ void GameControll::updateVoteNumbers()
 	}
 
 	//check for consequences
-	switch (currentPhase) {
+	switch (currentPhase)
+	{
 	case Phase::countdown: //voting to skip the remaining countdown phase
 	{
 		if(Server::isActive()||Client::isActive())

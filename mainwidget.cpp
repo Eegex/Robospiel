@@ -82,7 +82,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 
 void MainWidget::handleServerSwitch()
 {
-    GameControll::initiateServerSwitch();
+	GameControll::initiateServerSwitch();
 }
 
 void MainWidget::handleActionButtonRelease()
@@ -92,7 +92,7 @@ void MainWidget::handleActionButtonRelease()
 	//search -> ja, skipTarget, Hälfte
 	//countdown -> ja, skipTimer, alle
 	//presentation ->nein, give up, nur man selber
-	//freeplay -> ja, Freeplay abbrechen um weiterspielen zu können, Hälfte || alle, weil es dann weitergeht und alle mitmachen sollten? Andererseits können Leute dann nciht kurzzeitig aussezten
+	//freeplay -> ja, Freeplay abbrechen um weiterspielen zu können, Hälfte || alle, weil es dann weitergeht und alle mitmachen sollten? Andererseits können Leute dann nicht kurzzeitig aussezten
 	switch (GameControll::getCurrentPhase())
 	{
 	case GameControll::Phase::countdown:
