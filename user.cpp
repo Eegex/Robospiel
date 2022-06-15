@@ -242,10 +242,9 @@ void User::receiveVotekick()
 	if(votekickCount>=GameControll::getUsers()->size()-1 && this==GameControll::getLocalUser()) //required number of votes: everyone, but oneself
 	{
 		qDebug() << "Votekick count high enough. Disconnecting " <<name;
+		//GameControll::initiateServerSwitch(); TODO
 		UserView::disconnectFromServer(); //TODO zentral durch GameControll?
-		//TODO ggf. erst noch serverSwitch
 	}
-	//TODO votekick only for >=3 users?
 }
 
 void User::votekickInfo()

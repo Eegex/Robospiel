@@ -404,6 +404,15 @@ void GameControll::exeQTAction(QJsonObject data)
 			voteCounter--;
 		}
 		updateVoteNumbers();
+
+		if(!GameControll::votekickActive()) //if the leaving user was the third one, votekick is now disabled.
+		// -> Resetting votes
+		{
+			for(User* u : users)
+			{
+				u->resetVotekick();
+			}
+		}
 		break;
 	}
 	case changedUserColor:
@@ -1579,4 +1588,9 @@ void GameControll::resetVotes()
 QString GameControll::phaseAsString(Phase phase)
 {
 	return QStringList({tr("idle"),tr("search"), tr("countdown"), tr("presentation"),tr("freeplay")}).at(static_cast<int>(phase));
+}
+
+bool GameControll::votekickActive()
+{
+	return (Server::isActive() || Client::isActive()) && instance.users.size()>=3;
 }

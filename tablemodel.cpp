@@ -57,15 +57,17 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
 				case 2:
 					return GameControll::getUsers()->at(index.row())->getPoints();
 				case 3:
-					if(index.column()==3 && (GameControll::getUserIndexById(GameControll::getLocalUser()->getId())!=index.row()))
+					if(GameControll::votekickActive())
 					{
-						return tr("Votekick") + " " + GameControll::getUsers()->at(index.row())->getName();
+						if(index.column()==3 && (GameControll::getUserIndexById(GameControll::getLocalUser()->getId())!=index.row()))
+						{
+							return tr("Votekick") + " " + GameControll::getUsers()->at(index.row())->getName();
+						}
+						else
+						{
+							return QString::number(GameControll::getUsers()->at(index.row())->getVotekickCount()) + "/"+ QString::number(GameControll::getUsers()->size()-1);
+						}
 					}
-					else
-					{
-						return QString::number(GameControll::getUsers()->at(index.row())->getVotekickCount()) + "/"+ QString::number(GameControll::getUsers()->size()-1);
-					}
-
 				}
 			}
 			else if(role == Qt::ForegroundRole)

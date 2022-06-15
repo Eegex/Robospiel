@@ -28,7 +28,7 @@ void VotekickDelegate::updateSizeHint(int logicalIndex, int /*oldSize*/, int new
 
 int VotekickDelegate::hasButton(QPoint p) const
 {
-	if(p.x()==3)
+	if(p.x()==3 && GameControll::votekickActive())
 	{
 		if(GameControll::getUserIndexById(GameControll::getLocalUser()->getId())==p.y()) //own row
 		{

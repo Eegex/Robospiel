@@ -88,6 +88,7 @@ public:
 	static LeaderBoardWidget* getLeaderboard();
 	static int getUserIndexById(QUuid id);
 
+	static bool votekickActive();
 public slots:
 	static void startNetworkDebugger();
 	void calculateWinner();

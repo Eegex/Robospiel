@@ -6,7 +6,7 @@ using namespace std::chrono_literals;
 
 ConnectionToClient::ConnectionToClient(QObject *parent, QTcpSocket *tcpSocket): QObject(parent),tcpSocket(tcpSocket)
 {
-	connect(&connectionWatchDog,&QTimer::timeout,this,&ConnectionToClient::checkConnection);
+	//connect(&connectionWatchDog,&QTimer::timeout,this,&ConnectionToClient::checkConnection);
 	connectionWatchDog.start(15s);
 	streamFromClient.setDevice(tcpSocket);
 	connect(tcpSocket, &QIODevice::readyRead, this, &ConnectionToClient::receiveMessage);

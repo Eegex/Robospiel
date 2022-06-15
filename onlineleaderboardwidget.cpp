@@ -31,7 +31,6 @@ void OnlineLeaderboardWidget::initialize()
 	connect(powerButtonDelegate, &ButtonDelegate::buttonClicked,this,&OnlineLeaderboardWidget::userClicked);
 
 	int lastIndex = tableView->horizontalHeader()->count()-1;
-	qDebug() << " Dorothee lastIndex" <<lastIndex;
 	votekickDelegate = new VotekickDelegate({tableView->horizontalHeader()->sectionSize(lastIndex),tableView->verticalHeader()->sectionSize(0)},this);
 	connect(tableView->horizontalHeader(),&QHeaderView::sectionResized,votekickDelegate,&VotekickDelegate::updateSizeHint);
 	tableView->setItemDelegateForColumn(lastIndex, votekickDelegate);
