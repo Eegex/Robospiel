@@ -59,6 +59,7 @@ protected:
 	QPoint mouseStart;
 	int lastKey = 0;
 	bool showDebugOutput = false;
+	bool checkered = false;
 	QVector<KeyMapping*> * mapping = nullptr;
 	void callChangeActivePlayer(Tile *t);
 	QVector<PlayerWidget* > playerWidgets;

@@ -206,7 +206,7 @@ void GameControll::load()
 	instance.settings->load();
 	connect(instance.settings, &SettingsDialog::colorsChanged, &GameControll::getInstance(),[&]()
 	{
-		instance.board->updateColors(instance.settings->getBackground(), instance.settings->getWallcolor(), instance.settings->getGridcolor(), instance.settings->getPlayerColorLow(), instance.settings->getPlayerColorHigh());
+		instance.board->updateColors(instance.settings->getBackground(), instance.settings->getCheckerboardColor(), instance.settings->getWallcolor(), instance.settings->getGridcolor(), instance.settings->getPlayerColorLow(), instance.settings->getPlayerColorHigh());
 	});
 	connect(instance.settings, &SettingsDialog::newMapping, &GameControll::getInstance(),[&](QVector<KeyMapping*> mapping){ instance.mapping = mapping; });
 	connect(instance.settings, &SettingsDialog::usercolorChanged, &instance, [=](QColor color)
@@ -232,7 +232,7 @@ void GameControll::load()
 	});
 	if(instance.board)
 	{
-		instance.board->updateColors(instance.settings->getBackground(), instance.settings->getWallcolor(), instance.settings->getGridcolor(), instance.settings->getPlayerColorLow(), instance.settings->getPlayerColorHigh());
+		instance.board->updateColors(instance.settings->getBackground(), instance.settings->getCheckerboardColor(), instance.settings->getWallcolor(), instance.settings->getGridcolor(), instance.settings->getPlayerColorLow(), instance.settings->getPlayerColorHigh());
 	}
 	instance.mapping = instance.settings->getMapping();
 	instance.searchTime = instance.settings->getTimerTime();
@@ -253,7 +253,7 @@ Board * GameControll::setBoard(Board* newBoard)
 	instance.board = newBoard;
 	if(instance.settings)
 	{
-		instance.board->updateColors(instance.settings->getBackground(), instance.settings->getWallcolor(), instance.settings->getGridcolor(), instance.settings->getPlayerColorLow(), instance.settings->getPlayerColorHigh());
+		instance.board->updateColors(instance.settings->getBackground(), instance.settings->getCheckerboardColor(), instance.settings->getWallcolor(), instance.settings->getGridcolor(), instance.settings->getPlayerColorLow(), instance.settings->getPlayerColorHigh());
 	}
 	connect(instance.board, &Board::playerMoved, &GameControll::getInstance(), [&](int, int) // Please note that this connect has to come BEFORE the one that is below, otherwise we will have a problem with reverting to the thrid to last positions once the steps are all used up :(!
 	{
@@ -476,7 +476,7 @@ void GameControll::exeQTAction(QJsonObject data)
 		instance.leaderboard->updateServerName(id, getUserById(id)->getName());
 		break;
 
-    }
+	}
 	case votekick:
 	{
 		User* from = getUserById(QUuid(data.value("fromUser").toString()));

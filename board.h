@@ -42,6 +42,7 @@ public:
 	int addPlayer(Tile * t);
 	void resetMoves();
 	QColor getBackground() const;
+	QColor getCheckered() const;
 	QColor getPrimary() const;
 	QColor getGrid() const;
 	QColor getPlayerColorLow() const;
@@ -51,7 +52,7 @@ public:
 	void makeNewGoal();
 	void makeNewSeeker(bool random);
 	int getMoves() const;
-	void updateColors(QColor b, QColor w, QColor g, QColor p1, QColor p2);
+	void updateColors(QColor b, QColor c, QColor w, QColor g, QColor p1, QColor p2);
 	QString toBinary();
 	static Board * fromBinary(const QString base64);
 	void updateRandomGenerator(int seed);
@@ -91,6 +92,7 @@ private:
 	int moves = 0;
 	QVector<HistoryElement> history;
 	QColor background = QColor(0xff,0xff,0);
+	QColor checkered = QColor();
 	QColor primary = QColor(0xff,0,0xff);
 	QColor grid = QColor(0,0xff,0xff);
 	QColor playerHigh = QColor(0,0xff,0xff);

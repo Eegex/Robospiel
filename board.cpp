@@ -705,6 +705,11 @@ QColor Board::getBackground() const
 	return background;
 }
 
+QColor Board::getCheckered() const
+{
+	return checkered;
+}
+
 QColor Board::getPlayerColorLow() const
 {
 	return playerLow;
@@ -919,9 +924,10 @@ int Board::addPlayer(Tile * t)
 	return t->getPlayer();
 }
 
-void Board::updateColors(QColor b, QColor w, QColor g, QColor p1, QColor p2)
+void Board::updateColors(QColor b, QColor c, QColor w, QColor g, QColor p1, QColor p2)
 {
 	background = b;
+	checkered = c;
 	primary = w;
 	grid = g;
 	playerLow = p1;

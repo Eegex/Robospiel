@@ -7,53 +7,124 @@ SettingsDialog::SettingsDialog(QVector<KeyMapping*> mapping, QDialog * parent) :
 	QWidget * generalWidget = new QWidget(this);
 	generalWidget->setLayout(flGeneral);
 	flGeneral->addRow(tr("User name"),leUsername);
-    flGeneral->addRow(tr("Timer time (when you're server)"),leTimerTime);
+	flGeneral->addRow(tr("Timer time (when you're server)"),leTimerTime);
 	flGeneral->addRow(tr("User color"),pbUserColor);
 	flGeneral->addRow(tr("Background color"),pbBackgroundColor);
+	flGeneral->addRow(tr("Checkered Board"), pbCheckerboardColor);
 	flGeneral->addRow(tr("Wall color"),pbWallColor);
 	flGeneral->addRow(tr("Grid color"),pbGridColor);
 	flGeneral->addRow(tr("Player color start"),pbPlayerColorLow);
 	flGeneral->addRow(tr("Player color end"),pbPlayerColorHigh);
 	flGeneral->addRow(tr("Show top bidder on timer"),cbTopBidding);
-    flGeneral->addRow(tr("Fair Mode on"), cbFairMode);
+	flGeneral->addRow(tr("Fair Mode on"), cbFairMode);
 	pbUserColor->setStyleSheet("background-color:" + settings.value(usercolor).toString());
 	pbBackgroundColor->setStyleSheet("background-color:" + settings.value(background).toString());
+	pbCheckerboardColor->setStyleSheet("background-color:" + settings.value(checkered).toString());
 	pbWallColor->setStyleSheet("background-color:" + settings.value(wallcolor).toString());
 	pbGridColor->setStyleSheet("background-color:" + settings.value(gridcolor).toString());
 	pbPlayerColorLow->setStyleSheet("background-color:" + settings.value(playercolorlow).toString());
 	pbPlayerColorHigh->setStyleSheet("background-color:" + settings.value(playercolorhigh).toString());
 	cbTopBidding->setChecked(getShowTopBidding());
-    cbFairMode->setChecked(getFairModeOn());
+	cbFairMode->setChecked(getFairModeOn());
 	twTabs->addTab(generalWidget,tr("General"));
 	keyMappings = new KeyMappingView(mapping, this);
 	twTabs->addTab(keyMappings,tr("Key mappings"));
 	lay->addWidget(pbSave);
-	connect(leUsername,&QLineEdit::editingFinished,this,[&](){
+	connect(leUsername,&QLineEdit::editingFinished,this,[&]()
+	{
 		settings.insert(username,leUsername->text());
 	});
-    connect(leTimerTime,&QSpinBox::editingFinished,this,[&](){
-        settings.insert(timertime,leTimerTime->value());
-    });
-	connect(pbUserColor,&QPushButton::clicked,this,[&](){
-		settings.insert(usercolor,QColorDialog::getColor(getUsercolor()).name()); pbUserColor->setStyleSheet("background-color:" + settings.value(usercolor).toString());
+	connect(leTimerTime,&QSpinBox::editingFinished,this,[&]()
+	{
+		settings.insert(timertime,leTimerTime->value());
 	});
-	connect(pbBackgroundColor,&QPushButton::clicked,this,[&](){ settings.insert(background,QColorDialog::getColor(getBackground()).name()); pbBackgroundColor->setStyleSheet("background-color:" + settings.value(background).toString()); });
-	connect(pbWallColor,&QPushButton::clicked,this,[&](){ settings.insert(wallcolor,QColorDialog::getColor(getWallcolor()).name()); pbWallColor->setStyleSheet("background-color:" + settings.value(wallcolor).toString()); });
-	connect(pbGridColor,&QPushButton::clicked,this,[&](){ settings.insert(gridcolor,QColorDialog::getColor(getGridcolor()).name()); pbGridColor->setStyleSheet("background-color:" + settings.value(gridcolor).toString()); });
-	connect(pbPlayerColorLow,&QPushButton::clicked,this,[&](){ settings.insert(playercolorlow,QColorDialog::getColor(getPlayerColorLow()).name()); pbPlayerColorLow->setStyleSheet("background-color:" + settings.value(playercolorlow).toString()); });
-	connect(pbPlayerColorHigh,&QPushButton::clicked,this,[&](){ settings.insert(playercolorhigh,QColorDialog::getColor(getPlayerColorHigh()).name()); pbPlayerColorHigh->setStyleSheet("background-color:" + settings.value(playercolorhigh).toString()); });
-	connect(cbTopBidding,&QCheckBox::toggled,this,[&](){ settings.insert(topBidding,cbTopBidding->isChecked()); });
-    connect(cbFairMode,&QCheckBox::toggled,this,[&](){ settings.insert(fairMode,cbFairMode->isChecked()); });
-    connect(pbSave,&QPushButton::clicked,this,&SettingsDialog::save);
+	connect(pbUserColor,&QPushButton::clicked,this,[&]()
+	{
+		QColor c = QColorDialog::getColor(getUsercolor());
+		if(c.isValid())
+		{
+			settings.insert(usercolor,c.name());
+			pbUserColor->setStyleSheet("background-color:" + settings.value(usercolor).toString());
+		}
+	});
+	connect(pbBackgroundColor,&QPushButton::clicked,this,[&]()
+	{
+		QColor c = QColorDialog::getColor(getBackground());
+		if(c.isValid())
+		{
+			settings.insert(background,c.name());
+			pbBackgroundColor->setStyleSheet("background-color:" + settings.value(background).toString());
+		}
+	});
+	connect(pbCheckerboardColor,&QPushButton::clicked,this,[&]()
+	{
+		QColor c = QColorDialog::getColor(getCheckerboardColor());
+		if(c.isValid())
+		{
+			settings.insert(checkered,c.name());
+			pbCheckerboardColor->setStyleSheet("background-color:" + settings.value(checkered).toString());
+		}
+		else
+		{
+			settings.insert(checkered,"");
+			pbCheckerboardColor->setStyleSheet("");
+		}
+	});
+	connect(pbWallColor,&QPushButton::clicked,this,[&]()
+	{
+		QColor c = QColorDialog::getColor(getUsercolor());
+		if(c.isValid())
+		{
+			settings.insert(wallcolor,c.name());
+			pbWallColor->setStyleSheet("background-color:" + settings.value(wallcolor).toString());
+		}
+	});
+	connect(pbGridColor,&QPushButton::clicked,this,[&]()
+	{
+		QColor c = QColorDialog::getColor(getUsercolor());
+		if(c.isValid())
+		{
+			settings.insert(gridcolor,c.name());
+			pbGridColor->setStyleSheet("background-color:" + settings.value(gridcolor).toString());
+		}
+	});
+	connect(pbPlayerColorLow,&QPushButton::clicked,this,[&]()
+	{
+		QColor c = QColorDialog::getColor(getUsercolor());
+		if(c.isValid())
+		{
+			settings.insert(playercolorlow,c.name());
+			pbPlayerColorLow->setStyleSheet("background-color:" + settings.value(playercolorlow).toString());
+		}
+	});
+	connect(pbPlayerColorHigh,&QPushButton::clicked,this,[&]()
+	{
+		QColor c = QColorDialog::getColor(getUsercolor());
+		if(c.isValid())
+		{
+			settings.insert(playercolorhigh,QColorDialog::getColor(getPlayerColorHigh()).name());
+			pbPlayerColorHigh->setStyleSheet("background-color:" + settings.value(playercolorhigh).toString());
+		}
+	});
+	connect(cbTopBidding,&QCheckBox::toggled,this,[&]()
+	{
+		settings.insert(topBidding,cbTopBidding->isChecked());
+	});
+	connect(cbFairMode,&QCheckBox::toggled,this,[&]()
+	{
+		settings.insert(fairMode,cbFairMode->isChecked());
+	});
+	connect(pbSave,&QPushButton::clicked,this,&SettingsDialog::save);
 }
 
 QString SettingsDialog::getUsername() const
 {
 	return settings.value(username).toString();
 }
+
 int SettingsDialog::getTimerTime() const
 {
-    return settings.value(timertime).toInt();
+	return settings.value(timertime).toInt();
 }
 
 QColor SettingsDialog::getUsercolor() const
@@ -98,7 +169,12 @@ bool SettingsDialog::getShowTopBidding() const
 
 bool SettingsDialog::getFairModeOn() const
 {
-    return settings.value(fairMode).toBool();
+	return settings.value(fairMode).toBool();
+}
+
+QColor SettingsDialog::getCheckerboardColor() const
+{
+	return settings.value(checkered).toString();
 }
 
 /*!
@@ -148,10 +224,10 @@ void SettingsDialog::load()
 	{
 		settings.insert(username,tr("New User"));
 	}
-    if(!settings.contains(timertime))
-    {
-        settings.insert(timertime,30);
-    }
+	if(!settings.contains(timertime))
+	{
+		settings.insert(timertime,30);
+	}
 	if(!settings.contains(usercolor))
 	{
 		settings.insert(usercolor,"#000000");
@@ -180,29 +256,38 @@ void SettingsDialog::load()
 	{
 		settings.insert(topBidding,false);
 	}
-    if(!settings.contains(fairMode))
-    {
-        settings.insert(fairMode,true);
-    }
+	if(!settings.contains(fairMode))
+	{
+		settings.insert(fairMode,true);
+	}
+	if(!settings.contains(checkered))
+	{
+		settings.insert(checkered,"#88FF0000");
+	}
 	delete keyMappings;
 	keyMappings = new KeyMappingView(mapping, this);
 	twTabs->addTab(keyMappings,tr("Key mappings"));
 	leUsername->setText(getUsername());
-    leTimerTime->setMinimum(1);
-    leTimerTime->setMaximum(99);
-    leTimerTime->setSingleStep(5);
-    leTimerTime->setValue(getTimerTime());
+	leTimerTime->setMinimum(1);
+	leTimerTime->setMaximum(99);
+	leTimerTime->setSingleStep(5);
+	leTimerTime->setValue(getTimerTime());
 	pbUserColor->setStyleSheet("background-color:" + settings.value(usercolor).toString());
 	pbBackgroundColor->setStyleSheet("background-color:" + settings.value(background).toString());
 	pbWallColor->setStyleSheet("background-color:" + settings.value(wallcolor).toString());
 	pbGridColor->setStyleSheet("background-color:" + settings.value(gridcolor).toString());
 	pbPlayerColorLow->setStyleSheet("background-color:" + settings.value(playercolorlow).toString());
 	pbPlayerColorHigh->setStyleSheet("background-color:" + settings.value(playercolorhigh).toString());
+	if(QColor(settings.value(checkered).toString()).isValid())
+	{
+		pbCheckerboardColor->setStyleSheet("background-color:" + settings.value(checkered).toString());
+	}
+	else
+	{
+		pbCheckerboardColor->setStyleSheet("");
+	}
 	cbTopBidding->setChecked(getShowTopBidding());
-    cbFairMode->setChecked(getFairModeOn());
-
-
-
+	cbFairMode->setChecked(getFairModeOn());
 }
 
 /*!
@@ -236,7 +321,7 @@ void SettingsDialog::save()
 	emit colorsChanged();
 	emit newMapping(keyMappings->getMapping());
 	emit usernameChanged(settings.value(username).toString());
-    emit timertimeChanged(settings.value(timertime).toInt());
+	emit timertimeChanged(settings.value(timertime).toInt());
 	emit usercolorChanged(QColor(settings.value(usercolor).toString()));
 	if(isVisible())
 	{
@@ -246,13 +331,12 @@ void SettingsDialog::save()
 
 }
 
-void SettingsDialog::enableTimerChange(bool boolean){
-    leTimerTime->setDisabled(!boolean);
-
+void SettingsDialog::enableTimerChange(bool boolean)
+{
+	leTimerTime->setDisabled(!boolean);
 }
 
-void SettingsDialog::giveServerTimerTimeToEveryone(){
-//     emit timertimeChanged(settings.value(timertime).toString().toInt());
-
-
+void SettingsDialog::giveServerTimerTimeToEveryone()
+{
+	//emit timertimeChanged(settings.value(timertime).toString().toInt());
 }

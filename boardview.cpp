@@ -187,7 +187,6 @@ void BoardView::paintEvent(QPaintEvent * event)
 	painter.begin(this);
 	QPen debug(QColor(255,0,255));
 	QPen gridPen(board->getGrid(),1,Qt::SolidLine,Qt::RoundCap);
-	QPen player(QColor(0,0,0),2,Qt::SolidLine,Qt::RoundCap);
 	double tileHeight = (height() - 10) / static_cast<double>(board->getSize().height());
 	double tileWidth = (width() - 10) / static_cast<double>(board->getSize().width());
 	QPen wallPen(board->getPrimary(),std::min(tileHeight, tileWidth)*0.1,Qt::SolidLine,Qt::SquareCap);
@@ -195,12 +194,25 @@ void BoardView::paintEvent(QPaintEvent * event)
 	painter.setPen(gridPen);
 	painter.setBrush(board->getBackground());
 	painter.drawRect(this->rect() - QMargins(0,0,1,1));
+	QColor checkered = board->getCheckered();
+	checkered.setAlpha(80);
 	for(int y = 0; y < board->getSize().height(); y++)
 	{
 		for(int x = 0; x < board->getSize().width(); x++)
 		{
-			QRect tile(5+x*tileWidth,5+y*tileHeight,tileWidth,tileHeight);
+			QRect tile(5+x*tileWidth,5+y*tileHeight,tileWidth-1,tileHeight-1);
 			painter.drawRect(tile);
+			if(checkered.isValid())
+			{
+				if(x % 2)
+				{
+					painter.fillRect(tile,checkered);
+				}
+				if(y % 2)
+				{
+					painter.fillRect(tile,checkered);
+				}
+			}
 		}
 	}
 	painter.setPen(wallPen);
@@ -218,10 +230,7 @@ void BoardView::paintEvent(QPaintEvent * event)
 
 			if(key & static_cast<int>(Direction::north))
 			{
-
 				painter.drawLine(tile.topLeft(),tile.topRight());
-
-
 			}
 			if(key & static_cast<int>(Direction::east))
 			{
@@ -284,10 +293,10 @@ void BoardView::resizeEvent(QResizeEvent * event)
 			QPoint newPosition = tileToDesktopCoordinates(board->players.at(i));
 			double factorX = 1;
 			double factorY = 1;
-            if(!event->oldSize().isEmpty() && playerWidgets.at(i)->getInAnimation())
+			if(!event->oldSize().isEmpty() && playerWidgets.at(i)->getInAnimation())
 			{
-                factorX = event->size().width()*1.0/event->oldSize().width();
-                factorY = event->size().height()*1.0/event->oldSize().height();
+				factorX = event->size().width()*1.0/event->oldSize().width();
+				factorY = event->size().height()*1.0/event->oldSize().height();
 				newPosition=playerWidgets.at(i)->pos();
 				double newX=newPosition.x()*factorX;
 				double newY=newPosition.y()*factorY;
