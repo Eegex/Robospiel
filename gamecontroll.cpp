@@ -385,6 +385,7 @@ void GameControll::exeQTAction(QJsonObject data)
 	}
 	case PlayerAction::nextTarget:
 	{
+		qDebug() << "PlayerAction::nextTarget:";
 		nextTarget();
 		break;
 	}
@@ -1074,8 +1075,7 @@ GameControll::Phase GameControll::getCurrentPhase()
 
 void GameControll::nextTarget()
 {
-	//qDebug()<<"next target!!";
-
+	qDebug()<<"next target!!";
 	board->setCurrentToSavedState();
 	if(switchPhase(Phase::search))
 	{
@@ -1552,6 +1552,8 @@ void GameControll::updateVoteNumbers()
 		//Aussagenlogik: online ->VC>=VT ist !online v VC>=vT
 		if(!(Server::isActive()||Client::isActive()) || (voteCounter>=voteThreshold && Server::isActive()))
 		{
+			qDebug() << "trigger nextTarget";
+			GameControll::triggerAction(PlayerAction::setIdle);
 			GameControll::triggerAction(PlayerAction::nextTarget);
 		}
 		break;
