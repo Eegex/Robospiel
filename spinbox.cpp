@@ -30,6 +30,10 @@ void SpinBox::keyPressEvent(QKeyEvent* event)
 		event->accept();
 		emit returnPressed();
 	}
+	else if(event->key() < Qt::Key_0 || event->key() > Qt::Key_9)
+	{
+		event->ignore();
+	}
 	else
 	{
 		QSpinBox::keyPressEvent(event);

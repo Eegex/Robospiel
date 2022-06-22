@@ -206,8 +206,13 @@ void SettingsDialog::load()
 		}
 		mapping.append(new KeyMapping(static_cast<PlayerAction>(action.toInt()),keys));
 	}
-	if(mapping.isEmpty())
+	if(mapping.size() < 12)
 	{
+		while(mapping.isEmpty())
+		{
+			delete mapping.takeFirst();
+		}
+		qDebug() << "neues mapping";
 		mapping.append(new KeyMapping(PlayerAction::movePlayerNorth,{Qt::Key::Key_W,Qt::Key::Key_Up,Qt::Key::Key_F31}));
 		mapping.append(new KeyMapping(PlayerAction::movePlayerEast,{Qt::Key::Key_D,Qt::Key::Key_Right,Qt::Key::Key_F32}));
 		mapping.append(new KeyMapping(PlayerAction::movePlayerSouth,{Qt::Key::Key_S,Qt::Key::Key_Down,Qt::Key::Key_F33}));
@@ -219,6 +224,7 @@ void SettingsDialog::load()
 		mapping.append(new KeyMapping(PlayerAction::revert,Qt::Key::Key_R));
 		mapping.append(new KeyMapping(PlayerAction::revertToBeginning,Qt::Key::Key_B));
 		mapping.append(new KeyMapping(PlayerAction::giveUp,Qt::Key::Key_Q));
+		mapping.append(new KeyMapping(PlayerAction::vote,Qt::Key::Key_V));
 	}
 	if(!settings.contains(username))
 	{

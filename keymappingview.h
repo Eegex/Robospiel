@@ -20,7 +20,7 @@ public:
 	QVector<KeyMapping *> getMapping();
 
 private:
-	PlayerAction mappableActions[11] = { PlayerAction::movePlayerNorth,
+	PlayerAction mappableActions[12] = { PlayerAction::movePlayerNorth,
 										PlayerAction::movePlayerWest,
 										PlayerAction::movePlayerSouth,
 										PlayerAction::movePlayerEast,
@@ -32,7 +32,9 @@ private:
 
 										PlayerAction::giveUp,
 										PlayerAction::revert,
-										PlayerAction::revertToBeginning};
+										PlayerAction::revertToBeginning,
+										PlayerAction::vote
+									   };
 	QVector<KeyMapping*> allMappings;
 	QGridLayout * grid = nullptr;
 	QVBoxLayout * lay = nullptr;

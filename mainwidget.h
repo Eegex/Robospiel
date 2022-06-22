@@ -34,6 +34,10 @@ public:
 	void handleActionButtonRelease();
 	void handleServerSwitch();
 
+protected slots:
+	void keyPressEvent(QKeyEvent * event);
+	void handleKeyPress(int key);
+
 private slots:
 	void updateTimer(int remaining);
 	void editBoard();

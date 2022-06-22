@@ -385,7 +385,6 @@ void GameControll::exeQTAction(QJsonObject data)
 	}
 	case PlayerAction::nextTarget:
 	{
-		qDebug() << "PlayerAction::nextTarget:";
 		nextTarget();
 		break;
 	}
@@ -564,6 +563,10 @@ void GameControll::triggerAction(PlayerAction action)
 	{
 		emit instance.actionTriggered(action);
 	}
+	else if(action == PlayerAction::vote)
+	{
+		emit instance.triggerActionWithData(PlayerAction::vote,{{"userId", GameControll::getLocalUser()->getId().toString()}});
+	}
 	return;
 }
 
@@ -739,8 +742,6 @@ void GameControll::resetForNextUser()
 	emit updateMoves(0);
 	qDebug() << "Active User is now " <<user->getName();
 }
-
-
 
 int GameControll::getUserIndexById(QUuid id)
 {
@@ -1095,8 +1096,6 @@ void GameControll::nextTarget()
 
 void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out the phases word like this (with switchPhase) please delete all the commented sections and move "currentPhase = phase;" and "updateVoteNumbers();" before the switch-case
 {
-
-
 	switch(phase)
 	{
 	case Phase::idle:
@@ -1562,7 +1561,6 @@ void GameControll::updateVoteNumbers()
 	}
 
 }
-
 
 void GameControll::initiateServerSwitch()
 {

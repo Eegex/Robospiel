@@ -53,6 +53,9 @@ KeyMappingView::KeyMappingView(QVector<KeyMapping*> mappings, QWidget *parent) :
 			case PlayerAction::freePlay:
 				name->setText(tr("switch to freeplay"));
 				break;
+			case PlayerAction::vote:
+				name->setText(tr("vote for current action"));
+				break;
 			default:
 				name->setText(tr("Sorry, something went wrong :("));
 		}
