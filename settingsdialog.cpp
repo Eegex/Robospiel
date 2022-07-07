@@ -206,20 +206,6 @@ void SettingsDialog::load()
 		}
 		mapping.append(new KeyMapping(static_cast<PlayerAction>(action.toInt()),keys));
 	}
-	if(mapping.isEmpty())
-	{
-		mapping.append(new KeyMapping(PlayerAction::movePlayerNorth,{Qt::Key::Key_W,Qt::Key::Key_Up,Qt::Key::Key_F31}));
-		mapping.append(new KeyMapping(PlayerAction::movePlayerEast,{Qt::Key::Key_D,Qt::Key::Key_Right,Qt::Key::Key_F32}));
-		mapping.append(new KeyMapping(PlayerAction::movePlayerSouth,{Qt::Key::Key_S,Qt::Key::Key_Down,Qt::Key::Key_F33}));
-		mapping.append(new KeyMapping(PlayerAction::movePlayerWest,{Qt::Key::Key_A,Qt::Key::Key_Left,Qt::Key::Key_F34}));
-		mapping.append(new KeyMapping(PlayerAction::switchPlayerNorth,Qt::Key::Key_I));
-		mapping.append(new KeyMapping(PlayerAction::switchPlayerEast,Qt::Key::Key_L));
-		mapping.append(new KeyMapping(PlayerAction::switchPlayerSouth,Qt::Key::Key_K));
-		mapping.append(new KeyMapping(PlayerAction::switchPlayerWest,Qt::Key::Key_J));
-		mapping.append(new KeyMapping(PlayerAction::revert,Qt::Key::Key_R));
-		mapping.append(new KeyMapping(PlayerAction::revertToBeginning,Qt::Key::Key_B));
-		mapping.append(new KeyMapping(PlayerAction::giveUp,Qt::Key::Key_Q));
-	}
 	if(!settings.contains(username))
 	{
 		settings.insert(username,tr("New User"));

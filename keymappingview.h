@@ -1,7 +1,8 @@
 #ifndef KEYMAPPINGVIEW_H
 #define KEYMAPPINGVIEW_H
 
-#include "keyinput.h"
+#include "keyinputblock.h"
+#include "keyinputrecorder.h"
 #include "keymapping.h"
 
 #include <QGridLayout>
@@ -39,12 +40,12 @@ private:
 	QVector<QLabel*> mappingLabels;
 	QVector<QVector<QLabel*>*> keyLabels;
 	QVector<QHBoxLayout*> hBoxRows;
-	QMap<int, QPushButton*> addBtns;
+	QVector<KeyInputBlock*> inputBlocks;
 	QScrollArea * scroll = nullptr;
 	bool constructorHasEnded =false;
 
 	void completeMappings(QVector<KeyMapping*> mappings);
-	QVBoxLayout *getAddGroup(int row);
+	KeyInputBlock* getAddGroup(int row);
 	void insertKeyIntoUI(int row, int col);
 
 	void checkMappings();

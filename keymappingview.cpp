@@ -66,7 +66,7 @@ KeyMappingView::KeyMappingView(QVector<KeyMapping*> mappings, QWidget *parent) :
 			insertKeyIntoUI(i, j);
 		}
 		grid->addLayout(rowContainer, i, 1);
-		grid->addLayout(getAddGroup(i), i, 2);
+		grid->addWidget(getAddGroup(i), i, 2);
 	}
 	setWindowTitle(tr("Key Mappings"));
 	lay = new QVBoxLayout(this);
@@ -75,8 +75,13 @@ KeyMappingView::KeyMappingView(QVector<KeyMapping*> mappings, QWidget *parent) :
 	checkMappings();
 }
 
+/**
+ * @brief KeyMappingView::completeMappings adds default keyMappings and transfers the mappings to the allMappings variable
+ * @param mappings the (incomplete) mapping
+ */
 void KeyMappingView::completeMappings(QVector<KeyMapping*> mappings)
 {
+	//collect all keys in use
 	QVector<Qt::Key> usedKeys;
 	for(KeyMapping* mapping:mappings)
 	{
@@ -85,6 +90,8 @@ void KeyMappingView::completeMappings(QVector<KeyMapping*> mappings)
 	for(PlayerAction action: mappableActions)
 	{
 		bool exists =false;
+
+		//transfer the mapping to allMappings, if it exists
 		for(int i=0; i<mappings.length(); i++)
 		{
 			if(mappings.at(i)->getAction()==action)
@@ -94,18 +101,71 @@ void KeyMappingView::completeMappings(QVector<KeyMapping*> mappings)
 				break;
 			}
 		}
+
+		//add default mappings
 		if(!exists)
 		{
-			allMappings.append(new KeyMapping(action));
+			QVector<Qt::Key> possibleDefaults;
+			switch(action)
+			{
+				case PlayerAction::movePlayerNorth:
+					possibleDefaults = {Qt::Key::Key_W,Qt::Key::Key_Up,Qt::Key::Key_F31};
+					break;
+				case PlayerAction::movePlayerEast:
+					possibleDefaults = {Qt::Key::Key_D,Qt::Key::Key_Right,Qt::Key::Key_F32};
+					break;
+				case PlayerAction::movePlayerSouth:
+					possibleDefaults = {Qt::Key::Key_S,Qt::Key::Key_Down,Qt::Key::Key_F33};
+					break;
+				case PlayerAction::movePlayerWest:
+					possibleDefaults = {Qt::Key::Key_A,Qt::Key::Key_Left,Qt::Key::Key_F34};
+					break;
+				case PlayerAction::switchPlayerNorth:
+					possibleDefaults = {Qt::Key::Key_I};
+					break;
+				case PlayerAction::switchPlayerEast:
+					possibleDefaults = {Qt::Key::Key_L};
+					break;
+				case PlayerAction::switchPlayerSouth:
+					possibleDefaults = {Qt::Key::Key_K};
+					break;
+				case PlayerAction::switchPlayerWest:
+					possibleDefaults = {Qt::Key::Key_J};
+					break;
+				case PlayerAction::revert:
+					possibleDefaults = {Qt::Key::Key_R};
+					break;
+				case PlayerAction::revertToBeginning:
+					possibleDefaults = {Qt::Key::Key_B};
+					break;
+				case PlayerAction::giveUp:
+					possibleDefaults = {Qt::Key::Key_Q};
+					break;
+			}
+
+			//only use keys that are not already included in the mapping
+			for(Qt::Key key : possibleDefaults)
+			{
+				if(!usedKeys.contains(key))
+				{
+					allMappings.append(new KeyMapping(action, key));
+					usedKeys.append(key);
+					break;
+				}
+			}
 		}
 	}
 	checkMappings();
 }
 
+/**
+ * @brief KeyMappingView::checkMappings highlights label in the view in red to indicate duplicates
+ */
 void KeyMappingView::checkMappings()
 {
 	if(constructorHasEnded)
 	{
+		//iterate through all actions and all mapped keys for each action
 		bool valid = true;
 		QSet<Qt::Key> usedKeys;
 		for(int i=0; i<allMappings.length(); i++)
@@ -113,10 +173,12 @@ void KeyMappingView::checkMappings()
 			bool rowValid = true;
 			for(int j=0; j<allMappings.at(i)->getKeys().length(); j++)
 			{
+				//check for duplicate mapping
 				if(usedKeys.contains(allMappings.at(i)->getKeys().at(j)))
 				{
 					valid = false;
 					rowValid = false;
+					//find all duplicates, (they occured before)
 					for(int k=0; k<i; k++)
 					{
 						for(int l=0; l<allMappings.at(k)->getKeys().length(); l++)
@@ -150,34 +212,26 @@ void KeyMappingView::checkMappings()
 	}
 }
 
-QVBoxLayout* KeyMappingView::getAddGroup(int row)
+KeyInputBlock* KeyMappingView::getAddGroup(int row)
 {
-	QVBoxLayout* layout = new QVBoxLayout();
-	KeyInput* input = new KeyInput();
-
-
-	QPushButton* btnAddKey = new QPushButton(tr("Add"), this);
-	btnAddKey->setFixedWidth(KeyInput::inputWidth);
-	connect(btnAddKey, &QAbstractButton::pressed, this, [=]()->void{
-
-		if(input->hasKey() && allMappings.at(row)->addKey(input->getKey()))
+	KeyInputBlock* input = new KeyInputBlock();
+	inputBlocks.insert(row, input);
+	connect(inputBlocks.at(row), &KeyInputBlock::addMapping, this, [=](){
+		if(inputBlocks.at(row)->hasKey() && allMappings.at(row)->addKey(inputBlocks.at(row)->getKey()))
 		{
 			insertKeyIntoUI(row, allMappings.at(row)->getKeys().length()-1);
 			checkMappings();
 		}
-		input->reset();
-
+		inputBlocks.at(row)->reset();
 	});
-	addBtns.insert(row, btnAddKey);
-	layout->addWidget(input);
-	layout->addWidget(btnAddKey);
-	return layout;
+
+	return input;
 }
 
 void KeyMappingView::insertKeyIntoUI(int row, int col)
 {
 	QVBoxLayout* layout = new QVBoxLayout();
-	QLabel* label = new QLabel(KeyInput::keyToString(allMappings.at(row)->getKeys().at(col)), this);
+	QLabel* label = new QLabel(KeyInputRecorder::keyToString(allMappings.at(row)->getKeys().at(col)), this);
 	keyLabels.at(row)->append(label);
 	layout->addWidget(label);
 
@@ -191,7 +245,7 @@ void KeyMappingView::insertKeyIntoUI(int row, int col)
 		label->deleteLater();
 		deleteBtn->deleteLater();
 
-		allMappings.at(row)->removeKey(KeyInput::stringToKey(label->text()));
+		allMappings.at(row)->removeKey(KeyInputRecorder::stringToKey(label->text()));
 		checkMappings();
 	});
 	layout->addWidget(deleteBtn);

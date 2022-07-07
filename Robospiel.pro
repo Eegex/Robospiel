@@ -21,7 +21,8 @@ SOURCES += \
     client.cpp \
     connectiontoclient.cpp \
     gamecontroll.cpp \
-    keyinput.cpp \
+    keyinputblock.cpp \
+    keyinputrecorder.cpp \
     keymapping.cpp \
     keymappingview.cpp \
     main.cpp \
@@ -59,7 +60,8 @@ HEADERS += \
     direction.h \
     gamecontroll.h \
     goalwidget.h \
-    keyinput.h \
+    keyinputblock.h \
+    keyinputrecorder.h \
     keymapping.h \
     keymappingview.h \
     mainwidget.h \
