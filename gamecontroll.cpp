@@ -563,6 +563,10 @@ void GameControll::triggerAction(PlayerAction action)
 	{
 		emit instance.actionTriggered(action);
 	}
+	else if(action == PlayerAction::vote)
+	{
+		emit instance.triggerActionWithData(PlayerAction::vote,{{"userId", GameControll::getLocalUser()->getId().toString()}});
+	}
 	return;
 }
 
@@ -738,8 +742,6 @@ void GameControll::resetForNextUser()
 	emit updateMoves(0);
 	qDebug() << "Active User is now " <<user->getName();
 }
-
-
 
 int GameControll::getUserIndexById(QUuid id)
 {
@@ -1074,8 +1076,7 @@ GameControll::Phase GameControll::getCurrentPhase()
 
 void GameControll::nextTarget()
 {
-	//qDebug()<<"next target!!";
-
+	qDebug()<<"next target!!";
 	board->setCurrentToSavedState();
 	if(switchPhase(Phase::search))
 	{
@@ -1095,8 +1096,6 @@ void GameControll::nextTarget()
 
 void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out the phases word like this (with switchPhase) please delete all the commented sections and move "currentPhase = phase;" and "updateVoteNumbers();" before the switch-case
 {
-
-
 	switch(phase)
 	{
 	case Phase::idle:
@@ -1552,6 +1551,8 @@ void GameControll::updateVoteNumbers()
 		//Aussagenlogik: online ->VC>=VT ist !online v VC>=vT
 		if(!(Server::isActive()||Client::isActive()) || (voteCounter>=voteThreshold && Server::isActive()))
 		{
+			qDebug() << "trigger nextTarget";
+			GameControll::triggerAction(PlayerAction::setIdle);
 			GameControll::triggerAction(PlayerAction::nextTarget);
 		}
 		break;
@@ -1560,7 +1561,6 @@ void GameControll::updateVoteNumbers()
 	}
 
 }
-
 
 void GameControll::initiateServerSwitch()
 {

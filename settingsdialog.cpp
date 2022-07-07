@@ -40,7 +40,7 @@ SettingsDialog::SettingsDialog(QVector<KeyMapping*> mapping, QDialog * parent) :
 	});
 	connect(pbUserColor,&QPushButton::clicked,this,[&]()
 	{
-		QColor c = QColorDialog::getColor(getUsercolor());
+		QColor c = QColorDialog::getColor(getUsercolor(),nullptr,tr("User Color"));
 		if(c.isValid())
 		{
 			settings.insert(usercolor,c.name());
@@ -49,7 +49,7 @@ SettingsDialog::SettingsDialog(QVector<KeyMapping*> mapping, QDialog * parent) :
 	});
 	connect(pbBackgroundColor,&QPushButton::clicked,this,[&]()
 	{
-		QColor c = QColorDialog::getColor(getBackground());
+		QColor c = QColorDialog::getColor(getBackground(),nullptr,tr("Background Color"));
 		if(c.isValid())
 		{
 			settings.insert(background,c.name());
@@ -58,7 +58,7 @@ SettingsDialog::SettingsDialog(QVector<KeyMapping*> mapping, QDialog * parent) :
 	});
 	connect(pbCheckerboardColor,&QPushButton::clicked,this,[&]()
 	{
-		QColor c = QColorDialog::getColor(getCheckerboardColor());
+		QColor c = QColorDialog::getColor(getCheckerboardColor(),nullptr,tr("Checkerboard Color"));
 		if(c.isValid())
 		{
 			settings.insert(checkered,c.name());
@@ -72,7 +72,7 @@ SettingsDialog::SettingsDialog(QVector<KeyMapping*> mapping, QDialog * parent) :
 	});
 	connect(pbWallColor,&QPushButton::clicked,this,[&]()
 	{
-		QColor c = QColorDialog::getColor(getUsercolor());
+		QColor c = QColorDialog::getColor(getUsercolor(),nullptr,tr("Wall Color"));
 		if(c.isValid())
 		{
 			settings.insert(wallcolor,c.name());
@@ -81,7 +81,7 @@ SettingsDialog::SettingsDialog(QVector<KeyMapping*> mapping, QDialog * parent) :
 	});
 	connect(pbGridColor,&QPushButton::clicked,this,[&]()
 	{
-		QColor c = QColorDialog::getColor(getUsercolor());
+		QColor c = QColorDialog::getColor(getUsercolor(),nullptr,tr("Grid Color"));
 		if(c.isValid())
 		{
 			settings.insert(gridcolor,c.name());
@@ -90,7 +90,7 @@ SettingsDialog::SettingsDialog(QVector<KeyMapping*> mapping, QDialog * parent) :
 	});
 	connect(pbPlayerColorLow,&QPushButton::clicked,this,[&]()
 	{
-		QColor c = QColorDialog::getColor(getUsercolor());
+		QColor c = QColorDialog::getColor(getUsercolor(),nullptr,tr("Player color-range begin"));
 		if(c.isValid())
 		{
 			settings.insert(playercolorlow,c.name());
@@ -99,7 +99,7 @@ SettingsDialog::SettingsDialog(QVector<KeyMapping*> mapping, QDialog * parent) :
 	});
 	connect(pbPlayerColorHigh,&QPushButton::clicked,this,[&]()
 	{
-		QColor c = QColorDialog::getColor(getUsercolor());
+		QColor c = QColorDialog::getColor(getUsercolor(),nullptr,tr("Player color-range end"));
 		if(c.isValid())
 		{
 			settings.insert(playercolorhigh,QColorDialog::getColor(getPlayerColorHigh()).name());

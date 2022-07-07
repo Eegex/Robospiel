@@ -53,6 +53,9 @@ KeyMappingView::KeyMappingView(QVector<KeyMapping*> mappings, QWidget *parent) :
 			case PlayerAction::freePlay:
 				name->setText(tr("switch to freeplay"));
 				break;
+			case PlayerAction::vote:
+				name->setText(tr("vote for current action"));
+				break;
 			default:
 				name->setText(tr("Sorry, something went wrong :("));
 		}
@@ -94,7 +97,7 @@ void KeyMappingView::completeMappings(QVector<KeyMapping*> mappings)
 		//transfer the mapping to allMappings, if it exists
 		for(int i=0; i<mappings.length(); i++)
 		{
-			if(mappings.at(i)->getAction()==action)
+			if(mappings.at(i)->getAction()==action && mappings.at(i)->getKeys().size()>0)
 			{
 				exists=true;
 				allMappings.append(new KeyMapping(*mappings.takeAt(i)));

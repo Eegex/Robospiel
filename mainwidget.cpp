@@ -85,6 +85,31 @@ void MainWidget::handleServerSwitch()
 	GameControll::initiateServerSwitch();
 }
 
+void MainWidget::keyPressEvent(QKeyEvent* event)
+{
+	handleKeyPress(event->key());
+	QWidget::keyPressEvent(event);
+}
+
+void MainWidget::handleKeyPress(int key)
+{
+	for(const KeyMapping * k:qAsConst(*GameControll::getMapping()))
+	{
+		if(*k == key)
+		{
+			if(k->getAction() == PlayerAction::vote)
+			{
+				handleActionButtonRelease();
+			}
+			else
+			{
+				GameControll::triggerAction(k->getAction());
+			}
+			return;
+		}
+	}
+}
+
 void MainWidget::handleActionButtonRelease()
 {
 	//Phase -> ButtonDisablen?,aktion,erwartete Anzahl
@@ -93,35 +118,38 @@ void MainWidget::handleActionButtonRelease()
 	//countdown -> ja, skipTimer, alle
 	//presentation ->nein, give up, nur man selber
 	//freeplay -> ja, Freeplay abbrechen um weiterspielen zu können, Hälfte || alle, weil es dann weitergeht und alle mitmachen sollten? Andererseits können Leute dann nicht kurzzeitig aussezten
-	switch (GameControll::getCurrentPhase())
+	if(actionBtn->isEnabled())
 	{
-	case GameControll::Phase::countdown:
-	{
-		GameControll::disableAnnoyingSounds();
-		actionBtn->setDisabled(true);
-		GameControll::triggerActionWithData(PlayerAction::vote, {{"userId", GameControll::getLocalUser()->getId().toString()}});
-		break;
-	}
-	case GameControll::Phase::search: {}
-	case GameControll::Phase::idle: {}
-	case GameControll::Phase::freeplay:
-	{
-		//GameControll::triggerAction(PlayerAction::nextTarget); leave this in the code, for the case that Nora needs it
-		//disables vote before skipping the goal
-		actionBtn->setDisabled(true);
-		GameControll::triggerActionWithData(PlayerAction::vote, {{"userId", GameControll::getLocalUser()->getId().toString()}});
-		break;
-	}
-	case GameControll::Phase::presentation:
-	{
-		GameControll::triggerAction(PlayerAction::giveUp);
-		//emit view->animationEnded();
-		break;
-	}
-	}
-	if(GameControll::getCurrentPhase()==GameControll::Phase::countdown || GameControll::getCurrentPhase()==GameControll::Phase::search)
-	{
-		GameControll::getLeaderboard()->setBiddingFocus();
+		switch (GameControll::getCurrentPhase())
+		{
+		case GameControll::Phase::countdown:
+		{
+			GameControll::disableAnnoyingSounds();
+			actionBtn->setDisabled(true);
+			GameControll::triggerActionWithData(PlayerAction::vote, {{"userId", GameControll::getLocalUser()->getId().toString()}});
+			break;
+		}
+		case GameControll::Phase::search: {}
+		case GameControll::Phase::idle: {}
+		case GameControll::Phase::freeplay:
+		{
+			//GameControll::triggerAction(PlayerAction::nextTarget); leave this in the code, for the case that Nora needs it
+			//disables vote before skipping the goal
+			actionBtn->setDisabled(true);
+			GameControll::triggerActionWithData(PlayerAction::vote, {{"userId", GameControll::getLocalUser()->getId().toString()}});
+			break;
+		}
+		case GameControll::Phase::presentation:
+		{
+			GameControll::triggerAction(PlayerAction::giveUp);
+			//emit view->animationEnded();
+			break;
+		}
+		}
+		if(GameControll::getCurrentPhase()==GameControll::Phase::countdown || GameControll::getCurrentPhase()==GameControll::Phase::search)
+		{
+			GameControll::getLeaderboard()->setBiddingFocus();
+		}
 	}
 }
 

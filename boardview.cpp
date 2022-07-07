@@ -396,16 +396,6 @@ void BoardView::mouseMoveEvent(QMouseEvent * event)
 }
 
 /*!
- * \brief BoardView::keyPressEvent
- * \param event
- */
-void BoardView::keyPressEvent(QKeyEvent * event)
-{
-	handleKeyPress(event->key());
-	QWidget::keyPressEvent(event);
-}
-
-/*!
  * \brief BoardView::handleKeyPress
  * \param key
  */

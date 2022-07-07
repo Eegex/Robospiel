@@ -48,7 +48,7 @@ protected slots:
 	void resizeEvent(QResizeEvent * event);
 	virtual void mousePressEvent(QMouseEvent * event);
 	virtual void mouseMoveEvent(QMouseEvent * event);
-	void keyPressEvent(QKeyEvent * event);
+//	void keyPressEvent(QKeyEvent * event);
 	void handleKeyPress(int key);
 	bool event(QEvent * event);
 
