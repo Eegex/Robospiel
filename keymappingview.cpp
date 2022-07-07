@@ -144,6 +144,9 @@ void KeyMappingView::completeMappings(QVector<KeyMapping*> mappings)
 				case PlayerAction::giveUp:
 					possibleDefaults = {Qt::Key::Key_Q};
 					break;
+				case PlayerAction::vote:
+					possibleDefaults = {Qt::Key::Key_V};
+					break;
 			}
 
 			//only use keys that are not already included in the mapping
@@ -153,8 +156,15 @@ void KeyMappingView::completeMappings(QVector<KeyMapping*> mappings)
 				{
 					allMappings.append(new KeyMapping(action, key));
 					usedKeys.append(key);
+					exists = true;
 					break;
 				}
+			}
+
+			//when no key ist available, the action still has to be inserted to create an "Add" button later.
+			if(!exists)
+			{
+				allMappings.append(new KeyMapping(action));
 			}
 		}
 	}

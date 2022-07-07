@@ -1,3 +1,4 @@
+#include "gamecontroll.h"
 #include "powerbuttondelegate.h"
 #include <QApplication>
 #include <QPainter>
@@ -40,7 +41,7 @@ void PowerButtonDelegate::updateSizeHint(int logicalIndex, int /*oldSize*/, int 
 
 int PowerButtonDelegate::hasButton(QPoint p) const
 {
-	return buttonVisible && p.y()==0 ? 2 : 1;
+	return (buttonVisible && p.x()==0 && p.y()!=GameControll::getUserIndexById(GameControll::getLocalUser()->getId())) ? 2 : 1;
 }
 
 bool PowerButtonDelegate::isButtonDisabled(QPoint p) const
