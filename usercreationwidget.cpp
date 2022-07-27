@@ -44,8 +44,6 @@ UserCreationWidget::UserCreationWidget(QWidget *parent) : QWidget(parent)
  */
 void UserCreationWidget::addUser()
 {
-	qDebug()<<"Addition Request of user with name "<<userNamePicker->text()<<"and colour "<<userColourPicker->selectedColor().name();
-    qDebug()<<"Current Colour"<<userColourPicker->selectedColor().name();
 	User* user = new User(userNamePicker->text()!=nullptr?userNamePicker->text():DEFAULTUSERNAME, userColourPicker->selectedColor());
     GameControll::triggerActionWithData(PlayerAction::newUser, user->toJSON());
 

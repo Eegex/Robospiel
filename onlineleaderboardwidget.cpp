@@ -113,11 +113,6 @@ void OnlineLeaderboardWidget::btnPressed()
 		bidBtn->setText(tr("Bid") + ":" + QString::number(userBidding));
 		emit biddingAccepted(localUser->getId(), userBidding);
 		setBiddingFocus();
-		qDebug() << "Player changed their bidding to: " << userBidding;
-	}
-	else
-	{
-		qDebug() << "Someone has tried to bid No Bid";
 	}
 }
 
@@ -132,21 +127,6 @@ void OnlineLeaderboardWidget::newRound(){
  */
 void OnlineLeaderboardWidget::updateBidding(QUuid id, int bidding)
 {
-	//qDebug() << "OnlineLeaderboardWidget::updateBidding(QUuid " << id << ", int " << bidding << ")";
-	/*User * tmpUser = model->findUser(id);
-	QString name = "";
-	if (tmpUser != nullptr)
-	{
-		name = tmpUser->getName();
-		for(QTableWidgetItem *item : tableView->findItems(name,0))
-		{
-			if(item->data(1) == id && item->text() == name)
-			{
-				tableView->item(item->row(),item->column()+1)->setText(QString::number(bidding));
-				return;
-			}
-		}
-	}*/
 	userBidding = bidding; // notwendig?
 	emit biddingChangedOnline(userBidding);
 	model->update();
@@ -155,29 +135,6 @@ void OnlineLeaderboardWidget::updateBidding(QUuid id, int bidding)
 
 void OnlineLeaderboardWidget::updateName(QUuid id, QString newName)
 {
-	//qDebug() << "OnlineLeaderboardWidget::updateName(QUuid " << id << ", QString " << newName << ")";
-	/*	User * tmpUser = findUser(id);
-	QString name = "";
-	if (tmpUser != nullptr)
-	{
-		name = tmpUser->getName();
-		for(QTableWidgetItem *item : tableView->findItems(name,0))
-		{
-			if(item->data(1) == id && item->text() == name)
-			{
-				tableView->item(item->row(),item->column())->setText(newName);
-				return;
-			}
-		}
-	}
-	if (localUser->getId() == id)
-	{
-		localUser->setName(newName);
-		lname->setText(newName);
-	}
-	lay->update();*/
-
-
 	model->update();
 	if(localUser->getId() == id)
 	{
@@ -214,36 +171,11 @@ void OnlineLeaderboardWidget::updateServerName(QUuid id, QString newName)
 
 void OnlineLeaderboardWidget::updateColour(QUuid id, QColor color)
 {
-	//qDebug() << "OnlineLeaderboardWidget::updateColour(QUuid " << id << ", QColor " << color << ")";
-	/*	qDebug()<<"useronlinewidget updateColor to "<<color.name();
-	User * tmpUser = findUser(id);
-	QString name = "";
-	if (tmpUser != nullptr)
-	{
-		name = tmpUser->getName();
-		for(QTableWidgetItem *item : tableView->findItems(name,0))
-		{
-			if(item->data(1) == id && item->text() == name)
-			{
-				QBrush brush;
-				brush.setColor(color);
-				tableView->item(item->row(),item->column())->setForeground(brush);;
-				return;
-			}
-		}
-	}
-	if (localUser->getId() == id)
-	{
-		localUser->setColor(color);
-		lname->setStyleSheet("color: "+color.name());
-	}
-	lay->update();*/
 	model->update();
 }
 
 void OnlineLeaderboardWidget::addUser(User *u)
 {
-	//qDebug() << "OnlineLeaderboardWidget::addUser(User *" << u->getName() << u->getId() << ")";
 	connect(u,&User::biddingChanged,this,[&](QUuid id, int bid)
 	{
 		model->update();

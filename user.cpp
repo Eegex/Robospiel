@@ -31,7 +31,6 @@ User::User(QString name, QColor color, QObject *parent) : QObject(parent), name(
 
 User::~User()
 {
-	qDebug() << "User " << name << " (id:" << id << ") destroyed";
 }
 
 //User::User(QString name, QColor color, QUuid uuid, QObject *parent) : QObject(parent), name(name), color(color), id(uuid)
@@ -94,7 +93,6 @@ User* User::fromJSON(QJsonObject json)
 	user->setBidding(json.value("bidding").toInt());
 	user->points = json.value("points").toInt();
 	user->timeStamp = json.value("lastBiddingTime").toString().toULong();
-	qDebug() << "fromJSON hasBid";
 	user->hasBid = json.value("hasBid").toBool();
     user->hasVoted = json.value("hasVoted").toBool();
 
@@ -159,7 +157,6 @@ void User::setColor(QColor c)
  */
 void User::setBidding(int b)
 {
-	qDebug() << "User::setBidding(int " << b << ")" << name << id;
 	bidding = b;
 	hasBid = 1 < b && b < maxBid;
 	if(hasBid)
@@ -170,7 +167,6 @@ void User::setBidding(int b)
 	{
 		timeStamp = 0;
 	}
-	qDebug() << hasBid;
 	emit biddingChanged(id, b);
 }
 
@@ -181,13 +177,11 @@ unsigned long User::getTimeStamp() const
 
 bool User::operator<(const User & u) const
 {
-	qDebug() << "User::operator<(const User & u) const";
 	return this < &u;
 }
 
 bool User::operator<(const User * u) const
 {
-	//qDebug() << "User::operator<(const User * u) const";
 	if(hasBid && u->hasBid)
 	{
 		return (getBidding() == u->getBidding() && getTimeStamp() < u->getTimeStamp()) || getBidding() < u->getBidding();
@@ -241,7 +235,6 @@ void User::receiveVotekick()
 	votekickCount++;
 	if(votekickCount>=GameControll::getUsers()->size()-1 && this==GameControll::getLocalUser()) //required number of votes: everyone, but oneself
 	{
-		qDebug() << "Votekick count high enough. Disconnecting " <<name;
 		//GameControll::initiateServerSwitch(); TODO
 		UserView::disconnectFromServer(); //TODO zentral durch GameControll?
 	}

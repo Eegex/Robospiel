@@ -92,14 +92,6 @@ QColor PlayerWidget::getPlayerColor(Board* board, int playerIndex) //maybe not t
 //        double satStep = (colorLow.saturation() - colorHigh.saturation())/playerNum;
 //        double brightStep = (colorLow.value() - colorHigh.value())/playerNum;
 //        color.setHsv(colorLow.hue() - playerIndex*hueStep,colorLow.saturation() - playerIndex*satStep, colorLow.value() - playerIndex*brightStep);
-//        //if(playerIndex ==0)
-//        //{
-//        //	qDebug() << "Origin" << colorLow << colorHigh;
-//        //	qDebug() << "Farbelow" << colorLow.hue() << colorLow.saturation() << colorLow.value();
-//        //	qDebug() << "Farbehigh" << colorHigh.hue() << colorHigh.saturation() << colorHigh.value();
-//        //}
-//        //qDebug() << "Farbe: " << playerIndex << color.hue() << color.saturation() << color.value();
-//        //qDebug() << "Steps: " << hueStep << satStep << brightStep;
 //    }
 //    else
 //    {
@@ -127,7 +119,6 @@ double PlayerWidget::length(QPoint vector)
  */
 void PlayerWidget::moveAnimated(QPoint point, QPoint target, double speed)
 {
-	qDebug()<<"Called Function MoveAnimated!!!!";
 	double distance;
 	if(animations.size() > 0)
 	{

@@ -19,7 +19,6 @@ OfflineLeaderBoardWidget::OfflineLeaderBoardWidget()
  * This is needed because the List of Pointers to BiddingWidgets might not reflect the actual ordering
  */
 unsigned int OfflineLeaderBoardWidget::getBiddingWidgetIndexByID(QUuid id){
-	qDebug()<<"Called Function getBiddingWidgetByID in LeaderBoardWidget with ID "<<id;
 	for(unsigned int i = 0; i<numOfUsers; i++)
 	{
 		if(users[i]->getId() == id)
@@ -27,7 +26,7 @@ unsigned int OfflineLeaderBoardWidget::getBiddingWidgetIndexByID(QUuid id){
 			return i;
 		}
 	}
-	qDebug()<<"Couldn't find user with ID "<<id;
+	qDebug() << "Couldn't find user with ID "<< id << " in OfflineLeaderBoardWidget::getBiddingWidgetIndexByID";
 	return 0;
 }
 
@@ -36,13 +35,8 @@ unsigned int OfflineLeaderBoardWidget::getBiddingWidgetIndexByID(QUuid id){
  * This function is just there to update the visual layout
  */
 void OfflineLeaderBoardWidget::updateLayout(){
-	qDebug()<<"Called UpdateLayout, number of Users is "<<numOfUsers<<", running in offline mode!";
-	qDebug()<<"List of Users, starting from 0:";
-	for(unsigned int i = 0; i < numOfUsers; i++)
-		qDebug()<<users.at(i)->getUser()->getName();
 	for(unsigned int i = 0; i < numOfUsers; i++)
 	{
-		qDebug()<<"Adding user with name " << users.at(i)->getUser()->getName() << " at position " << i;
 		lay->addWidget(users.at(i), i, 0);
 	}
 	lay->addWidget(userCreationWidget, numOfUsers, 0);
@@ -72,7 +66,6 @@ void OfflineLeaderBoardWidget::setBiddingFocus()
  */
 void OfflineLeaderBoardWidget::addUser(User * newUser)
 {
-	qDebug()<<"LeaderBoardWidget: AddUser: Add user with name: "<<newUser->getName()<<"and id"<<newUser->getId().toString()<<"and colour "<<(newUser->getColor().isValid()?newUser->getColor().name():"0x000000");
 	UserBiddingWidget * newWidget = new UserBiddingWidget(newUser); //Create new BiddingWidget to display
 	users.append(newWidget); //Append widget to list of users
 	lay->addWidget(users.at(numOfUsers));
@@ -100,7 +93,6 @@ void OfflineLeaderBoardWidget::addUser(User * newUser)
  */
 void OfflineLeaderBoardWidget::updateBidding(QUuid id, int bidding)
 {
-	qDebug()<<"Called Function UpdateBidding in Offline LeaderBoard Widget, update points to "<<bidding;
 	for(UserBiddingWidget* ubw : users)
 	{
 		if(ubw->getId() == id)
@@ -181,7 +173,6 @@ void OfflineLeaderBoardWidget::activateInput()
  */
 void OfflineLeaderBoardWidget::updateAllUsers()
 {
-	qDebug()<<"Called Function UpdateAllUsers in OfflineLeaderBoardWidget\n";
 	for(UserBiddingWidget* ubw : users)
 	{
 		updateBidding(ubw->getUser()->getId(), ubw->getUser()->getBidding());
@@ -190,11 +181,6 @@ void OfflineLeaderBoardWidget::updateAllUsers()
 	}
 	QVector<UserBiddingWidget*> temp;
 	//This creates the sorted view that we want
-	qDebug()<<"Outputting things";
-	for(User* u : *GameControll::getInstance().getUsers())
-	{
-		qDebug()<<u->getName();
-	}
 	for(User* u : *GameControll::getInstance().getUsers())
 	{
 		for(UserBiddingWidget* ubw : users)
@@ -204,11 +190,6 @@ void OfflineLeaderBoardWidget::updateAllUsers()
 				temp.append(ubw);
 			}
 		}
-	}
-	qDebug() << "Sorted Users!\n";
-	for(unsigned int i = 0; i<numOfUsers; i++)
-	{
-		qDebug() << "Position: " << i << " " << temp[i]->getUser()->getName(); //Was users[i]
 	}
 	users = temp;
 	updateLayout();

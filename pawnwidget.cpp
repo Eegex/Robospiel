@@ -11,7 +11,6 @@ void PawnWidget::move(QPoint point)
 
 void PawnWidget::setEditable(bool value)
 {
-	qDebug() << "PawnWidget::setEditable(bool value)";
 	editable = value;
 }
 

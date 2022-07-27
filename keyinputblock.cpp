@@ -27,8 +27,6 @@ bool KeyInputBlock::hasKey()
 
 Qt::Key KeyInputBlock::getKey()
 {
-	qDebug() << this;
-
 	return input->getKey();
 }
 

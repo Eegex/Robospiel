@@ -23,7 +23,6 @@ void ConnectionToClient::setUser(User *value)
 
 void ConnectionToClient::sendLeft()
 {
-	//qDebug() << "ConnectionToClient::sendLeft()";
 	if(tcpSocket->bytesToWrite() > 0)
 	{
 		tcpSocket->waitForBytesWritten();
@@ -62,12 +61,10 @@ void ConnectionToClient::receiveMessage()
 	{
 		if(disconnectCheck)
 		{
-			//qDebug() << "Server: Heartbeat angenommen";
 			disconnectCheck = false;
 		}
 		else
 		{
-			//qDebug() << "Server: antwort Heartbeat";
 			sendMessage("Heartbeat");
 		}
 	}
@@ -83,11 +80,9 @@ void ConnectionToClient::checkConnection()
 {
 	if(disconnectCheck)
 	{
-		//qDebug() << "Client" << user->getName() << "disconnected";
 		sendLeft();
 	}
 	disconnectCheck = true;
-	//qDebug() << "Server: sende Heartbeat";
 	sendMessage("Heartbeat");
 }
 

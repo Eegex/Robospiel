@@ -22,10 +22,8 @@ UserBiddingWidget::UserBiddingWidget(User * u, QWidget *parent) : QWidget(parent
 	connect(accept,&QPushButton::clicked,this,&UserBiddingWidget::btnPressed); //When player has accepted bid, disable the button
 	lSpinBox->setMinimum(MIN_BID);
 	lSpinBox->setSingleStep(1);
-    qDebug()<<"In Creation of UserBiddingWidget, adding user with bidding " << user->getBidding();
 	lSpinBox->setValue(user->getBidding());
 	updateLayout();
-	qDebug()<<"In Creation of UserBiddingWidget, Name is: "<<labelName<<" points are "<<lSpinBox->value();
 }
 
 /*!
@@ -40,7 +38,6 @@ void UserBiddingWidget::deactivateBtn()
 	{
 		user->setTimeStamp(QDateTime::currentMSecsSinceEpoch());
 	}
-	qDebug()<<"Called Function Deactivate Button in UserBiddingWidget";
 	accept->setEnabled(false);
 }
 
@@ -48,7 +45,6 @@ void UserBiddingWidget::deactivateBtn()
  * \brief UserBiddingWidget::activateBtn enables input spinbox and accept button
  */
 void UserBiddingWidget::activateBtn(){
-	qDebug()<<"Called Function Activate Button in UserBiddingWidget";
 	accept->setEnabled(true);
 	lSpinBox->setEnabled(true);
 }
@@ -107,9 +103,6 @@ void UserBiddingWidget::btnPressed()
 {
 	if(lSpinBox->value() > MIN_BID){
 		emit biddingChanged(lSpinBox->value(), QDateTime::currentMSecsSinceEpoch(), user->getId());
-		qDebug()<<"Player "<<user->getName()<<" changed their bidding to: "<<lSpinBox->value();
-	}else{
-		qDebug()<<"Someone has tried to bid No Bid";
 	}
 }
 

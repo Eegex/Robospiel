@@ -27,10 +27,6 @@ UserView::UserView(QPushButton *actionBtn, QPushButton *serverSwitchBtn, QWidget
 			onlineLeaderboard->setLocalUser(GameControll::getInstance().initializeUser(user));
 			onlineLeaderboard->initialize();
 		}
-		else
-		{
-			qDebug()<<"In Userview constructor: "<<"no online leaderboard";
-		}
 
 		network->hide();
 		btnBack->show();

@@ -352,7 +352,6 @@ void BoardView::mouseMoveEvent(QMouseEvent * event)
 				handleKeyPress(Qt::Key_F32);
 				return;
 			}
-			//qDebug() << "east";
 		}
 		else if(moved.x() < -100)
 		{
@@ -362,7 +361,6 @@ void BoardView::mouseMoveEvent(QMouseEvent * event)
 				handleKeyPress(Qt::Key_F34);
 				return;
 			}
-			//qDebug() << "west";
 		}
 		else if(moved.y() > 100)
 		{
@@ -372,7 +370,6 @@ void BoardView::mouseMoveEvent(QMouseEvent * event)
 				handleKeyPress(Qt::Key_F33);
 				return;
 			}
-			//qDebug() << "south";
 		}
 		else if(moved.y() < -100)
 		{
@@ -382,7 +379,6 @@ void BoardView::mouseMoveEvent(QMouseEvent * event)
 				handleKeyPress(Qt::Key_F31);
 				return;
 			}
-			//qDebug() << "north";
 		}
 	}
 	else

@@ -11,7 +11,6 @@
 #include <QRandomGenerator>
 #include <QRect>
 #include <QMouseEvent>
-#include "QDebug"
 #include "board.h"
 #include "keymapping.h"
 #include "playerwidget.h"

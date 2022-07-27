@@ -179,7 +179,6 @@ QString Board::toBinary()
 	{
 		s << static_cast<quint8>(p.x());
 		s << static_cast<quint8>(p.y());
-		qDebug()<<p;
 	}
 
 	return QString::fromUtf8(binary.toBase64());
@@ -284,11 +283,6 @@ Board * Board::fromBinary(const QString base64)
 		newBoard->playersAfterGoalHit.append(QPoint(x,y));
 	}
 
-	qDebug()<<"Board::fromBinary"<<"playersAfterGoalHit"<<newBoard->playersAfterGoalHit.size();
-	for(int i=0; i<newBoard->playersAfterGoalHit.size(); i++)
-	{
-		qDebug()<<newBoard->playersAfterGoalHit.at(i);
-	}
 	return newBoard;
 }
 
@@ -740,7 +734,6 @@ Direction Board::getNextDirection(Direction direction, int numberOfClockwiseStep
 	{
 		Direction nextDir = getNextDirection(direction, 1);
 		numberOfClockwiseSteps--;
-		//qDebug()<<printDirection(nextDir).c_str() << numberOfClockwiseSteps;
 		return getNextDirection(nextDir, numberOfClockwiseSteps);
 	}
 	switch(direction)
@@ -834,9 +827,7 @@ void Board::moveActivePlayer(Direction d, int targetX, int targetY, bool isRever
 		{
 			moves++;
 		}
-		qDebug()<<"Moves:"<<moves;
 		goalHit = (goal == currentTile && seeker == activePlayer);
-		qDebug()<<"Currently in Board Class, the goal has"<<(goalHit?"been hit!":"!NOT! been hit!");
 		if(!isRevert)
 		{
 			history.append(h);
@@ -872,9 +863,7 @@ void Board::revert()
 			direction = direction > static_cast<int>(Direction::east) ? direction>>2 : direction<<2; //invert direction
 			moves--; //delete the former move and do this action without incrementing moves.
 			// Has to be before moveActivePlayer(), because otherwise calculateGameStatus() would have a wrong number of moves.
-			qDebug() << "move to" << h.previousPlayer << h.previousPosition;
 			moveActivePlayer(static_cast<Direction>(direction), h.previousPosition.x(), h.previousPosition.y(),true);
-			qDebug()<<"Moves:"<<moves;
 		}
 		if(h.action == PlayerAction::playerSwitch)
 		{
@@ -946,10 +935,8 @@ void Board::updateColors(QColor b, QColor c, QColor w, QColor g, QColor p1, QCol
  */
 int Board::switchPlayer(Direction d)
 {
-	qDebug() << "Board::switchPlayer(Direction d)" << printDirection(d);
 	if(!static_cast<int>(d))
 	{
-		qDebug() << "keine Richtung";
 		return activePlayer;
 	}
 	int targetAngle;
@@ -976,7 +963,6 @@ int Board::switchPlayer(Direction d)
 		break;
 	}
 	}
-	qDebug() << targetAngle;
 	float angleFactor = 2; //indicates the priority of the angle in deciding to what player you should jump
 	float distanceFactor = 1; //indicates the priority of the distance in deciding to what player you should jump
 	float largestPossibleFittingScore = angleFactor + distanceFactor;
@@ -987,9 +973,7 @@ int Board::switchPlayer(Direction d)
 	{
 		if(t->getPlayer() != activePlayer)
 		{
-			qDebug() << "Player: " << t->getPlayer();
 			QPoint delta = t->getPosition() - players.at(activePlayer)->getPosition();
-			qDebug() << delta;
 
 			int tileAngle = 0;
 			if(delta.x()) //so we don't divide by 0
@@ -1003,37 +987,25 @@ int Board::switchPlayer(Direction d)
 				tileAngle += 90;
 			}
 
-			//qDebug() << "initial Winkel" << tileAngle;
 			// as till now we have only an angle between 0 and 90, we must add degrees depending on the quadrant.
 			// note that we always include the first achsis and exclude the last axis (clockwise)
-			if(delta.y()<0 && delta.x()>=0)
-			{
-				//qDebug() << "in 1st quadrant";
-			}
 			if(delta.y()>=0 && delta.x()>0)
 			{
-				//qDebug() << "in 4th quadrant";
 				tileAngle = tileAngle + 90;
 			}
 			else if(delta.y()>0 && delta.x()<=0)
 			{
-				//qDebug() << "in 3rd quadrant";
 				tileAngle = tileAngle +180;
 			}
 			else if(delta.y()<=0 && delta.x()<0)
 			{
-				//qDebug() << "in 2nd quadrant";
 				tileAngle = tileAngle +270;
 			}
 
-			//qDebug() << "standardized angle" << tileAngle;
-
 			float distanceOfAngles = std::min(abs(tileAngle- targetAngle), abs(360-tileAngle+targetAngle));
-			//            qDebug() << distanceOfAngleToTargetAngle;
 
 			float distance = sqrt(pow(delta.x(),2) + pow(delta.y(),2) );
 			float largestPossibleDistance = sqrt(pow(tiles.size(),2) + pow(tiles.at(0).size(),2) );
-			//            qDebug() << "Distance: " << distance << largestPossibleDistance;
 
 			//falls jmd nen besseren Namen weiß, gerne umbennen, soll heißen wie gut der Player sich eignet um für diese Bewegung genommen zu werden
 			float fittingScore = largestPossibleFittingScore;
@@ -1043,19 +1015,15 @@ int Board::switchPlayer(Direction d)
 				fittingScore = angleFactor * distanceOfAngles/360 + distanceFactor * distance/largestPossibleDistance;
 			}
 
-			//            qDebug() << "Fitting: " << fittingScore << minFit;
-
 			if(fittingScore < minFit) //looking for the best (smallest) fittingScore
 			{
 				min = t;
 				minFit = fittingScore;
-				//                qDebug() << "FittingAfter: " << fittingScore << minFit;
 			}
 		}
 	}
 	if(minFit < largestPossibleFittingScore)
 	{
-		//qDebug() << "Ergebnis" << min->getPlayer();
 		changeActivePlayer(min->getPlayer(), false);
 		return min->getPlayer();
 	}
@@ -1068,7 +1036,6 @@ int Board::switchPlayer(Direction d)
 void Board::resetMoves()
 {
 	moves = 0;
-	qDebug()<<"Moves:"<<moves;
 }
 
 void Board::updateRandomGenerator(int seed)

@@ -42,6 +42,5 @@ int VotekickDelegate::hasButton(QPoint p) const
 bool VotekickDelegate::isButtonDisabled(QPoint p) const
 {
 	User* u = GameControll::getUsers()->at(p.y());
-	GameControll::getLocalUser()->votekickInfo();
 	return hasButton(p) && GameControll::getLocalUser()->getVotekick(u->getId());
 }

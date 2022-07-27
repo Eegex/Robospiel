@@ -143,8 +143,6 @@ void GameControll::adaptFromJSON(QJsonObject json)
 		instance.actionWhenAnimationEnded=&GameControll::resetAndNextTarget;
 		break;
 	}
-
-//	qDebug()<<instance.getBoard();
 }
 
 /*!
@@ -154,7 +152,6 @@ void GameControll::adaptFromJSON(QJsonObject json)
  */
 void GameControll::sendToServerWithData(PlayerAction a, QJsonObject info)
 {
-	qDebug()<<"Send to server with data" << a << info;
 	info.insert("action", a);
 	if(Server::getInstance().isActive())
 	{
@@ -180,7 +177,6 @@ void GameControll::sendToServerWithData(PlayerAction a, QJsonObject info)
  */
 void GameControll::sendToServer(PlayerAction a)
 {
-	qDebug()<<"Send to server"<<a;
 	QJsonObject json;
 	json.insert("action", a);
 	if(Server::getInstance().isActive())
@@ -271,7 +267,6 @@ Board * GameControll::setBoard(Board* newBoard)
  */
 void GameControll::exeQTAction(QJsonObject data)
 {
-	qDebug() << "GameControll::exeQTAction(QJsonObject " << data << ")";
 	PlayerAction a = static_cast<PlayerAction>(data.take("action").toInt());
 	User * user = nullptr;
 	switch(a)
@@ -444,14 +439,12 @@ void GameControll::exeQTAction(QJsonObject data)
 	}
 	case switchServer:
 	{
-		qDebug() << data << "FUCK YOU";
 		QUuid id = QUuid(data.value("id").toString());
 		QString ip = data.value("ip").toString();
 		int port = data.value("port").toInt();
 		//int port = data.value("port").toString().toInt();
 		//ip = "localhost";
 		//port = 8050;
-		qDebug() << ip << "ip" << port << "port";
 		if(id == static_cast<OnlineLeaderboardWidget*>(leaderboard)->getLocalUser()->getId()) //we are the new server
 		{
 			//this user has to be the new server
@@ -474,7 +467,6 @@ void GameControll::exeQTAction(QJsonObject data)
 				Server::closeServer();
 			}
 			Client::getInstance().startClient(ip, port);
-			qDebug() << "sollte true false sein" << Client::isActive() << Server::isActive();
 			instance.enableServerSwitchBtn(instance.localUserIsServer());
 		}
 		//updateVoteNumbers();
@@ -507,7 +499,6 @@ void GameControll::exeQTAction(QJsonObject data)
  */
 void GameControll::triggerAction(PlayerAction action)
 {
-	//qDebug()<<"Called function TriggerAction with parameters "<<action;
 	if(action & PlayerAction::movement && instance.localUserIsActiveUser())
 	{
 		if((instance.currentPhase == Phase::presentation || instance.currentPhase == Phase::freeplay)) //If online only let the active user move
@@ -520,7 +511,6 @@ void GameControll::triggerAction(PlayerAction action)
 	{
 		if(instance.localUserIsActiveUser() && action != PlayerAction::playerSwitch)
 		{
-			//qDebug()<<"playerSwitch is called in triggerAction with isRevert=False!";
 			emit instance.actionTriggeredWithData(action, {{"isRevert", false}});
 			return;
 		}
@@ -528,7 +518,6 @@ void GameControll::triggerAction(PlayerAction action)
 	else if(action & PlayerAction::bidding) //TODO submit biddingValue
 	{
 		Q_ASSERT_X(false, "GameControll::triggerAction", "use triggerActionWithData to send biddings!");
-		//qDebug()<<"Currently in GameControl: triggerAction -> bidding, current Phase is "<<static_cast<int>(instance.currentPhase);
 		//if(instance.currentPhase == Phase::search || instance.currentPhase == Phase::countdown)
 		//{
 		//	emit instance.actionTriggered(action);
@@ -585,7 +574,6 @@ void GameControll::addTransmission(QJsonObject transmission)
  */
 void GameControll::triggerActionWithData(PlayerAction action, QJsonObject data)
 {
-	//qDebug() << "GameControll::triggerActionWithData(PlayerAction " << action << ", QJsonObject " << data << ")";
 	switch (action)
 	{
 	case playerSwitch:
@@ -645,7 +633,6 @@ void GameControll::calculateGameStatus()
 {
 	//TODO: Maybe we also want there to be some kind of message when we "win" in freeplay
 	if(currentPhase == Phase::presentation){
-		//qDebug()<<"Current Moves are: "<< board->getMoves()<<", User Bidding is "<<getUserById(activeUserID)->getBidding();
 		/*if(board->getMoves() < getUserById(activeUserID)->getBidding())
 	{*/
 		if(board->goalHit) //Spieler hat gewonnen, die Runde ist zuende
@@ -658,7 +645,6 @@ void GameControll::calculateGameStatus()
 			if(board->getMoves() >= getUserById(activeUserID)->getBidding())
 			{
 				//TODO: Flag um anzuzeigen, dass der Spieler das Ziel erreicht hat?
-				qDebug()<<"User couldn't end the round in the specified bid of "<< getUserById(activeUserID)->getBidding()<<", the next user is being drawn";
 				GameControll::triggerAction(revert);
 				User * user = instance.users.first();
 				const QString& username = user->getName();
@@ -677,24 +663,11 @@ void GameControll::handleUserGivingUp()
 	}
 	else //Alles Versager
 	{
-		qDebug()<<"No User could end the round in their specified bid.";
 		//No one reached the goal so after freeplay it should load the reverted state
 		instance.board->revertToBeginning();
 		switchPhase(Phase::freeplay);
 		//GameControll::resetAndNextTarget();
 	}
-	//if(nextUser)//Not at last player yet, noch haben nicht alle versagt
-	//{
-	//    actionWhenAnimationEnded = &GameControll::resetForNextUser;
-
-	//    qDebug()<<"actionWhenAnimationEnded = resetFornextuser";
-	//}
-	//else //Alles Versager
-	//{
-	//    qDebug()<<"No User could end the round in their specified bid.";
-	//    actionWhenAnimationEnded = &GameControll::resetAndNextTarget;
-	//    qDebug()<<"actionWhenAnimationEnded = resetAndNextTarget";
-	//}
 }
 
 void GameControll::resetAndNextTarget()
@@ -731,7 +704,6 @@ void GameControll::updateRandomGenerator(int seed)
  */
 void GameControll::resetForNextUser()
 {
-	//qDebug()<<"Acquiring next User";
 	User* user = getNextUser(activeUserID); //Liste ist bereits sortiert (siehe oben), daher ist der nächste User in der Liste der User mit dem nächsthöheren Bidding
 	Q_ASSERT_X(user,"GameControll::resetForNextUser","User is nullptr");
 	showGuide({ tr("Present your solution, ") + user->getName() + "[]",tr("Your turn, ") + user->getName() + "[]" });
@@ -740,7 +712,6 @@ void GameControll::resetForNextUser()
 	emit enableActionBtn(localUserIsActiveUser());
 	getBoard()->revertToBeginning(); //Setze Spielerpositionen zurück
 	emit updateMoves(0);
-	qDebug() << "Active User is now " <<user->getName();
 }
 
 int GameControll::getUserIndexById(QUuid id)
@@ -800,26 +771,21 @@ void GameControll::sortBy(strategy strategy)
 	}
 	if(strategy == bid)
 	{
-		//qDebug()<<"Called sortByBidding";
 		User * minUser = nullptr;
 		int minIndex = 0;
 		int minBid;
 		for(int additionIndex = 0; additionIndex < instance.users.size(); additionIndex++)
 		{
-			//qDebug()<<"AdditionIndex: "<<additionIndex;
 			minBid = User::maxBid;
 			minTimeStamp = QDateTime::currentMSecsSinceEpoch();
 			for(User* user : qAsConst(instance.users))
 			{
-				//qDebug()<<"SortByBidding: USER "<<user->getName()<<" with bidding "<<user->getBidding()<<"and timestamp: "<<user->getTimeStamp();
 				if(user->getBidding() <= minBid && isActive[instance.users.indexOf(user)])//If User has a lower bid than the currently lowest bid
 				{
-					//qDebug()<<"User: "<<user->getName()<<" has lower bid than the current Minimum";
 					if(user->getBidding() == minBid)
 					{
 						if(user->getTimeStamp() <= minTimeStamp) //check the timestamp
 						{
-							//qDebug()<<"Bidding is the same, timestamp is earlier, user is "<<user->getName();
 							minUser = user; //Set the Widget to add to the new list to the user
 							minIndex = instance.users.indexOf(user); //Set the index needed for deactivating the user to the current index
 							minBid = user->getBidding(); //Set the newest lowest bid to the current user as there can be users after that one with lower bids
@@ -828,28 +794,20 @@ void GameControll::sortBy(strategy strategy)
 					}
 					else
 					{
-						//qDebug()<<"Bidding of user "<<user->getName()<<" with bidding "<<user->getBidding()<<" is smaller than minimum bid of "<<minBid;
 						minUser = user; //Set the Widget to add to the new list to the user
 						minIndex = instance.users.indexOf(user); //Set the index needed for deactivating the user to the current index
 						minBid = user->getBidding(); //Set the newest lowest bid to the current user as there can be users after that one with lower bids
 						minTimeStamp = user->getTimeStamp(); //Set User Timestamp to the current user value
 					}
 				}
-				//qDebug()<<("\n");
 			}
 			isActive[minIndex] = false; //Deactivate user
 			sortedUsers.append(minUser);
 		}
 		instance.users = sortedUsers;
-		for(int i = 0; i<instance.users.size(); i++)
-		{
-			//qDebug()<<"SortedUsers (Bidding): User "<<i<<": "<<instance.users[i]->getName()<<" with points: "<<instance.users[i]->getPoints()<<" and timestamp "<<instance.users[i]->getTimeStamp();
-			//isActive[i] = true;
-		}
 	}
 	if(strategy == points)
 	{
-		//qDebug()<<"Called sortByPoints";
 		User * maxUser = nullptr;
 		int maxIndex = 0;
 		int maxPts;
@@ -858,10 +816,8 @@ void GameControll::sortBy(strategy strategy)
 			maxPts = 0;
 			for(User * user : qAsConst(instance.users))
 			{
-				//qDebug()<<"SortByPoints: USER "<<user->getName()<<" with points "<<user->getPoints()<<"and timestamp: "<<user->getTimeStamp();
 				if(user->getPoints() >= maxPts && isActive[instance.users.indexOf(user)])//If User has more points than the current maximum
 				{
-					//qDebug()<<"Points of user "<<user->getName()<<" with points "<<user->getPoints()<<" is larger than maximum amount of "<<maxPts;
 					maxUser = user; //Set the Widget to add to the new list to the user
 					maxIndex = instance.users.indexOf(user); //Set the index needed for deactivating the user to the current index
 					maxPts = user->getPoints(); //Set the newest largest number of points to the current user as there can be users after that one with larger number of points
@@ -872,15 +828,9 @@ void GameControll::sortBy(strategy strategy)
 			sortedUsers.append(maxUser);
 		}
 		instance.users = sortedUsers;
-		for(int i = 0; i<instance.users.size(); i++)
-		{
-			//qDebug()<<"SortedUsers: User "<<i<<": "<<instance.users[i]->getName()<<" with points: "<<instance.users[i]->getPoints()<<" and timestamp "<<instance.users[i]->getTimeStamp();
-			//isActive[i] = true;
-		}
 	}
 
 	if(instance.getSettingsDialog()->getFairModeOn() && (Server::isActive() || Client::isActive())){
-		//qDebug() << "Local User: " << getLocalUser()->getName() << " First User: " << instance.users.at(0)->getName();
 		if(getLocalUser()->getId() == instance.users.at(0)->getId()){
 			QString path = QDir::currentPath();
 			#if QT_VERSION_MAJOR == 5
@@ -908,15 +858,6 @@ void GameControll::sortBy(strategy strategy)
  */
 void GameControll::addUser(User* user)
 {
-	qDebug() << "GameControll::addUser(User* " << user->getId() << ")" << "(" + user->getName() +")";
-	//	if(Client::isActive() || Server::isActive())
-	//	{
-	//		OnlineLeaderboardWidget * ol = static_cast<OnlineLeaderboardWidget*>(instance.leaderboard);
-	//		if(ol->getLocalUser() && ol->getLocalUser()->getId() == user->getId())
-	//		{
-	//			return;
-	//		}
-	//	}
 	for(User * u: qAsConst(instance.users))
 	{
 		if(u->getId() == user->getId())
@@ -951,7 +892,6 @@ void GameControll::calculateWinner()
 
 	activeUser->incrementPoints();
 	const QString username = activeUser->getName();
-	qDebug()<<"User "<<username<<" has successfully ended the round with "<<board->getMoves()<<" moves, their current points are "<<activeUser->getPoints()<<". \nI think the move counter is already reset for the next round at this point...";
 	showGuide({ tr("Goal has been hit by %1").arg(username) + "[2000]" + "[]"}); //TODO: because of reasons this text is not shown
 	switchPhase(Phase::freeplay);
 }
@@ -977,7 +917,6 @@ User* GameControll::getUserById(QUuid id)
 
 void GameControll::changeBidding(int bidding, QUuid id)
 {
-	//qDebug()<<"Called Function Change Bidding from "<<id.toString()<< "to" << bidding;
 	for (User *u: qAsConst(users))
 	{
 		if (u->getId() == id)
@@ -1001,7 +940,6 @@ User * GameControll::initializeUser(User* u)
 	}
 	instance.enableServerSwitchBtn(instance.localUserIsServer());
 
-	qDebug()<<"initializeUser with id: "<<u->getId();
 	triggerActionWithData(PlayerAction::registerClient, u->toJSON());
 	triggerActionWithData(PlayerAction::newUser, u->toJSON());
 
@@ -1076,7 +1014,6 @@ GameControll::Phase GameControll::getCurrentPhase()
 
 void GameControll::nextTarget()
 {
-	qDebug()<<"next target!!";
 	board->setCurrentToSavedState();
 	if(switchPhase(Phase::search))
 	{
@@ -1181,8 +1118,6 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 
 bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns out the phases word like this (with setPhase) please delete all the commented sections
 {
-	//qDebug() << "GameControll::switchPhase(GameControll::Phase " << static_cast<int>(phase) << ")";
-
 	switch(phase)
 	{
 	case Phase::idle:
@@ -1247,7 +1182,6 @@ bool GameControll::switchPhase(GameControll::Phase phase) //TODO: once it turns 
 		break;
 	}
 	}
-	//qDebug()<< "switchPhase was called, but there could not be a switch to phase" << (int) phase;
 	return false;
 }
 
@@ -1268,7 +1202,6 @@ QVector<KeyMapping*> * GameControll::getMapping()
 
 void GameControll::letUserPlayFree(const QUuid & userId)
 {
-	//qDebug() << "GameControll::letUserPlayFree(const QUuid & userId)";
 	if(currentPhase == Phase::freeplay)
 	{
 		// set user as active user.
@@ -1328,10 +1261,6 @@ void GameControll::endTimer()
 		emit instance.time(0);
 		instance.countdown.stop();
 		instance.switchPhase(Phase::presentation);
-	}
-	else
-	{
-		qDebug() << "tried to end timer that wasn't running";
 	}
 }
 
@@ -1519,7 +1448,6 @@ void GameControll::updateVoteNumbers()
 		if(Server::isActive()||Client::isActive())
 		{
 			QString path = QDir::currentPath();
-			//qDebug()<<path;
 			#if QT_VERSION_MAJOR == 5
 				player->setMedia(QUrl::fromLocalFile(path + "/../Robospiel/Sounds/rick.mp3"));
 				player->setVolume(50);
@@ -1551,7 +1479,6 @@ void GameControll::updateVoteNumbers()
 		//Aussagenlogik: online ->VC>=VT ist !online v VC>=vT
 		if(!(Server::isActive()||Client::isActive()) || (voteCounter>=voteThreshold && Server::isActive()))
 		{
-			qDebug() << "trigger nextTarget";
 			GameControll::triggerAction(PlayerAction::setIdle);
 			GameControll::triggerAction(PlayerAction::nextTarget);
 		}

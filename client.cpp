@@ -57,7 +57,6 @@ void Client::startClient(QString serverAddress, int serverPort)
 
 bool Client::sendMessageToServer(QJsonObject data)
 {
-	//qDebug() << "Client::sendMessageToServer(QJsonObject " << data << ")";
 	//prepare the message
 	QJsonDocument document(data);
 	QString message = QString::fromUtf8(document.toJson());
@@ -69,7 +68,6 @@ bool Client::sendMessageToServer(QJsonObject data)
 
 void Client::processMessageFromServer()
 {
-	//qDebug() << "Client::processMessageFromServer()";
 	QString message;
 	streamFromServer.startTransaction();
 	streamFromServer >> message;
@@ -82,19 +80,16 @@ void Client::processMessageFromServer()
 	{
 		if(disconnectCheck)
 		{
-			//qDebug() << "Client: Heartbeat angenommen";
 			disconnectCheck = false;
 		}
 		else
 		{
-			//qDebug() << "Client: antwort Heartbeat";
 			sendMessage("Heartbeat");
 		}
 	}
 	else
 	{
 		QJsonObject data = QJsonDocument::fromJson(message.toUtf8()).object();
-		//qDebug() << data;
 
 		data.insert("Client","Server");
 		GameControll::addTransmission(data);
@@ -108,12 +103,10 @@ void Client::checkConnection()
 {
 	if(disconnectCheck)
 	{
-		//qDebug() << "Server disconnected";
 		UserView::disconnectFromServer();
 		connectionWatchDog.stop();
 	}
 	disconnectCheck = true;
-	//qDebug() << "Client: sende Heartbeat";
 	sendMessage("Heartbeat");
 }
 

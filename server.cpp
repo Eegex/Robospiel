@@ -75,7 +75,6 @@ int Server::sendMessageToClients(QJsonObject additionalData)
  */
 int Server::forwardMessageToClients(QString message)
 {
-	qDebug() << "Server::forwardMessageToClients(QString " << message << ")";
 	int errorCount = 0;
 	for(ConnectionToClient* client : qAsConst(connections))
 	{
@@ -95,7 +94,6 @@ int Server::forwardMessageToClients(QString message)
  */
 void Server::addClient()
 {
-	qDebug()<<"Added new Client to Server";
 	QTcpSocket* tcpServerConnection = server->nextPendingConnection();
 	if (!tcpServerConnection)
 	{
@@ -170,14 +168,12 @@ void Server::addClient()
 void Server::closeServer()
 {
 	server->close();
-	qDebug() << "server closed leere connections";
 	while(!connections.empty())
 	{
 		ConnectionToClient * toDelete = connections.takeFirst();
 		toDelete->sendLeft();
 		delete toDelete;
 	}
-	qDebug() << "Server tot";
 	emit instance.serverClosed();
 }
 
@@ -185,17 +181,15 @@ void Server::switchServer()
 {
 	if(!connections.empty())
 	{
-	ConnectionToClient* newServer = connections.first();
-	QUuid id = newServer->getUser()->getId();
-	//QString ip = "localhost";
-	int port = 8050;
+		ConnectionToClient* newServer = connections.first();
+		QUuid id = newServer->getUser()->getId();
+		//QString ip = "localhost";
+		int port = 8050;
 
-	QHostAddress ip = newServer->getTcpSocket()->peerAddress();
-	//int port = newServer->getTcpSocket()->peerPort();
+		QHostAddress ip = newServer->getTcpSocket()->peerAddress();
+		//int port = newServer->getTcpSocket()->peerPort();
 
-	qDebug() << "HEYA! port: " << port << "ip: " << ip.toString();
-
-	GameControll::triggerActionWithData(PlayerAction::switchServer,{{"port", port}, {"id", id.toString()}, {"ip", ip.toString()}});
+		GameControll::triggerActionWithData(PlayerAction::switchServer,{{"port", port}, {"id", id.toString()}, {"ip", ip.toString()}});
 	}
 	//test
 }
