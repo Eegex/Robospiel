@@ -131,17 +131,25 @@ void GameControll::adaptFromJSON(QJsonObject json)
 	switch(json.value("actionWhenAnimationEndedAsInt").toInt())
 	{
 	case 0:
-		instance.actionWhenAnimationEnded=nullptr;
+	{
+		instance.actionWhenAnimationEnded = nullptr;
 		break;
+	}
 	case 1:
-		instance.actionWhenAnimationEnded=&GameControll::calculateWinner;
+	{
+		instance.actionWhenAnimationEnded = &GameControll::calculateWinner;
 		break;
+	}
 	case 2:
-		instance.actionWhenAnimationEnded=&GameControll::resetForNextUser;
+	{
+		instance.actionWhenAnimationEnded = &GameControll::resetForNextUser;
 		break;
+	}
 	case 3:
-		instance.actionWhenAnimationEnded=&GameControll::resetAndNextTarget;
+	{
+		instance.actionWhenAnimationEnded = &GameControll::resetAndNextTarget;
 		break;
+	}
 	}
 }
 
@@ -449,7 +457,7 @@ void GameControll::exeQTAction(QJsonObject data)
 		{
 			//this user has to be the new server
 //			QThread::msleep(50);
-			Client::getInstance().closeClient();
+			Client::closeClient();
 			Server::startServer(ip, port);
 		}
 		else //we will now be clients
@@ -458,7 +466,7 @@ void GameControll::exeQTAction(QJsonObject data)
 			//wait around here
 			if(!localUserIsServer()) // we used to be a client and are still only a client
 			{
-				Client::getInstance().closeClient();
+				Client::closeClient();
 //				QThread::msleep(100);
 				//Server::getInstance().closeServer();
 			}
@@ -467,10 +475,10 @@ void GameControll::exeQTAction(QJsonObject data)
 				Server::closeServer();
 			}
 			Client::getInstance().startClient(ip, port);
-			instance.enableServerSwitchBtn(instance.localUserIsServer());
+			emit instance.enableServerSwitchBtn(instance.localUserIsServer());
 		}
 		//updateVoteNumbers();
-		updateActionButtonText();
+		emit updateActionButtonText();
 		instance.leaderboard->updateServerName(id, getUserById(id)->getName());
 		break;
 	}
@@ -938,7 +946,7 @@ User * GameControll::initializeUser(User* u)
 	{
 		u  = new User(instance.getSettingsDialog()->getUsername(), instance.getSettingsDialog()->getUsercolor());
 	}
-	instance.enableServerSwitchBtn(instance.localUserIsServer());
+	emit instance.enableServerSwitchBtn(instance.localUserIsServer());
 
 	triggerActionWithData(PlayerAction::registerClient, u->toJSON());
 	triggerActionWithData(PlayerAction::newUser, u->toJSON());
@@ -1319,7 +1327,8 @@ void GameControll::showGuide(const QStringList & texts)
 {
 	QString text = texts.at(instance.r->bounded(texts.size())); //TODO: synchronize? (...d?)
 	assert(text.endsWith("]"));
-	QStringList list = text.split(QRegularExpression("[\\[\\]]"),Qt::KeepEmptyParts);
+	static QRegularExpression regex("[\\[\\]]");
+	QStringList list = text.split(regex,Qt::KeepEmptyParts);
 	list.removeLast();
 	assert(list.size() % 2 == 0);
 	for(int i = 0;i < list.size() - 1;i += 2)

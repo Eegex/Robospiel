@@ -6,7 +6,6 @@
 #include <QtNetwork/QTcpSocket>
 #include <QDebug>
 #include <QJsonObject>
-#include "Direction.h"
 
 
 class Client : public QObject
@@ -18,7 +17,7 @@ public:
 
 	void startClient(QString serverAddress, int serverPort);
 	bool sendMessageToServer(QJsonObject data);
-	void closeClient();
+	static void closeClient();
 	static bool isActive();
 private:
 	Client(QObject *parent = nullptr);

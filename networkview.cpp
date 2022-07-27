@@ -170,8 +170,8 @@ NetworkView::~NetworkView()
 
 void NetworkView::toChoiceMenu()
 {
-	Server::getInstance().closeServer();
-	Client::getInstance().closeClient();
+	Server::closeServer();
+	Client::closeClient();
 
 	layout->removeWidget(serverContainer);
 	layout->removeWidget(clientContainer);

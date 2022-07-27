@@ -35,15 +35,22 @@ void Client::startClient(QString serverAddress, int serverPort)
 	{
 		connected = true;
 		connect(tcpSocket, &QIODevice::readyRead, this, &Client::processMessageFromServer);
-		connect(tcpSocket, &QAbstractSocket::connected, this, [=]()-> void{
+		connect(tcpSocket, &QAbstractSocket::connected, this, [=]()-> void
+		{
 			emit clientStarted();
 		});
-		connect(tcpSocket, &QAbstractSocket::disconnected, this, [=]()->void{emit clientClosed();});
-		#if QT_VERSION_MAJOR == 5
-			connect(tcpSocket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, [=](QAbstractSocket::SocketError socketError) -> void {emit errorInClient(socketError);});
-		#elif QT_VERSION_MAJOR == 6
-			connect(tcpSocket, &QAbstractSocket::errorOccurred, this, [=](QAbstractSocket::SocketError socketError) -> void {emit errorInClient(socketError);});
-		#endif
+		connect(tcpSocket, &QAbstractSocket::disconnected, this, [=]()->void
+		{
+			emit clientClosed();
+		});
+#if QT_VERSION_MAJOR == 5
+		connect(tcpSocket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, [=](QAbstractSocket::SocketError socketError) -> void {emit errorInClient(socketError);});
+#elif QT_VERSION_MAJOR == 6
+		connect(tcpSocket, &QAbstractSocket::errorOccurred, this, [=](QAbstractSocket::SocketError socketError) -> void
+		{
+			emit errorInClient(socketError);
+		});
+#endif
 	}
 	emit clientIsStarting();
 	tcpSocket->close();
@@ -112,7 +119,7 @@ void Client::checkConnection()
 
 void Client::closeClient()
 {
-	tcpSocket->close();
+	instance.tcpSocket->close();
 }
 
 bool Client::isActive()
