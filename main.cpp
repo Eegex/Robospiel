@@ -29,7 +29,6 @@ int main(int argc, char *argv[])
 	}
 	MainWindow w;
 	w.showMaximized();
-	w.dumpObjectTree();
 	return a.exec();
 }
 

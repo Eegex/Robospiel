@@ -20,6 +20,7 @@ public:
 	static void closeServer();
 	static bool isActive();
 	static void switchServer();
+	static int connectedClientCount();
 private:
 	Server(QObject *parent = nullptr);
 	static int forwardMessageToClients(QString message);

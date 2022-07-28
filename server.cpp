@@ -102,7 +102,7 @@ void Server::addClient()
 
 	ConnectionToClient* connection = new ConnectionToClient(this, tcpServerConnection);
 	connections.append(connection);
-	//"Das ist code für wenn ein CLient einfach geht" - Dorothee
+	//"Das ist code für wenn ein Client einfach geht" - Dorothee
 	connect(connection, &ConnectionToClient::deleteConnection, this, [=](ConnectionToClient* toDelete)->void
 	{
 		if(!connections.contains(toDelete))
@@ -169,13 +169,13 @@ void Server::addClient()
 
 void Server::closeServer()
 {
-	server->close();
 	while(!connections.empty())
 	{
 		ConnectionToClient * toDelete = connections.takeFirst();
 		toDelete->sendLeft();
-		delete toDelete;
+		toDelete->deleteLater();
 	}
+	server->close();
 	emit instance.serverClosed();
 }
 
@@ -194,6 +194,11 @@ void Server::switchServer()
 		GameControll::triggerActionWithData(PlayerAction::switchServer,{{"port", port}, {"id", id.toString()}, {"ip", ip.toString()}});
 	}
 	//test
+}
+
+int Server::connectedClientCount()
+{
+	return instance.connections.size();
 }
 
 bool Server::isActive()

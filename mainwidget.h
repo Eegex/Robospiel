@@ -57,7 +57,7 @@ private:
 	UserView * userView = nullptr;
 	QLCDNumber * lcd = nullptr;
 	QPushButton * actionBtn = nullptr; //aka. Vote-Btn
-	QPushButton * serverSwitchBtn = nullptr;
+	QAction * aServerSwitch = nullptr;
 	QMenuBar * menuBar = nullptr;
 	QAction * aNetworking = nullptr;
 	QAction * aEditBoard = nullptr;

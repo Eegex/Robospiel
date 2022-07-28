@@ -450,32 +450,24 @@ void GameControll::exeQTAction(QJsonObject data)
 		QUuid id = QUuid(data.value("id").toString());
 		QString ip = data.value("ip").toString();
 		int port = data.value("port").toInt();
-		//int port = data.value("port").toString().toInt();
-		//ip = "localhost";
-		//port = 8050;
 		if(id == static_cast<OnlineLeaderboardWidget*>(leaderboard)->getLocalUser()->getId()) //we are the new server
 		{
 			//this user has to be the new server
-//			QThread::msleep(50);
 			Client::closeClient();
 			Server::startServer(ip, port);
 		}
-		else //we will now be clients
+		else //we will now be a client
 		{
-
-			//wait around here
 			if(!localUserIsServer()) // we used to be a client and are still only a client
 			{
 				Client::closeClient();
-//				QThread::msleep(100);
-				//Server::getInstance().closeServer();
 			}
 			else
 			{
 				Server::closeServer();
 			}
 			Client::getInstance().startClient(ip, port);
-			emit instance.enableServerSwitchBtn(instance.localUserIsServer());
+			emit instance.enableServerSwitchBtn(instance.localUserIsServer()); //TODO: warum ist das nötig? Sollte eigentlich von Server 116 emit clientsChanged(connections.length()); geregelt werden.
 		}
 		//updateVoteNumbers();
 		emit updateActionButtonText();
@@ -946,13 +938,13 @@ User * GameControll::initializeUser(User* u)
 	{
 		u  = new User(instance.getSettingsDialog()->getUsername(), instance.getSettingsDialog()->getUsercolor());
 	}
-	emit instance.enableServerSwitchBtn(instance.localUserIsServer());
+	//emit instance.enableServerSwitchBtn(instance.localUserIsServer());
 
 	triggerActionWithData(PlayerAction::registerClient, u->toJSON());
 	triggerActionWithData(PlayerAction::newUser, u->toJSON());
 
 	/*
-	Problem: The new User is transmitted via JSOn -> is a different object from u.
+	Problem: The new User is transmitted via JSON -> is a different object from u.
 	The local user in OnlineLeaderboardWidget and the user in Gamecontroll::users should be the same object.
 
 	If this is in the server, the triggerActionWithData is synchronous, the new local user can be found in the if-statement below
@@ -1058,7 +1050,7 @@ void GameControll::setPhase(GameControll::Phase phase) //TODO: once it turns out
 	}
 	case Phase::search:
 	{
-		emit enableServerSwitchBtn(localUserIsServer());
+		//emit enableServerSwitchBtn(localUserIsServer());
 		currentPhase = phase;
 		updateVoteNumbers();
 		instance.leaderboard->noPlayerInPower();

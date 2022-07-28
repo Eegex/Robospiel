@@ -13,14 +13,17 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	actionBtnTexts.insert(GameControll::Phase::presentation, tr("Give Up"));
 	actionBtnTexts.insert(GameControll::Phase::freeplay, tr("Next"));
 	actionBtn = new QPushButton(this);
-	serverSwitchBtn = new QPushButton(this);
-	serverSwitchBtn->setText("Server switch");
+	aServerSwitch = new QAction("Switch server",this);
 	updateActionBtnText();
 	actionBtn->setEnabled(false); // should only be enabled as soon as we have the leaderboard and we can actually start the game
-	serverSwitchBtn->setEnabled(false); // should only be enabled as soon as we have the leaderboard and we can actually start the game
+	aServerSwitch->setVisible(false);
+	aServerSwitch->setEnabled(false); // should only be enabled as soon as we have the leaderboard and we can actually start the game
+	connect(&Server::getInstance(),&Server::clientsChanged,this,[&](int count)
+	{
+		enableServerSwitchBtn(count);
+	});
 
-	userView = new UserView(actionBtn, serverSwitchBtn, this);
-
+	userView = new UserView(actionBtn, aServerSwitch, this);
 	initializeView(GameControll::setBoard(new Board(16, 16, 5)), GameControll::getMapping());
 	//connect(view, &BoardView::lastAnimationAfterGoalHitEnded, game, &GameControll::calculateWinner);
 	lcd = new QLCDNumber(this);
@@ -43,9 +46,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(&GameControll::getInstance(),&GameControll::focusBoard,this,&MainWidget::focusBoard);
 	adjustSize();
 	glMain->addWidget(actionBtn,2,1,Qt::AlignCenter);
-	glMain->addWidget(serverSwitchBtn,2,2,Qt::AlignCenter);
 	connect(actionBtn, &QPushButton::released, this, &MainWidget::handleActionButtonRelease);
-	connect(serverSwitchBtn, &QPushButton::released, this, &MainWidget::handleServerSwitch);
+	connect(aServerSwitch, &QAction::triggered, this, &MainWidget::handleServerSwitch);
 	connect(&GameControll::getInstance(), &GameControll::setBoardEnabled, this, [&](bool enabled)
 	{
 		if(edit)
@@ -226,7 +228,6 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	//TODO: Wenn nicht gebraucht ausgrauen...
 
 	mNewStuff =  new QMenu(tr("New"),this);
-
 	aNewWalls = new QAction(tr("Walls"),this);
 	aNewSeeker = new QAction(tr("Seeker"),this);
 	aNewPlayers = new QAction(tr("Players"),this);
@@ -260,6 +261,8 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	QMenu *menu5 = new QMenu(tr("Debug"),this);
 	aDebugger = new QAction(tr("Debug"),this);
 	menu5->addAction(aDebugger);
+	QMenu *menu6 = new QMenu(tr("Server Switch"),this);
+	menu6->addAction(aServerSwitch);
 
 	bar->addMenu(mNewStuff);
 	bar->addMenu(menu1);
@@ -267,6 +270,7 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	bar->addMenu(menu3);
 	bar->addMenu(menu4);
 	bar->addMenu(menu5);
+	bar->addMenu(menu6);
 #else
 	bar->addMenu(mNewStuff);
 	aEditBoard = new QAction(tr("Edit Board"),this);
@@ -283,7 +287,7 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	bar->addAction(aGoToIdle);
 	aDebugger = new QAction(tr("Debug"),this);
 	bar->addAction(aDebugger);
-
+	bar->addAction(aServerSwitch);
 
 
 #endif
@@ -402,8 +406,8 @@ void MainWidget::enableActionBtn(bool boolean)
 
 void MainWidget::enableServerSwitchBtn(bool boolean)
 {
-	serverSwitchBtn->setEnabled(boolean);
-	serverSwitchBtn->setVisible(boolean);
+	aServerSwitch->setEnabled(boolean);
+	aServerSwitch->setVisible(boolean);
 }
 
 void MainWidget::editBoard()

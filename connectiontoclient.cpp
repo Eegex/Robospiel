@@ -28,6 +28,7 @@ void ConnectionToClient::sendLeft()
 		tcpSocket->waitForBytesWritten();
 	}
 	tcpSocket->close();
+	emit deleteConnection(this);
 	tcpSocket->waitForDisconnected();
 }
 

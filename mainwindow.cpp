@@ -11,8 +11,27 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 MainWindow::~MainWindow()
 {
-	Server::switchServer();
-	Server::closeServer();
-	Client::closeClient();
 }
 
+void MainWindow::closeEvent(QCloseEvent* event)
+{
+	if(Server::isActive())
+	{
+		if(Server::connectedClientCount())
+		{
+			Server::switchServer();
+			QTimer::singleShot(100,this,&MainWindow::close);
+			event->ignore();
+			return;
+		}
+		else
+		{
+			Server::closeServer();
+		}
+	}
+	else if(Client::isActive())
+	{
+		Client::closeClient();
+	}
+	event->accept();
+}

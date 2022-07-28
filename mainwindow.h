@@ -15,6 +15,8 @@ public:
 
 private:
 	MainWidget * centralWidget = nullptr;
-    //~MainWindow();
+
+protected:
+	void closeEvent(QCloseEvent* event);
 };
 #endif // MAINWINDOW_H
