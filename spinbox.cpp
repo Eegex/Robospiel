@@ -5,9 +5,9 @@
 #include <QDebug>
 #include <QTimer>
 
-SpinBox::SpinBox(QWidget* parent):QSpinBox(parent)
+SpinBox::SpinBox(QWidget* parent) : QSpinBox(parent)
 {
-
+	setMouseTracking(true);
 }
 
 void SpinBox::focusInEvent(QFocusEvent * event)
@@ -49,5 +49,4 @@ void SpinBox::setSelectAllOnFocus(bool selectAllOnFocus)
 {
 	this->selectAllOnFocus = selectAllOnFocus;
 }
-
 

@@ -102,7 +102,7 @@ void Server::addClient()
 
 	ConnectionToClient* connection = new ConnectionToClient(this, tcpServerConnection);
 	connections.append(connection);
-//"Das ist code für wenn ein CLient einfach geht" - Dorothee
+	//"Das ist code für wenn ein CLient einfach geht" - Dorothee
 	connect(connection, &ConnectionToClient::deleteConnection, this, [=](ConnectionToClient* toDelete)->void
 	{
 		if(!connections.contains(toDelete))
@@ -116,11 +116,13 @@ void Server::addClient()
 		emit clientsChanged(connections.length());
 		//TODO reset local data in clients and server
 
-
-		QJsonObject data;
-		data.insert("action", PlayerAction::userLeft);
-		data.insert("userId", u->getId().toString());
-		sendMessageToClients(data);
+		if(u)
+		{
+			QJsonObject data;
+			data.insert("action", PlayerAction::userLeft);
+			data.insert("userId", u->getId().toString());
+			sendMessageToClients(data);
+		}
 	});
 	connect(connection, &ConnectionToClient::receivedMessage, this, [this](QString message)
 	{
