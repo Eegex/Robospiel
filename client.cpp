@@ -71,7 +71,10 @@ void Client::processMessageFromServer()
 	QString message;
 	streamFromServer.startTransaction();
 	streamFromServer >> message;
-	connectionWatchDog.start();
+	if(connected)
+	{
+		connectionWatchDog.start();
+	}
 	if(!streamFromServer.commitTransaction())
 	{
 		return;
@@ -112,7 +115,12 @@ void Client::checkConnection()
 
 void Client::closeClient()
 {
+	streamFromServer.abortTransaction();
+	streamFromServer.resetStatus();
 	tcpSocket->close();
+	connected = false;
+	disconnectCheck = false;
+	connectionWatchDog.stop();
 }
 
 bool Client::isActive()

@@ -75,6 +75,8 @@ void UserView::disconnectFromServer()
 	instance->network->show(); //TODO: ausreichend?
 	instance->btnBack->hide();
 
+	Client::getInstance().closeClient();
+
 	//		GameControll::getInstance().setLeaderboard(leaderboard);
 }
 
