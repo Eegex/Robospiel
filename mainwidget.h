@@ -15,11 +15,10 @@
 #include "user.h"
 #include "board.h"
 #include "boardeditor.h"
-#include "networkview.h"
 #include "settingsdialog.h"
 #include "gamecontroll.h"
 #include "LeaderBoardWidget.h"
-#include "userview.h"
+#include "stackwidget.h"
 
 class MainWidget : public QWidget
 {
@@ -27,12 +26,10 @@ class MainWidget : public QWidget
 public:
 	explicit MainWidget(QWidget *parent = nullptr);
 	void setMenuBar(QMenuBar * bar);
-	void enableActionBtn(bool boolean);
 	void enableServerSwitchBtn(bool boolean);
 	void enableIdle(bool boolean);
-	void updateActionBtnText();
-	void handleActionButtonRelease();
 	void handleServerSwitch();
+
 
 protected slots:
 	void keyPressEvent(QKeyEvent * event);
@@ -50,13 +47,12 @@ private slots:
 
 private:
 	QLabel * dlGuide = new QLabel(this);
-	QLabel * dlSteps = new QLabel(this);
+
 	QGridLayout * glMain = nullptr;
 	BoardView * view = nullptr;
 	BoardEditor * edit = nullptr;
-	UserView * userView = nullptr;
 	QLCDNumber * lcd = nullptr;
-	QPushButton * actionBtn = nullptr; //aka. Vote-Btn
+	StackWidget* stack = nullptr;
 	QAction * aServerSwitch = nullptr;
 	QMenuBar * menuBar = nullptr;
 	QAction * aNetworking = nullptr;
@@ -82,12 +78,11 @@ private:
 	QAction * aNewTarget = nullptr;
 	QAction * aGoToIdle = nullptr;
 
-	QMap<GameControll::Phase, QString> actionBtnTexts;
+
 
 	void initializeView(Board *b, QVector<KeyMapping *> *m);
 	void connectView(BoardView * view);
 
-	bool tooltipDir = false;
 
 	//int testCounter=0;
 };

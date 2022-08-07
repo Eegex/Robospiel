@@ -1526,3 +1526,8 @@ bool GameControll::votekickActive()
 {
 	return (Server::isActive() || Client::isActive()) && instance.users.size()>=3;
 }
+
+void GameControll::requestDisconnect()
+{
+	emit instance.disconnectFromServer();
+}

@@ -1,6 +1,6 @@
 #include "client.h"
-#include "userview.h"
 #include "gamecontroll.h"
+#include "stackwidget.h"
 #include <QJsonDocument>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -113,7 +113,7 @@ void Client::checkConnection()
 {
 	if(disconnectCheck)
 	{
-		UserView::disconnectFromServer();
+		GameControll::requestDisconnect();
 		connectionWatchDog.stop();
 	}
 	disconnectCheck = true;

@@ -1,6 +1,7 @@
+#include "client.h"
 #include "gamecontroll.h"
+#include "server.h"
 #include "user.h"
-#include "userview.h"
 #include <QString>
 #include <QColor>
 #include <QUuid>
@@ -236,7 +237,7 @@ void User::receiveVotekick()
 	if(votekickCount>=GameControll::getUsers()->size()-1 && this==GameControll::getLocalUser()) //required number of votes: everyone, but oneself
 	{
 		//GameControll::initiateServerSwitch(); TODO
-		UserView::disconnectFromServer(); //TODO zentral durch GameControll?
+		GameControll::requestDisconnect();
 	}
 }
 

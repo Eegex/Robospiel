@@ -1,4 +1,6 @@
+#include "client.h"
 #include "mainwindow.h"
+#include "server.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {

@@ -33,17 +33,16 @@ SOURCES += \
     onlineleaderboardwidget.cpp \
     offlineleaderboardwidget.cpp \
     pawnwidget.cpp \
-    networkview.cpp \
     playerwidget.cpp \
     powerbuttondelegate.cpp \
     server.cpp \
     settingsdialog.cpp \
     spinbox.cpp \
+    stackwidget.cpp \
     tablemodel.cpp \
     tile.cpp \
     user.cpp \
     usercreationwidget.cpp \
-    userview.cpp \
     votekickdelegate.cpp
 
 HEADERS += \
@@ -68,7 +67,6 @@ HEADERS += \
     mainwindow.h \
     networkdebugger.h \
     networkmodel.h \
-    networkview.h \
     onlineleaderboardwidget.h \
     offlineleaderboardwidget.h \
     pawnwidget.h \
@@ -77,12 +75,12 @@ HEADERS += \
     server.h \
     settingsdialog.h \
     spinbox.h \
+    stackwidget.h \
     tablemodel.h \
     tile.h \
     boardview.h \
     direction.h \
     user.h \
-    userview.h \
     votekickdelegate.h
 
 TRANSLATIONS += \

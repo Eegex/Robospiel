@@ -12,7 +12,6 @@
 #include <QDateTime>
 #include <QString>
 #include "user.h"
-#include "networkview.h"
 
 class LeaderBoardWidget : public QWidget
 {

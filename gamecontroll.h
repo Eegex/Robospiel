@@ -89,6 +89,7 @@ public:
 	static int getUserIndexById(QUuid id);
 
 	static bool votekickActive();
+	static void requestDisconnect();
 public slots:
 	static void startNetworkDebugger();
 	void calculateWinner();
@@ -153,6 +154,7 @@ signals:
 	void focusBoard();
 	void updateMoves(int moves);
 	void setBoardEnabled(bool enabled);
+	void disconnectFromServer();
 
 private slots:
 	void updateTimer();

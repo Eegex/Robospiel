@@ -32,6 +32,9 @@ public:
 	void initialize();
 	User * getLocalUser() const;
 	void updateServerName(QUuid id, QString newName);
+	void handleActionButtonRelease();
+	void updateActionBtnText();
+	void enableActionBtn(bool boolean);
 private:
 	QGridLayout * lay = new QGridLayout(this);
 	QPushButton * bidBtn = new QPushButton(this); //accept in biddingWidget
@@ -45,6 +48,12 @@ private:
 	TableModel * model = new TableModel(this);
 	PowerButtonDelegate * powerButtonDelegate = nullptr;
 	VotekickDelegate* votekickDelegate = nullptr;
+
+	QPushButton * actionBtn = new QPushButton(this); //aka. Vote-Btn
+	QMap<GameControll::Phase, QString> actionBtnTexts;
+	QLabel * dlSteps = new QLabel(this);
+
+	bool tooltipDir = false;
 
 public slots:
 	void btnPressed();
