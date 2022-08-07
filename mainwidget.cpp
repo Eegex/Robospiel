@@ -9,9 +9,10 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	glMain = new QGridLayout(this);
 	//GameControll::setLeaderboard(userView->getLeaderboard());
 
-
 	aServerSwitch = new QAction("Switch server",this);
 
+	topSpacer = new QSpacerItem(10,800,QSizePolicy::Preferred,QSizePolicy::Expanding);
+	bottomSpacer = new QSpacerItem(10,800,QSizePolicy::Preferred,QSizePolicy::Expanding);
 
 	aServerSwitch->setVisible(false);
 	aServerSwitch->setEnabled(false); // should only be enabled as soon as we have the leaderboard and we can actually start the game
@@ -28,13 +29,13 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 					   "background-color: #000000;"
 					   "color: #DD0000;"
 					   "}");
-	lcd->setMinimumSize(250,180);
+	lcd->setFixedSize(250,180);
 	lcd->setDigitCount(2);
 	dlGuide->setMaximumHeight(30);
 	glMain->addWidget(dlGuide,0,0,1,2,Qt::AlignHCenter);
-	glMain->addWidget(view,1,0,4,1,Qt::AlignCenter);
-
-	glMain->addWidget(lcd,1,1,Qt::AlignCenter);
+	glMain->addItem(topSpacer,1,0,2,1);
+	glMain->addWidget(view,2,0,2,1,Qt::AlignCenter);
+	glMain->addWidget(lcd,2,1,Qt::AlignCenter);
 	connect(&GameControll::getInstance(),&GameControll::updateGuide,this,&MainWidget::updateGuide);
 	connect(&GameControll::getInstance(), &GameControll::newBoard, this, [=](Board * newBoard)
 	{
@@ -42,7 +43,6 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	});
 	connect(&GameControll::getInstance(),&GameControll::focusBoard,this,&MainWidget::focusBoard);
 	adjustSize();
-
 
 	connect(aServerSwitch, &QAction::triggered, this, &MainWidget::handleServerSwitch);
 	connect(&GameControll::getInstance(), &GameControll::setBoardEnabled, this, [&](bool enabled)
@@ -58,11 +58,10 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	});
 
 	stack = new StackWidget(this);
-	glMain->addWidget(stack,4,1,Qt::AlignCenter);
+	glMain->addWidget(stack,3,1,Qt::AlignCenter);
+	glMain->addItem(bottomSpacer,4,0,2,1);
 	connect(&GameControll::getInstance(),&GameControll::time,this,&MainWidget::updateTimer);
-
 }
-
 
 void MainWidget::handleServerSwitch()
 {
@@ -98,10 +97,6 @@ void MainWidget::handleKeyPress(int key)
 		}
 	}
 }
-
-
-
-
 
 void MainWidget::setMenuBar(QMenuBar * bar)
 {
@@ -310,8 +305,6 @@ void MainWidget::focusBoard()
 		view->setFocus();
 	}
 }
-
-
 
 void MainWidget::enableServerSwitchBtn(bool boolean)
 {

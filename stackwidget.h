@@ -15,6 +15,7 @@ class StackWidget : public QWidget
 	Q_OBJECT
 public:
 	explicit StackWidget(QWidget *parent = nullptr);
+	QSize sizeHint() const;
 private:
 	QIntValidator intValidator;
 	QString defaultServer = "localhost";
@@ -24,6 +25,7 @@ private:
 	QVBoxLayout* layout = nullptr;
 	QStackedLayout* stack = nullptr;
 
+	QSizePolicy btnSizePolicy;
 	QPushButton* backButton = nullptr;
 
 	//Network Auswahl
@@ -51,17 +53,12 @@ private:
 	QLineEdit* leMessageToClients = nullptr;
 	QPushButton* btnStartServer = nullptr;
 
-
-
 	//Leaderboard
 	LeaderBoardWidget* leaderboard = nullptr;
-
-
-
-
 	void handleLeaderboardOnline();
 	void handleLeaderboardOffline();
 	void disconnectFromServer();
+
 };
 
 #endif // STACKWIDGET_H

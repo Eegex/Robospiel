@@ -8,6 +8,10 @@ BoardView::BoardView(QWidget *parent) : QWidget(parent)
 {
 	setMouseTracking(true);
 	setFocusPolicy(Qt::FocusPolicy::StrongFocus);
+	QSizePolicy sp;
+	sp.setHorizontalPolicy(QSizePolicy::Preferred);
+	sp.setVerticalPolicy(QSizePolicy::Preferred);
+	setSizePolicy(sp);
 	grabGesture(Qt::PanGesture);
 	grabGesture(Qt::SwipeGesture);
 }
@@ -41,12 +45,11 @@ void BoardView::setBoard(Board * newBoard)
 	});
 	connect(board,&Board::paintPlayers,this, [&]()
 	{
-		for (int i =0;i<playerWidgets.length() ;i++ )
+		for(int i = 0;i < playerWidgets.length();i++)
 		{
 			playerWidgets.at(i)->repaint();
 		}
-	}
-	);
+	});
 	connect(board,&Board::goalMoved,this,[&]()
 	{
 		goalwidget->move(tileToDesktopCoordinates(board->goal));

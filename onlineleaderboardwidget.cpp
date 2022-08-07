@@ -61,6 +61,7 @@ void OnlineLeaderboardWidget::initialize()
 		}
 	});
 
+	actionBtn->setFixedSize(QSize(125,60));
 	actionBtnTexts.insert(GameControll::Phase::idle, tr("Start"));
 	actionBtnTexts.insert(GameControll::Phase::search, tr("Next"));
 	actionBtnTexts.insert(GameControll::Phase::countdown, tr("Skip"));
@@ -70,8 +71,6 @@ void OnlineLeaderboardWidget::initialize()
 
 	connect(&GameControll::getInstance(), &GameControll::enableActionBtn, this, &OnlineLeaderboardWidget::enableActionBtn);
 	updateActionBtnText();
-
-	setStyleSheet("background-color: #FF0000");
 }
 
 void OnlineLeaderboardWidget::handleActionButtonRelease()
@@ -192,7 +191,7 @@ void OnlineLeaderboardWidget::setOnlineWidget()
 	biddingBox->setSingleStep(1);
 	bidBtn->setText(BID_BTN_TEXT);
 
-	lay->addWidget(actionBtn);
+	lay->addWidget(actionBtn,0,0,Qt::AlignHCenter);
 	lay->addWidget(dlSteps);
 
 	lay->addWidget(lplayerInPower);

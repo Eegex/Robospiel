@@ -12,6 +12,7 @@
 #include <QUuid>
 #include <QWidgetAction>
 #include <QAction>
+#include <QSpacerItem>
 #include "user.h"
 #include "board.h"
 #include "boardeditor.h"
@@ -78,7 +79,8 @@ private:
 	QAction * aNewTarget = nullptr;
 	QAction * aGoToIdle = nullptr;
 
-
+	QSpacerItem* topSpacer = nullptr;
+	QSpacerItem* bottomSpacer = nullptr;
 
 	void initializeView(Board *b, QVector<KeyMapping *> *m);
 	void connectView(BoardView * view);

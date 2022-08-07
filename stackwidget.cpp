@@ -6,21 +6,38 @@
 #include "stackwidget.h"
 
 StackWidget::StackWidget(QWidget *parent) : QWidget{parent}
-{	
+{
+	QSizePolicy sp;
+	sp.setHorizontalPolicy(QSizePolicy::Expanding);
+	sp.setVerticalPolicy(QSizePolicy::Expanding);
+	setSizePolicy(sp);
+
+	btnSizePolicy.setHorizontalPolicy(QSizePolicy::Preferred);
+	btnSizePolicy.setVerticalPolicy(QSizePolicy::Maximum);
+
 	createNetworkSelection();
 	createClientLayout();
 	createServerLayout();
 
-	stack = new QStackedLayout(this);
-	stack->addItem(networkSelection);
-	stack->addItem(clientLayout);
-	stack->addItem(serverLayout);
+	stack = new QStackedLayout;
+	QWidget* tmp = new QWidget(this);
+	tmp->setLayout(networkSelection);
+	stack->addWidget(tmp);
+	tmp = new QWidget(this);
+	tmp->setLayout(clientLayout);
+	stack->addWidget(tmp);
+	tmp = new QWidget(this);
+	tmp->setLayout(serverLayout);
+	stack->addWidget(tmp);
 
 	backButton = new QPushButton(tr("Back"), this);
+	backButton->setSizePolicy(btnSizePolicy);
+	backButton->hide();
 
 	layout = new QVBoxLayout(this);
+	layout->setAlignment(Qt::AlignBottom|Qt::AlignHCenter);
 	layout->addLayout(stack);
-	layout->addWidget(backButton);
+	layout->addWidget(backButton,0,Qt::AlignHCenter);
 
 	setLayout(layout);
 
@@ -38,11 +55,17 @@ StackWidget::StackWidget(QWidget *parent) : QWidget{parent}
 	});
 }
 
+QSize StackWidget::sizeHint() const
+{
+	return QSize(1000,1000);
+}
+
 void StackWidget::disconnectFromServer()
 {
 	if(leaderboard)
 	{
 		leaderboard->deleteLater();
+		leaderboard = nullptr;
 		GameControll::clearUsers();
 	}
 
@@ -59,16 +82,20 @@ void StackWidget::disconnectFromServer()
 void StackWidget::createNetworkSelection()
 {
 
-	btnClient = new QPushButton(tr("Join Server"));
+	btnClient = new QPushButton(tr("Join Server"),this);
 	btnClient->setObjectName("btnClient");
-	btnServer = new QPushButton(tr("Start Server"));
+	btnClient->setSizePolicy(btnSizePolicy);
+	btnServer = new QPushButton(tr("Start Server"),this);
 	btnServer->setObjectName("btnServer");
-	btnOffline = new QPushButton(tr("Play offline"));
+	btnServer->setSizePolicy(btnSizePolicy);
+	btnOffline = new QPushButton(tr("Play offline"),this);
 	btnOffline->setObjectName("btnOffline");
+	btnOffline->setSizePolicy(btnSizePolicy);
 
 	networkSelection = new QVBoxLayout(this);
-	networkSelection->addWidget(btnClient);
+	networkSelection->setAlignment(Qt::AlignBottom|Qt::AlignHCenter);
 	networkSelection->addWidget(btnServer);
+	networkSelection->addWidget(btnClient);
 	networkSelection->addWidget(btnOffline);
 
 
@@ -89,14 +116,16 @@ void StackWidget::createNetworkSelection()
 
 void StackWidget::createClientLayout()
 {
-	clientLayout = new QVBoxLayout(this);
 	leClientAddress = new QLineEdit(defaultServer,this);
 	leClientAddress->setPlaceholderText(tr("Server Address"));
-	leClientPort = new QLineEdit("8050",this);
+	leClientAddress->setSizePolicy(btnSizePolicy);
+	leClientPort = new QLineEdit(QString::number(defaultPort),this);
+	leClientPort->setSizePolicy(btnSizePolicy);
 	leClientPort->setPlaceholderText(tr("Server Port"));
 	leClientPort->setValidator(&intValidator);
 
 	btnStartClient = new QPushButton(tr("Start Client"), this);
+	btnStartClient->setSizePolicy(btnSizePolicy);
 	connect(btnStartClient, &QPushButton::clicked, this, [=]()
 	{
 		Client::getInstance().startClient(leClientAddress->text(), leClientPort->text().toInt());
@@ -105,6 +134,8 @@ void StackWidget::createClientLayout()
 
 	clientStatus = new QLabel(this);
 
+	clientLayout = new QVBoxLayout(this);
+	clientLayout->setAlignment(Qt::AlignBottom|Qt::AlignHCenter);
 	clientLayout->addWidget(leClientAddress);
 	clientLayout->addWidget(leClientPort);
 	clientLayout->addWidget(btnStartClient);
@@ -135,14 +166,16 @@ void StackWidget::createClientLayout()
 
 void StackWidget::createServerLayout()
 {
-	serverLayout = new QVBoxLayout(this);
 	leServerAddress = new QLineEdit(this);
 	leServerAddress->setPlaceholderText(tr("Server Address"));
+	leServerAddress->setSizePolicy(btnSizePolicy);
 	leServerPort = new QLineEdit(this);
 	leServerPort->setPlaceholderText(tr("Server Port"));
 	leServerPort->setValidator(&intValidator);
+	leServerPort->setSizePolicy(btnSizePolicy);
 
 	btnStartServer = new QPushButton(tr("Start Server"), this);
+	btnStartServer->setSizePolicy(btnSizePolicy);
 	connect(btnStartServer, &QPushButton::clicked, this, [=]()
 	{
 		Server::getInstance().startServer(leServerAddress->text(), leServerPort->text().toInt());
@@ -159,6 +192,8 @@ void StackWidget::createServerLayout()
 	});
 	ipSearcher->get(QNetworkRequest({"http://api64.ipify.org/"}));
 
+	serverLayout = new QVBoxLayout(this);
+	serverLayout->setAlignment(Qt::AlignBottom|Qt::AlignHCenter);
 	serverLayout->addWidget(leServerAddress);
 	serverLayout->addWidget(leServerPort);
 	serverLayout->addWidget(btnStartServer);
@@ -187,6 +222,11 @@ void StackWidget::createServerLayout()
 
 void StackWidget::handleLeaderboardOffline()
 {
+	if(leaderboard)
+	{
+		leaderboard->deleteLater();
+		leaderboard = nullptr;
+	}
 	leaderboard = new OfflineLeaderBoardWidget();
 	stack->insertWidget(3, leaderboard);
 	GameControll::getInstance().setLeaderboard(leaderboard);
@@ -203,6 +243,7 @@ void StackWidget::handleLeaderboardOnline()
 		OnlineLeaderboardWidget* onlineLeaderboard = dynamic_cast<OnlineLeaderboardWidget*>(leaderboard);
 		user = onlineLeaderboard->getLocalUser();
 		onlineLeaderboard->deleteLater(); //TODO bleibt der User erhalten, auch wenn das Leaderboard glöscht wird?
+		leaderboard = nullptr;
 	}
 	leaderboard = new OnlineLeaderboardWidget();
 	stack->insertWidget(3, leaderboard);
@@ -217,4 +258,3 @@ void StackWidget::handleLeaderboardOnline()
 
 	stack->setCurrentIndex(3);
 }
-
