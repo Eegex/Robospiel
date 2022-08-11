@@ -456,6 +456,13 @@ void GameControll::exeQTAction(QJsonObject data)
 			//this user has to be the new server
 			Client::closeClient();
 			Server::startServer(ip, port);
+
+			//connections between leaderboard and Users are lost, since the leaderboard got replaced
+			//make new connections
+			for(User* u:users)
+			{
+				leaderboard->addUser(u);
+			}
 		}
 		else //we will now be a client
 		{
@@ -904,7 +911,7 @@ void GameControll::calculateWinner()
  */
 User* GameControll::getUserById(QUuid id)
 {
-	for(User* u: qAsConst(users))
+	for(User* u: qAsConst(instance.users))
 	{
 		if(u->getId()==id)
 		{

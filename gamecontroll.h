@@ -90,6 +90,8 @@ public:
 
 	static bool votekickActive();
 	static void requestDisconnect();
+
+	static User *getUserById(QUuid id);
 public slots:
 	static void startNetworkDebugger();
 	void calculateWinner();
@@ -127,7 +129,6 @@ private:
 
 	explicit GameControll(QObject *parent = nullptr);
 	void sendToServer(PlayerAction a);
-	User *getUserById(QUuid id);
 	User *getNextUser(QUuid lastUserId);
 
 

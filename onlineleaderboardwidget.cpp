@@ -295,7 +295,6 @@ void OnlineLeaderboardWidget::addUser(User *u)
 {
 	connect(u,&User::biddingChanged,this,[&](QUuid id, int bid)
 	{
-		//qDebug() << " Dorothee bidding changed to " << bid;
 		model->update();
 		if(id == localUser->getId())
 		{
