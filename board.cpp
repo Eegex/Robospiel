@@ -62,25 +62,14 @@ void Board::makeNewPlayers(int playerNumber)
 
 /*!
  * \brief Board::makeNewSeeker - changes the player that is the seeker to a new one
- * \param random - do you want the new player to a surprise? Else the seekers will switch in a certain order (depending on their id)
+ * \param random - do you want the new player to be a surprise?
  */
-void Board::makeNewSeeker(bool random)
+void Board::makeNewSeeker()
 {
-	if(players.length()<2) //just one player? This will stay the seeker!
+	int originalSeeker = seeker;
+	while(seeker == originalSeeker)
 	{
-		return;
-	}
-	if(random) //random new seeker
-	{
-		int originalSeeker = seeker;
-		while(seeker == originalSeeker)
-		{
-			seeker = r->bounded(players.size());
-		}
-	}
-	else //the player with the next id will be the seeker
-	{
-		seeker = (seeker+1)%players.length();
+		seeker = r->bounded(players.size());
 	}
 	activePlayer = seeker;
 	emit boardChanged();
@@ -305,7 +294,7 @@ void Board::setPlayerOnTile(int player, Tile* tile)
 void Board::startNewRound()
 {
 	resetMoves();
-	makeNewSeeker(true);
+	makeNewSeeker();
 	activePlayer = seeker;
 	history.clear();
 	//goal only in corner?

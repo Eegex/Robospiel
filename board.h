@@ -50,7 +50,7 @@ public:
 	void makeNewPlayers(int playerNumber);
 	void makeNewWalls(int height, int width);
 	void makeNewGoal();
-	void makeNewSeeker(bool random);
+	void makeNewSeeker();
 	int getMoves() const;
 	void updateColors(QColor b, QColor c, QColor w, QColor g, QColor p1, QColor p2);
 	QString toBinary();

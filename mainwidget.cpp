@@ -137,16 +137,12 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 
 	mNewStuff =  new QMenu(tr("New"),this);
 	aNewWalls = new QAction(tr("Walls"),this);
-	aNewSeeker = new QAction(tr("Seeker"),this);
 	aNewPlayers = new QAction(tr("Players"),this);
 	aNewAll = new QAction(tr("All"),this);
-	aNewTarget = new QAction(tr("Target"),this);
 
 	mNewStuff->addAction(aNewAll);
 	mNewStuff->addAction(aNewWalls);
 	mNewStuff->addAction(aNewPlayers);
-	mNewStuff->addAction(aNewTarget);
-	mNewStuff->addAction(aNewSeeker);
 	mNewStuff->addMenu(mNewGame);
 
 #ifdef __APPLE__
@@ -205,11 +201,11 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 		aDebugger->setText("Clear Log");
 	});
 	connect(aSettings,&QAction::triggered,&GameControll::getInstance(),&GameControll::showSettings);
-	connect(aResetPoints, &QAction::triggered, this, [=]()->void
+	connect(aResetPoints, &QAction::triggered, this, [=]()
 	{
 		GameControll::triggerAction(PlayerAction::resetPoints);
 	});
-	connect(aEditBoard,&QAction::triggered,this,[=]()->void
+	connect(aEditBoard,&QAction::triggered,this,[=]()
 	{
 		if(edit)
 		{
@@ -222,11 +218,11 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 		}
 		this->editBoard();
 	});
-	connect(aNextTarget,&QAction::triggered,this, [=]()->void
+	connect(aNextTarget,&QAction::triggered,this, [=]()
 	{
 		GameControll::triggerAction(PlayerAction::nextTarget);
 	});
-	connect(aGoToIdle, &QAction::triggered, &GameControll::getInstance(), [=]()->void
+	connect(aGoToIdle, &QAction::triggered, &GameControll::getInstance(), [=]()
 	{
 		GameControll::triggerAction(PlayerAction::setIdle);
 	});
@@ -250,14 +246,13 @@ void MainWidget::connectView(BoardView * view)
 		return;
 	}
 	connect(aNewWalls,&QAction::triggered,view,&BoardView::makeNewWalls);
-	connect(aNewSeeker,&QAction::triggered,view,&BoardView::makeNewSeeker);
 	connect(aNewPlayers,&QAction::triggered,view,&BoardView::makeNewPlayers);
 	connect(aNewAll,&QAction::triggered,view,&BoardView::makeNewAll);
-	connect(aNewTarget,&QAction::triggered,view,&BoardView::makeNewTarget);
 }
 
 void MainWidget::createBoard()
 {
+	GameControll::triggerAction(PlayerAction::blockBoard);
 	if(view)
 	{
 		view->setBoard(GameControll::setBoard(new Board(sbWidth->value(),sbHeight->value(),sbPlayer->value())));
