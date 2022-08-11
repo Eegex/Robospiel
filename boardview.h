@@ -40,7 +40,6 @@ public:
 	void makeNewAll();
 	void makeNewPlayers();
 	void makeNewWalls();
-	void makeNewTarget();
 	void makeNewSeeker();
 protected slots:
 	void paintEvent(QPaintEvent * event);

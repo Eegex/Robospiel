@@ -73,10 +73,8 @@ private:
 	QAction * aNewBoard = nullptr;
 
 	QAction * aNewWalls = nullptr;
-	QAction * aNewSeeker = nullptr;
 	QAction * aNewPlayers = nullptr;
 	QAction * aNewAll = nullptr;
-	QAction * aNewTarget = nullptr;
 	QAction * aGoToIdle = nullptr;
 
 	QSpacerItem* topSpacer = nullptr;

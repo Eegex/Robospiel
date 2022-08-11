@@ -1,4 +1,5 @@
 #include "boardview.h"
+#include "gamecontroll.h"
 
 /*!
  * \brief BoardView::BoardView Constructs a BoardView Object
@@ -90,7 +91,9 @@ QSize BoardView::sizeHint() const
  */
 void BoardView::makeNewAll()
 {
+	GameControll::triggerAction(PlayerAction::blockBoard);
 	board->makeNewBoard(board->getSize().width(), board->getSize().height(), board->players.length());
+	GameControll::triggerActionWithData(PlayerAction::editBoard,{{"board", board->toBinary()}});
 }
 
 /*!
@@ -98,15 +101,9 @@ void BoardView::makeNewAll()
  */
 void BoardView::makeNewPlayers()
 {
+	GameControll::triggerAction(PlayerAction::blockBoard);
 	board->makeNewPlayers(board->players.length());
-}
-
-/*!
- * \brief BoardView::makeNewSeeker
- */
-void BoardView::makeNewSeeker()
-{
-	board->makeNewSeeker(false);
+	GameControll::triggerActionWithData(PlayerAction::editBoard,{{"board", board->toBinary()}});
 }
 
 /*!
@@ -114,12 +111,9 @@ void BoardView::makeNewSeeker()
  */
 void BoardView::makeNewWalls()
 {
+	GameControll::triggerAction(PlayerAction::blockBoard);
 	board->makeNewWalls(board->getSize().width(), board->getSize().height());
-}
-
-void BoardView::makeNewTarget()
-{
-	board->makeNewGoal();
+	GameControll::triggerActionWithData(PlayerAction::editBoard,{{"board", board->toBinary()}});
 }
 
 /*!
