@@ -73,12 +73,8 @@ void MainWidget::handleServerSwitch()
 
 void MainWidget::keyPressEvent(QKeyEvent* event)
 {
-	handleKeyPress(event->key());
+	int key = event->key();
 	QWidget::keyPressEvent(event);
-}
-
-void MainWidget::handleKeyPress(int key)
-{
 	for(const KeyMapping * k:qAsConst(*GameControll::getMapping()))
 	{
 		if(*k == key)
@@ -90,7 +86,6 @@ void MainWidget::handleKeyPress(int key)
 				{
 					leaderboard->handleActionButtonRelease();
 				}
-
 			}
 			else
 			{

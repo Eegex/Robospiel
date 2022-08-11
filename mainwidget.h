@@ -35,7 +35,6 @@ public:
 
 protected slots:
 	void keyPressEvent(QKeyEvent * event);
-	void handleKeyPress(int key);
 
 private slots:
 	void updateTimer(int remaining);
