@@ -1,3 +1,4 @@
+#include <QFileDialog>
 #include <QJsonObject>
 #include <QStringList>
 #include <QUuid>
@@ -1235,6 +1236,40 @@ void GameControll::setActiveUserID(const QUuid & id)
 {
 
 	activeUserID = id;
+}
+
+void GameControll::saveBoard()
+{
+	QDir saveDir(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation));
+	if(!saveDir.exists())
+	{
+		saveDir.mkpath(saveDir.path());
+	}
+	QFile boardfile(QFileDialog::getSaveFileName(nullptr,"Board speichern",saveDir.absolutePath(),"*.brd"));
+	if(boardfile.open(QIODevice::WriteOnly))
+	{
+		boardfile.write(instance.board->toBinary().toUtf8());
+		boardfile.close();
+	}
+}
+
+void GameControll::loadBoard()
+{
+	QDir saveDir(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation));
+	if(!saveDir.exists())
+	{
+		saveDir.mkpath(saveDir.path());
+	}
+	QFile boardfile(QFileDialog::getOpenFileName(nullptr,"Board laden",saveDir.absolutePath(),"*.brd"));
+	if(boardfile.open(QIODevice::ReadOnly))
+	{
+		QString data = QString::fromUtf8(boardfile.readAll());
+		boardfile.close();
+		GameControll::triggerAction(PlayerAction::blockBoard);
+		setBoard(Board::fromBinary(data));
+		GameControll::triggerActionWithData(PlayerAction::editBoard,{{"board", instance.board->toBinary()}});
+		GameControll::triggerActionWithData(PlayerAction::syncRandomGenerators,{{"Seed",QTime::currentTime().msecsSinceStartOfDay()}});
+	}
 }
 
 LeaderBoardWidget* GameControll::getLeaderboard()

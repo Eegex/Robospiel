@@ -86,6 +86,11 @@ QSize BoardView::sizeHint() const
 	return board->getSize() * 50 + QSize(10,10);
 }
 
+QSize BoardView::minimumSizeHint() const
+{
+	return board->getSize() * 10 + QSize(10,10);
+}
+
 /*!
  * \brief BoardView::makeNewAll
  */
@@ -270,14 +275,21 @@ void BoardView::paintEvent(QPaintEvent * event)
  */
 void BoardView::resizeEvent(QResizeEvent * event)
 {
-	int w = event->size().width() / board->getSize().width();
-	int h = event->size().height() / board->getSize().height();
+	double w = event->size().width() / board->getSize().width();
+	double h = event->size().height() / board->getSize().height();
+	double s = std::min(w,h);
+	if(w != h)
+	{
+		event->ignore();
+		resize(s);
+		return;
+	}
 	update();
 	QTimer::singleShot(50, this, [=]()->void{
 		//update players
 		for(int i = 0; i <board->players.length();i++)
 		{
-			playerWidgets.at(i)->setFixedSize(w,h);
+			playerWidgets.at(i)->setFixedSize(s,s);
 
 			//calculate all future animations
 			QVector<QPoint> targets = playerWidgets.at(i)->getTargets();
@@ -311,7 +323,7 @@ void BoardView::resizeEvent(QResizeEvent * event)
 	});
 
 	goalwidget->move(tileToDesktopCoordinates(board->goal));
-	goalwidget->setFixedSize(w,h);
+	goalwidget->setFixedSize(s,s);
 	event->accept();
 }
 

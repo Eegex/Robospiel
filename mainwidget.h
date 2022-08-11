@@ -13,6 +13,7 @@
 #include <QWidgetAction>
 #include <QAction>
 #include <QSpacerItem>
+//#include <QSplitter>
 #include "user.h"
 #include "board.h"
 #include "boardeditor.h"
@@ -76,6 +77,10 @@ private:
 	QAction * aNewPlayers = nullptr;
 	QAction * aNewAll = nullptr;
 	QAction * aGoToIdle = nullptr;
+
+	QMenu * mImportExport = nullptr;
+	QAction * aSaveBoard = nullptr;
+	QAction * aLoadBoard = nullptr;
 
 	QSpacerItem* topSpacer = nullptr;
 	QSpacerItem* bottomSpacer = nullptr;

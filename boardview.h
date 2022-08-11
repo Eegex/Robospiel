@@ -31,6 +31,7 @@ class BoardView : public QWidget
 	Q_OBJECT
 public:
 	explicit BoardView(QWidget *parent = nullptr);
+	QSize minimumSizeHint() const;
 	QSize sizeHint() const;
 	virtual void setBoard(Board * b);
 	void setDebugOutputEnabled(bool set = true);

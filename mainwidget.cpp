@@ -2,6 +2,7 @@
 #include "mainwidget.h"
 #include "onlineleaderboardwidget.h"
 #include "server.h"
+#include "client.h"
 
 MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 {
@@ -35,6 +36,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	glMain->addWidget(dlGuide,0,0,1,2,Qt::AlignHCenter);
 	glMain->addItem(topSpacer,1,0,2,1);
 	glMain->addWidget(view,2,0,2,1,Qt::AlignCenter);
+	glMain->setColumnStretch(0,7);
+	glMain->setColumnStretch(1,3);
 	glMain->addWidget(lcd,2,1,Qt::AlignCenter);
 	connect(&GameControll::getInstance(),&GameControll::updateGuide,this,&MainWidget::updateGuide);
 	connect(&GameControll::getInstance(), &GameControll::newBoard, this, [=](Board * newBoard)
@@ -110,6 +113,9 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	sbPlayer = new QSpinBox(this);
 	aNewBoard = new QAction(tr("Create Board"),this);
 	aGoToIdle = new QAction(tr("Idle"),this);
+	mImportExport = new QMenu(tr("Import/Export"),this);
+	aLoadBoard = new QAction(tr("Load Board"),this);
+	aSaveBoard = new QAction(tr("Save Board"),this);
 	aGoToIdle->setDisabled(true);
 	connect(aNewBoard,&QAction::triggered,this,&MainWidget::createBoard);
 	sbHeight->setMinimum(5);
@@ -133,7 +139,8 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	mNewGame->addAction(waPlayer);
 	mNewGame->addAction(aNewBoard);
 
-	//TODO: Wenn nicht gebraucht ausgrauen...
+	mImportExport->addAction(aLoadBoard);
+	mImportExport->addAction(aSaveBoard);
 
 	mNewStuff =  new QMenu(tr("New"),this);
 	aNewWalls = new QAction(tr("Walls"),this);
@@ -170,6 +177,7 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 
 	bar->addMenu(mNewStuff);
 	bar->addMenu(menu1);
+	bar->addMenu(mImportExport);
 	bar->addMenu(menu2);
 	bar->addMenu(menu3);
 	bar->addMenu(menu4);
@@ -179,12 +187,14 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	bar->addMenu(mNewStuff);
 	aEditBoard = new QAction(tr("Edit Board"),this);
 	bar->addAction(aEditBoard);
+	bar->addMenu(mImportExport);
 
 	aNextTarget = new QAction(tr("Next Target"),this);
 	//bar->addAction(aNextTarget);
 
 	aResetPoints = new QAction(tr("Reset points"),this);
 //	bar->addAction(aResetPoints);
+
 
 	aSettings = new QAction(tr("Settings"),this);
 	bar->addAction(aSettings);
@@ -221,6 +231,16 @@ void MainWidget::setMenuBar(QMenuBar * bar)
 	connect(aNextTarget,&QAction::triggered,this, [=]()
 	{
 		GameControll::triggerAction(PlayerAction::nextTarget);
+	});
+	connect(aSaveBoard,&QAction::triggered,&GameControll::getInstance(),&GameControll::saveBoard);
+	connect(aLoadBoard,&QAction::triggered,&GameControll::getInstance(),&GameControll::loadBoard);
+	connect(&Client::getInstance(),&Client::clientStarted,this,[&]()
+	{
+		aLoadBoard->setDisabled(true);
+	});
+	connect(&Server::getInstance(),&Server::serverStarted,this,[&]()
+	{
+		aLoadBoard->setEnabled(true);
 	});
 	connect(aGoToIdle, &QAction::triggered, &GameControll::getInstance(), [=]()
 	{
@@ -275,6 +295,7 @@ void MainWidget::enableMenus(bool boolean)
 {
 	mNewStuff->setEnabled(boolean);
 	aEditBoard->setEnabled(boolean);
+	aLoadBoard->setEnabled(Server::isActive() && boolean);
 }
 
 void MainWidget::enableBoard(bool enabled)

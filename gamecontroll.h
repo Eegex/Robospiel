@@ -82,9 +82,9 @@ public:
 	bool localUserIsClient();
 	static QString phaseAsString(Phase phase);
 
-    void setPlayerInPowerLabel(User *user);
-    static void initiateServerSwitch();
-    static User *initializeUser(User *user);
+	void setPlayerInPowerLabel(User *user);
+	static void initiateServerSwitch();
+	static User *initializeUser(User *user);
 	static LeaderBoardWidget* getLeaderboard();
 	static int getUserIndexById(QUuid id);
 
@@ -99,7 +99,8 @@ public slots:
 	void remakeBoard();
 	QUuid getActiveUserID();
 	void setActiveUserID(const QUuid & id);
-
+	static void saveBoard();
+	static void loadBoard();
 
 private:
 	NetworkModel * nwModel = nullptr;
@@ -147,7 +148,7 @@ signals:
 	void updateGuide(const QString & txt);
 	void enableMenus(bool boolean);
 	void enableActionBtn(bool boolean);
-    void enableServerSwitchBtn(bool boolean);
+	void enableServerSwitchBtn(bool boolean);
 	void enableIdleBtn(bool boolean);
 	void newBoard(Board* b);
 	void updateActionButtonText();
