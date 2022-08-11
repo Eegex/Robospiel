@@ -229,7 +229,8 @@ KeyInputBlock* KeyMappingView::getAddGroup(int row)
 {
 	KeyInputBlock* input = new KeyInputBlock();
 	inputBlocks.insert(row, input);
-	connect(inputBlocks.at(row), &KeyInputBlock::addMapping, this, [=](){
+	connect(inputBlocks.at(row), &KeyInputBlock::addMapping, this, [=]()
+	{
 		if(inputBlocks.at(row)->hasKey() && allMappings.at(row)->addKey(inputBlocks.at(row)->getKey()))
 		{
 			insertKeyIntoUI(row, allMappings.at(row)->getKeys().length()-1);
@@ -251,7 +252,8 @@ void KeyMappingView::insertKeyIntoUI(int row, int col)
 	QPushButton* deleteBtn = new QPushButton(tr("Delete"), this);
 	QFontMetrics* fontInfo = new QFontMetrics(deleteBtn->font());
 	deleteBtn->setMaximumWidth(fontInfo->boundingRect(deleteBtn->text()+"...").width());
-	connect(deleteBtn, &QAbstractButton::pressed, this, [=]()->void{
+	connect(deleteBtn, &QAbstractButton::pressed, this, [=]()
+	{
 		keyLabels.at(row)->removeAll(label);
 
 		layout->deleteLater();
@@ -267,7 +269,6 @@ void KeyMappingView::insertKeyIntoUI(int row, int col)
 
 
 	hBoxRows.at(row)->addLayout(layout);
-	hBoxRows.at(row)->setAlignment(Qt::AlignLeft);
 }
 
 QVector<KeyMapping*> KeyMappingView::getMapping()
