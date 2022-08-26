@@ -111,9 +111,7 @@ private:
 	bool placeInnerWallifFits(Tile *tile, Direction direection);
 	Direction getNextDirection(Direction direction, int numberOfClockwiseSteps);
 	bool placeOuterWallIfFits(Tile *, Direction direction);
-	void placeGoalInCorner();
 	Board(QObject * parent = nullptr);
-	bool isTileCorner(Tile *tile);
 	Tile *getRandomTile();
 };
 

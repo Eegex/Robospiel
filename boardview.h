@@ -57,7 +57,7 @@ protected:
 	QSize tileSize;
 	QPoint mouseStart;
 	int lastKey = 0;
-	bool showDebugOutput = false;
+	bool showDebugOutput = true;
 	bool checkered = false;
 	QVector<KeyMapping*> * mapping = nullptr;
 	void callChangeActivePlayer(Tile *t);

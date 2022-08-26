@@ -49,15 +49,26 @@ void Board::makeNewBoard(int width, int height, int playerNumber)
  */
 void Board::makeNewPlayers(int playerNumber)
 {
-	players.clear();
-	for(int i=0; i<playerNumber; i++)
+	while(!players.isEmpty())
 	{
-		Tile * t = getRandomUnoccupiedTile();
-		t->setPlayer(i);
-		players.append(t);
-		emit playerMoved(i,(goal == t && seeker == activePlayer) ? moves : -1);
-		emit boardChanged();
+		Tile* p = players.takeFirst();
+		p->setPlayer(-1);
 	}
+	for(int i = 0;i < playerNumber;i++)
+	{
+		Tile* t = getRandomUnoccupiedTile();
+		if(t)
+		{
+			t->setPlayer(i);
+			players.append(t);
+			emit playerMoved(i,(goal == t && seeker == activePlayer) ? moves : -1);
+		}
+		else
+		{
+			qDebug() << "no random Tile";
+		}
+	}
+	emit boardChanged();
 }
 
 /*!
@@ -80,9 +91,43 @@ void Board::makeNewSeeker()
  */
 void Board::makeNewGoal()
 {
-	placeGoalInCorner();
-	emit goalMoved();
-	emit boardChanged();
+	Tile* alt = goal;
+	goal = nullptr;
+	QVector<Tile*> free;
+	for(const QVector<Tile*> &row:tiles)
+	{
+		for(Tile* t:row)
+		{
+			char walls = 0;
+			for(int i = 0; i < 4;i++)
+			{
+				walls += t->getWall(static_cast<Direction>(i)) << i;
+			}
+			if(!(t->getPosition().rx() == players.at(seeker)->getPosition().rx())
+					&& !(t->getPosition().ry() == players.at(seeker)->getPosition().ry())
+					&& QVector<char>({0b1100,0b0110,0b0011,0b1001}).contains(walls))
+			{
+				free.append(t);
+			}
+		}
+	}
+	if(free.isEmpty())
+	{
+		goal = getRandomUnoccupiedTile();
+	}
+	else
+	{
+		goal = free.at(r->bounded(free.size()));
+	}
+	if(!goal)
+	{
+		goal = alt;
+	}
+	if(goal)
+	{
+		emit goalMoved();
+		emit boardChanged();
+	}
 }
 
 void Board::makeNewWalls(int width, int height)
@@ -346,59 +391,29 @@ Tile* Board::getRandomTile()
 	return tiles.at(r->bounded(tiles.length())).at(r->bounded(tiles.at(0).length()));
 }
 
-
 /*!
  * \brief Board::getRandomUnoccupiedTile
  * \return a tile that has no player nor goal currently placed on it
  */
 Tile* Board::getRandomUnoccupiedTile()
 {
-	bool tileIsValid = false;
-	Tile* initialTile = nullptr;
-	int counter = 0;
-	while(!tileIsValid)
+	QVector<Tile*> free;
+	for(const QVector<Tile*> &row:tiles)
 	{
-		counter++;
-		initialTile = getRandomTile();
-		tileIsValid = true;
-		for(Tile* player : qAsConst(players))
+		for(Tile* tile:row)
 		{
-			if(player == initialTile)
+			if(tile->getPlayer() == -1 && goal != tile)
 			{
-				tileIsValid = false;
+				free.append(tile);
 			}
-		}
-		if(goal == initialTile)
-		{
-			tileIsValid = false;
-		}
-		if(counter>100000)
-		{
-			for(int i =0; i<tiles.size(); i++){
-				for(int j = 0; j<tiles.at(0).size(); j++){
-					initialTile = tiles.at(i).at(j);
-					tileIsValid = true;
-					for(Tile* player : qAsConst(players))
-					{
-						if(player == initialTile)
-						{
-							tileIsValid = false;
-						}
-					}
-					if(goal == initialTile)
-					{
-						tileIsValid = false;
-					}
-				}
-				if(!tileIsValid){
-					qDebug() << "Can't find any unoccupied tile";
-					return nullptr;
-				}
-			}
-
 		}
 	}
-	return initialTile;
+	if(free.isEmpty())
+	{
+		qDebug() << "Can't find any unoccupied tile";
+		return nullptr;
+	}
+	return free.at(r->bounded(free.size()));
 }
 
 void Board::placeOuterWalls()
@@ -571,96 +586,6 @@ bool Board::placeInnerWallifFits(Tile* tile, Direction direction)
 		}
 	}
 	return false;
-}
-
-/*!
- * \brief Board::placeGoalInCorner - places a goal into a spot that has two walls that are in a right angle to each other
- */
-void Board::placeGoalInCorner()
-{
-	bool noCorner = true;
-	int count = 0;
-	while(noCorner) //try to just find a new corner spot for the goal
-	{
-		placeGoalAwayFromSeeker();
-		noCorner = !isTileCorner(goal);
-		count++;
-		if(count > 1000) // when this didn't work after 1000 tries
-		{
-			//find a corner
-			Tile*  tile;
-			while(noCorner)
-			{
-				tile = getRandomTile();
-				noCorner = !isTileCorner(tile);
-			}
-			//put the goal there
-			goal = tile;
-			//move the player that's in that corner to a random tile
-			int playerNum = tile->getPlayer();
-			if (playerNum != -1)
-			{
-				setPlayerOnTile(playerNum, getRandomUnoccupiedTile());
-				//emit boardChanged();
-				emit playerMoved(playerNum, -1);
-			}
-		}
-	}
-	emit goalMoved();
-	return;
-}
-
-/*!
- * \brief Board::isTileCorner - checks if a tile has two walls that are in a right angle to each other
- * \param tile
- * \return
- */
-bool Board::isTileCorner(Tile* tile){
-
-	int numberOfWalls = 0;
-	for(int i = 0; i<5; i++)
-	{
-		//we need to make sure that only tiles with real corners are used.
-		//A tile like this | | is not a corner. So we check if the two walls of the tile are in neighboring directions.
-		Direction dir = getNextDirection(Direction::north, i);
-		if(tile->getWall(dir))
-		{
-			if(numberOfWalls ==1){
-				numberOfWalls = 2;
-			}
-			else if(numberOfWalls==0){
-				numberOfWalls++;
-			}
-		}
-		else{
-			if(numberOfWalls==1){
-				numberOfWalls=0;
-			}
-		}
-	}
-	return numberOfWalls>=2;
-
-}
-
-void Board::placeGoalAwayFromSeeker()
-{
-
-	bool inRowOrColWithSeeker = true;
-	while(inRowOrColWithSeeker)
-	{
-		goal = getRandomUnoccupiedTile();
-		if(goal==nullptr)
-		{
-			goal = getRandomUnoccupiedTile();
-		}
-		if(!(goal->getPosition().rx() == players.at(seeker)->getPosition().rx()) &&
-		   !(goal->getPosition().ry() == players.at(seeker)->getPosition().ry()))
-		{
-			inRowOrColWithSeeker = false;
-		}
-	}
-	return;
-
 }
 
 int Board::getMoves() const
