@@ -760,7 +760,7 @@ void Board::changeActivePlayer(int playerNumber, bool isRevert)
 		history.append(h);
 	}
 	activePlayer = playerNumber;
-	//emit boardChanged();
+	emit boardChanged();
 }
 
 /*!

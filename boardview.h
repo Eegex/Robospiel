@@ -50,6 +50,7 @@ protected slots:
 //	void keyPressEvent(QKeyEvent * event);
 	void handleKeyPress(int key);
 	bool event(QEvent * event);
+	void repaintView();
 
 protected:
 	Tile * coordsToTile(QPoint p);
@@ -57,7 +58,7 @@ protected:
 	QSize tileSize;
 	QPoint mouseStart;
 	int lastKey = 0;
-	bool showDebugOutput = true;
+	bool showDebugOutput = false;
 	bool checkered = false;
 	QVector<KeyMapping*> * mapping = nullptr;
 	void callChangeActivePlayer(Tile *t);

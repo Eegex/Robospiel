@@ -24,7 +24,7 @@ BoardView::BoardView(QWidget *parent) : QWidget(parent)
 void BoardView::setBoard(Board * newBoard)
 {
 	this->board = newBoard;
-	connect(board,SIGNAL(boardChanged()),this,SLOT(update()));
+	connect(board,&Board::boardChanged,this,&BoardView::repaintView);
 	while(!playerWidgets.isEmpty())
 	{
 		delete playerWidgets.takeFirst();
@@ -262,10 +262,6 @@ void BoardView::paintEvent(QPaintEvent * event)
 		}
 	}
 	painter.end();
-	for(PlayerWidget * widget:qAsConst(playerWidgets))
-	{
-		widget->update();
-	}
 	event->accept();
 }
 
@@ -390,14 +386,14 @@ void BoardView::mouseMoveEvent(QMouseEvent * event)
 			}
 		}
 	}
-	else
-	{
-		Tile * t = coordsToTile(event->pos());
-		if(t)
-		{
-			handleKeyPress(Qt::Key_F35);
-		}
-	}
+//	else
+//	{
+//		Tile * t = coordsToTile(event->pos());
+//		if(t)
+//		{
+//			handleKeyPress(Qt::Key_F35);
+//		}
+//	}
 }
 
 /*!
@@ -456,6 +452,15 @@ bool BoardView::event(QEvent * event)
 		}
 	}
 	return QWidget::event(event);
+}
+
+void BoardView::repaintView()
+{
+	update();
+	for(PlayerWidget * widget:qAsConst(playerWidgets))
+	{
+		widget->update();
+	}
 }
 
 /*!
