@@ -19,6 +19,8 @@ bool Client::disconnectCheck = false;
 QTcpSocket* Client::tcpSocket = new QTcpSocket();
 Client::Client(QObject *parent) : QObject(parent) {}
 
+
+
 Client& Client::getInstance()
 {
 	return instance;

@@ -236,8 +236,10 @@ void User::receiveVotekick()
 	votekickCount++;
 	if(votekickCount>=GameControll::getUsers()->size()-1 && this==GameControll::getLocalUser()) //required number of votes: everyone, but oneself
 	{
-		//GameControll::initiateServerSwitch(); TODO
-		GameControll::requestDisconnect();
+		if(!GameControll::initiateServerSwitch(false))
+		{
+			GameControll::requestDisconnect();
+		}
 	}
 }
 

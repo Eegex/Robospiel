@@ -29,7 +29,10 @@ void ConnectionToClient::sendLeft()
 	}
 	tcpSocket->close();
 	emit deleteConnection(this);
-	tcpSocket->waitForDisconnected();
+	if(tcpSocket->state()!= QAbstractSocket::UnconnectedState)
+	{
+		tcpSocket->waitForDisconnected();
+	}
 }
 
 User * ConnectionToClient::getUser() const

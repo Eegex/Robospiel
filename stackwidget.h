@@ -16,7 +16,10 @@ class StackWidget : public QWidget
 public:
 	explicit StackWidget(QWidget *parent = nullptr);
 	QSize sizeHint() const;
+	static void disconnectFromServer();
 private:
+	static StackWidget* currentStackWidget;
+
 	QIntValidator intValidator;
 	QString defaultServer = "localhost";
 	int defaultPort = 8050;
@@ -57,7 +60,7 @@ private:
 	LeaderBoardWidget* leaderboard = nullptr;
 	void handleLeaderboardOnline();
 	void handleLeaderboardOffline();
-	void disconnectFromServer();
+
 
 };
 

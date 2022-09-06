@@ -5,6 +5,8 @@
 #include "server.h"
 #include "stackwidget.h"
 
+StackWidget* StackWidget::currentStackWidget = nullptr;
+
 StackWidget::StackWidget(QWidget *parent) : QWidget{parent}
 {
 	QSizePolicy sp;
@@ -53,6 +55,8 @@ StackWidget::StackWidget(QWidget *parent) : QWidget{parent}
 	{
 		backButton->setVisible(index!=0);
 	});
+
+	currentStackWidget = this;
 }
 
 QSize StackWidget::sizeHint() const
@@ -62,10 +66,15 @@ QSize StackWidget::sizeHint() const
 
 void StackWidget::disconnectFromServer()
 {
-	if(leaderboard)
+	if(!currentStackWidget)
 	{
-		leaderboard->deleteLater();
-		leaderboard = nullptr;
+		qDebug() << "no stack widget to use for disconnect";
+		return;
+	}
+	if(currentStackWidget->leaderboard)
+	{
+		currentStackWidget->leaderboard->deleteLater();
+		currentStackWidget->leaderboard = nullptr;
 		GameControll::clearUsers();
 	}
 

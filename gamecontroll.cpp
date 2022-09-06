@@ -7,6 +7,7 @@
 #include "client.h"
 #include "user.h"
 #include "onlineleaderboardwidget.h"
+#include "stackwidget.h"
 
 using namespace std::chrono_literals;
 GameControll GameControll::instance;
@@ -451,6 +452,7 @@ void GameControll::exeQTAction(QJsonObject data)
 		QUuid id = QUuid(data.value("id").toString());
 		QString ip = data.value("ip").toString();
 		int port = data.value("port").toInt();
+
 		if(id == static_cast<OnlineLeaderboardWidget*>(leaderboard)->getLocalUser()->getId()) //we are the new server
 		{
 			//this user has to be the new server
@@ -463,6 +465,10 @@ void GameControll::exeQTAction(QJsonObject data)
 			{
 				leaderboard->addUser(u);
 			}
+
+			QTimer::singleShot(2000, this, &Server::cleanupUsers);
+
+
 		}
 		else //we will now be a client
 		{
@@ -472,6 +478,11 @@ void GameControll::exeQTAction(QJsonObject data)
 			}
 			else
 			{
+				bool restart = data.value("restartOldServer").toBool();
+				if(!restart) {
+					StackWidget::disconnectFromServer();
+					return;
+				}
 				Server::closeServer();
 			}
 			Client::getInstance().startClient(ip, port);
@@ -1532,12 +1543,19 @@ void GameControll::updateVoteNumbers()
 
 }
 
-void GameControll::initiateServerSwitch()
+/**
+ * @brief GameControll::initiateServerSwitch
+ * @param restart determines if the old server reconnects after the switch
+ * @return true if a serverSwitch was performed
+ */
+bool GameControll::initiateServerSwitch(bool restart)
 {
 	if(instance.localUserIsServer())
 	{
-		Server::switchServer();
+		Server::switchServer(restart);
+		return true;
 	}
+	return false;
 }
 
 bool GameControll::localUserIsServer()
@@ -1566,7 +1584,7 @@ QString GameControll::phaseAsString(Phase phase)
 
 bool GameControll::votekickActive()
 {
-	return (Server::isActive() || Client::isActive()) && instance.users.size()>=3;
+	return (Server::isActive() || Client::isActive()) && instance.users.size()>=2;
 }
 
 void GameControll::requestDisconnect()

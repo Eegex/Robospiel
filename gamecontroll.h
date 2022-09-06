@@ -83,7 +83,7 @@ public:
 	static QString phaseAsString(Phase phase);
 
 	void setPlayerInPowerLabel(User *user);
-	static void initiateServerSwitch();
+	static bool initiateServerSwitch(bool restart=true);
 	static User *initializeUser(User *user);
 	static LeaderBoardWidget* getLeaderboard();
 	static int getUserIndexById(QUuid id);

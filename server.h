@@ -19,8 +19,9 @@ public:
 	static int sendMessageToClients(QJsonObject additionalData);
 	static void closeServer();
 	static bool isActive();
-	static void switchServer();
+	static void switchServer(bool restart = true);
 	static int connectedClientCount();
+	static void cleanupUsers();
 private:
 	Server(QObject *parent = nullptr);
 	static int forwardMessageToClients(QString message);

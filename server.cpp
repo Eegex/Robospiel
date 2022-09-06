@@ -167,6 +167,35 @@ void Server::addClient()
 	GameControll::triggerActionWithData(PlayerAction::syncRandomGenerators,{{"Seed",QTime::currentTime().msecsSinceStartOfDay()}});
 }
 
+/**
+ * @brief Server::cleanupUsers
+ * Searches for a Connection for each user in GameControll to eliminate users, that didn't reconnect after a serverswitch.
+ */
+void Server::cleanupUsers()
+{
+	for(User* u : *(GameControll::getUsers()))
+	{
+		bool foundConnection = false;
+		for(ConnectionToClient* c : connections)
+		{
+			if(c->getUser() && c->getUser()->getId()==u->getId())
+			{
+				foundConnection = true;
+				break;
+			}
+		}
+		//if !foundConnection && man ist nicht selber der server
+		if(!foundConnection && (!GameControll::getLocalUser() || u->getId()!=GameControll::getLocalUser()->getId()))
+		{
+			emit instance.clientsChanged(GameControll::getUsers()->size());
+			QJsonObject data;
+			data.insert("action", PlayerAction::userLeft);
+			data.insert("userId", u->getId().toString());
+			sendMessageToClients(data);
+		}
+	}
+}
+
 void Server::closeServer()
 {
 	while(!connections.empty())
@@ -179,7 +208,11 @@ void Server::closeServer()
 	emit instance.serverClosed();
 }
 
-void Server::switchServer()
+/**
+ * @brief Server::switchServer
+ * @param restart determines if the old server reconnects after the switch
+ */
+void Server::switchServer(bool restart)
 {
 	if(!connections.empty())
 	{
@@ -191,7 +224,7 @@ void Server::switchServer()
 		QHostAddress ip = newServer->getTcpSocket()->peerAddress();
 		//int port = newServer->getTcpSocket()->peerPort();
 
-		GameControll::triggerActionWithData(PlayerAction::switchServer,{{"port", port}, {"id", id.toString()}, {"ip", ip.toString()}});
+		GameControll::triggerActionWithData(PlayerAction::switchServer,{{"port", port}, {"id", id.toString()}, {"ip", ip.toString()}, {"restartOldServer", restart}});
 	}
 	//test
 }
