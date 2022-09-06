@@ -94,6 +94,7 @@ void Board::makeNewGoal()
 	Tile* alt = goal;
 	goal = nullptr;
 	QVector<Tile*> free;
+	QVector<char> ecken({0b1100,0b0110,0b0011,0b1001});
 	for(const QVector<Tile*> &row:tiles)
 	{
 		for(Tile* t:row)
@@ -101,11 +102,9 @@ void Board::makeNewGoal()
 			char walls = 0;
 			for(int i = 0; i < 4;i++)
 			{
-				walls += t->getWall(static_cast<Direction>(i)) << i;
+				walls += t->getWall(static_cast<Direction>(1 << (i))) << i;
 			}
-			if(!(t->getPosition().rx() == players.at(seeker)->getPosition().rx())
-					&& !(t->getPosition().ry() == players.at(seeker)->getPosition().ry())
-					&& QVector<char>({0b1100,0b0110,0b0011,0b1001}).contains(walls))
+			if(ecken.contains(walls) && t->getPosition().rx() != players.at(seeker)->getPosition().rx() && t->getPosition().ry() != players.at(seeker)->getPosition().ry())
 			{
 				free.append(t);
 			}
