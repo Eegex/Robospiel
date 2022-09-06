@@ -102,7 +102,7 @@ void Board::makeNewGoal()
 			char walls = 0;
 			for(int i = 0; i < 4;i++)
 			{
-				walls += t->getWall(static_cast<Direction>(1 << (i))) << i;
+				walls += t->getWall(static_cast<Direction>(1 << i)) << i;
 			}
 			if(ecken.contains(walls) && t->getPosition().rx() != players.at(seeker)->getPosition().rx() && t->getPosition().ry() != players.at(seeker)->getPosition().ry())
 			{
