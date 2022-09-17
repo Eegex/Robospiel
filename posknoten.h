@@ -12,11 +12,12 @@ class PosKnoten
 {
 	PosKnoten* parent;
 	QMap<QPoint,PosKnoten*> children;
-    PosKnoten *getRoot();
+	PosKnoten *getRoot();
 public:
-    QPoint getTileOfActivePlayer();
+	QPoint getTileOfActivePlayer();
 	PosKnoten();
 	~PosKnoten();
+	const QMap<QPoint, PosKnoten *> & getChildren() const;
 };
 
 #endif // POSKNOTEN_H

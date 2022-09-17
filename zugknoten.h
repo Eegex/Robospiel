@@ -13,17 +13,18 @@ public:
 		int player;
 		Direction d;
 	};
-private:
 	ZugKnoten* parent = nullptr;
 	QVector<ZugKnoten*> children;
 	Zug zug;
-public:
-    PosKnoten* pos;
+	PosKnoten* pos;
+
 	ZugKnoten();
 	ZugKnoten(Zug z, PosKnoten* pos);
 	~ZugKnoten();
 	void addChild(ZugKnoten* child);
 
+	ZugKnoten * getParent() const;
+	void setParent(ZugKnoten * newParent);
 };
 
 #endif // ZUGKNOTEN_H

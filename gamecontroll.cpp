@@ -23,7 +23,6 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
 	countdown.setInterval(1s);
 	r = new QRandomGenerator(QTime::currentTime().msecsSinceStartOfDay());
 	player = new QMediaPlayer;
-
 }
 
 /*!
@@ -38,6 +37,7 @@ void GameControll::initializeConnections()
 	connect(&instance, &GameControll::actionTriggeredWithData, &instance, &GameControll::sendToServerWithData);
 	connect(&instance, &GameControll::actionTriggered, &instance, &GameControll::sendToServer);
 	connect(&instance.guideTimer,&QTimer::timeout, &instance,&GameControll::nextGuide);
+	connect(s,&Solver::solved,GameControll::getInstance(),&GameControll::presentSolution);
 }
 
 void GameControll::startNetworkDebugger()
@@ -1047,6 +1047,7 @@ void GameControll::nextTarget()
 		emit updateMoves(0);
 		leaderboard->activateInput();
 		board->startNewRound();
+		s->solve(board);
 	}
 }
 
@@ -1287,6 +1288,15 @@ void GameControll::loadBoard()
 		setBoard(Board::fromBinary(data));
 		GameControll::triggerActionWithData(PlayerAction::editBoard,{{"board", instance.board->toBinary()}});
 		GameControll::triggerActionWithData(PlayerAction::syncRandomGenerators,{{"Seed",QTime::currentTime().msecsSinceStartOfDay()}});
+	}
+}
+
+void GameControll::presentSolution()
+{
+	QVector<ZugKnoten::Zug> pfad = s->exportPath();
+	for(ZugKnoten::Zug zug:pfad)
+	{
+		qDebug() << zug.player << QStringList({"north","east","south","west"}).at(1 << static_cast<int>(zug.d));
 	}
 }
 

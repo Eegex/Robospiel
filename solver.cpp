@@ -2,11 +2,16 @@
 #include <QDebug>
 
 
+Solver::Solver(QObject *parent) : QObject{parent}
+{
+
+}
+
 bool Solver::goalHit(PosKnoten *pos)
 {
-    QPoint activePlayerTile = pos->getTileOfActivePlayer();
-    QPoint goalTile = board->goal->getPosition();
-    return activePlayerTile == goalTile;
+	QPoint activePlayerTile = pos->getTileOfActivePlayer();
+	QPoint goalTile = board->goal->getPosition();
+	return activePlayerTile == goalTile;
 
 }
 
@@ -27,7 +32,8 @@ void Solver::generateChildren(ZugKnoten* alt)
 			}
 			//Check for duplicate
 			PosKnoten* newPos = posExists(result);
-			if(!newPos) {
+			if(!newPos)
+			{
 				continue;
 			}
 
@@ -37,12 +43,6 @@ void Solver::generateChildren(ZugKnoten* alt)
 
 			//insert into boundary
 			frontier.append(newZugKnoten);
-
-			//Check for goal
-			if(goalHit(newPos)) {
-				emit solved();
-			}
-
 		}
 	}
 }
@@ -106,16 +106,11 @@ QVector<QPoint> Solver::makeMove(ZugKnoten::Zug zug)
 		}
 		playerCoordinates[zug.player] = currentPos;
 	}
-	if(actualMovement) {
+	if(actualMovement)
+	{
 		return playerCoordinates;
 	}
 	return QVector<QPoint>();
-}
-
-
-Solver::Solver(QObject *parent) : QObject{parent}
-{
-
 }
 
 void Solver::solve(Board * b)
@@ -131,12 +126,12 @@ void Solver::solve(Board * b)
 	ZugKnoten* current = zugBaum;
 	while(!goalHit(current->pos))
 	{
-        generateChildren(current);
+		generateChildren(current);
 		assert(!frontier.isEmpty());
 		current = frontier.takeFirst();
 		qDebug() << "Frontier size: " << frontier.size();
 	}
-
+	emit solved();
 }
 
 QVector<ZugKnoten::Zug> Solver::exportPath()

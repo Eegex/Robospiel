@@ -16,6 +16,7 @@
 #include "board.h"
 #include "Direction.h"
 #include "networkdebugger.h"
+#include "solver.h"
 
 enum strategy {points, bid};
 /*!
@@ -103,8 +104,10 @@ public slots:
 	void setActiveUserID(const QUuid & id);
 	static void saveBoard();
 	static void loadBoard();
+	void presentSolution();
 
 private:
+	Solver* s = new Solver(this);
 	NetworkModel * nwModel = nullptr;
 	NetworkDebugger * debugger = nullptr;
 	static GameControll instance;

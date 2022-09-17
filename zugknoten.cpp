@@ -1,5 +1,15 @@
 #include "zugknoten.h"
 
+ZugKnoten * ZugKnoten::getParent() const
+{
+	return parent;
+}
+
+void ZugKnoten::setParent(ZugKnoten * newParent)
+{
+	parent = newParent;
+}
+
 ZugKnoten::ZugKnoten()
 {
 
