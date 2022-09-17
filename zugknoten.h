@@ -20,7 +20,7 @@ private:
 	Zug zug;
 public:
 	ZugKnoten();
-	ZugKnoten(Direction move, int player, PosKnoten* pos);
+	ZugKnoten(Zug z, PosKnoten* pos);
 	~ZugKnoten();
 	void addChild(ZugKnoten* child);
 
