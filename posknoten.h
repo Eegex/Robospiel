@@ -14,6 +14,7 @@ class PosKnoten
 	QMap<QPoint,PosKnoten*> children;
 public:
 	PosKnoten();
+	~PosKnoten();
 };
 
 #endif // POSKNOTEN_H

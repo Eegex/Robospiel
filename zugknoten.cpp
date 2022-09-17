@@ -4,3 +4,11 @@ ZugKnoten::ZugKnoten()
 {
 
 }
+
+ZugKnoten::~ZugKnoten()
+{
+	while(!children.isEmpty())
+	{
+		delete children.takeFirst();
+	}
+}
