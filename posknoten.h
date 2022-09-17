@@ -16,6 +16,7 @@ class PosKnoten
 public:
     QPoint getTileOfActivePlayer();
 	PosKnoten();
+	~PosKnoten();
 };
 
 #endif // POSKNOTEN_H
