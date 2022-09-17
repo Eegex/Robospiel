@@ -9,9 +9,9 @@ Solver::Solver(QObject *parent) : QObject{parent}
 
 bool Solver::goalHit(PosKnoten *pos)
 {
-	QPoint activePlayerTile = pos->getTileOfActivePlayer();
+	QPoint seekerTile = pos->getTileOfSeeker();
 	QPoint goalTile = board->goal->getPosition();
-	return activePlayerTile == goalTile;
+	return seekerTile == goalTile;
 
 }
 
@@ -20,7 +20,6 @@ void Solver::generateChildren(ZugKnoten* alt)
 {
 	for(int player = 0; player<board->players.size(); player++)
 	{
-
 		for(Direction d : {Direction::north, Direction::east, Direction::south, Direction::west})
 		{
 			ZugKnoten::Zug zug = {player, d};
@@ -31,6 +30,7 @@ void Solver::generateChildren(ZugKnoten* alt)
 				continue;
 			}
 			//Check for duplicate
+			result.prepend(result.takeAt(board->seeker));
 			PosKnoten* newPos = posExists(result);
 			if(!newPos)
 			{
@@ -79,12 +79,8 @@ QVector<QPoint> Solver::makeMove(ZugKnoten::Zug zug)
 	//Q_ASSERT_X(!nextTile ,"Board::moveActivePlayer","nextTile is nullptr");
 	bool actualMovement = false;
 
-	bool playerOnNextTile = false;
-	for(QPoint player:playerCoordinates) {
-		playerOnNextTile |= (player==nextPos);
-	}
-
-	while(!board->getTile(currentPos)->getWall(zug.d) && playerOnNextTile && currentPos!=board->goal->getPosition())
+	//qDebug() <<"HIER"<< !board->getTile(currentPos)->getWall(zug.d) << playerOnNextTile << (currentPos!=board->goal->getPosition());
+	while(!board->getTile(currentPos)->getWall(zug.d) && currentPos!=board->goal->getPosition())
 	{
 		bool nextTileFree = true;
 		for(QPoint player : playerCoordinates)
@@ -124,13 +120,13 @@ void Solver::solve(Board * b)
 	posBaum = new PosKnoten();
 	zugBaum = new ZugKnoten();
 	ZugKnoten* current = zugBaum;
-	while(!goalHit(current->pos))
+	do
 	{
 		generateChildren(current);
 		assert(!frontier.isEmpty());
 		current = frontier.takeFirst();
 		qDebug() << "Frontier size: " << frontier.size();
-	}
+	} while(!goalHit(current->pos));
 	emit solved();
 }
 
@@ -151,31 +147,23 @@ QVector<ZugKnoten::Zug> Solver::exportPath()
 
 PosKnoten * Solver::posExists(QVector<QPoint> players)
 {
-
-	//Wenn der PosKnoten bereits existiert für die aktuellen Spieler, dann gib einen Nullptr zurück.
-	bool containsAllPositions = true;
-	//Speichere die aktuelle Ebene im Graphen zwischen, falls wir irgendwo aufhören und da Krams einfügen müssen.
-	PosKnoten * currentParent = posBaum;
-	//Gehe über alle "Ebenen" drüber
-	for(QPoint player : players)
+	bool returnNull = true;
+	PosKnoten* current = posBaum;
+	for(QPoint p:players)
 	{
-		if(!posBaum->getChildren()->contains(player))
+		if(!current->getChildren().contains(PosKnoten::pointToInt(p)))
 		{
-			containsAllPositions = false;
+			PosKnoten* neu = new PosKnoten();
+			neu->parent = current;
+			current->getChildren().insert(PosKnoten::pointToInt(p),neu);
+			returnNull = false;
 		}
-		else
-		{
-			currentParent = posBaum->getChildren()->find(player).value();
-		}
+		current = current->getChildren().value(PosKnoten::pointToInt(p));
 	}
-	//Wenn die aktuelle Position schon existiert, gib einen Nullzeiger zurück.
-	if(containsAllPositions)
+	if(returnNull)
 	{
 		return nullptr;
 	}
-
-	//Ansonsten erstelle einen neuen Knoten mit den entsprechenden Daten und gib diesen zurück.
-	posBaum->getChildren()->insert(players.last(), currentParent);
-	return posBaum->getChildren()->find(players.last()).value();
+	return current;
 }
 

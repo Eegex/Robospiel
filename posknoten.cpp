@@ -1,6 +1,6 @@
 #include "posknoten.h"
 
-const QMap<QPoint, PosKnoten *> & PosKnoten::getChildren() const
+QMap<int, PosKnoten *> & PosKnoten::getChildren()
 {
 	return children;
 }
@@ -8,26 +8,37 @@ const QMap<QPoint, PosKnoten *> & PosKnoten::getChildren() const
 PosKnoten* PosKnoten::getRoot()
 {
 	PosKnoten* parent = this->parent;
-	while(parent != nullptr){
+	while(parent != nullptr)
+	{
 		parent = parent->parent;
 	}
 	return parent;
 
 }
 
-QPoint PosKnoten::getTileOfActivePlayer()
+int PosKnoten::pointToInt(QPoint p)
 {
-	QPoint activePlayerTile;
+	return p.x() * maxBoardSize + p.y();
+}
+
+QPoint PosKnoten::intToPoint(int i)
+{
+	return QPoint(i / maxBoardSize,i % maxBoardSize);
+}
+
+QPoint PosKnoten::getTileOfSeeker()
+{
+	QPoint seekerTile;
+
+	PosKnoten* knot = this;
 	PosKnoten* parent = this->parent;
-	while(true){
-		PosKnoten* newParent = parent->parent;
-		if(newParent == nullptr){
-			activePlayerTile = newParent->children.key(parent);
-			break;
-		}
-		parent = newParent;
+	while(parent->parent)
+	{
+		parent = parent->parent;
+		knot = knot->parent;
 	}
-	return activePlayerTile;
+	seekerTile = intToPoint(parent->children.key(knot));
+	return seekerTile;
 
 }
 

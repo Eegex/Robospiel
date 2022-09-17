@@ -37,7 +37,7 @@ void GameControll::initializeConnections()
 	connect(&instance, &GameControll::actionTriggeredWithData, &instance, &GameControll::sendToServerWithData);
 	connect(&instance, &GameControll::actionTriggered, &instance, &GameControll::sendToServer);
 	connect(&instance.guideTimer,&QTimer::timeout, &instance,&GameControll::nextGuide);
-	connect(s,&Solver::solved,GameControll::getInstance(),&GameControll::presentSolution);
+	connect(instance.s,&Solver::solved,&GameControll::getInstance(),&GameControll::presentSolution);
 }
 
 void GameControll::startNetworkDebugger()

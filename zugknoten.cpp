@@ -31,4 +31,5 @@ ZugKnoten::~ZugKnoten()
 void ZugKnoten::addChild(ZugKnoten * child)
 {
 	children.append(child);
+	child->parent = this;
 }
