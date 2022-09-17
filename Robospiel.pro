@@ -34,16 +34,19 @@ SOURCES += \
     offlineleaderboardwidget.cpp \
     pawnwidget.cpp \
     playerwidget.cpp \
+    posknoten.cpp \
     powerbuttondelegate.cpp \
     server.cpp \
     settingsdialog.cpp \
+    solver.cpp \
     spinbox.cpp \
     stackwidget.cpp \
     tablemodel.cpp \
     tile.cpp \
     user.cpp \
     usercreationwidget.cpp \
-    votekickdelegate.cpp
+    votekickdelegate.cpp \
+    zugknoten.cpp
 
 HEADERS += \
     Direction.h \
@@ -71,9 +74,11 @@ HEADERS += \
     offlineleaderboardwidget.h \
     pawnwidget.h \
     playerwidget.h \
+    posknoten.h \
     powerbuttondelegate.h \
     server.h \
     settingsdialog.h \
+    solver.h \
     spinbox.h \
     stackwidget.h \
     tablemodel.h \
@@ -81,7 +86,8 @@ HEADERS += \
     boardview.h \
     direction.h \
     user.h \
-    votekickdelegate.h
+    votekickdelegate.h \
+    zugknoten.h
 
 TRANSLATIONS += \
 Robospiel_de_DE.ts
