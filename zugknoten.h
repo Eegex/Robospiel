@@ -16,9 +16,9 @@ public:
 private:
 	ZugKnoten* parent = nullptr;
 	QVector<ZugKnoten*> children;
-	PosKnoten* pos;
 	Zug zug;
 public:
+    PosKnoten* pos;
 	ZugKnoten();
 	ZugKnoten(Zug z, PosKnoten* pos);
 	~ZugKnoten();

@@ -29,7 +29,7 @@ void Solver::solve(Board * b)
 	ZugKnoten* current = zugBaum;
 	while(!goalHit(current->pos))
 	{
-		generateChildren(currentZug);
+        generateChildren(current);
 		assert(!frontier.isEmpty());
 		current = frontier.takeFirst();
 		qDebug() << "Frontier size: " << frontier.size();
