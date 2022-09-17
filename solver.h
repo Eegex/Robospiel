@@ -12,17 +12,18 @@ class Solver : public QObject
 	Board* board = nullptr;
 	PosKnoten* posBaum = 0;
 	ZugKnoten* zugBaum = 0;
-
-	void generateChildren(ZugKnoten* alt);
-	PosKnoten* posExists(QVector<QPoint> murmeln); // nullptr falls treffer, sonst Rückgabe in ZugKnoten verwenden
-	bool goalHit(PosKnoten* pos);
+	QVector<ZugKnoten*> frontier;
+	void generateChildren(ZugKnoten* alt); //Dorothee
+	PosKnoten* posExists(QVector<QPoint> players); // Luca  // nullptr falls treffer, sonst Rückgabe in ZugKnoten verwenden
+	bool goalHit(PosKnoten* pos); // Nora
+	ZugKnoten* goal = nullptr;
 public:
 	explicit Solver(QObject *parent = nullptr);
-	void solve(Board* b);
-	QVector<ZugKnoten::Zug> exportPath();
+	void solve(Board* b); // Annalena
+	QVector<ZugKnoten::Zug> exportPath(); // Jan
 
 signals:
-
+	void solved();
 };
 
 #endif // SOLVER_H
