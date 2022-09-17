@@ -24,6 +24,8 @@ public:
 
 signals:
 	void solved();
+private:
+	QVector<QPoint> makeMove(ZugKnoten::Zug zug);
 };
 
 #endif // SOLVER_H
