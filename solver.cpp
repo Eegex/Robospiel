@@ -24,14 +24,14 @@ void Solver::generateChildren(ZugKnoten* alt)
 		{
 			ZugKnoten::Zug zug = {player, d};
 			//Zug machen
-			QVector<QPoint> result = makeMove(zug);
+			QVector<QPoint> result = makeMove(zug, alt);
 			if(result.length() == 0)
 			{
 				continue;
 			}
 			//Check for duplicate
 			result.prepend(result.takeAt(board->seeker));
-			PosKnoten* newPos = posExists(result);
+			PosKnoten* newPos = makeUniquePosKnoten(result);
 			if(!newPos)
 			{
 				continue;
@@ -42,17 +42,22 @@ void Solver::generateChildren(ZugKnoten* alt)
 			alt->addChild(newZugKnoten);
 
 			//insert into boundary
+			if(goalHit(newZugKnoten->pos))
+			{
+				goal = newZugKnoten;
+				return;
+			}
 			frontier.append(newZugKnoten);
+
 		}
 	}
 }
 
-QVector<QPoint> Solver::makeMove(ZugKnoten::Zug zug)
+QVector<QPoint> Solver::makeMove(ZugKnoten::Zug zug, ZugKnoten* alt)
 {
+
 	QVector<QPoint> playerCoordinates;
-	for(Tile* t:board->players) {
-		playerCoordinates.append(t->getPosition());
-	}
+	alt->pos->getCoordinates(&playerCoordinates);
 
 	int changeOfXAxis = 0;
 	int changeOfYAxis = 0;
@@ -115,18 +120,31 @@ void Solver::solve(Board * b)
 	{
 		delete posBaum;
 		delete zugBaum;
+		goal = nullptr;
+		frontier.clear();
 	}
 	board = b;
 	posBaum = new PosKnoten();
-	zugBaum = new ZugKnoten();
+
+
+	QVector<QPoint> playerCoordinates;
+	for(Tile* t:board->players)
+	{
+		playerCoordinates.append(t->getPosition());
+	}
+	zugBaum = new ZugKnoten({}, makeUniquePosKnoten(playerCoordinates));
+
+
 	ZugKnoten* current = zugBaum;
 	do
 	{
 		generateChildren(current);
-		assert(!frontier.isEmpty());
-		current = frontier.takeFirst();
+		if(!frontier.isEmpty())
+		{
+			current = frontier.takeFirst();
+		}
 		qDebug() << "Frontier size: " << frontier.size();
-	} while(!goalHit(current->pos));
+	} while(!goal);
 	emit solved();
 }
 
@@ -136,7 +154,7 @@ QVector<ZugKnoten::Zug> Solver::exportPath()
 	if(goal)
 	{
 		ZugKnoten* zug = goal;
-		while(zug)
+		while(zug->parent)
 		{
 			path.prepend(zug->zug);
 			zug = zug->parent;
@@ -145,7 +163,12 @@ QVector<ZugKnoten::Zug> Solver::exportPath()
 	return path;
 }
 
-PosKnoten * Solver::posExists(QVector<QPoint> players)
+/**
+ * @brief Solver::makeUniquePosKnoten
+ * @param players
+ * @return newly created PosKnoten or nullpointer if the node already existed.
+ */
+PosKnoten * Solver::makeUniquePosKnoten(QVector<QPoint> players)
 {
 	bool returnNull = true;
 	PosKnoten* current = posBaum;

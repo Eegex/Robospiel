@@ -14,7 +14,7 @@ class Solver : public QObject
 	ZugKnoten* zugBaum = 0;
 	QVector<ZugKnoten*> frontier;
 	void generateChildren(ZugKnoten* alt); //Dorothee
-	PosKnoten* posExists(QVector<QPoint> players); // Luca  // nullptr falls treffer, sonst Rückgabe in ZugKnoten verwenden
+	PosKnoten* makeUniquePosKnoten(QVector<QPoint> players); // Luca  // nullptr falls treffer, sonst Rückgabe in ZugKnoten verwenden
 	bool goalHit(PosKnoten* pos); // Nora
 	ZugKnoten* goal = nullptr;
 public:
@@ -25,7 +25,7 @@ public:
 signals:
 	void solved();
 private:
-	QVector<QPoint> makeMove(ZugKnoten::Zug zug);
+	QVector<QPoint> makeMove(ZugKnoten::Zug zug, ZugKnoten* alt);
 };
 
 #endif // SOLVER_H

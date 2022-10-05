@@ -33,7 +33,7 @@ public:
 	static QColor getPlayerColor(Board* board, int playerIndex);
 private:
 	int playerNumber;
-	bool debugMode = false;
+	bool debugMode = true;
 
 	double fractionOfTile = 0.7;
 	QVector<Animation> animations;

@@ -56,3 +56,14 @@ PosKnoten::~PosKnoten()
 	}
 	children.clear();
 }
+
+void PosKnoten::getCoordinates(QVector<QPoint>* points)
+{
+	if(parent)
+	{
+		QPoint pos = PosKnoten::intToPoint(parent->getChildren().key(this));
+		points->prepend(pos);
+
+		parent->getCoordinates(points);
+	}
+}

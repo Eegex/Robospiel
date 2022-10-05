@@ -21,6 +21,7 @@ public:
 	PosKnoten();
 	~PosKnoten();
 	QMap<int, PosKnoten *> & getChildren();
+	void getCoordinates(QVector<QPoint>* points);
 };
 
 #endif // POSKNOTEN_H

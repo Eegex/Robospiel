@@ -1294,9 +1294,31 @@ void GameControll::loadBoard()
 void GameControll::presentSolution()
 {
 	QVector<ZugKnoten::Zug> pfad = s->exportPath();
+	qDebug() << "solved in " << pfad.length() << " moves!!!";
 	for(ZugKnoten::Zug zug:pfad)
 	{
-		qDebug() << zug.player << QStringList({"north","east","south","west"}).at(1 << static_cast<int>(zug.d));
+		QString string;
+		switch(zug.d)
+		{
+			case Direction::none:
+				string="ERROR";
+				break;
+			case Direction::north:
+				string="north";
+				break;
+			case Direction::east:
+				string="east";
+				break;
+			case Direction::south:
+				string="south";
+				break;
+			case Direction::west:
+				string="west";
+				break;
+
+		}
+
+		qDebug() << zug.player << string;
 	}
 }
 
