@@ -26,6 +26,7 @@ signals:
 	void solved();
 private:
 	QVector<QPoint> makeMove(ZugKnoten::Zug zug, ZugKnoten* alt);
+	void printBoard(PosKnoten* k);
 };
 
 #endif // SOLVER_H

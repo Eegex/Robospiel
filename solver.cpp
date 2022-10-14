@@ -30,7 +30,6 @@ void Solver::generateChildren(ZugKnoten* alt)
 				continue;
 			}
 			//Check for duplicate
-			result.prepend(result.takeAt(board->seeker));
 			PosKnoten* newPos = makeUniquePosKnoten(result);
 			if(!newPos)
 			{
@@ -103,7 +102,7 @@ QVector<QPoint> Solver::makeMove(ZugKnoten::Zug zug, ZugKnoten* alt)
 		actualMovement = true;
 		if(!board->getTile(nextPos)->getWall(zug.d))
 		{
-			nextPos = currentPos+ QPoint(changeOfXAxis,changeOfYAxis);
+			nextPos = currentPos + QPoint(changeOfXAxis,changeOfYAxis);
 		}
 		playerCoordinates[zug.player] = currentPos;
 	}
@@ -130,8 +129,10 @@ void Solver::solve(Board * b)
 	QVector<QPoint> playerCoordinates;
 	for(Tile* t:board->players)
 	{
+		//qDebug() << t->getPosition();
 		playerCoordinates.append(t->getPosition());
 	}
+	playerCoordinates.prepend(playerCoordinates.takeAt(board->seeker));
 	zugBaum = new ZugKnoten({}, makeUniquePosKnoten(playerCoordinates));
 
 
@@ -158,6 +159,17 @@ QVector<ZugKnoten::Zug> Solver::exportPath()
 		{
 			path.prepend(zug->zug);
 			zug = zug->parent;
+		}
+	}
+	for(ZugKnoten::Zug& z:path)
+	{
+		if(z.player == 0)
+		{
+			z.player = board->seeker;
+		}
+		else if(z.player <= board->seeker)
+		{
+			z.player--;
 		}
 	}
 	return path;
@@ -189,4 +201,3 @@ PosKnoten * Solver::makeUniquePosKnoten(QVector<QPoint> players)
 	}
 	return current;
 }
-

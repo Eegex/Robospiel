@@ -13,7 +13,6 @@ PosKnoten* PosKnoten::getRoot()
 		parent = parent->parent;
 	}
 	return parent;
-
 }
 
 int PosKnoten::pointToInt(QPoint p)

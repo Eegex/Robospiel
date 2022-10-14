@@ -1047,6 +1047,7 @@ void GameControll::nextTarget()
 		emit updateMoves(0);
 		leaderboard->activateInput();
 		board->startNewRound();
+//		emit board->boardChanged();
 		s->solve(board);
 	}
 }
