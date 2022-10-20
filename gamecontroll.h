@@ -6,6 +6,7 @@
 #include <QTime>
 #include <QDebug>
 #include <QMediaPlayer>
+#include <QThread>
 #if QT_VERSION_MAJOR == 6
 	#include <QAudioOutput>
 #endif
@@ -107,7 +108,9 @@ public slots:
 	void presentSolution();
 
 private:
-	Solver* s = new Solver(this);
+	QThread* solverThread = nullptr;
+//	Solver* s = nullptr;
+	QVector<ZugKnoten::Zug> solution;
 	NetworkModel * nwModel = nullptr;
 	NetworkDebugger * debugger = nullptr;
 	static GameControll instance;
@@ -141,6 +144,8 @@ private:
 	int voteCounter = 0;
 	int voteThreshold = 0;
 	void resetVotes();
+	static void solveBoard(Board* board, QVector<ZugKnoten::Zug>* solution);
+	void killSolver();
 signals:
 	void actionTriggeredWithData(PlayerAction action, QJsonObject additionalData);
 	void actionTriggered(PlayerAction action);
@@ -160,6 +165,7 @@ signals:
 	void updateMoves(int moves);
 	void setBoardEnabled(bool enabled);
 	void disconnectFromServer();
+	void newBoardToSolve(Board* b,QVector<ZugKnoten::Zug>& solution);
 
 private slots:
 	void updateTimer();

@@ -31,13 +31,12 @@ GameControll::GameControll(QObject *parent) : QObject(parent)
  */
 void GameControll::initializeConnections()
 {
-	connect(&Server::getInstance(), &Server::actionReceived, &GameControll::getInstance(), &GameControll::exeQTAction);
-	connect(&Client::getInstance(), &Client::actionReceived, &GameControll::getInstance(), &GameControll::exeQTAction);
+	connect(&Server::getInstance(), &Server::actionReceived, &instance, &GameControll::exeQTAction);
+	connect(&Client::getInstance(), &Client::actionReceived, &instance, &GameControll::exeQTAction);
 	connect(&instance.countdown,&QTimer::timeout, &instance,&GameControll::updateTimer);
 	connect(&instance, &GameControll::actionTriggeredWithData, &instance, &GameControll::sendToServerWithData);
 	connect(&instance, &GameControll::actionTriggered, &instance, &GameControll::sendToServer);
 	connect(&instance.guideTimer,&QTimer::timeout, &instance,&GameControll::nextGuide);
-	connect(instance.s,&Solver::solved,&GameControll::getInstance(),&GameControll::presentSolution);
 }
 
 void GameControll::startNetworkDebugger()
@@ -252,6 +251,7 @@ void GameControll::showSettings()
 
 Board * GameControll::setBoard(Board* newBoard)
 {
+	instance.killSolver();
 	if(instance.board)
 	{
 		instance.board->deleteLater();
@@ -1046,9 +1046,15 @@ void GameControll::nextTarget()
 		}
 		emit updateMoves(0);
 		leaderboard->activateInput();
+		killSolver();
 		board->startNewRound();
-//		emit board->boardChanged();
-		s->solve(board);
+		if(localUserIsServer())
+		{
+			solverThread = QThread::create(GameControll::solveBoard,getInstance().board,&getInstance().solution);
+			connect(instance.solverThread,&QThread::finished,&instance,&GameControll::presentSolution);
+			solverThread->start();
+			qDebug() << "Started Thread" << solverThread;
+		}
 	}
 }
 
@@ -1294,9 +1300,8 @@ void GameControll::loadBoard()
 
 void GameControll::presentSolution()
 {
-	QVector<ZugKnoten::Zug> pfad = s->exportPath();
-	qDebug() << "solved in " << pfad.length() << " moves!!!";
-	for(ZugKnoten::Zug zug:pfad)
+	qDebug() << "solved in " << solution.length() << " moves!!!";
+	for(ZugKnoten::Zug zug:solution)
 	{
 		QString string;
 		switch(zug.d)
@@ -1316,9 +1321,7 @@ void GameControll::presentSolution()
 			case Direction::west:
 				string="west";
 				break;
-
 		}
-
 		qDebug() << zug.player << string;
 	}
 }
@@ -1607,6 +1610,33 @@ void GameControll::resetVotes()
 	for(User* u : users)
 	{
 		u->setHasVoted(false);
+	}
+}
+
+void GameControll::solveBoard(Board* board, QVector<ZugKnoten::Zug>* solution)
+{
+	Solver s;
+	s.solveBoard(board,*solution);
+}
+
+void GameControll::killSolver()
+{
+	QThread* thread = solverThread;
+	if(thread)
+	{
+		if(thread->isRunning())
+		{
+			thread->terminate();
+			qDebug() << "waiting";
+			thread->wait(QDeadlineTimer::Forever);
+			qDebug() << "waiting finished";
+		}
+		qDebug() << "killed" << thread << solverThread;
+		thread->deleteLater();
+		if(solverThread == thread)
+		{
+			solverThread = nullptr;
+		}
 	}
 }
 

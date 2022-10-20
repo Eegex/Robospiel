@@ -2,6 +2,7 @@
 #define SOLVER_H
 
 #include <QObject>
+#include <QMutex>
 #include "posknoten.h"
 #include "zugknoten.h"
 #include "board.h"
@@ -17,13 +18,18 @@ class Solver : public QObject
 	PosKnoten* makeUniquePosKnoten(QVector<QPoint> players); // Luca  // nullptr falls treffer, sonst Rückgabe in ZugKnoten verwenden
 	bool goalHit(PosKnoten* pos); // Nora
 	ZugKnoten* goal = nullptr;
+	QMutex deletable;
+	int depth = 0;
+	int generated = 0;
+	int explored = 0;
+	QVector<int> width;
+	ZugKnoten* levelEdge = nullptr;
+	void exportPath(QVector<ZugKnoten::Zug>& path); // Jan
 public:
 	explicit Solver(QObject *parent = nullptr);
-	void solve(Board* b); // Annalena
-	QVector<ZugKnoten::Zug> exportPath(); // Jan
+public slots:
+	void solveBoard(Board* b, QVector<ZugKnoten::Zug>& path); // Annalena
 
-signals:
-	void solved();
 private:
 	QVector<QPoint> makeMove(ZugKnoten::Zug zug, ZugKnoten* alt);
 	void printBoard(PosKnoten* k);

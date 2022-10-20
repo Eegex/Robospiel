@@ -1,4 +1,5 @@
 #include "solver.h"
+#include <QThread>
 #include <QDebug>
 
 
@@ -14,7 +15,6 @@ bool Solver::goalHit(PosKnoten *pos)
 	return seekerTile == goalTile;
 
 }
-
 
 void Solver::generateChildren(ZugKnoten* alt)
 {
@@ -46,8 +46,15 @@ void Solver::generateChildren(ZugKnoten* alt)
 				goal = newZugKnoten;
 				return;
 			}
+			if(alt == levelEdge)
+			{
+				++depth;
+				width.append(generated - width.last());
+				levelEdge = newZugKnoten;
+				qDebug() << "next Level" << depth;
+			}
+			++generated;
 			frontier.append(newZugKnoten);
-
 		}
 	}
 }
@@ -113,28 +120,33 @@ QVector<QPoint> Solver::makeMove(ZugKnoten::Zug zug, ZugKnoten* alt)
 	return QVector<QPoint>();
 }
 
-void Solver::solve(Board * b)
+void Solver::solveBoard(Board* b, QVector<ZugKnoten::Zug>& path)
 {
+	qDebug() << "Solver::solveBoard(Board * b)";
 	if(board)
 	{
+		frontier.clear();
 		delete posBaum;
 		delete zugBaum;
 		goal = nullptr;
-		frontier.clear();
+		width.clear();
+		depth = 0;
+		generated = 0;
+		explored = 0;
 	}
+	width << 0;
 	board = b;
+	path.clear();
 	posBaum = new PosKnoten();
-
 
 	QVector<QPoint> playerCoordinates;
 	for(Tile* t:board->players)
 	{
-		//qDebug() << t->getPosition();
 		playerCoordinates.append(t->getPosition());
 	}
 	playerCoordinates.prepend(playerCoordinates.takeAt(board->seeker));
 	zugBaum = new ZugKnoten({}, makeUniquePosKnoten(playerCoordinates));
-
+	levelEdge = zugBaum;
 
 	ZugKnoten* current = zugBaum;
 	do
@@ -143,15 +155,26 @@ void Solver::solve(Board * b)
 		if(!frontier.isEmpty())
 		{
 			current = frontier.takeFirst();
+			++explored;
 		}
-		qDebug() << "Frontier size: " << frontier.size();
 	} while(!goal);
-	emit solved();
+	exportPath(path);
+	++depth;
+	width.append(generated - width.last());
+	qDebug() << "Final depth:" << depth;
+	qDebug() << "Generated:" << generated;
+	qDebug() << "Explored:" << explored;
+	qDebug() << "Percentage:" << static_cast<double>(explored) / generated;
+	for(int i = 0; i+1 < width.size();i++)
+	{
+		QDebug d = qDebug();
+		d.setAutoInsertSpaces(false);
+		d << "Level " << i << ": " << width.at(i+1);
+	}
 }
 
-QVector<ZugKnoten::Zug> Solver::exportPath()
+void Solver::exportPath(QVector<ZugKnoten::Zug>& path)
 {
-	QVector<ZugKnoten::Zug> path;
 	if(goal)
 	{
 		ZugKnoten* zug = goal;
@@ -172,7 +195,6 @@ QVector<ZugKnoten::Zug> Solver::exportPath()
 			z.player--;
 		}
 	}
-	return path;
 }
 
 /**

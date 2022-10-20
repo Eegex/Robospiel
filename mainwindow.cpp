@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	setCentralWidget(centralWidget);
 	centralWidget->setMenuBar(this->menuBar());
 
-	setStyleSheet("background: #333333");
+//	setStyleSheet("background: #333333");
 //    showMaximized();
 	show();
 }
